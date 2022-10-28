@@ -19,38 +19,25 @@
     ],
   },
   {
-    path: '/welcome',
-    name: 'welcome',
+    path: '/omni-channel',
+    name: 'omni-channel',
     icon: 'smile',
-    component: './Welcome',
-  },
-  {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
-    component: './Admin',
     routes: [
       {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        icon: 'smile',
-        component: './Welcome',
+        path: '/omni-channel/report',
+        name: 'report',
+        component: './omni-channel/report/index'
       },
       {
-        component: './404',
+        path: '/omni-channel/setting',
+        name: 'setting',
+        component: './omni-channel/setting/index',
       },
     ],
   },
   {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
-  },
-  {
     path: '/',
-    redirect: '/welcome',
+    redirect: '/omni-channel',
   },
   {
     component: './404',

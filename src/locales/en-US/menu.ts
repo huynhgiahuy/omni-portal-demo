@@ -53,4 +53,9 @@ export default {
   'menu.account.avatar.notify': 'Cài đặt thông báo',
   'menu.account.avatar.displayAccessibility': 'Màn hình & trợ năng',
   'menu.account.avatar.logout': 'Đăng xuất',
+
+  //Omni Channel
+  'menu.omni-channel': 'Omni Channel',
+  'menu.omni-channel.report': 'Report',
+  'menu.omni-channel.setting': 'Setting',
 };
