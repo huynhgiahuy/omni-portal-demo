@@ -49,4 +49,8 @@ export default {
   'menu.editor.flow': 'Flow Editor',
   'menu.editor.mind': 'Mind Editor',
   'menu.editor.koni': 'Koni Editor',
+  'menu.account.avatar.person': 'Xem thông tin cá nhân',
+  'menu.account.avatar.notify': 'Cài đặt thông báo',
+  'menu.account.avatar.displayAccessibility': 'Màn hình & trợ năng',
+  'menu.account.avatar.logout': 'Đăng xuất',
 };
