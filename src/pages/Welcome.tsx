@@ -16,7 +16,6 @@ const Welcome: React.FC = () => {
   const intl = useIntl();
 
   return (
-    <PageContainer>
       <Card>
         <Alert
           message={intl.formatMessage({
@@ -59,7 +58,6 @@ const Welcome: React.FC = () => {
         </Typography.Text>
         <CodePreview>yarn add @ant-design/pro-layout</CodePreview>
       </Card>
-    </PageContainer>
   );
 };
 

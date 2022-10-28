@@ -1,5 +1,4 @@
 import { Settings as LayoutSettings } from '@ant-design/pro-layout';
-import logoTheme from '../public/logo_theme.svg';
 
 const Settings: LayoutSettings & {
   pwa?: boolean;
@@ -16,7 +15,7 @@ const Settings: LayoutSettings & {
   title: 'OmniChannel',
   pwa: false,
   // logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
-  logo: logoTheme,
+  logo: '/logo_theme.svg',
   iconfontUrl: '',
 };
 
