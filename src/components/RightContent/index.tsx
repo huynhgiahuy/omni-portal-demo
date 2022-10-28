@@ -1,10 +1,13 @@
 import { Space } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+// import { QuestionCircleOutlined } from '@ant-design/icons';
 import React from 'react';
-import { useModel, SelectLang } from 'umi';
+import { useModel } from 'umi';
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
+import Diapad from './Diapad';
+import NoticeIconView from '../NoticeIcon';
+import WorkingStatus from './WorkingStatus';
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -42,20 +45,17 @@ const GlobalHeaderRight: React.FC = () => {
             value: 'Pro Layout',
           },
         ]}
-        // onSearch={value => {
-        //   console.log('input', value);
-        // }}
-      />
-      <span
-        className={styles.action}
-        onClick={() => {
-          window.open('https://pro.ant.design/docs/getting-started');
+        onSearch={(value) => {
+          console.log('input', value);
         }}
-      >
-        <QuestionCircleOutlined />
-      </span>
+      />
+      <div style={{ display: 'flex' }}>
+        <WorkingStatus />
+      </div>
+      <Diapad />
+      <NoticeIconView />
       <Avatar />
-      <SelectLang className={styles.action} />
+      {/* <SelectLang className={styles.action} /> */}
     </Space>
   );
 };

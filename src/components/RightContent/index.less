@@ -14,14 +14,14 @@
 .right {
   display: flex;
   float: right;
-  height: 48px;
+  height: 64px;
   margin-left: auto;
   overflow: hidden;
   .action {
     display: flex;
     align-items: center;
-    height: 48px;
-    padding: 0 12px;
+    height: 64px;
+    // padding: 0 12px;
     cursor: pointer;
     transition: all 0.3s;
     > span {
@@ -42,6 +42,8 @@
   }
   .account {
     .avatar {
+      width: 34px;
+      height: 34px;
       margin-right: 8px;
       color: @primary-color;
       vertical-align: top;
@@ -81,4 +83,89 @@
       display: none;
     }
   }
+}
+
+// diapad
+.input {
+  margin: 8px 11px;
+  padding: 0;
+  background-color: #f5f5f5;
+  border-color: #f5f5f5;
+  border-radius: 32px;
+  & > input {
+    padding: 0 4px 0 8px !important;
+    background: transparent;
+  }
+  &:hover {
+    background-color: #f5f5f5 !important;
+  }
+}
+
+.suffix-list-dropdown {
+  .title-dropdown {
+    padding: 16px 0 58px 0;
+    text-align: center;
+  }
+}
+
+.btn-phone {
+  background-color: #127ace !important;
+  border-color: #127ace !important;
+  transform: rotate(90deg);
+  & > span {
+    color: #fff;
+  }
+  &:hover {
+    background-color: #127ace;
+    border-color: #3f5261;
+  }
+}
+
+.btn-disable {
+  // background-color: #aeaeae !important;
+  // border-color: #aeaeae !important;
+}
+
+.icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background-color: #edf5fd;
+  border-radius: 50%;
+  .dot {
+    position: absolute;
+    top: 5px;
+    right: -1px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    content: '';
+  }
+}
+
+// select status
+.status-container {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  .icon {
+    padding-right: 5px;
+  }
+}
+
+.select-dropdown {
+  display: flex !important;
+  align-items: center !important;
+  // width: 100px;
+  & > :nth-child(1) {
+    padding-right: 5px;
+  }
+}
+
+.text-status {
+  margin-left: 9px;
+  font-weight: 400;
+  font-size: 13px;
 }

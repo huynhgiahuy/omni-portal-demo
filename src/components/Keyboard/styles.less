@@ -1,0 +1,108 @@
+.keyboard {
+  border-radius: 0 0 10px 10px;
+  padding: 0;
+  background: #fff;
+  max-width: 276px;
+  z-index: 9999;
+  -moz-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -khtml-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+
+.keyboard-inner {
+  width: 240px;
+  text-align: center;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  &__row {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    flex-shrink: 0;
+    overflow: hidden;
+    align-items: stretch;
+  }
+}
+
+.value {
+  position: relative;
+  display: inline;
+  flex-grow: 0;
+  flex-shrink: 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  text-align: center;
+  font-weight: 400;
+  color: rgb(37, 36, 35);
+  font-size: 26px;
+  line-height: 30px;
+  cursor: inherit;
+}
+
+.button {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex: 1 0 0%;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  border-color: transparent;
+  text-align: left;
+  border-width: 0;
+  min-height: 46px;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  border-style: solid;
+  border-radius: 8px;
+  transition: background .3s linear;
+  &:hover {
+    background: #BDDEF9;
+  }
+  &--number {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 0;
+    overflow: hidden;
+    align-items: stretch;
+    align-self: center;
+    font-size: 24px;
+    font-weight: 600;
+    &--value {
+      .value();
+
+      color: #127ACE;
+    }
+    &--letter {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 0;
+      flex-shrink: 0;
+      overflow: hidden;
+      align-items: center;
+      align-self: center;
+      &__value {
+        .value();
+        
+        text-transform: uppercase;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.65);
+        line-height: 16px;
+        &[data-text='&nbsp;']::before {
+          content: ' ';
+        }
+      }
+    }
+  }
+}
