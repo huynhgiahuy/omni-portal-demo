@@ -64,36 +64,23 @@ import mapDtmfWithSound from './utils/mapDtmfWithSound';
 // }
 
 const numberMapByRow = [
-  [
-    { "1": '' },
-    { "2": 'abc' },
-    { "3": 'def' },
-  ],
-  [
-    { "4": 'ghi' },
-    { "5": 'jlk' },
-    { "6": 'mno' },
-  ],
-  [
-    { "7": 'pqrs' },
-    { "8": 'tuv' },
-    { "9": 'wxyz' },
-  ],
-  [
-    { "*": '' },
-    { "0": '+' },
-    { "#": '' },
-  ]
-]
+  [{ 1: '' }, { 2: 'abc' }, { 3: 'def' }],
+  [{ 4: 'ghi' }, { 5: 'jlk' }, { 6: 'mno' }],
+  [{ 7: 'pqrs' }, { 8: 'tuv' }, { 9: 'wxyz' }],
+  [{ '*': '' }, { 0: '+' }, { '#': '' }],
+];
 
 const Keyboard = ({ getValue, size }) => {
   // const sound = React.useMemo(() => new Tone(450, 540), []);
   // const sound = React.useMemo(() => new Audio('/musics/soundEffect.wav'), []);
 
-  const handleOnClick = React.useCallback((keyPress) => (e) => {
-    mapDtmfWithSound.playDTMFSound(keyPress);
-    getValue && getValue(keyPress);
-  }, [getValue]);
+  const handleOnClick = React.useCallback(
+    (keyPress) => () => {
+      mapDtmfWithSound.playDTMFSound(keyPress);
+      getValue && getValue(keyPress);
+    },
+    [getValue],
+  );
 
   // const handleOnMouseDown = React.useCallback((keyPress) => (e) => {
   //   e.preventDefault();
@@ -117,7 +104,7 @@ const Keyboard = ({ getValue, size }) => {
         {numberMapByRow.map((row, index) => {
           return (
             <div key={index} className={style['keyboard-inner__row']}>
-              {row.map(numb => {
+              {row.map((numb) => {
                 const value = Object.keys(numb);
                 const letter = numb[value];
                 return (
@@ -129,14 +116,14 @@ const Keyboard = ({ getValue, size }) => {
                     // onMouseDown={handleOnMouseDown(value)}
                     onClick={handleOnClick(value)}
                   />
-                )
+                );
               })}
             </div>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 };
 
 Keyboard.propTypes = {
