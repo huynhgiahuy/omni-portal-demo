@@ -1,5 +1,5 @@
 import React, { Fragment, useCallback, useState } from 'react';
-import { Input, Button, Popover, AutoComplete } from 'antd';
+import { Input, Button, Popover } from 'antd';
 import Numbpad from '../Icons/numpad';
 import styles from './index.less';
 import { PhoneFilled } from '@ant-design/icons';
@@ -32,7 +32,7 @@ const Suffix: React.FC<SuffixProps> = ({ onClickNumberpad, children }) => {
             </div>
           </div>
         }
-        content={<Keyboard size="small" getValue={onClickNumberpad} />}
+        content={<Keyboard size="small" getValue={() => onClickNumberpad} />}
       >
         <Button
           style={{ border: 'none', marginRight: 0 }}
