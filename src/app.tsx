@@ -55,6 +55,7 @@ export async function getInitialState(): Promise<{
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
     rightContentRender: () => <RightContent />,
+    leftContentRender: () => <div>123</div>,
     disableContentMargin: false,
     // waterMarkProps: {
     //   content: initialState?.currentUser?.name,

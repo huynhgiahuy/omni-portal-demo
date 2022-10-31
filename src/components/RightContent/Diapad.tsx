@@ -6,7 +6,7 @@ import { PhoneFilled } from '@ant-design/icons';
 import Keyboard from '../Keyboard';
 
 type SuffixProps = {
-  onClickNumberpad: (number: number) => void;
+  onClickNumberpad: (number: string) => void;
   children: React.ReactNode;
 };
 const options = [
@@ -32,7 +32,7 @@ const Suffix: React.FC<SuffixProps> = ({ onClickNumberpad, children }) => {
             </div>
           </div>
         }
-        content={<Keyboard size="small" getValue={() => onClickNumberpad} />}
+        content={<Keyboard size="small" getValue={(e: string) => onClickNumberpad(e)} />}
       >
         <Button
           style={{ border: 'none', marginRight: 0 }}
