@@ -25,14 +25,6 @@ const GlobalHeaderRight: React.FC = () => {
     className = `${styles.right}  ${styles.dark}`;
   }
 
-  const [isChangeView, setChangeView] = useState<String | Number>('Thông tin cá nhân');
-  const [isClickBtnCall, setClickBtnCall] = useState<boolean>(false);
-  const handleClickBtnCall = () => {
-    setClickBtnCall(true);
-  }
-  const handleCloseBtnCall = () => {
-    setClickBtnCall(false);
-  }
   return (
     <Space className={className}>
       <HeaderSearch
@@ -65,14 +57,6 @@ const GlobalHeaderRight: React.FC = () => {
       <NoticeIconView />
       <Avatar />
       {/* <SelectLang className={styles.action} /> */}
-      <Button onClick={handleClickBtnCall}>Test call</Button>
-      <Modal
-        open={isClickBtnCall}
-        onCancel={handleCloseBtnCall}
-        title="test"
-        mask={false}
-        style={{ position: 'absolute', bottom: 0, top: 'initial', right: 'inherit', marginRight: '50px' }}
-      />
     </Space>
   );
 };
