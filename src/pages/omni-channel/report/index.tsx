@@ -35,6 +35,7 @@ const Report: React.FC = () => {
                     },
                 ]}
                 className={styles.antSegmented}
+                style={{ backgroundColor: "#e3eaf4" }}
             />
         </>
     )

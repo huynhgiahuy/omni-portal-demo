@@ -1,4 +1,3 @@
-import { BellOutlined } from '@ant-design/icons';
 import { Badge, Spin, Tabs } from 'antd';
 import useMergedState from 'rc-util/es/hooks/useMergedState';
 import React from 'react';
@@ -7,6 +6,7 @@ import type { NoticeIconTabProps } from './NoticeList';
 import NoticeList from './NoticeList';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
+import NoticeBellIcon from '../../assets/NoticeIcon.svg';
 
 const { TabPane } = Tabs;
 
@@ -83,7 +83,7 @@ const NoticeIcon: React.FC<NoticeIconProps> & {
     );
   };
 
-  const { className, count, bell } = props;
+  const { className, count } = props;
 
   const [visible, setVisible] = useMergedState<boolean>(false, {
     value: props.popupVisible,
@@ -91,11 +91,10 @@ const NoticeIcon: React.FC<NoticeIconProps> & {
   });
   const noticeButtonClass = classNames(className, styles.noticeButton);
   const notificationBox = getNotificationBox();
-  const NoticeBellIcon = bell || <BellOutlined className={styles.icon} />;
   const trigger = (
     <span className={classNames(noticeButtonClass, { opened: visible })}>
       <Badge count={count} style={{ boxShadow: 'none' }} className={styles.badge}>
-        {NoticeBellIcon}
+        <img src={NoticeBellIcon} alt="..." className={styles.icon} />
       </Badge>
     </span>
   );
@@ -115,10 +114,6 @@ const NoticeIcon: React.FC<NoticeIconProps> & {
       {trigger}
     </HeaderDropdown>
   );
-};
-
-NoticeIcon.defaultProps = {
-  emptyImage: 'https://gw.alipayobjects.com/zos/rmsportal/wAhyIChODzsoKIOBHcBk.svg',
 };
 
 NoticeIcon.Tab = NoticeList;

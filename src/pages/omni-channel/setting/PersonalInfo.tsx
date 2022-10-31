@@ -1,5 +1,6 @@
 import React from 'react';
 import { Row, Col, Card, Typography, Button, Avatar } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import styles from '../setting/style.less';
 import ImageAvatar from '../setting/avatar_test.png';
 
@@ -8,35 +9,20 @@ const PersonalInfo: React.FC = () => {
         <>
             <Card
                 title={
-                    <div className={styles.antAvatarImg}>
-                        <Avatar src={ImageAvatar} className={styles.antImg}></Avatar>
+                    <div>
+                        <div className={styles.antAvatarImg}>
+                            <Avatar src={ImageAvatar} className={styles.antImg}></Avatar>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                            <EditOutlined style={{ fontSize: '22px'}} />
+                        </div>
                     </div>
                 }
                 className={styles.detailCardLayout}
             >
-                <div style={{ paddingTop: '30px' }}>
+                <div style={{ paddingTop: '10px' }}>
                     <Row>
-                        <Col md={2} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                            <Button
-                                className={styles.antSettingBtn}
-                                style={{ backgroundColor: "#064b8b", color: '#fff' }}
-                            >
-                                Thông tin cá nhân
-                            </Button>
-                            <Button
-                                className={styles.antSettingBtn}
-                                style={{ color: "#064b8b" }}
-                            >
-                                Mật khẩu
-                            </Button>
-                            <Button
-                                className={styles.antSettingBtn}
-                                style={{ color: "#064b8b" }}
-                            >
-                                Thiết bị
-                            </Button>
-                        </Col>
-                        <Col md={1}></Col>
+                        <Col md={3}></Col>
                         <Col md={9}>
                             <Typography.Text className={styles.antFieldDisplay}>Giới thiệu về bạn</Typography.Text>
                             <hr></hr>
@@ -72,6 +58,16 @@ const PersonalInfo: React.FC = () => {
                                 <Typography.Text className={styles.antTextStyle}>Công tác</Typography.Text>
                                 <Typography.Text className={styles.antBold}>FPT Tân Thuận</Typography.Text>
                             </div>
+                            <Typography.Text className={styles.antFieldDisplay}>Bảo mật</Typography.Text>
+                            <hr></hr>
+                            <div className={styles.antDataDisplay}>
+                                <Typography.Text className={styles.antTextStyle}>Mật khẩu hiện tại</Typography.Text>
+                                <Typography.Text className={styles.antBold}>Huyen2918***</Typography.Text>
+                            </div>
+                            <div className={styles.antDataDisplay}>
+                                <Typography.Text className={styles.antTextStyle}>Lần cập nhật cuối cùng</Typography.Text>
+                                <Typography.Text className={styles.antBold}>01/09/2022</Typography.Text>
+                            </div>
                         </Col>
                         <Col md={2}></Col>
                         <Col md={9}>
@@ -84,6 +80,16 @@ const PersonalInfo: React.FC = () => {
                             <div className={styles.antDataDisplay}>
                                 <Typography.Text className={styles.antTextStyle}>IP Phone</Typography.Text>
                                 <Typography.Text className={styles.antBold}>18234</Typography.Text>
+                            </div>
+                            <Typography.Text className={styles.antFieldDisplay}>Thiết bị</Typography.Text>
+                            <hr></hr>
+                            <div className={styles.antDataDisplay}>
+                                <Typography.Text className={styles.antTextStyle}>Mật khẩu hiện tại</Typography.Text>
+                                <Typography.Text className={styles.antBold}>Huyen2918***</Typography.Text>
+                            </div>
+                            <div className={styles.antDataDisplay}>
+                                <Typography.Text className={styles.antTextStyle}>Lần cập nhật cuối cùng</Typography.Text>
+                                <Typography.Text className={styles.antBold}>01/09/2022</Typography.Text>
                             </div>
                         </Col>
                     </Row>

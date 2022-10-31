@@ -21,12 +21,13 @@
   {
     path: '/omni-channel',
     name: 'omni-channel',
-    icon: 'smile',
+    icon: '/icons/omni_icon.svg',
     routes: [
       {
         path: '/omni-channel/report',
         name: 'report',
-        component: './omni-channel/report/index'
+        component: './omni-channel/report/index',
+        icon: 'smile',
       },
       {
         path: '/omni-channel/setting',
