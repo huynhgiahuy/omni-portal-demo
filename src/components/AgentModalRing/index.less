@@ -1,0 +1,196 @@
+.modalRing {
+  position: absolute;
+  top: 75px;
+  right: 33px;
+  transition: width 0.5s;
+
+  :global {
+    .ant-modal-body {
+      padding: 0;
+    }
+  }
+}
+
+.modalRingFullScreen {
+  transition: width 0.5s;
+  :global {
+    .ant-modal-body {
+      padding: 0;
+    }
+  }
+}
+
+.modalRingContent {
+  position: relative;
+  width: 100%;
+  padding: 8px;
+  background: linear-gradient(180deg, black -3.67%, #545454 21.75%);
+  border-radius: 4px;
+
+  .modalRingAvatar {
+    border: 5px solid #a5d5ff;
+    border-radius: 100%;
+    animation: scaling 2s infinite;
+  }
+  .circle1 {
+    animation-delay: 0s;
+  }
+  .circle2 {
+    animation-delay: 1s;
+  }
+}
+
+.modalRingContentFullScreen {
+  position: relative;
+  width: 100%;
+  height: 423px;
+  padding: 8px;
+  background: linear-gradient(180deg, black -3.67%, #545454 21.75%);
+  border-radius: 4px;
+
+  .modalRingAvatar {
+    border: 5px solid #a5d5ff;
+    border-radius: 100%;
+    animation: scaling 2s infinite;
+  }
+  .circle1 {
+    animation-delay: 0s;
+  }
+  .circle2 {
+    animation-delay: 1s;
+  }
+}
+
+.modalRingIcon {
+  transform: scaleX(-1);
+  svg {
+    width: 22px;
+    height: 22px;
+    fill: white;
+  }
+}
+
+.modalRingOutlined {
+  cursor: pointer;
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: #afafaf;
+  }
+}
+
+.avatar {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  margin-left: 40px;
+
+  div {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: #a5d5ff;
+    border-radius: 50%;
+    animation: scaling 2s cubic-bezier(0.12, 0.7, 0.74, 0.71) infinite;
+  }
+}
+
+.avatarFullScreen {
+  top: 120px;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  margin-top: 50px;
+  margin-left: 15px;
+
+  div {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    margin-left: 15px;
+    background-color: #a5d5ff;
+    border-radius: 50%;
+    animation: scaling 2s cubic-bezier(0.12, 0.7, 0.74, 0.71) infinite;
+  }
+}
+
+.phone {
+  z-index: 2;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  background-color: #a5d5ff;
+  animation: phone 1s cubic-bezier(0.12, 0.7, 0.74, 0.71) infinite alternate-reverse;
+}
+
+.material-icons {
+  color: white;
+}
+
+@keyframes scaling {
+  0% {
+    background-color: #a5d5ff;
+    transform: scale(1);
+  }
+  100% {
+    background-color: rgba(0, 180, 245, 0);
+    transform: scale(3);
+  }
+}
+
+.phonePickUp {
+  transform: scaleX(-1);
+  cursor: pointer;
+  svg {
+    padding: 10px;
+    font-size: 40px;
+    background: #52c41b;
+    border-radius: 100%;
+    animation: phonePickUp 0.3s infinite forwards;
+    fill: white;
+  }
+}
+
+@keyframes phonePickUp {
+  0% {
+    rotate: -10deg;
+  }
+  50% {
+    rotate: 30deg;
+  }
+  100% {
+    rotate: -10deg;
+  }
+}
+
+.phoneShare {
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  background: #399dee;
+  border-radius: 100%;
+  cursor: pointer;
+}
+
+.phoneHandUp {
+  cursor: pointer;
+  svg {
+    padding: 10px;
+    font-size: 40px;
+    background: red;
+    border-radius: 100%;
+    fill: white;
+    rotate: -135deg;
+  }
+}
+
+.infoPhoneFullScreen {
+  margin-top: 30px;
+  margin-bottom: 70px;
+  text-align: center;
+}
+.forwardPhoneModal {
+  color: rgba(0, 0, 0, 0.45)
+}

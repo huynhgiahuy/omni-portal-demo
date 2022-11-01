@@ -169,3 +169,40 @@
   font-weight: 400;
   font-size: 13px;
 }
+
+.modalRing {
+  :global {
+    .ant-modal-body {
+      padding: 0;
+    }
+  }
+
+  .modalRingContent {
+    position: relative;
+    width: 100%;
+    height: 177px;
+    padding: 8px;
+    background: linear-gradient(180deg, black -3.67%, #545454 21.75%);
+    border-radius: 4px;
+
+    .modalRingAvatar {
+      border: 2px solid white;
+    }
+  }
+
+  .modalRingIcon {
+    transform: scaleX(-1);
+    svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+    }
+  }
+
+  .modalRingOutlined {
+    width: 14px;
+    height: 14px;
+    color: #afafaf;
+    cursor: pointer;
+  }
+}

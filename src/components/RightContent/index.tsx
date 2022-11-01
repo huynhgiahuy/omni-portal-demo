@@ -1,4 +1,4 @@
-import { Space, Button, Modal } from 'antd';
+import { Space } from 'antd';
 // import { QuestionCircleOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import { useModel } from 'umi';
@@ -8,11 +8,13 @@ import styles from './index.less';
 import Diapad from './Diapad';
 import NoticeIconView from '../NoticeIcon';
 import WorkingStatus from './WorkingStatus';
+import AgentModalRing from '../AgentModalRing';
 
 export type SiderTheme = 'light' | 'dark';
 
 const GlobalHeaderRight: React.FC = () => {
   const { initialState } = useModel('@@initialState');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (!initialState || !initialState.settings) {
     return null;
@@ -24,6 +26,18 @@ const GlobalHeaderRight: React.FC = () => {
   if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
     className = `${styles.right}  ${styles.dark}`;
   }
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <Space className={className}>
@@ -57,6 +71,21 @@ const GlobalHeaderRight: React.FC = () => {
       <NoticeIconView />
       <Avatar />
       {/* <SelectLang className={styles.action} /> */}
+      <a
+        onClick={showModal}
+        style={{
+          position: 'absolute',
+          left: 0,
+          background: 'white',
+          color: 'white',
+          borderColor: 'white',
+          bottom: 0,
+        }}
+      >
+        Button
+      </a>
+
+      <AgentModalRing isModalOpen={isModalOpen} handleOk={handleOk} handleCancel={handleCancel} />
     </Space>
   );
 };
