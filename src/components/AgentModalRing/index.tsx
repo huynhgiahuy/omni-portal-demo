@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './index.less';
-import { Modal, Space, Typography, Popover, Button, Form, Select } from 'antd';
-import { FullscreenExitOutlined, FullscreenOutlined, PhoneOutlined } from '@ant-design/icons';
+import { Modal, Space, Typography, Popover, Button, Collapse, Radio } from 'antd';
+import { FullscreenExitOutlined, FullscreenOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons';
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
 import AvatarModal from '../../../public/avatar_modal_ring.png';
@@ -12,8 +12,15 @@ type AgentModalRingProps = {
   handleCancel: () => void;
 };
 
+const { Panel } = Collapse;
+
 const AgentModalRing: React.FC<AgentModalRingProps> = ({ isModalOpen, handleOk, handleCancel }) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [valueCheckboxUser, setValueCheckboxUser] = useState<any>([]);
+
+  const handleSelectForwardUser = (e: any) => {
+    setValueCheckboxUser(e.target.value)
+  }
 
   return (
     <Modal
@@ -92,7 +99,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({ isModalOpen, handleOk, 
         <Space
           size={[18, 0]}
           align="start"
-          style={{ width: '100%', justifyContent: 'center', paddingBottom: 18, zIndex: 2 }}
+          style={{ width: '100%', justifyContent: 'center', zIndex: 2 }}
         >
           <PhoneOutlined
             className={styles.phonePickUp}
@@ -110,17 +117,29 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({ isModalOpen, handleOk, 
               </>
             }
             content={
-              <Form>
-                <Form.Item>
-                  <Select placeholder="Chọn nhân sự">
-                    <Select.Option value="data1">Trần Phương Anh Đào - 18032</Select.Option>
-                    <Select.Option value="data2">Trần Phương Anh Đào - 18032</Select.Option>
-                    <Select.Option value="data3">Trần Phương Anh Đào - 18032</Select.Option>
-                  </Select>
-                </Form.Item>
-                <Button>Hủy</Button>
-                <Button>Chuyển</Button>
-              </Form>
+              <>
+                <div style={{ paddingBottom: "10px" }}>
+                  <Typography.Text>Nhân sự đã chọn: <Typography.Text style={{ fontWeight: 'bold' }}>{valueCheckboxUser === '' ? 'Chưa lọc' : valueCheckboxUser}</Typography.Text></Typography.Text>
+                </div>
+                <Collapse>
+                  <Panel key="user" header={
+                    <Typography.Text strong>Danh sách nhân sự</Typography.Text>
+                  }
+                  >
+                    <Radio.Group onChange={handleSelectForwardUser}>
+                      <Space direction="vertical">
+                        <Radio value="Trần Phương Anh - 18942"><UserOutlined /> Trần Phương Anh - 18942</Radio>
+                        <Radio value="Trần Phương Anh - 18943"><UserOutlined /> Trần Phương Anh - 18943</Radio>
+                        <Radio value="Trần Phương Anh - 18944"><UserOutlined /> Trần Phương Anh - 18944</Radio>
+                      </Space>
+                    </Radio.Group>
+                  </Panel>
+                </Collapse>
+                <div style={{ display: 'flex', justifyContent: 'right', paddingTop: '10px' }}>
+                  <Button style={{ marginRight: '10px' }}>Hủy</Button>
+                  <Button type='primary'>Chuyển</Button>
+                </div>
+              </>
             }
           >
             <img
@@ -131,8 +150,8 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({ isModalOpen, handleOk, 
           </Popover>
           <PhoneOutlined className={styles.phoneHandUp} onClick={handleCancel} />
         </Space>
-      </div>
-    </Modal>
+      </div >
+    </Modal >
   );
 };
 

@@ -192,5 +192,28 @@
   text-align: center;
 }
 .forwardPhoneModal {
-  color: rgba(0, 0, 0, 0.45)
+  color: rgba(0, 0, 0, 0.45);
+}
+.forwardSelectDropdown {
+  :global {
+    .ant-select-dropdown {
+      height: 100px;
+    }
+  }
+}
+.antModalCheckUser {
+  padding: 0;
+  font-size: 13px;
+  :global {
+    .ant-tree-checkbox-checked .ant-tree-checkbox-inner,
+    .ant-tree-checkbox-indeterminate .ant-tree-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #19857b;
+      border-color: #19857b;
+    }
+    .ant-tree-checkbox-indeterminate .ant-tree-checkbox-inner:after {
+      background-color: #fff;
+    }
+  }
 }
