@@ -9,12 +9,15 @@ import Diapad from './Diapad';
 import NoticeIconView from '../NoticeIcon';
 import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
+import AgentModalAnswer from '../AgentModalAnswer';
 
 export type SiderTheme = 'light' | 'dark';
 
 const GlobalHeaderRight: React.FC = () => {
   const { initialState } = useModel('@@initialState');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenRing, setIsModalOpenRing] = useState(false);
+  const [isModalOpenAnswer, setIsModalOpenAnswer] = useState(false);
+  const [isFullScreenModal, setIsFullScreenModal] = useState(false);
 
   if (!initialState || !initialState.settings) {
     return null;
@@ -27,16 +30,33 @@ const GlobalHeaderRight: React.FC = () => {
     className = `${styles.right}  ${styles.dark}`;
   }
 
-  const showModal = () => {
-    setIsModalOpen(true);
+  const showModalRing = () => {
+    setIsModalOpenRing(true);
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
+  const handleOkRing = () => {
+    setIsModalOpenRing(false);
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
+  const handleCancelRing = () => {
+    setIsModalOpenRing(false);
+  };
+
+  const showModalAnswer = () => {
+    setIsModalOpenAnswer(true);
+    setIsModalOpenRing(false);
+  };
+
+  const handleOkAnswer = () => {
+    setIsModalOpenAnswer(false);
+  };
+
+  const handleCancelAnswer = () => {
+    setIsModalOpenAnswer(false);
+  };
+
+  const handleFullScreenModal = () => {
+    setIsFullScreenModal(!isFullScreenModal);
   };
 
   return (
@@ -72,7 +92,7 @@ const GlobalHeaderRight: React.FC = () => {
       <Avatar />
       {/* <SelectLang className={styles.action} /> */}
       <a
-        onClick={showModal}
+        onClick={showModalRing}
         style={{
           position: 'absolute',
           left: 0,
@@ -85,7 +105,22 @@ const GlobalHeaderRight: React.FC = () => {
         Button
       </a>
 
-      <AgentModalRing isModalOpen={isModalOpen} handleOk={handleOk} handleCancel={handleCancel} />
+      <AgentModalRing
+        isModalOpen={isModalOpenRing}
+        handleOk={handleOkRing}
+        handleCancel={handleCancelRing}
+        handleOpenAnswer={showModalAnswer}
+        isFullScreenModal={isFullScreenModal}
+        handleFullScreenModal={handleFullScreenModal}
+      />
+
+      <AgentModalAnswer
+        isModalOpen={isModalOpenAnswer}
+        handleOk={handleOkAnswer}
+        handleCancel={handleCancelAnswer}
+        isFullScreenModal={isFullScreenModal}
+        handleFullScreenModal={handleFullScreenModal}
+      />
     </Space>
   );
 };
