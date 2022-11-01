@@ -32,3 +32,8 @@ functions/mock
 # screenshot
 screenshot
 .firebase
+
+#docker
+docker
+Dockerfile.dev
+Dockerfile.hub
