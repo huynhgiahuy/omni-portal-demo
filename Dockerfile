@@ -9,7 +9,7 @@ WORKDIR /opt/app
 
 COPY package.json yarn.lock ./
 # Install app dependencies
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,id=scc/omnichannel/omni-portal yarn --frozen-lockfile
+RUN --mount=type=cache,target=/usr/local/share/.cache/yarn/v6,id=scc/omnichannel/omni-portal yarn
 
 # App source
 COPY ./ ./
