@@ -4,7 +4,7 @@ import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { Alert, message, Tabs } from 'antd';
 import React, { useState } from 'react';
-import { FormattedMessage, history, SelectLang, useIntl, useModel } from 'umi';
+import { FormattedMessage, history, useIntl, useModel } from 'umi';
 
 import styles from './index.less';
 
@@ -71,9 +71,9 @@ const Login: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.lang} data-lang>
+      {/* <div className={styles.lang} data-lang>
         {SelectLang && <SelectLang />}
-      </div>
+      </div> */}
       <div className={styles.content}>
         <LoginForm
           logo={<img alt="logo" src="/logo.svg" />}
