@@ -4,16 +4,19 @@ import {
   SettingOutlined,
   UserOutlined,
   NotificationOutlined,
+  CompassFilled,
 } from '@ant-design/icons';
-import { Avatar, Menu, Spin, Row, Col, Switch, Divider, Radio } from 'antd';
+import { Avatar, Menu, Spin, Row, Col, Switch, Divider, Radio, Typography, Image } from 'antd';
 import { history, useModel, FormattedMessage } from 'umi';
 import { stringify } from 'querystring';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
 import { outLogin } from '@/services/ant-design-pro/api';
 import type { MenuInfo } from 'rc-menu/lib/interface';
+import IconDark from './Vector 132.png';
 
 const { SubMenu } = Menu;
+const { Title } = Typography;
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -174,9 +177,25 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             <Switch size="small" defaultChecked onChange={onChange} />
           </Col>
         </Row>
-        <Divider style={{ backgroundColor: '#B4B4B4', marginTop: '10px', marginBottom: '1px' }} />
+        <Divider
+          style={{
+            backgroundColor: '#B4B4B4',
+            marginTop: '10px',
+            marginBottom: '1px',
+          }}
+        />
         <Row className={styles.notifyMenu}>
-          <Col span={24} style={{ fontSize: '13px', color: '#1890FF', paddingLeft: '13px' }}>
+          <Col
+            span={24}
+            style={{
+              fontSize: '13px',
+              color: '#1890FF',
+              paddingLeft: '13px',
+              fontFamily: 'Roboto',
+              fontStyle: 'normal',
+              paddingTop: '5px',
+            }}
+          >
             Xem tất cả cài đặt
           </Col>
         </Row>
@@ -194,105 +213,92 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
           </>
         }
       >
-        <Menu.ItemGroup
-          title={
-            <div>
-              <Row>
-                <Col span={4}>
-                  <Avatar size="small" style={{ backgroundColor: 'color' }}>
-                    <SettingOutlined
-                      style={{ paddingRight: '13px', width: '10px', color: 'black' }}
-                    />
-                  </Avatar>
-                </Col>
-                <Col span={20} style={{ paddingLeft: '10px', color: '#000000' }}>
-                  <FormattedMessage
-                    id="menu.account.monitor.omni.dark"
-                    defaultMessage="monitor setting"
-                  />
-                </Col>
-              </Row>
-            </div>
-          }
-        >
+        <div className={styles.popupDisplay}>
+          <div className={styles.popupDisplayTitle}>
+            <Row>
+              <Col span={4}>
+                <Avatar size="small" style={{ backgroundColor: 'color' }}>
+                  {/* <SettingOutlined
+                    style={{ paddingRight: '13px', width: '10px', color: 'black' }}
+                  /> */}
+                  {/* <Avatar style={{ verticalAlign: 'right' }} size={13} src={IconDark}></Avatar> */}
+                  <Image preview={false} src={IconDark}></Image>
+                </Avatar>
+              </Col>
+              <Col span={20}>
+                <FormattedMessage
+                  id="menu.account.monitor.omni.dark"
+                  defaultMessage="monitor setting"
+                />
+              </Col>
+            </Row>
+          </div>
           <Radio.Group defaultValue={1}>
-            <Menu.Item className={styles.monitorItem} key="setting:1">
-              <p className={styles.textMonitor}>
-                Điều chỉnh giao diện của <br /> phần mềm để giảm độ chói <br /> và cho đôi mắt được
-                nghỉ ngơi.
-              </p>
-            </Menu.Item>
-            <Menu.Item className={styles.monitorRadio} key="setting:2">
-              <Row>
-                <Col span={12}>Tắt</Col>
-                <Col span={12}>
-                  <Radio style={{ paddingLeft: '40px' }} value={1}>
-                    {' '}
-                  </Radio>
-                </Col>
-              </Row>
-            </Menu.Item>
-            <Menu.Item className={styles.monitorRadio} key="setting:3">
-              <Row>
-                <Col span={12}>Bật</Col>
-                <Col span={12}>
-                  <Radio style={{ paddingLeft: '40px' }} value={2}>
-                    {' '}
-                  </Radio>
-                </Col>
-              </Row>
-            </Menu.Item>
+            <p className={styles.popupDisplayContent}>
+              Điều chỉnh giao diện của phần mềm để giảm độ chói và cho đôi mắt được nghỉ ngơi.
+            </p>
+            <Row>
+              <Col span={16}>
+                <Title level={5} className={styles.popupDisplayColTitle}>
+                  Tắt
+                </Title>
+              </Col>
+              <Col span={8}>
+                <Radio className={styles.popupDisplayColRadio} value={1}></Radio>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={16}>
+                <Title level={5} className={styles.popupDisplayColTitle}>
+                  Bật
+                </Title>
+              </Col>
+              <Col span={8}>
+                <Radio className={styles.popupDisplayColRadio} value={2}></Radio>
+              </Col>
+            </Row>
           </Radio.Group>
-        </Menu.ItemGroup>
-        <Menu.ItemGroup
-          title={
-            <div className={styles.infoAccount}>
-              <Row>
-                <Col span={4}>
-                  <Avatar size="small" style={{ backgroundColor: 'color' }}>
-                    <SettingOutlined
-                      style={{ paddingRight: '13px', width: '10px', color: 'black' }}
-                    />
-                  </Avatar>
-                </Col>
-                <Col span={20} style={{ paddingLeft: '6px', color: '#000000' }}>
-                  <FormattedMessage
-                    id="menu.account.monitor.omni.zoom"
-                    defaultMessage="monitor setting"
-                  />
-                </Col>
-              </Row>
-            </div>
-          }
-        >
+          <div className={styles.popupDisplayTitle}>
+            <Row>
+              <Col span={4}>
+                <Avatar size="small" style={{ backgroundColor: 'color' }}>
+                  <CompassFilled style={{ paddingRight: '13px', width: '10px', color: 'black' }} />
+                </Avatar>
+              </Col>
+              <Col span={20}>
+                <FormattedMessage
+                  id="menu.account.monitor.omni.zoom"
+                  defaultMessage="monitor setting"
+                />
+              </Col>
+            </Row>
+          </div>
           <Radio.Group defaultValue={1}>
-            <Menu.Item className={styles.monitorItem} key="setting:4">
-              <p className={styles.textMonitor}>
-                Làm giảm kích thước phông <br /> chữ để có thêm nội dung <br /> vừa với màn hình.
-              </p>
-            </Menu.Item>
-            <Menu.Item key="setting:5" className={styles.monitorRadio}>
-              <Row>
-                <Col span={12}>Tắt</Col>
-                <Col span={12}>
-                  <Radio style={{ paddingLeft: '40px' }} value={1}>
-                    {' '}
-                  </Radio>
-                </Col>
-              </Row>
-            </Menu.Item>
-            <Menu.Item key="setting:6" className={styles.monitorRadio}>
-              <Row>
-                <Col span={12}>Bật</Col>
-                <Col span={12}>
-                  <Radio style={{ paddingLeft: '40px' }} value={2}>
-                    {' '}
-                  </Radio>
-                </Col>
-              </Row>
-            </Menu.Item>
+            <p className={styles.popupDisplayContent}>
+              Làm giảm kích thước phông chữ để có thêm nội dung vừa với màn hình.
+            </p>
+            <Row>
+              <Col span={16}>
+                <Title level={5} className={styles.popupDisplayColTitle}>
+                  Tắt
+                </Title>
+              </Col>
+              <Col span={8}>
+                <Radio className={styles.popupDisplayColRadio} value={1}></Radio>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={16}>
+                <Title level={5} className={styles.popupDisplayColTitle}>
+                  Bật
+                </Title>
+              </Col>
+              <Col span={8}>
+                <Radio className={styles.popupDisplayColRadio} value={2}></Radio>
+              </Col>
+            </Row>
           </Radio.Group>
-        </Menu.ItemGroup>
+        </div>
       </SubMenu>
       <Menu.Divider />
       <Menu.Item key="logout">
