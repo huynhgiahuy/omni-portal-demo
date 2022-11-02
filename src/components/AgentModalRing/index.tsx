@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './index.less';
-import { Modal, Space, Typography, Popover, Button, Collapse, Radio } from 'antd';
+import { Modal, Space, Typography, Popover, Button, Collapse, Radio, Form, Input, Timeline } from 'antd';
 import { ExclamationCircleFilled, FullscreenExitOutlined, FullscreenOutlined, PhoneOutlined, UserOutlined, EditOutlined, HistoryOutlined } from '@ant-design/icons';
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
@@ -13,6 +13,15 @@ type AgentModalRingProps = {
   handleOpenAnswer: () => void;
   isFullScreenModal: boolean;
   handleFullScreenModal: () => void;
+  handleSelectForwardUser: (e: any) => void;
+  handleClickIconHistory: () => void;
+  handleClickIconNote: () => void;
+  valueCheckboxUser: any;
+  isVisibleHistoryCall: boolean;
+  isVisibleNoteCall: boolean;
+  isActiveIconHistory: boolean;
+  isActiveIconNote: boolean;
+
 };
 
 const { Panel } = Collapse;
@@ -24,6 +33,14 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   handleOpenAnswer,
   isFullScreenModal,
   handleFullScreenModal,
+  handleSelectForwardUser,
+  handleClickIconHistory,
+  handleClickIconNote,
+  valueCheckboxUser,
+  isVisibleHistoryCall,
+  isVisibleNoteCall,
+  isActiveIconHistory,
+  isActiveIconNote
 }) => {
   const { confirm } = Modal;
 
@@ -43,20 +60,6 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       onCancel() { },
     });
   };
-
-  const [valueCheckboxUser, setValueCheckboxUser] = useState<any>([]);
-  const [isVisibleHistoryCall, setVisibleHistoryCall] = useState(false);
-  const [isActiveIconHistory, setActiveIconHistory] = useState(false);
-  const [isActiveIconNote, setActiveIconNote] = useState(false);
-
-  const handleSelectForwardUser = (e: any) => {
-    setValueCheckboxUser(e.target.value)
-  }
-
-  const handleClickIconHistory = () => {
-    setVisibleHistoryCall(!isVisibleHistoryCall);
-    setActiveIconHistory(!isActiveIconHistory)
-  }
 
   return (
     <>
@@ -185,19 +188,111 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 <PhoneOutlined className={styles.phoneHandUp} onClick={showConfirm} />
               </Space>
             </div>
-            {isVisibleHistoryCall ? (
+            {isFullScreenModal && isVisibleHistoryCall ? (
               <div className={styles.infoCallHistory}>
-                <div style={{ color: '#fff', paddingTop: '5px' }}>
-                  <Typography.Text style={{ color: '#fff' }}>Lịch sử</Typography.Text>
+                <div className={styles.historyFormHeaderLayout}>
+                  <Typography.Text className={styles.historyFormHeaderStyle}>Lịch sử</Typography.Text>
                 </div>
-                <br></br>
-                <div style={{ color: '#fff', paddingTop: '100px' }}>
-                  <Typography.Text style={{ color: '#fff' }}>Người dùng chưa có lịch sử liên lạc</Typography.Text>
+                <div className={styles.historyFormContentLayout}>
+                  <Timeline>
+                    <Timeline.Item>
+                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>22/09/2022 14:20</Typography.Paragraph>
+                      <div className={styles.historyFormContentFlex1}>
+                        <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>Cuộc gọi đến</Typography.Paragraph>
+                        <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>00:12</Typography.Paragraph>
+                      </div>
+                      <ul style={{ listStyleType: 'disc', color: '#fff' }}>
+                        <li>
+                          <Typography.Paragraph className={styles.historyFormContentFlex2}>
+                            Ghi chú: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại</Typography.Text>
+                          </Typography.Paragraph>
+                        </li>
+                        <li>
+                          <Typography.Paragraph className={styles.historyFormContentFlex3}>
+                            Nhân sự: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>HuyenLM2</Typography.Text>
+                          </Typography.Paragraph>
+                        </li>
+                      </ul>
+                    </Timeline.Item>
+                    <Timeline.Item>
+                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>22/09/2022 14:20</Typography.Paragraph>
+                      <div className={styles.historyFormContentFlex1}>
+                        <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>Cuộc gọi đến</Typography.Paragraph>
+                        <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>00:12</Typography.Paragraph>
+                      </div>
+                      <ul style={{ listStyleType: 'disc', color: '#fff' }}>
+                        <li>
+                          <Typography.Paragraph className={styles.historyFormContentFlex2}>
+                            Ghi chú: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại</Typography.Text>
+                          </Typography.Paragraph>
+                        </li>
+                        <li>
+                          <Typography.Paragraph className={styles.historyFormContentFlex3}>
+                            Nhân sự: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>HuyenLM2</Typography.Text>
+                          </Typography.Paragraph>
+                        </li>
+                      </ul>
+                    </Timeline.Item>
+                    <Timeline.Item>
+                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>22/09/2022 14:20</Typography.Paragraph>
+                      <div className={styles.historyFormContentFlex1}>
+                        <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>Cuộc gọi đến</Typography.Paragraph>
+                        <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>00:12</Typography.Paragraph>
+                      </div>
+                      <ul style={{ listStyleType: 'disc', color: '#fff' }}>
+                        <li>
+                          <Typography.Paragraph className={styles.historyFormContentFlex2}>
+                            Ghi chú: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại</Typography.Text>
+                          </Typography.Paragraph>
+                        </li>
+                        <li>
+                          <Typography.Paragraph className={styles.historyFormContentFlex3}>
+                            Nhân sự: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>HuyenLM2</Typography.Text>
+                          </Typography.Paragraph>
+                        </li>
+                      </ul>
+                    </Timeline.Item>
+                  </Timeline>
+                </div>
+              </div>
+            ) : isFullScreenModal && isVisibleNoteCall ? (
+              <div className={styles.infoCallNote}>
+                <div className={styles.noteFormHeaderLayout}>
+                  <Typography.Text className={styles.noteFormHeaderStyle}>Ghi chú</Typography.Text>
+                </div>
+                <div className={styles.noteFormContentLayout}>
+                  <Form layout='vertical' className={styles.noteFormPhoneCall}>
+                    <Form.Item
+                      label={<Typography.Text style={{ color: '#fff' }}>Họ và tên</Typography.Text>}
+                    >
+                      <Input className={styles.inputHistoryFormStyle} placeholder="Nhập thông tin" />
+                    </Form.Item>
+                    <Form.Item
+                      label={<Typography.Text style={{ color: '#fff' }}>Số điện thoại</Typography.Text>}
+                    >
+                      <Input className={styles.inputHistoryFormStyle} placeholder="Nhập thông tin" />
+                    </Form.Item>
+                    <Form.Item
+                      label={<Typography.Text style={{ color: '#fff' }}>Email</Typography.Text>}
+                    >
+                      <Input className={styles.inputHistoryFormStyle} placeholder="Nhập thông tin" />
+                    </Form.Item>
+                    <Form.Item
+                      label={<Typography.Text style={{ color: '#fff' }}>Đơn vị công tác</Typography.Text>}
+                    >
+                      <Input className={styles.inputHistoryFormStyle} placeholder="Nhập thông tin" />
+                    </Form.Item>
+                    <Form.Item
+                      label={<Typography.Text style={{ color: '#fff' }}>Ghi chú</Typography.Text>}
+                    >
+                      <Input className={styles.inputHistoryFormStyle} placeholder="Nhập thông tin" />
+                    </Form.Item>
+                  </Form>
                 </div>
               </div>
             ) : ''}
             {isFullScreenModal && <div className={styles.infoCallRightSide}>
-              <EditOutlined className={isActiveIconNote ? `${styles.activeIconPhoneModal}` : `${styles.notActiveIconPhoneModal}`} />
+              <EditOutlined className={isActiveIconNote ? `${styles.activeIconPhoneModal}` : `${styles.notActiveIconPhoneModal}`} onClick={handleClickIconNote} />
               <HistoryOutlined className={isActiveIconHistory ? `${styles.activeIconPhoneModal}` : `${styles.notActiveIconPhoneModal}`} onClick={handleClickIconHistory} />
             </div>}
           </div>
