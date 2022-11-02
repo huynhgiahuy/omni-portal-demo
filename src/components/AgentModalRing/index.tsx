@@ -204,12 +204,12 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       </div>
                       <ul style={{ listStyleType: 'disc', color: '#fff' }}>
                         <li>
-                          <Typography.Paragraph className={styles.historyFormContentFlex2}>
+                          <Typography.Paragraph style={{ marginBottom: 'unset', paddingRight: '50px', fontWeight: 'bold', color: '#fff' }}>
                             Ghi chú: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại</Typography.Text>
                           </Typography.Paragraph>
                         </li>
                         <li>
-                          <Typography.Paragraph className={styles.historyFormContentFlex3}>
+                          <Typography.Paragraph style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}>
                             Nhân sự: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>HuyenLM2</Typography.Text>
                           </Typography.Paragraph>
                         </li>
@@ -223,12 +223,12 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       </div>
                       <ul style={{ listStyleType: 'disc', color: '#fff' }}>
                         <li>
-                          <Typography.Paragraph className={styles.historyFormContentFlex2}>
+                          <Typography.Paragraph style={{ marginBottom: 'unset', paddingRight: '50px', fontWeight: 'bold', color: '#fff' }}>
                             Ghi chú: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại</Typography.Text>
                           </Typography.Paragraph>
                         </li>
                         <li>
-                          <Typography.Paragraph className={styles.historyFormContentFlex3}>
+                          <Typography.Paragraph style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}>
                             Nhân sự: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>HuyenLM2</Typography.Text>
                           </Typography.Paragraph>
                         </li>
@@ -242,12 +242,12 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       </div>
                       <ul style={{ listStyleType: 'disc', color: '#fff' }}>
                         <li>
-                          <Typography.Paragraph className={styles.historyFormContentFlex2}>
+                          <Typography.Paragraph style={{ marginBottom: 'unset', paddingRight: '50px', fontWeight: 'bold', color: '#fff' }}>
                             Ghi chú: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại</Typography.Text>
                           </Typography.Paragraph>
                         </li>
                         <li>
-                          <Typography.Paragraph className={styles.historyFormContentFlex3}>
+                          <Typography.Paragraph style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}>
                             Nhân sự: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>HuyenLM2</Typography.Text>
                           </Typography.Paragraph>
                         </li>
