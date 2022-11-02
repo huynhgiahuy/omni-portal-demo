@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import styles from './index.less';
-import { Modal, Space, Typography, Popover, Button, Radio, Collapse, Form, Input, Timeline } from 'antd';
+import {
+  Modal,
+  Space,
+  Typography,
+  Popover,
+  Button,
+  Radio,
+  Collapse,
+  Form,
+  Input,
+  Timeline,
+} from 'antd';
 import {
   AudioFilled,
   CaretRightOutlined,
@@ -48,10 +59,11 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   isVisibleHistoryCall,
   isVisibleNoteCall,
   isActiveIconHistory,
-  isActiveIconNote
+  isActiveIconNote,
 }) => {
   const [isPlay, setIsPlay] = useState(true);
   const [isRecord, setIsRecord] = useState(false);
+  const [isPopoverForward, setPopoverForward] = useState(false);
 
   const { confirm } = Modal;
 
@@ -68,11 +80,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
         handleCancel();
       },
       cancelText: 'Huỷ',
-      onCancel() { },
+      onCancel() {},
     });
   };
-
-  const [isPopoverForward, setPopoverForward] = useState(false);
 
   return (
     <Modal
@@ -196,31 +206,62 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                 }
                 content={
                   <>
-                    <div style={{ paddingBottom: "10px" }}>
-                      <Typography.Text>Nhân sự đã chọn: <Typography.Text style={{ fontWeight: 'bold' }}>{valueCheckboxUser === '' ? 'Chưa lọc' : valueCheckboxUser}</Typography.Text></Typography.Text>
+                    <div style={{ paddingBottom: '10px' }}>
+                      <Typography.Text>
+                        Nhân sự đã chọn:{' '}
+                        <Typography.Text style={{ fontWeight: 'bold' }}>
+                          {valueCheckboxUser === '' ? 'Chưa lọc' : valueCheckboxUser}
+                        </Typography.Text>
+                      </Typography.Text>
                     </div>
                     <Collapse>
-                      <Panel key="user" header={
-                        <Typography.Text strong>Danh sách nhân sự</Typography.Text>
-                      }
+                      <Panel
+                        key="user"
+                        header={<Typography.Text strong>Danh sách nhân sự</Typography.Text>}
                       >
                         <Radio.Group onChange={handleSelectForwardUser}>
                           <Space direction="vertical">
-                            <Radio value="Trần Phương Anh - 18942"><UserOutlined /> Trần Phương Anh - 18942</Radio>
-                            <Radio value="Trần Phương Anh - 18943"><UserOutlined /> Trần Phương Anh - 18943</Radio>
-                            <Radio value="Trần Phương Anh - 18944"><UserOutlined /> Trần Phương Anh - 18944</Radio>
+                            <Radio value="Trần Phương Anh - 18942">
+                              <UserOutlined /> Trần Phương Anh - 18942
+                            </Radio>
+                            <Radio value="Trần Phương Anh - 18943">
+                              <UserOutlined /> Trần Phương Anh - 18943
+                            </Radio>
+                            <Radio value="Trần Phương Anh - 18944">
+                              <UserOutlined /> Trần Phương Anh - 18944
+                            </Radio>
                           </Space>
                         </Radio.Group>
                       </Panel>
                     </Collapse>
                     <div className={styles.forwardSelectButton}>
-                      <Button style={{ marginRight: '10px' }} onClick={() => setPopoverForward(!isPopoverForward)}>Hủy</Button>
-                      <Button type='primary'>Chuyển</Button>
+                      <Button
+                        style={{ marginRight: '10px' }}
+                        onClick={() => setPopoverForward(!isPopoverForward)}
+                      >
+                        Hủy
+                      </Button>
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          setPopoverForward(false);
+                          setTimeout(() => {
+                            handleCancel();
+                          }, 0);
+                        }}
+                      >
+                        Chuyển
+                      </Button>
                     </div>
                   </>
                 }
               >
-                <img src={Share} alt="share" className={styles.phoneShare} onClick={() => setPopoverForward(!isPopoverForward)} />
+                <img
+                  src={Share}
+                  alt="share"
+                  className={styles.phoneShare}
+                  onClick={() => setPopoverForward(!isPopoverForward)}
+                />
               </Popover>
               <PhoneOutlined className={styles.phoneHandUp} onClick={showConfirm} />
             </Space>
@@ -234,58 +275,121 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
               <div className={styles.historyFormContentLayout}>
                 <Timeline>
                   <Timeline.Item>
-                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>22/09/2022 14:20</Typography.Paragraph>
+                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                      22/09/2022 14:20
+                    </Typography.Paragraph>
                     <div className={styles.historyFormContentFlex1}>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>Cuộc gọi đến</Typography.Paragraph>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>00:12</Typography.Paragraph>
+                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>
+                        Cuộc gọi đến
+                      </Typography.Paragraph>
+                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                        00:12
+                      </Typography.Paragraph>
                     </div>
                     <ul style={{ listStyleType: 'disc', color: '#fff' }}>
                       <li>
-                        <Typography.Paragraph style={{ marginBottom: 'unset', paddingRight: '50px', fontWeight: 'bold', color: '#fff' }}>
-                          Ghi chú: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại</Typography.Text>
+                        <Typography.Paragraph
+                          style={{
+                            marginBottom: 'unset',
+                            paddingRight: '50px',
+                            fontWeight: 'bold',
+                            color: '#fff',
+                          }}
+                        >
+                          Ghi chú:{' '}
+                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                            Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại
+                          </Typography.Text>
                         </Typography.Paragraph>
                       </li>
                       <li>
-                        <Typography.Paragraph style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}>
-                          Nhân sự: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>HuyenLM2</Typography.Text>
+                        <Typography.Paragraph
+                          style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}
+                        >
+                          Nhân sự:{' '}
+                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                            HuyenLM2
+                          </Typography.Text>
                         </Typography.Paragraph>
                       </li>
                     </ul>
                   </Timeline.Item>
                   <Timeline.Item>
-                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>22/09/2022 14:20</Typography.Paragraph>
+                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                      22/09/2022 14:20
+                    </Typography.Paragraph>
                     <div className={styles.historyFormContentFlex1}>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>Cuộc gọi đến</Typography.Paragraph>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>00:12</Typography.Paragraph>
+                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>
+                        Cuộc gọi đến
+                      </Typography.Paragraph>
+                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                        00:12
+                      </Typography.Paragraph>
                     </div>
                     <ul style={{ listStyleType: 'disc', color: '#fff' }}>
                       <li>
-                        <Typography.Paragraph style={{ marginBottom: 'unset', paddingRight: '50px', fontWeight: 'bold', color: '#fff' }}>
-                          Ghi chú: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại</Typography.Text>
+                        <Typography.Paragraph
+                          style={{
+                            marginBottom: 'unset',
+                            paddingRight: '50px',
+                            fontWeight: 'bold',
+                            color: '#fff',
+                          }}
+                        >
+                          Ghi chú:{' '}
+                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                            Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại
+                          </Typography.Text>
                         </Typography.Paragraph>
                       </li>
                       <li>
-                        <Typography.Paragraph style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}>
-                          Nhân sự: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>HuyenLM2</Typography.Text>
+                        <Typography.Paragraph
+                          style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}
+                        >
+                          Nhân sự:{' '}
+                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                            HuyenLM2
+                          </Typography.Text>
                         </Typography.Paragraph>
                       </li>
                     </ul>
                   </Timeline.Item>
                   <Timeline.Item>
-                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>22/09/2022 14:20</Typography.Paragraph>
+                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                      22/09/2022 14:20
+                    </Typography.Paragraph>
                     <div className={styles.historyFormContentFlex1}>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>Cuộc gọi đến</Typography.Paragraph>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>00:12</Typography.Paragraph>
+                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>
+                        Cuộc gọi đến
+                      </Typography.Paragraph>
+                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                        00:12
+                      </Typography.Paragraph>
                     </div>
                     <ul style={{ listStyleType: 'disc', color: '#fff' }}>
                       <li>
-                        <Typography.Paragraph style={{ marginBottom: 'unset', paddingRight: '50px', fontWeight: 'bold', color: '#fff' }}>
-                          Ghi chú: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại</Typography.Text>
+                        <Typography.Paragraph
+                          style={{
+                            marginBottom: 'unset',
+                            paddingRight: '50px',
+                            fontWeight: 'bold',
+                            color: '#fff',
+                          }}
+                        >
+                          Ghi chú:{' '}
+                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                            Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại
+                          </Typography.Text>
                         </Typography.Paragraph>
                       </li>
                       <li>
-                        <Typography.Paragraph style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}>
-                          Nhân sự: <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>HuyenLM2</Typography.Text>
+                        <Typography.Paragraph
+                          style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}
+                        >
+                          Nhân sự:{' '}
+                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                            HuyenLM2
+                          </Typography.Text>
                         </Typography.Paragraph>
                       </li>
                     </ul>
@@ -300,14 +404,16 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                 <hr></hr>
               </div>
               <div className={styles.noteFormContentLayout}>
-                <Form layout='vertical' className={styles.noteFormPhoneCall}>
+                <Form layout="vertical" className={styles.noteFormPhoneCall}>
                   <Form.Item
                     label={<Typography.Text style={{ color: '#fff' }}>Họ và tên</Typography.Text>}
                   >
                     <Input className={styles.inputHistoryFormStyle} placeholder="Nhập thông tin" />
                   </Form.Item>
                   <Form.Item
-                    label={<Typography.Text style={{ color: '#fff' }}>Số điện thoại</Typography.Text>}
+                    label={
+                      <Typography.Text style={{ color: '#fff' }}>Số điện thoại</Typography.Text>
+                    }
                   >
                     <Input className={styles.inputHistoryFormStyle} placeholder="Nhập thông tin" />
                   </Form.Item>
@@ -317,7 +423,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                     <Input className={styles.inputHistoryFormStyle} placeholder="Nhập thông tin" />
                   </Form.Item>
                   <Form.Item
-                    label={<Typography.Text style={{ color: '#fff' }}>Đơn vị công tác</Typography.Text>}
+                    label={
+                      <Typography.Text style={{ color: '#fff' }}>Đơn vị công tác</Typography.Text>
+                    }
                   >
                     <Input className={styles.inputHistoryFormStyle} placeholder="Nhập thông tin" />
                   </Form.Item>
@@ -329,11 +437,29 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                 </Form>
               </div>
             </div>
-          ) : ''}
-          {isFullScreenModal && <div className={styles.infoCallRightSide}>
-            <EditOutlined className={isActiveIconNote ? `${styles.activeIconPhoneModal}` : `${styles.notActiveIconPhoneModal}`} onClick={handleClickIconNote} />
-            <HistoryOutlined className={isActiveIconHistory ? `${styles.activeIconPhoneModal}` : `${styles.notActiveIconPhoneModal}`} onClick={handleClickIconHistory} />
-          </div>}
+          ) : (
+            ''
+          )}
+          {isFullScreenModal && (
+            <div className={styles.infoCallRightSide}>
+              <EditOutlined
+                className={
+                  isActiveIconNote
+                    ? `${styles.activeIconPhoneModal}`
+                    : `${styles.notActiveIconPhoneModal}`
+                }
+                onClick={handleClickIconNote}
+              />
+              <HistoryOutlined
+                className={
+                  isActiveIconHistory
+                    ? `${styles.activeIconPhoneModal}`
+                    : `${styles.notActiveIconPhoneModal}`
+                }
+                onClick={handleClickIconHistory}
+              />
+            </div>
+          )}
         </div>
       </div>
     </Modal>
