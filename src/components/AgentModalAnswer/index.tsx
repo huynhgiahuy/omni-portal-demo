@@ -225,6 +225,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
             <div className={styles.infoCallHistory}>
               <div className={styles.historyFormHeaderLayout}>
                 <Typography.Text className={styles.historyFormHeaderStyle}>Lịch sử</Typography.Text>
+                <hr></hr>
               </div>
               <div className={styles.historyFormContentLayout}>
                 <Timeline>
@@ -292,6 +293,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
             <div className={styles.infoCallNote}>
               <div className={styles.noteFormHeaderLayout}>
                 <Typography.Text className={styles.noteFormHeaderStyle}>Ghi chú</Typography.Text>
+                <hr></hr>
               </div>
               <div className={styles.noteFormContentLayout}>
                 <Form layout='vertical' className={styles.noteFormPhoneCall}>
