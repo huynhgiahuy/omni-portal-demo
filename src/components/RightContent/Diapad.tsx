@@ -1,13 +1,15 @@
 import React, { Fragment, useCallback, useState } from 'react';
-import { Input, Button, Popover } from 'antd';
+import { Input, Button, Popover, AutoComplete } from 'antd';
 import Numbpad from '../Icons/numpad';
 import styles from './index.less';
 import { PhoneFilled } from '@ant-design/icons';
 import Keyboard from '../Keyboard';
+import InfoUserCard from '../InfoUserCard';
 
 type SuffixProps = {
   onClickNumberpad: (number: string) => void;
   children: React.ReactNode;
+  setValueInput: React.Dispatch<React.SetStateAction<string>>;
 };
 const options = [
   { value: '0908776291', name: 'Nguyễn Diệu Nhi' },
@@ -17,18 +19,36 @@ const options = [
   { value: '0918234789', name: 'Huỳnh Nhi' },
 ];
 
-const Suffix: React.FC<SuffixProps> = ({ onClickNumberpad, children }) => {
+export const changeNumberPhone = (value: string) => {
+  if (value.length === 10) {
+    return `${value.slice(0, 4)} ${value.slice(4, 7)} ${value.slice(-3)}`;
+  }
+  return value;
+};
+
+const Suffix: React.FC<SuffixProps> = ({ onClickNumberpad, children, setValueInput }) => {
+  const [openPopover, setOpenPopover] = useState(false);
   return (
     <Fragment>
       <Popover
         placement="bottom"
         trigger="click"
         arrowPointAtCenter={false}
+        onOpenChange={(e) => {
+          setOpenPopover(e);
+        }}
         title={
           <div className={styles['suffix-list-dropdown']}>
             <div className={styles['title-dropdown']}>
-              <span>Không có trong danh bạ</span>
-              {/** Render list contact in here */}
+              {/* <span>Không có trong danh bạ</span> */}
+              {options.slice(0, 2).map((user, index) => (
+                <InfoUserCard
+                  key={`info-user-card-${index}`}
+                  userName={user.name}
+                  numberPhone={user.value}
+                  handlePhone={(e) => setValueInput(e)}
+                />
+              ))}
             </div>
           </div>
         }
@@ -37,7 +57,7 @@ const Suffix: React.FC<SuffixProps> = ({ onClickNumberpad, children }) => {
         <Button
           style={{ border: 'none', marginRight: 0 }}
           type="link"
-          icon={<Numbpad onClick={() => {}} style={{ color: 'gray' }} />}
+          icon={<Numbpad style={{ color: `${openPopover ? '#3D94E4' : 'gray'}` }} />}
         />
       </Popover>
       {children}
@@ -51,13 +71,9 @@ type DiapadProps = {
   onClickCall?: (value: string) => void;
 };
 
-const Diapad: React.FC<DiapadProps> = ({
-  isShowPhoneCall = false,
-  onSendDTMF,
-
-  onClickCall,
-}) => {
+const Diapad: React.FC<DiapadProps> = ({ isShowPhoneCall = false, onSendDTMF, onClickCall }) => {
   const [valueInput, setValueInput] = useState<string>('');
+  const [openAutoComplete, setOpenAutoComplete] = useState(false);
 
   const handleOnClickNumberpad = useCallback(
     (number) => {
@@ -73,26 +89,57 @@ const Diapad: React.FC<DiapadProps> = ({
     onClickCall && onClickCall(valueInput);
   }, [onClickCall, valueInput]);
 
+  const renderItem = (title: string, value: string) => ({
+    value,
+    label: <InfoUserCard userName={title} numberPhone={value} textSearch={valueInput} />,
+  });
+
+  const listUserPhone = options.map((user) => {
+    return renderItem(user.name, user.value);
+  });
+
+  const optionsAuto = [
+    {
+      label: 'Cuộc gọi gần đây',
+      options: listUserPhone,
+    },
+  ];
+
   return (
-    <Input
-      allowClear
+    <AutoComplete
+      id="hightlight-text"
       value={valueInput}
-      onChange={(e) => setValueInput(`${e.target.value}`)}
-      className={styles.input}
-      placeholder="Nhập tên hoặc số"
-      suffix={
-        <Suffix onClickNumberpad={handleOnClickNumberpad}>
-          <Button
-            disabled={!isShowPhoneCall}
-            onClick={isShowPhoneCall ? handleCall : () => {}}
-            className={`${styles['btn-phone']} ${!isShowPhoneCall && styles['btn-disable']}`}
-            shape="circle"
-            icon={<PhoneFilled color="gray" />}
-          />
-        </Suffix>
-      }
-      onPressEnter={isShowPhoneCall ? handleCall : () => {}}
-    />
+      options={optionsAuto}
+      open={openAutoComplete}
+      onChange={(e) => {
+        setValueInput(e);
+      }}
+      onBlur={() => {
+        setOpenAutoComplete(false);
+      }}
+    >
+      <Input
+        allowClear
+        onChange={(e) => setValueInput(`${e.target.value}`)}
+        onClick={() => {
+          setOpenAutoComplete(true);
+        }}
+        className={styles.input}
+        placeholder="Nhập tên hoặc số"
+        suffix={
+          <Suffix onClickNumberpad={handleOnClickNumberpad} setValueInput={setValueInput}>
+            <Button
+              disabled={!isShowPhoneCall}
+              onClick={isShowPhoneCall ? handleCall : () => {}}
+              className={`${styles['btn-phone']} ${!isShowPhoneCall && styles['btn-disable']}`}
+              shape="circle"
+              icon={<PhoneFilled color="gray" />}
+            />
+          </Suffix>
+        }
+        onPressEnter={isShowPhoneCall ? handleCall : () => {}}
+      />
+    </AutoComplete>
   );
 };
 
