@@ -215,8 +215,13 @@
   gap: 10px;
 }
 .infoCallHistory {
-  flex: 1;
-  margin-right: 40px;
+  width: 270px;
+  margin-right: 30px;
+  background-color: #737373;
+}
+.infoCallNote {
+  width: 270px;
+  margin-right: 30px;
   text-align: center;
   background-color: #737373;
 }
@@ -230,5 +235,60 @@
   padding: 5px;
   color: white;
   font-size: 18px;
-  background: gray;
+  background: #bbbdbf;
+}
+.noteFormPhoneCall {
+  :global {
+    .ant-form-item {
+      margin-bottom: 10px;
+    }
+  }
+}
+.historyFormHeaderLayout {
+  padding-top: 5px;
+  text-align: center;
+}
+.historyFormHeaderStyle {
+  color: #fff;
+  font-weight: bold;
+}
+.historyFormContentLayout {
+  max-height: 320px;
+  padding-top: 20px;
+  padding-right: 10px;
+  padding-left: 10px;
+  overflow-y: scroll;
+  color: #fff;
+}
+.historyFormContentFlex1 {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 10px;
+}
+.noteFormHeaderLayout {
+  padding-top: 5px;
+}
+.noteFormHeaderStyle {
+  color: #fff;
+  font-weight: bold;
+}
+.noteFormContentLayout {
+  max-height: 320px;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-left: 10px;
+  overflow-y: scroll;
+}
+.inputHistoryFormStyle {
+  border-radius: 4px;
+}
+:global {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    height: 98px;
+    background: #d9d9d9;
+    border-radius: 99px;
+  }
 }
