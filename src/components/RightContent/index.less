@@ -103,8 +103,10 @@
 
 .suffix-list-dropdown {
   .title-dropdown {
-    padding: 16px 0 58px 0;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 16px 0 16px 0;
   }
 }
 
@@ -171,37 +173,36 @@
 }
 
 .infoAccount {
-  //padding-top: 5px;
-  padding-bottom: 1px;
-  padding-left: 2px;
-  padding-right: 10px;
   // background: #FFFFFF;
   // border-radius: 6px;
   display: inline-block;
+  padding-right: 10px;
+  //padding-top: 5px;
+  padding-bottom: 1px;
+  padding-left: 2px;
 }
 
-
 .notifyMenu {
-  padding-right: 8px;
   width: 210px;
+  padding-right: 8px;
 }
 
 .notifyMenuCol1 {
-  font-size: 13px;
   padding-left: 12px;
+  font-size: 13px;
   font-family: 'Roboto';
   font-style: normal;
 }
 
-.notifyMenuSwitch{
+.notifyMenuSwitch {
   padding-left: 10px;
 }
 
 .textMonitor {
-  font-family: Roboto;
-  font-size: 12px;
-  font-style: italic;
   font-weight: 400;
+  font-size: 12px;
+  font-family: Roboto;
+  font-style: italic;
   line-height: 14px;
   letter-spacing: 0.03em;
   text-align: left;
