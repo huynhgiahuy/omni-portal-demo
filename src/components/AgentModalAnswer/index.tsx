@@ -71,6 +71,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
       onCancel() { },
     });
   };
+
+  const [isPopoverForward, setPopoverForward] = useState(false);
+
   return (
     <Modal
       mask={false}
@@ -179,6 +182,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
               />
 
               <Popover
+                open={isPopoverForward}
                 trigger="click"
                 placement="bottom"
                 title={
@@ -210,13 +214,13 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       </Panel>
                     </Collapse>
                     <div className={styles.forwardSelectButton}>
-                      <Button style={{ marginRight: '10px' }}>Hủy</Button>
+                      <Button style={{ marginRight: '10px' }} onClick={() => setPopoverForward(!isPopoverForward)}>Hủy</Button>
                       <Button type='primary'>Chuyển</Button>
                     </div>
                   </>
                 }
               >
-                <img src={Share} alt="share" className={styles.phoneShare} />
+                <img src={Share} alt="share" className={styles.phoneShare} onClick={() => setPopoverForward(!isPopoverForward)} />
               </Popover>
               <PhoneOutlined className={styles.phoneHandUp} onClick={showConfirm} />
             </Space>

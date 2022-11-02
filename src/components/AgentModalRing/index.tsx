@@ -61,6 +61,8 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
     });
   };
 
+  const [isPopoverForward, setPopoverForward] = useState(false);
+
   return (
     <>
       <Modal
@@ -145,6 +147,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
               >
                 <PhoneOutlined className={styles.phonePickUp} onClick={handleOpenAnswer} />
                 <Popover
+                  open={isPopoverForward}
                   trigger="click"
                   placement='bottom'
                   title={
@@ -173,7 +176,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                         </Panel>
                       </Collapse>
                       <div className={styles.forwardSelectButton}>
-                        <Button style={{ marginRight: '10px' }}>Hủy</Button>
+                        <Button style={{ marginRight: '10px' }} onClick={() => setPopoverForward(!isPopoverForward)}>Hủy</Button>
                         <Button type='primary'>Chuyển</Button>
                       </div>
                     </>
@@ -183,6 +186,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     src={Share}
                     alt="share"
                     className={styles.phoneShare}
+                    onClick={() => setPopoverForward(!isPopoverForward)}
                   />
                 </Popover>
                 <PhoneOutlined className={styles.phoneHandUp} onClick={showConfirm} />
