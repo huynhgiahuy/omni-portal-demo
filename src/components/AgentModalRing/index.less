@@ -251,7 +251,6 @@
 .historyFormHeaderStyle {
   color: #fff;
   font-weight: bold;
-  text-decoration: underline;
 }
 .historyFormContentLayout {
   max-height: 320px;
@@ -283,7 +282,6 @@
 .noteFormHeaderStyle {
   color: #fff;
   font-weight: bold;
-  text-decoration: underline;
 }
 .noteFormContentLayout {
   max-height: 320px;
@@ -294,4 +292,15 @@
 }
 .inputHistoryFormStyle {
   border-radius: 4px;
+}
+:global {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 20px;
+  }
+  ::-webkit-scrollbar-thumb {
+    height: 98px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 99px;
+  }
 }
