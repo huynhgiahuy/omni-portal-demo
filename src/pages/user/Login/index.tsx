@@ -4,7 +4,7 @@ import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { Alert, message, Tabs } from 'antd';
 import React, { useState } from 'react';
-import { FormattedMessage, history, SelectLang, useIntl, useModel } from 'umi';
+import { FormattedMessage, history, useIntl, useModel } from 'umi';
 
 import styles from './index.less';
 
@@ -29,23 +29,67 @@ const Login: React.FC = () => {
   const intl = useIntl();
 
   const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-    if (userInfo) {
-      await setInitialState((s) => ({
-        ...s,
-        currentUser: userInfo,
-      }));
-    }
+    // const userInfo = await initialState?.fetchUserInfo?.();
+    // if (userInfo) {
+    //   await setInitialState((s) => ({
+    //     ...s,
+    //     currentUser: userInfo,
+    //   }));
+    // }
+    const userInfo = {
+      access: 'admin',
+      address: '西湖区工专路 77 号',
+      avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
+      country: 'China',
+      email: 'antdesign@alipay.com',
+      geographic: {
+        province: { label: '浙江省', key: '330000' },
+        city: { label: '杭州市', key: '330100' },
+      },
+      group: '蚂蚁金服－某某某事业群－某某平台部－某某技术部－UED',
+      name: 'Serati Ma',
+      notifyCount: 12,
+      phone: '0752-268888888',
+      signature: '海纳百川，有容乃大',
+      tags: [
+        { key: '0', label: '很有想法的' },
+        { key: '1', label: '专注设计' },
+        { key: '2', label: '辣~' },
+      ],
+      title: '交互专家',
+      unreadCount: 11,
+      userid: '00000001',
+    };
+
+    await setInitialState((s) => ({
+      ...s,
+      currentUser: userInfo,
+    }));
   };
 
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
-      const msg = await login({ ...values, type });
-      if (msg.status === 'ok') {
+      // const msg = await login({ ...values, type });
+      // console.log(msg);
+      // if (msg.status === 'ok') {
+      //   const defaultLoginSuccessMessage = intl.formatMessage({
+      //     id: 'pages.login.success',
+      //     defaultMessage: 'Đăng nhập thành công',
+      //   });
+      //   message.success(defaultLoginSuccessMessage);
+      //   await fetchUserInfo();
+      //   /** 此方法会跳转到 redirect 参数所在的位置 */
+      //   if (!history) return;
+      //   const { query } = history.location;
+      //   const { redirect } = query as { redirect: string };
+      //   history.push(redirect || '/');
+      //   return;
+      // }
+      if (values.username === 'admin' && values.password === 'admin') {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
-          defaultMessage: '登录成功！',
+          defaultMessage: 'Đăng nhập thành công',
         });
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
@@ -54,11 +98,16 @@ const Login: React.FC = () => {
         const { query } = history.location;
         const { redirect } = query as { redirect: string };
         history.push(redirect || '/');
-        return;
+        setUserLoginState({ currentAuthority: 'admin', status: 'ok', type: 'account' });
+      } else {
+        message.error('Mật khẩu hoặc tài khoản không đúng vui lòng thử lại');
       }
-      console.log(msg);
+
+      // console.log(msg);
+
       // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
+
+      // setUserLoginState(msg);
     } catch (error) {
       const defaultLoginFailureMessage = intl.formatMessage({
         id: 'pages.login.failure',
@@ -71,9 +120,9 @@ const Login: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <div className={styles.lang} data-lang>
+      {/* <div className={styles.lang} data-lang>
         {SelectLang && <SelectLang />}
-      </div>
+      </div> */}
       <div className={styles.content}>
         <LoginForm
           logo={<img alt="logo" src="/logo.svg" />}

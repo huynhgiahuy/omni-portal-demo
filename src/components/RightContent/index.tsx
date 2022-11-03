@@ -1,4 +1,4 @@
-import { Space } from 'antd';
+import { Popover, Space } from 'antd';
 // import { QuestionCircleOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import { useModel } from 'umi';
@@ -18,6 +18,13 @@ const GlobalHeaderRight: React.FC = () => {
   const [isModalOpenRing, setIsModalOpenRing] = useState(false);
   const [isModalOpenAnswer, setIsModalOpenAnswer] = useState(false);
   const [isFullScreenModal, setIsFullScreenModal] = useState(false);
+
+  const [valueCheckboxUser, setValueCheckboxUser] = useState<any>([]);
+  const [isVisibleHistoryCall, setVisibleHistoryCall] = useState(false);
+  const [isActiveIconHistory, setActiveIconHistory] = useState(false);
+  const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
+  const [isActiveIconNote, setActiveIconNote] = useState(false);
+
 
   if (!initialState || !initialState.settings) {
     return null;
@@ -58,6 +65,24 @@ const GlobalHeaderRight: React.FC = () => {
   const handleFullScreenModal = () => {
     setIsFullScreenModal(!isFullScreenModal);
   };
+
+  const handleSelectForwardUser = (e: any) => {
+    setValueCheckboxUser(e.target.value)
+  }
+
+  const handleClickIconHistory = () => {
+    setVisibleHistoryCall(!isVisibleHistoryCall);
+    setActiveIconHistory(!isActiveIconHistory)
+    setVisibleNoteCall(false);
+    setActiveIconNote(false);
+  }
+
+  const handleClickIconNote = () => {
+    setVisibleNoteCall(!isVisibleNoteCall);
+    setActiveIconNote(!isActiveIconNote);
+    setVisibleHistoryCall(false);
+    setActiveIconHistory(false)
+  }
 
   return (
     <Space className={className}>
@@ -112,6 +137,14 @@ const GlobalHeaderRight: React.FC = () => {
         handleOpenAnswer={showModalAnswer}
         isFullScreenModal={isFullScreenModal}
         handleFullScreenModal={handleFullScreenModal}
+        handleSelectForwardUser={handleSelectForwardUser}
+        handleClickIconHistory={handleClickIconHistory}
+        handleClickIconNote={handleClickIconNote}
+        valueCheckboxUser={valueCheckboxUser}
+        isVisibleHistoryCall={isVisibleHistoryCall}
+        isVisibleNoteCall={isVisibleNoteCall}
+        isActiveIconHistory={isActiveIconHistory}
+        isActiveIconNote={isActiveIconNote}
       />
 
       <AgentModalAnswer
@@ -120,6 +153,14 @@ const GlobalHeaderRight: React.FC = () => {
         handleCancel={handleCancelAnswer}
         isFullScreenModal={isFullScreenModal}
         handleFullScreenModal={handleFullScreenModal}
+        handleSelectForwardUser={handleSelectForwardUser}
+        handleClickIconHistory={handleClickIconHistory}
+        handleClickIconNote={handleClickIconNote}
+        valueCheckboxUser={valueCheckboxUser}
+        isVisibleHistoryCall={isVisibleHistoryCall}
+        isVisibleNoteCall={isVisibleNoteCall}
+        isActiveIconHistory={isActiveIconHistory}
+        isActiveIconNote={isActiveIconNote}
       />
     </Space>
   );

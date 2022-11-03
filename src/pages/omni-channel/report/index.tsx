@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Segmented } from 'antd';
 import { BarChartOutlined, SwapOutlined, ScheduleOutlined, LineChartOutlined, PhoneOutlined } from '@ant-design/icons';
+import GeneralStatistic from './GeneralStatistic';
+import HistoryCall from "./HistoryCall";
 import styles from '../report/style.less'
 
 const Report: React.FC = () => {
+    const [isChangeView, setChangeView] = useState<String | Number>('Thống kê chung');
+    const handleChangeSegmented = (value: String | Number) => {
+        setChangeView(value);
+    }
     return (
         <>
             <Segmented
@@ -35,8 +41,10 @@ const Report: React.FC = () => {
                     },
                 ]}
                 className={styles.antSegmented}
+                onChange={handleChangeSegmented}
                 style={{ backgroundColor: "#e3eaf4" }}
             />
+            {isChangeView === 'Thống kê chung' ? (<GeneralStatistic />) : isChangeView === 'Lịch sử cuộc gọi' ? (<HistoryCall />) : ''}
         </>
     )
 }

@@ -1,5 +1,5 @@
 import React from "react"
-import { Card, Form, Input, Select, Row, Col } from 'antd';
+import { Card, Form, Select, Button } from 'antd';
 import styles from '../report/style.less'
 
 const formItemLayout = {
@@ -11,7 +11,7 @@ const formItemLayout = {
             span: 24
         },
         md: {
-            span: 3,
+            span: 7,
         },
     },
     wrapperCol: {
@@ -22,10 +22,26 @@ const formItemLayout = {
             span: 24
         },
         md: {
-            span: 5,
+            span: 12,
         },
     },
 };
+
+const submitFormLayout = {
+    wrapperCol: {
+        xs: {
+            span: 24,
+        },
+        sm: {
+            span: 10,
+        },
+        md: {
+            span: 10,
+            offset: 11,
+        },
+    },
+};
+
 
 const GeneralStatistic: React.FC = () => {
     return (
@@ -33,22 +49,163 @@ const GeneralStatistic: React.FC = () => {
             <Card
                 className={styles.detailCardLayout}
             >
-                <Form style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Row>
-                        <Col md={10}>
+                <Form {...formItemLayout}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+                        <div style={{ flex: 1 }}>
                             <Form.Item
                                 label="Loại thống kê"
                                 name="Loại thống kê"
                             >
-                                <Select defaultValue="1" placeholder="Please chose">
+                                <Select placeholder="Please chose">
                                     <Select.Option value="1">Phần tử sự cố</Select.Option>
                                     <Select.Option value="2">Phần tử sự cố 2</Select.Option>
                                 </Select>
                             </Form.Item>
-                        </Col>
-                    </Row>
-                    
-
+                            <Form.Item
+                                label="Chi nhánh ảnh hưởng"
+                                name="Chi nhánh ảnh hưởng"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Bộ phận phát hiện"
+                                name="Bộ phận phát hiện"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Loại ticket"
+                                name="Loại ticket"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Hình thức tạo"
+                                name="Hình thức tạo"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Nhóm phần tử"
+                                name="Nhóm phần tử"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Loại dịch vụ"
+                                name="Loại dịch vụ"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Cấp độ"
+                                name="Cấp độ"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <Form.Item
+                                label="Vùng miền"
+                                name="Vùng miền"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Queue"
+                                name="Queue"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Nhân viên xử lý"
+                                name="Nhân viên xử lý"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Tình trạng ticket"
+                                name="Tình trạng ticket"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Trạng thái xử lý"
+                                name="Trạng thái xử lý"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Sự cố"
+                                name="Sự cố"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Loại khách hàng"
+                                name="Loại khách hàng"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Mức độ"
+                                name="Mực độ"
+                            >
+                                <Select placeholder="Please chose">
+                                    <Select.Option value="1">Phần tử sự cố</Select.Option>
+                                    <Select.Option value="2">Phần tử sự cố 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                        </div>
+                    </div>
+                    <div>
+                        <Form.Item {...submitFormLayout} style={{ marginTop: '10px' }}>
+                            <Button style={{ marginRight: '10px', color: '#1890FF', border: '1px solid #1890FF' }}>Xuất excel</Button>
+                            <Button type="primary">Thông kê</Button>
+                        </Form.Item>
+                    </div>
                 </Form>
             </Card>
         </>

@@ -27,7 +27,6 @@
         path: '/omni-channel/report',
         name: 'report',
         component: './omni-channel/report/index',
-        icon: 'smile',
       },
       {
         path: '/omni-channel/setting',
@@ -38,7 +37,7 @@
   },
   {
     path: '/',
-    redirect: '/omni-channel',
+    redirect: '/omni-channel/setting',
   },
   {
     component: './404',
