@@ -23,7 +23,7 @@ export default defineConfig({
   // https://umijs.org/zh-CN/plugins/plugin-locale
   locale: {
     // default zh-CN
-    default: 'zh-CN',
+    default: 'en-US',
     antd: true,
     // default true, when it is true, will use `navigator.language` overwrite default
     baseNavigator: true,
@@ -43,6 +43,21 @@ export default defineConfig({
   // esbuild is father build tools
   // https://umijs.org/plugins/plugin-esbuild
   esbuild: {},
+  define: {
+    'process.env.UMI_WS_CALL_CENTER_URL': process.env.UMI_WS_CALL_CENTER_URL,
+    'process.env.UMI_API_BASE_URL': process.env.UMI_API_BASE_URL,
+    'process.env.REACT_APP_WEBSOCKET_SSL': process.env.REACT_APP_WEBSOCKET_SSL,
+    'process.env.UMI_API_URL': process.env.UMI_API_URL,
+    'process.env.UMI_DOMAIN': process.env.UMI_DOMAIN,
+    'process.env.PORT': process.env.PORT,
+    'process.env.REDIRECT_URI_PROTOCOL': process.env.REDIRECT_URI_PROTOCOL,
+    'process.env.REDIRECT_URI_DOMAIN': process.env.REDIRECT_URI_DOMAIN,
+    'process.env.TENANT_NAME': process.env.TENANT_NAME,
+    'process.env.CLIENT_ID': process.env.CLIENT_ID,
+    'process.env.SECRET_ID': process.env.SECRET_ID,
+    'process.env.SECRET_VALUE': process.env.SECRET_VALUE,
+    'process.env.ENV': process.env.ENV,
+  },
   title: false,
   ignoreMomentLocale: true,
   proxy: proxy[REACT_APP_ENV || 'dev'],
