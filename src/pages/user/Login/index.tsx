@@ -121,11 +121,11 @@ const Login: React.FC = () => {
 
   const handleClickLogin = () => {
     if (api.ENV === 'local') {
-      window.location = `${api.UMI_API_BASE_URL}/user/sso_login?redirect_uri=${
+      window.location.href = `${api.UMI_API_BASE_URL}/user/sso_login?redirect_uri=${
         api.REDIRECT_URI_PROTOCOL || 'https'
       }%3A%2F%2F${api.UMI_DOMAIN}%3A${api.PORT}%2Fmainpage`;
     } else {
-      window.location = `https://login.microsoftonline.com/${api.TENANT_NAME}/oauth2/authorize?client_id=${api.CLIENT_ID}&response_type=code&response_mode=form_post&redirect_uri=${api.UMI_API_URL}&sso_reload=true&state=123`;
+      window.location.href = `https://login.microsoftonline.com/${api.TENANT_NAME}/oauth2/authorize?client_id=${api.CLIENT_ID}&response_type=code&response_mode=form_post&redirect_uri=${api.UMI_API_URL}&sso_reload=true&state=123`;
     }
 
     return null;
@@ -330,9 +330,9 @@ const Login: React.FC = () => {
             >
               <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
             </a>
-            <Button className={styles.loginBtn} onClick={handleClickLogin}>
+            {/* <Button className={styles.loginBtn} onClick={handleClickLogin}>
               Đăng nhập bằng SSO
-            </Button>
+            </Button> */}
           </div>
         </LoginForm>
       </div>
