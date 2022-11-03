@@ -70,16 +70,15 @@ const HistoryCall: React.FC = () => {
                 if (record.huongcuocgoi === 'gọi vào') {
                     return (
                         <>
-                            <img src={PhoneCallIn} style={{ width: '20px', height: '20px' }} /> {record.huongcuocgoi}
+                            <img src={PhoneCallIn} style={{ width: '20px', height: '20px', marginRight: '10px' }} /><Typography.Text>{record.huongcuocgoi}</Typography.Text>
                         </>
                     )
                 }
                 return (
                     <>
-                        <img src={PhoneCallOut} style={{ width: '20px', height: '20px' }} /> {record.huongcuocgoi}
+                        <img src={PhoneCallOut} style={{ width: '20px', height: '20px', marginRight: '10px' }} /><Typography.Text style={{ marginLeft: '5px' }}>{record.huongcuocgoi}</Typography.Text>
                     </>
                 )
-
             }
         },
         {
