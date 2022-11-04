@@ -40,7 +40,7 @@ const Login: React.FC = () => {
     const userInfo = {
       access: 'admin',
       address: '西湖区工专路 77 号',
-      avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
+      avatar: 'https://iili.io/mnXB2e.png',
       country: 'China',
       email: 'antdesign@alipay.com',
       geographic: {
@@ -48,7 +48,7 @@ const Login: React.FC = () => {
         city: { label: '杭州市', key: '330100' },
       },
       group: '蚂蚁金服－某某某事业群－某某平台部－某某技术部－UED',
-      name: 'Serati Ma',
+      name: 'Lâm Mỹ Huyền',
       notifyCount: 12,
       phone: '0752-268888888',
       signature: '海纳百川，有容乃大',
@@ -121,9 +121,8 @@ const Login: React.FC = () => {
 
   const handleClickLogin = () => {
     if (api.ENV === 'local') {
-      window.location.href = `${api.UMI_API_BASE_URL}/user/sso_login?redirect_uri=${
-        api.REDIRECT_URI_PROTOCOL || 'https'
-      }%3A%2F%2F${api.UMI_DOMAIN}%3A${api.PORT}%2Fmainpage`;
+      window.location.href = `${api.UMI_API_BASE_URL}/user/sso_login?redirect_uri=${api.REDIRECT_URI_PROTOCOL || 'https'
+        }%3A%2F%2F${api.UMI_DOMAIN}%3A${api.PORT}%2Fmainpage`;
     } else {
       window.location.href = `https://login.microsoftonline.com/${api.TENANT_NAME}/oauth2/authorize?client_id=${api.CLIENT_ID}&response_type=code&response_mode=form_post&redirect_uri=${api.UMI_API_URL}&sso_reload=true&state=123`;
     }
