@@ -2,11 +2,12 @@ import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
-import { Alert, message, Tabs } from 'antd';
+import { Alert, Button, message, Tabs } from 'antd';
 import React, { useState } from 'react';
 import { FormattedMessage, history, useIntl, useModel } from 'umi';
 
 import styles from './index.less';
+import api from '@/api';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -29,23 +30,67 @@ const Login: React.FC = () => {
   const intl = useIntl();
 
   const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-    if (userInfo) {
-      await setInitialState((s) => ({
-        ...s,
-        currentUser: userInfo,
-      }));
-    }
+    // const userInfo = await initialState?.fetchUserInfo?.();
+    // if (userInfo) {
+    //   await setInitialState((s) => ({
+    //     ...s,
+    //     currentUser: userInfo,
+    //   }));
+    // }
+    const userInfo = {
+      access: 'admin',
+      address: '西湖区工专路 77 号',
+      avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
+      country: 'China',
+      email: 'antdesign@alipay.com',
+      geographic: {
+        province: { label: '浙江省', key: '330000' },
+        city: { label: '杭州市', key: '330100' },
+      },
+      group: '蚂蚁金服－某某某事业群－某某平台部－某某技术部－UED',
+      name: 'Serati Ma',
+      notifyCount: 12,
+      phone: '0752-268888888',
+      signature: '海纳百川，有容乃大',
+      tags: [
+        { key: '0', label: '很有想法的' },
+        { key: '1', label: '专注设计' },
+        { key: '2', label: '辣~' },
+      ],
+      title: '交互专家',
+      unreadCount: 11,
+      userid: '00000001',
+    };
+
+    await setInitialState((s) => ({
+      ...s,
+      currentUser: userInfo,
+    }));
   };
 
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
-      const msg = await login({ ...values, type });
-      if (msg.status === 'ok') {
+      // const msg = await login({ ...values, type });
+      // console.log(msg);
+      // if (msg.status === 'ok') {
+      //   const defaultLoginSuccessMessage = intl.formatMessage({
+      //     id: 'pages.login.success',
+      //     defaultMessage: 'Đăng nhập thành công',
+      //   });
+      //   message.success(defaultLoginSuccessMessage);
+      //   await fetchUserInfo();
+      //   /** 此方法会跳转到 redirect 参数所在的位置 */
+      //   if (!history) return;
+      //   const { query } = history.location;
+      //   const { redirect } = query as { redirect: string };
+      //   history.push(redirect || '/');
+      //   return;
+      // }
+      if (values.username === 'admin' && values.password === 'admin') {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
-          defaultMessage: '登录成功！',
+          defaultMessage: 'Đăng nhập thành công',
         });
         message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
@@ -54,11 +99,16 @@ const Login: React.FC = () => {
         const { query } = history.location;
         const { redirect } = query as { redirect: string };
         history.push(redirect || '/');
-        return;
+        setUserLoginState({ currentAuthority: 'admin', status: 'ok', type: 'account' });
+      } else {
+        message.error('Mật khẩu hoặc tài khoản không đúng vui lòng thử lại');
       }
-      console.log(msg);
+
+      // console.log(msg);
+
       // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
+
+      // setUserLoginState(msg);
     } catch (error) {
       const defaultLoginFailureMessage = intl.formatMessage({
         id: 'pages.login.failure',
@@ -68,6 +118,18 @@ const Login: React.FC = () => {
     }
   };
   const { status, type: loginType } = userLoginState;
+
+  const handleClickLogin = () => {
+    if (api.ENV === 'local') {
+      window.location.href = `${api.UMI_API_BASE_URL}/user/sso_login?redirect_uri=${
+        api.REDIRECT_URI_PROTOCOL || 'https'
+      }%3A%2F%2F${api.UMI_DOMAIN}%3A${api.PORT}%2Fmainpage`;
+    } else {
+      window.location.href = `https://login.microsoftonline.com/${api.TENANT_NAME}/oauth2/authorize?client_id=${api.CLIENT_ID}&response_type=code&response_mode=form_post&redirect_uri=${api.UMI_API_URL}&sso_reload=true&state=123`;
+    }
+
+    return null;
+  };
 
   return (
     <div className={styles.container}>
@@ -204,6 +266,7 @@ const Login: React.FC = () => {
                   },
                 ]}
               />
+
               <ProFormCaptcha
                 fieldProps={{
                   size: 'large',
@@ -267,9 +330,13 @@ const Login: React.FC = () => {
             >
               <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
             </a>
+            {/* <Button className={styles.loginBtn} onClick={handleClickLogin}>
+              Đăng nhập bằng SSO
+            </Button> */}
           </div>
         </LoginForm>
       </div>
+
       {/* <Footer /> */}
     </div>
   );
