@@ -47,7 +47,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       const { key } = event;
       console.log('avatar_drop_down:>> ', event);
       if (key === 'logout') {
-        setInitialState((s) => ({ ...s, currentUser: undefined }));
+        setInitialState((s: any) => ({ ...s, currentUser: undefined }));
         loginOut();
         return;
       }
@@ -71,7 +71,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   }
 
   function handleLight() {
-    setInitialState((s) => ({
+    setInitialState((s: any) => ({
       ...s,
       settings: {
         navTheme: 'light',
@@ -89,7 +89,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   }
 
   function handleDark() {
-    setInitialState((s) => ({
+    setInitialState((s: any) => ({
       ...s,
       settings: {
         navTheme: 'realDark',
