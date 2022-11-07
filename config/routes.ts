@@ -37,7 +37,7 @@
   },
   {
     path: '/',
-    redirect: '/omni-channel/setting',
+    redirect: '/omni-channel/report',
   },
   {
     component: './404',
