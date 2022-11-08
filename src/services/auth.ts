@@ -9,7 +9,7 @@ export const endpoint = api.UMI_API_BASE_URL;
  * @param {string} data.password
  * @returns {Promise<object>}
  */
-export async function verifySSO(data: any) {
+export async function verifySSO(data: any): Promise<any> {
   if (api.ENV === 'local') {
     return request(`${endpoint}/user/sso_verify`, {
       method: 'POST',

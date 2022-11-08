@@ -3,11 +3,12 @@ import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { Alert, Button, message, Tabs } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { FormattedMessage, history, useIntl, useModel } from 'umi';
 
 import styles from './index.less';
 import api from '@/api';
+import { verifySSO } from '@/services/auth';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -28,6 +29,33 @@ const Login: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
 
   const intl = useIntl();
+
+  useLayoutEffect(() => {
+    const requestSecurity = async () => {
+      if (window.location.href.includes('code')) {
+        const paramsString = history.location.search;
+        const params = new URLSearchParams(paramsString);
+        const code = params.get('code');
+        const state = params.get('state');
+        const session_state = params.get('session_state');
+
+        const data = {
+          state,
+          session_state,
+          code,
+          redirect_uri: `${api.UMI_API_URL}`,
+        };
+
+        const response = await verifySSO(data);
+        if (response?.success === true) {
+          window.localStorage.setItem('access_token', response?.data[0]?.id_token);
+          window.localStorage.setItem('rid', response?.data[0]?.refresh_token);
+          window.localStorage.setItem('user_id', response?.data[0]?.user_id);
+        }
+      }
+    };
+    requestSecurity();
+  }, []);
 
   const fetchUserInfo = async () => {
     // const userInfo = await initialState?.fetchUserInfo?.();
