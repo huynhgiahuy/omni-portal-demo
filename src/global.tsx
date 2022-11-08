@@ -23,7 +23,6 @@ if (window.location.href.includes('code')) {
   if (response?.success === true) {
     window.localStorage.setItem('access_token', response?.data[0]?.id_token);
     window.localStorage.setItem('rid', response?.data[0]?.refresh_token);
-    window.localStorage.setItem('user_id', response?.data[0]?.user_id);
   }
 }
 

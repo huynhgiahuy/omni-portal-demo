@@ -9,18 +9,44 @@ export const endpoint = api.UMI_API_BASE_URL;
  * @param {string} data.password
  * @returns {Promise<object>}
  */
-export async function verifySSO(data: any): Promise<any> {
-  if (api.ENV === 'local') {
-    return request(`${endpoint}/user/sso_verify`, {
-      method: 'POST',
-      data,
-    });
-  } else {
-    return request(`${endpoint}/user/sso_fpt_verify_code`, {
-      method: 'POST',
-      data,
-    });
-  }
+
+export interface requestProps {
+  success: boolean;
+  error_code: number;
+  length_data: number;
+  message_error: string;
+}
+
+interface requeGetUrlSSOProps extends requestProps {
+  data: string[];
+}
+
+interface requestVerifySSO extends requestProps {
+  data: Array<{
+    access_token: string;
+    expires_at: number;
+    expires_in: number;
+    id_token: string;
+    'not-before-policy': number;
+    refresh_expires_in: number;
+    refresh_token: string;
+    scope: string;
+    session_state: string;
+    token_type: string;
+  }>;
+}
+
+export const getUrlSSO = (): Promise<requeGetUrlSSOProps> => {
+  return request(`${endpoint}/api/get_url_sso`, {
+    method: 'POST',
+  });
+};
+
+export async function verifySSO(data: any): Promise<requestVerifySSO> {
+  return request(`${endpoint}/api/get_token`, {
+    method: 'POST',
+    data,
+  });
 }
 
 export async function requestLogin(data: any) {

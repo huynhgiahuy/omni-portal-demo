@@ -11,6 +11,8 @@ import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
 import api from '@/api';
+import UserAgent from '@/utils/jssip';
+import JsSIP from 'jssip';
 import { history } from 'umi';
 import { verifySSO } from '@/services/auth';
 

@@ -1,14 +1,12 @@
-import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
 import { Alert, Button, message, Tabs } from 'antd';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, history, useIntl, useModel } from 'umi';
 
 import styles from './index.less';
-import api from '@/api';
-import { verifySSO } from '@/services/auth';
+import { getUrlSSO } from '@/services/auth';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -29,33 +27,6 @@ const Login: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
 
   const intl = useIntl();
-
-  useLayoutEffect(() => {
-    const requestSecurity = async () => {
-      if (window.location.href.includes('code')) {
-        const paramsString = history.location.search;
-        const params = new URLSearchParams(paramsString);
-        const code = params.get('code');
-        const state = params.get('state');
-        const session_state = params.get('session_state');
-
-        const data = {
-          state,
-          session_state,
-          code,
-          redirect_uri: `${api.UMI_API_URL}`,
-        };
-
-        const response = await verifySSO(data);
-        if (response?.success === true) {
-          window.localStorage.setItem('access_token', response?.data[0]?.id_token);
-          window.localStorage.setItem('rid', response?.data[0]?.refresh_token);
-          window.localStorage.setItem('user_id', response?.data[0]?.user_id);
-        }
-      }
-    };
-    requestSecurity();
-  }, []);
 
   const fetchUserInfo = async () => {
     // const userInfo = await initialState?.fetchUserInfo?.();
@@ -147,12 +118,11 @@ const Login: React.FC = () => {
   };
   const { status, type: loginType } = userLoginState;
 
-  const handleClickLogin = () => {
-    if (api.ENV === 'local') {
-      window.location.href = `${api.UMI_API_BASE_URL}/user/sso_login?redirect_uri=${api.REDIRECT_URI_PROTOCOL || 'https'
-        }%3A%2F%2F${api.UMI_DOMAIN}%3A${api.PORT}%2Fmainpage`;
-    } else {
-      window.location.href = `https://login.microsoftonline.com/${api.TENANT_NAME}/oauth2/authorize?client_id=${api.CLIENT_ID}&response_type=code&response_mode=form_post&redirect_uri=${api.UMI_API_URL}&sso_reload=true&state=123`;
+  const handleClickLogin = async () => {
+    const urlSSO = await getUrlSSO();
+    console.log(urlSSO);
+    if (urlSSO?.success) {
+      window.location.href = urlSSO.data[0];
     }
 
     return null;
@@ -357,9 +327,9 @@ const Login: React.FC = () => {
             >
               <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
             </a>
-            {/* <Button className={styles.loginBtn} onClick={handleClickLogin}>
+            <Button className={styles.loginBtn} onClick={handleClickLogin}>
               Đăng nhập bằng SSO
-            </Button> */}
+            </Button>
           </div>
         </LoginForm>
       </div>
