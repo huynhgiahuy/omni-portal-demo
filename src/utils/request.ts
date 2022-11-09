@@ -75,8 +75,7 @@ const getTokenGatewayByRefreshToken = async (refreshToken: string) => {
 
     if (res?.success) {
       set('rid', res.data[0].refresh_token);
-      set('access_token', res.data[0].id_token);
-      set('user_id', res.data[0].user_id);
+      set('access_token', res.data[0].access_token);
       return res.data[0];
     } else window.location.href = `${api.UMI_API_URL}/user/login`;
 

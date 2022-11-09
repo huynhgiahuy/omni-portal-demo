@@ -21,7 +21,7 @@ if (window.location.href.includes('code')) {
 
   const response = await verifySSO(data);
   if (response?.success === true) {
-    window.localStorage.setItem('access_token', response?.data[0]?.id_token);
+    window.localStorage.setItem('access_token', response?.data[0]?.access_token);
     window.localStorage.setItem('rid', response?.data[0]?.refresh_token);
   }
 }

@@ -17,7 +17,7 @@ export interface requestProps {
   message_error: string;
 }
 
-interface requeGetUrlSSOProps extends requestProps {
+export interface requeGetUrlSSOProps extends requestProps {
   data: string[];
 }
 
@@ -37,15 +37,24 @@ interface requestVerifySSO extends requestProps {
 }
 
 export const getUrlSSO = (): Promise<requeGetUrlSSOProps> => {
-  return request(`${endpoint}/api/get_url_sso`, {
+  return request(`${endpoint}/user-service/api/get_url_sso`, {
     method: 'POST',
   });
 };
 
 export async function verifySSO(data: any): Promise<requestVerifySSO> {
-  return request(`${endpoint}/api/get_token`, {
+  return request(`${endpoint}/user-service/api/get_token`, {
     method: 'POST',
     data,
+  });
+}
+
+export async function requestGetInfoUser(token: any): Promise<requeGetUrlSSOProps> {
+  return request(`${endpoint}/user-service/api/get_info_user`, {
+    method: 'POST',
+    data: {
+      token,
+    },
   });
 }
 
@@ -189,8 +198,8 @@ export async function requestGetLicense(headers: any) {
  * @param {string} data.refreshToken
  * @returns {Promise<object>}
  */
-export async function requestRefreshToken(refreshToken: string) {
-  return request(`${endpoint}/user/sso_fpt_refresh_token`, {
+export async function requestRefreshToken(refreshToken: string): Promise<any> {
+  return request(`${endpoint}/user-service/api/get_token_from_refresh_token`, {
     method: 'POST',
     data: {
       refresh_token: refreshToken,
