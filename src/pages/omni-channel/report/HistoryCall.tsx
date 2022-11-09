@@ -239,6 +239,7 @@ const HistoryCall: React.FC = () => {
                             dataSource={data}
                             columns={columns}
                             style={{ paddingLeft: '10px', paddingTop: '10px' }}
+                            className={styles.tableStyle}
                             pagination={{
                                 pageSize: 5,
                                 showQuickJumper: true,
@@ -276,6 +277,7 @@ const HistoryCall: React.FC = () => {
                             dataSource={dataDanhba}
                             columns={columnsDanhba}
                             style={{ paddingLeft: '10px', paddingTop: '10px' }}
+                            className={styles.tableStyle}
                             pagination={{
                                 pageSize: 5,
                                 showQuickJumper: true,
