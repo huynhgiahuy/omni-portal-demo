@@ -94,9 +94,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
               enableDarkTheme
               settings={initialState?.settings}
               onSettingChange={(settings) => {
-                console.log('app.tsx :>> ', 1);
-                console.log({ settings });
-                console.log('app.tsx :>> ', 2);
+                // console.log('app.tsx :>> ', 1);
+                // console.log({ settings });
+                // console.log('app.tsx :>> ', 2);
                 setInitialState((preInitialState) => ({
                   ...preInitialState,
                   settings,
