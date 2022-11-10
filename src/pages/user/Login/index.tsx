@@ -7,6 +7,7 @@ import { FormattedMessage, history, useIntl, useModel } from 'umi';
 
 import styles from './index.less';
 import { getUrlSSO, requestGetInfoUser } from '@/services/auth';
+import api from '../../../api';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -143,7 +144,7 @@ const Login: React.FC = () => {
   const { status, type: loginType } = userLoginState;
 
   const handleClickLogin = async () => {
-    const urlSSO = await getUrlSSO();
+    const urlSSO = await getUrlSSO(api.UMI_API_URL);
     console.log(urlSSO);
     if (urlSSO?.success) {
       window.location.href = urlSSO.data[0];

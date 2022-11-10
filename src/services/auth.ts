@@ -36,9 +36,12 @@ interface requestVerifySSO extends requestProps {
   }>;
 }
 
-export const getUrlSSO = (): Promise<requeGetUrlSSOProps> => {
+export const getUrlSSO = (url?: string): Promise<requeGetUrlSSOProps> => {
   return request(`${endpoint}/user-service/api/get_url_sso`, {
     method: 'POST',
+    data: {
+      redirect_uri: url,
+    },
   });
 };
 
