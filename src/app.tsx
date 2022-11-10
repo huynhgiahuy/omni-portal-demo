@@ -89,9 +89,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       return (
         <>
           {children}
-          {/* {!props.location?.pathname?.includes('/login') && (
+          {!props.location?.pathname?.includes('/login') && (
             <SettingDrawer
               enableDarkTheme
+              prefixCls="setting_theme"
               settings={initialState?.settings}
               onSettingChange={(settings) => {
                 // console.log('app.tsx :>> ', 1);
@@ -103,7 +104,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
                 }));
               }}
             />
-          )} */}
+          )}
         </>
       );
     },
