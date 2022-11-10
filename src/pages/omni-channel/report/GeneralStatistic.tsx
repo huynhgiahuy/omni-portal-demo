@@ -202,7 +202,7 @@ const GeneralStatistic: React.FC = () => {
                     </div>
                     <Form.Item {...submitFormLayout} style={{ marginTop: '10px', marginBottom: 'unset' }}>
                         <Button className={styles.exportBtn}>Xuất excel</Button>
-                        <Button type="primary">Thông kê</Button>
+                        <Button type="primary">Thống kê</Button>
                     </Form.Item>
                 </Form>
             </Card>
