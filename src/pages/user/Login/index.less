@@ -48,3 +48,21 @@
     color: @primary-color;
   }
 }
+
+.loginBtn {
+  width: 100%;
+  height: 40px;
+  margin-top: 20px;
+  color: white;
+  background-color: #1479fb;
+  border-radius: 5px;
+}
+
+.loginForm {
+  :global {
+    .ant-btn-lg {
+      visibility: hidden;
+      opacity: 0;
+    }
+  }
+}

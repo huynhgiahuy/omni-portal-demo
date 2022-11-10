@@ -25,7 +25,21 @@
 .detailCardLayout {
   margin-top: 7%;
   background-color: white;
-  border: 1px solid #59895C;
+  border: 1px solid #59895c;
+  border-radius: 8px;
+  :global {
+    .ant-card-head {
+      border-bottom: unset;
+    }
+    .ant-card-body {
+      padding-left: unset;
+    }
+  }
+}
+.detailCardLayoutNoMar {
+  margin-top: 1rem;
+  background-color: white;
+  border: 1px solid #59895c;
   border-radius: 8px;
   :global {
     .ant-card-head {
@@ -57,20 +71,21 @@
 }
 .antFieldDisplay {
   margin-bottom: 20px;
+  padding: 5px;
   font-weight: bold;
   font-size: 18px;
-  padding: 5px;
+  background-color: #f0f2f5;
   border-radius: 6px;
-  background-color: #F0F2F5;
 }
 .antDataDisplay {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
-  font-size: 16px;
+  font-size: 18px;
 }
 .antTextStyle {
   color: rgba(0, 0, 0, 1);
+  font-size: 18px;
 }
 .antBold {
   color: rgba(0, 0, 0, 1);
@@ -85,5 +100,90 @@
       display: flex;
       justify-content: center;
     }
+  }
+}
+.osDeviceStyle {
+  margin-right: 10px;
+  color: rgba(0, 0, 0, 1);
+  font-weight: bold;
+  font-size: 18px;
+}
+.locationDeviceStyle {
+  margin-right: 10px;
+  color: rgba(0, 0, 0, 0.53);
+  font-weight: 400;
+  font-size: 13px;
+  font-style: italic;
+}
+.permissionTable {
+  :global {
+    .ant-table-thead > tr > th {
+      color: rgba(0, 0, 0, 1);
+      font-weight: bold;
+      background-color: #87c686;
+    }
+    .ant-table-thead {
+      font-size: 14px;
+    }
+  }
+}
+.inputPhonePrefix {
+  :global {
+    .ant-input-group-addon {
+      color: #1890ff;
+    }
+  }
+}
+.addPermissionIcon {
+  color: #7fb77e;
+  font-size: 30px;
+  background-color: #fff;
+}
+.cancleBtn {
+  margin-right: 10px;
+}
+.addPermissionTable {
+  :global {
+    .ant-table-thead > tr > th {
+      color: rgba(0, 0, 0, 1);
+      font-weight: bold;
+      background-color: #c5e3ff;
+    }
+    .ant-table-thead {
+      font-size: 14px;
+    }
+    .ant-table-cell-scrollbar:not([rowspan]) {
+      box-shadow: none;
+    }
+  }
+}
+.addPermissionInputPlaceholder {
+  :global {
+    .ant-input:placeholder-shown {
+      text-align: center;
+    }
+    .ant-form-item-explain-error {
+      text-align: center;
+    }
+  }
+}
+.addPermissionInput {
+  text-align: center;
+}
+.antCheckboxGroup {
+  :global {
+    .ant-checkbox-group-item {
+      margin-right: 30px;
+    }
+  }
+}
+:global {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    height: 98px;
+    background: #c5e3ff;
+    border-radius: 99px;
   }
 }

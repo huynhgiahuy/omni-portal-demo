@@ -1,6 +1,6 @@
-import { Popover, Space } from 'antd';
+import { Space } from 'antd';
 // import { QuestionCircleOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
@@ -10,6 +10,11 @@ import NoticeIconView from '../NoticeIcon';
 import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
+import api from '@/api';
+import UserAgent from '@/utils/jssip';
+import JsSIP from 'jssip';
+import { history } from 'umi';
+import { verifySSO } from '@/services/auth';
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -24,7 +29,6 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconHistory, setActiveIconHistory] = useState(false);
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
-
 
   if (!initialState || !initialState.settings) {
     return null;
@@ -67,22 +71,22 @@ const GlobalHeaderRight: React.FC = () => {
   };
 
   const handleSelectForwardUser = (e: any) => {
-    setValueCheckboxUser(e.target.value)
-  }
+    setValueCheckboxUser(e.target.value);
+  };
 
   const handleClickIconHistory = () => {
     setVisibleHistoryCall(!isVisibleHistoryCall);
-    setActiveIconHistory(!isActiveIconHistory)
+    setActiveIconHistory(!isActiveIconHistory);
     setVisibleNoteCall(false);
     setActiveIconNote(false);
-  }
+  };
 
   const handleClickIconNote = () => {
     setVisibleNoteCall(!isVisibleNoteCall);
     setActiveIconNote(!isActiveIconNote);
     setVisibleHistoryCall(false);
-    setActiveIconHistory(false)
-  }
+    setActiveIconHistory(false);
+  };
 
   return (
     <Space className={className}>

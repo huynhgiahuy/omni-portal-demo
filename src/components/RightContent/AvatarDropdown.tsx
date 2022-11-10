@@ -29,6 +29,8 @@ const loginOut = async () => {
   await outLogin();
   const { query = {}, search, pathname } = history.location;
   const { redirect } = query;
+  window.localStorage.removeItem('access_token');
+  window.localStorage.removeItem('rid');
   // Note: There may be security issues, please note
   if (window.location.pathname !== '/user/login' && !redirect) {
     history.replace({
@@ -42,13 +44,12 @@ const loginOut = async () => {
 
 const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   const { initialState, setInitialState } = useModel('@@initialState');
-
   const onMenuClick = useCallback(
     (event: MenuInfo) => {
       const { key } = event;
       console.log('avatar_drop_down:>> ', event);
       if (key === 'logout') {
-        setInitialState((s) => ({ ...s, currentUser: undefined }));
+        setInitialState((s: any) => ({ ...s, currentUser: undefined }));
         loginOut();
         return;
       }
@@ -71,6 +72,41 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     console.log(`switch to ${checked}`);
   }
 
+  function handleLight() {
+    setInitialState((s: any) => ({
+      ...s,
+      settings: {
+        navTheme: 'light',
+        primaryColor: '#1890ff',
+        layout: 'side',
+        contentWidth: 'Fluid',
+        fixedHeader: true,
+        fixSiderbar: true,
+        pwa: false,
+        logo: '/logo_theme.svg',
+        headerHeight: 48,
+        splitMenus: false,
+      },
+    }));
+  }
+
+  function handleDark() {
+    setInitialState((s: any) => ({
+      ...s,
+      settings: {
+        navTheme: 'realDark',
+        primaryColor: '#1890ff',
+        layout: 'side',
+        contentWidth: 'Fluid',
+        fixedHeader: true,
+        fixSiderbar: true,
+        pwa: false,
+        logo: '/logo_theme.svg',
+        headerHeight: 48,
+        splitMenus: false,
+      },
+    }));
+  }
   const loading = (
     <span className={`${styles.action} ${styles.account}`}>
       <Spin
@@ -237,7 +273,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             <p className={styles.popupDisplayContent}>
               Điều chỉnh giao diện của phần mềm để giảm độ chói và cho đôi mắt được nghỉ ngơi.
             </p>
-            <Row>
+            <Row onChange={handleLight}>
               <Col span={16}>
                 <Title level={5} className={styles.popupDisplayColTitle}>
                   Tắt
@@ -247,7 +283,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
                 <Radio className={styles.popupDisplayColRadio} value={1}></Radio>
               </Col>
             </Row>
-            <Row>
+            <Row onChange={handleDark}>
               <Col span={16}>
                 <Title level={5} className={styles.popupDisplayColTitle}>
                   Bật

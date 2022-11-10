@@ -4,6 +4,7 @@ import { UserOutlined, ContainerOutlined, TeamOutlined } from '@ant-design/icons
 import styles from '../setting/style.less';
 import PersonalInfo from './PersonalInfo';
 import ShiftInfo from './ShiftInfo';
+import PermissionEdit from './PermissionEdit';
 
 const Setting: React.FC = () => {
   const [isChangeView, setChangeView] = useState<String | Number>('Thông tin cá nhân');
@@ -40,7 +41,7 @@ const Setting: React.FC = () => {
       ) : isChangeView === 'Thông tin ca trực' ? (
         <ShiftInfo />
       ) : (
-        ''
+        <PermissionEdit />
       )}
     </>
   )
