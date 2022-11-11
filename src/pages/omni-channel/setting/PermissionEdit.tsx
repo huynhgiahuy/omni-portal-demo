@@ -471,6 +471,7 @@ const PermissionEdit: React.FC = () => {
                                     <Form.Item
                                         label={<Typography.Text style={{ fontWeight: 'bold' }}>Số điện thoại</Typography.Text>}
                                         name="sodienthoai"
+                                        required={true}
                                         rules={[
                                             {
                                                 validator(_, value) {
