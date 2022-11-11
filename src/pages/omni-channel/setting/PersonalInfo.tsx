@@ -153,10 +153,10 @@ const PersonalInfo: React.FC = () => {
                                     <Typography.Text className={styles.antTextStyle}>Số điện thoại cá nhân</Typography.Text>
                                     {isEditUser === true ? (
                                         <Form.Item name="sodienthoai" className={styles.antFormItemMargin}>
-                                            <Input defaultValue="9669966996" style={{ width: '300px', textAlign: 'right' }} />
+                                            <Input defaultValue="6996699669" style={{ width: '300px', textAlign: 'right' }} />
                                         </Form.Item>
                                     ) : (
-                                        <Typography.Text className={styles.antBold}>9669966996</Typography.Text>
+                                        <Typography.Text className={styles.antBold}>6996699669</Typography.Text>
                                     )}
                                 </div>
                                 <div className={styles.antDataDisplay}>
