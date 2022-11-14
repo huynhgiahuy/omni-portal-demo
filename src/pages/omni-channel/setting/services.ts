@@ -28,3 +28,9 @@ export async function requestListUserInfo() {
     },
   );
 }
+
+export async function requestEditUserInfo() {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/user/update_user_infomation`, {
+    method: 'POST',
+  });
+}
