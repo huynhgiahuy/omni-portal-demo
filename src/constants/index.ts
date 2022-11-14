@@ -36,9 +36,13 @@ export const OPTIONS_PERMISSION_IM = [
     label: 'Xuất báo cáo',
     value: 'Xuất báo cáo',
   },
+  {
+    label: 'Design',
+    value: 'Design',
+  },
 ];
 
-export const OPTIONS_PERMISSION_IM_VALUE = ['Tạo mới', 'Cập nhật', 'Xóa', 'Xuất báo cáo'];
+export const OPTIONS_PERMISSION_IM_VALUE = ['Tạo mới', 'Cập nhật', 'Xóa', 'Xuất báo cáo', 'Design'];
 
 export const OPTIONS_PERMISSION_EM = [
   {
@@ -99,9 +103,13 @@ export const OPTIONS_PERMISSION_RF = [
     label: 'Xuất báo cáo',
     value: 'Xuất báo cáo',
   },
+  {
+    label: 'Design',
+    value: 'Design',
+  },
 ];
 
-export const OPTIONS_PERMISSION_RF_VALUE = ['Tạo mới', 'Cập nhật', 'Xóa', 'Xuất báo cáo'];
+export const OPTIONS_PERMISSION_RF_VALUE = ['Tạo mới', 'Cập nhật', 'Xóa', 'Xuất báo cáo', 'Design'];
 
 export const OPTIONS_PERMISSION_DESIGN = [
   {
@@ -177,15 +185,15 @@ export const OPTIONS_PERMISSION_SETTING = [
 export const TREE_DATA_TKC = [
   {
     title: 'Thống kê chung',
-    key: 'Thống kê chung',
+    key: 'general_statistic',
     children: [
       {
         title: 'Truy vấn',
-        key: 'Truy vấn',
+        key: 'general_statistic_query',
       },
       {
         title: 'Xuất báo cáo',
-        key: 'Xuất báo cáo',
+        key: 'general_statistic_export',
       },
     ],
   },
@@ -194,37 +202,37 @@ export const TREE_DATA_TKC = [
 export const TREE_DATA_BGCT = [
   {
     title: 'Bàn giao ca trực',
-    key: 'Bàn giao ca trực',
+    key: 'shift_transfer',
   },
 ];
 
 export const TREE_DATA_KHD = [
   {
     title: 'Kế hoạch đêm',
-    key: 'Kế hoạch đêm',
+    key: 'shift_night',
   },
 ];
 
 export const TREE_DATA_LSCG = [
   {
     title: 'Lịch sử cuộc gọi',
-    key: 'Lịch sử cuộc gọi',
+    key: 'history_call',
     children: [
       {
         title: 'Nghe ghi âm',
-        key: 'Nghe ghi âm',
+        key: 'history_call_record',
       },
       {
         title: 'Xóa lịch sử',
-        key: 'Xóa lịch sử',
+        key: 'history_call_delete',
       },
       {
         title: 'Xuất báo cáo',
-        key: 'Xuất báo cáo',
+        key: 'history_call_export',
       },
       {
         title: 'Phân tích',
-        key: 'Phân tích',
+        key: 'history_call_analytic',
       },
     ],
   },
@@ -233,11 +241,11 @@ export const TREE_DATA_LSCG = [
 export const TREE_DATA_TTCN = [
   {
     title: 'Thông tin cá nhân',
-    key: 'Thông tin cá nhân',
+    key: 'user_info',
     children: [
       {
         title: 'Chỉnh sửa',
-        key: 'Chỉnh sửa',
+        key: 'user_info_edit',
       },
     ],
   },
@@ -246,15 +254,15 @@ export const TREE_DATA_TTCN = [
 export const TREE_DATA_TTCT = [
   {
     title: 'Thông tin ca trực',
-    key: 'Thông tin ca trực',
+    key: 'shift_info',
     children: [
       {
         title: 'Tạo mới',
-        key: 'Tạo mới',
+        key: 'shift_info_create',
       },
       {
         title: 'Chỉnh sửa',
-        key: 'Chỉnh sửa',
+        key: 'shift_info_edit',
       },
     ],
   },
@@ -267,15 +275,15 @@ export const TREE_DATA_NQ = [
     children: [
       {
         title: 'Tạo mới',
-        key: 'Tạo mới',
+        key: 'group_permission_add',
       },
       {
         title: 'Chỉnh sửa',
-        key: 'Chỉnh sửa',
+        key: 'group_permission_edit',
       },
       {
         title: 'Xóa',
-        key: 'Xóa',
+        key: 'group_permission_delete',
       },
     ],
   },
@@ -394,3 +402,6 @@ export const OPTIONS_PERMISSION_TEST_VALUE = [
   'Xuất báo cáo',
   'Phân tích',
 ];
+
+/// User Role URL
+export const USER_ROLE_URL = 'http://172.27.228.201:9001';

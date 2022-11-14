@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Card,
     Typography,
@@ -50,6 +50,7 @@ import { EditOutlined, DeleteOutlined, PlusSquareFilled } from '@ant-design/icon
 import { dataPermission, dataPermissionTable } from './FakeData';
 //import CustomizeBread from '@/components/CustomizeBread/CustomizeBread';
 import ImageAvatar from '../setting/avatar_test.png';
+import { requestListUserRole, requestListUserInfo } from './services';
 
 interface DataType {
     key: string;
@@ -65,6 +66,10 @@ interface DataType {
 interface DataTypePermissionTable {
     key: string;
     module: string;
+}
+interface TreeData {
+    title: string;
+    key: string;
 }
 
 const formItemLayout = {
@@ -135,6 +140,39 @@ const PermissionEdit: React.FC = () => {
     const [indeterminateDesign, setIndeterminateDesign] = useState(false);
     const [checkAllDesign, setCheckAllDesign] = useState(false);
 
+    const [valueCheckboxGeneralStatistic, setValueCheckboxGeneralStatistic] = useState<string | any>([]);
+    const [valueCheckboxTransferShift, setValueCheckboxTransferShift] = useState<string | any>([]);
+    const [valueCheckboxNightShift, setValueCheckboxNightShift] = useState<string | any>([]);
+    const [valueCheckboxHistoryCall, setValueCheckboxHistoryCall] = useState<string | any>([]);
+    const [valueCheckboxTTCN, setValueCheckboxTTCN] = useState<string | any>([]);
+    const [valueCheckboxTTCT, setValueCheckboxTTCT] = useState<string | any>([]);
+    const [valueCheckboxGroupsPer, setValueCheckboxGroupsPer] = useState<string | any>([]);
+
+    const fetchListUserRole = async (role_code: any, role_desc: any) => {
+        const res = await requestListUserRole(
+            valueCheckboxGeneralStatistic.concat(
+                valueCheckboxTransferShift,
+                valueCheckboxNightShift,
+                valueCheckboxHistoryCall,
+                valueCheckboxTTCN,
+                valueCheckboxTTCT,
+                valueCheckboxGroupsPer
+            ),
+            role_code,
+            role_desc
+        );
+        return res;
+    }
+
+    // const fetchListUserInfo = async () => {
+    //     const response_1 = await requestListUserInfo();
+    //     if (response_1.success === true) {
+    //         return response_1.data
+    //     }
+    // }
+    // useEffect(() => {
+    //     fetchListUserInfo();
+    // }, [])
 
     const handleCheckFilterDB = (list: any) => {
         setIndeterminateDB(!!list.length && list.length < OPTIONS_PERMISSION_DB.length);
@@ -207,6 +245,28 @@ const PermissionEdit: React.FC = () => {
         setIndeterminateDesign(false);
         setCheckAllDesign(e.target.checked);
     };
+    ///
+    const onCheckDataTreeGeneralStatistic = (checkedKeys: any, info: any) => {
+        setValueCheckboxGeneralStatistic(info.node?.children?.map((item: TreeData) => item.key))
+    };
+    const onCheckDataTreeTransferShift = (checkedKeys: any, info: any) => {
+        setValueCheckboxTransferShift(checkedKeys)
+    };
+    const onCheckDataTreeNightShift = (checkedKeys: any, info: any) => {
+        setValueCheckboxNightShift(checkedKeys)
+    };
+    const onCheckDataTreeHistoryCall = (checkedKeys: any, info: any) => {
+        setValueCheckboxHistoryCall(info.node?.children?.map((item: TreeData) => item.key))
+    };
+    const onCheckDataTreeTTCN = (checkedKeys: any, info: any) => {
+        setValueCheckboxTTCN(info.node?.children?.map((item: TreeData) => item.key))
+    };
+    const onCheckDataTreeTTCT = (checkedKeys: any, info: any) => {
+        setValueCheckboxTTCT(info.node?.children?.map((item: TreeData) => item.key))
+    };
+    const onCheckDataTreeGroupsPer = (checkedKeys: any, info: any) => {
+        setValueCheckboxGroupsPer(info.node?.children?.map((item: TreeData) => item.key))
+    };
 
     const handleClickAddPermission = () => {
         setClickAddPermission(true);
@@ -222,11 +282,12 @@ const PermissionEdit: React.FC = () => {
     }
     const handleOnFinishPermissionEdit = (values: any) => {
         console.log(values)
-        setClickAddPermission(false)
+        setClickAddPermission(false);
     }
     const handleOnFinishPermissionAddNew = (values: any) => {
         console.log(values)
         handleCancleAddNewPermission();
+        fetchListUserRole(values.role_code, values.role_desc);
     }
     const columns: ColumnsType<DataType> = [
         {
@@ -393,19 +454,19 @@ const PermissionEdit: React.FC = () => {
                 else if (record.module === 'Báo cáo') {
                     return (
                         <>
-                            <Tree treeData={TREE_DATA_TKC} checkable />
-                            <Tree treeData={TREE_DATA_BGCT} checkable />
-                            <Tree treeData={TREE_DATA_KHD} checkable />
-                            <Tree treeData={TREE_DATA_LSCG} checkable />
+                            <Tree treeData={TREE_DATA_TKC} checkable onCheck={onCheckDataTreeGeneralStatistic} />
+                            <Tree treeData={TREE_DATA_BGCT} checkable onCheck={onCheckDataTreeTransferShift} />
+                            <Tree treeData={TREE_DATA_KHD} checkable onCheck={onCheckDataTreeNightShift} />
+                            <Tree treeData={TREE_DATA_LSCG} checkable onCheck={onCheckDataTreeHistoryCall} />
                         </>
                     )
                 }
                 else {
                     return (
                         <>
-                            <Tree treeData={TREE_DATA_TTCN} checkable />
-                            <Tree treeData={TREE_DATA_TTCT} checkable />
-                            <Tree treeData={TREE_DATA_NQ} checkable />
+                            <Tree treeData={TREE_DATA_TTCN} checkable onCheck={onCheckDataTreeTTCN} />
+                            <Tree treeData={TREE_DATA_TTCT} checkable onCheck={onCheckDataTreeTTCT} />
+                            <Tree treeData={TREE_DATA_NQ} checkable onCheck={onCheckDataTreeGroupsPer} />
                         </>
                     )
                 }
@@ -492,18 +553,6 @@ const PermissionEdit: React.FC = () => {
                                         <Input addonBefore="+84" className={styles.inputPhonePrefix} />
                                     </Form.Item>
                                     <Form.Item
-                                        label={<Typography.Text style={{ fontWeight: 'bold' }}>Mật khẩu</Typography.Text>}
-                                        name="matkhau"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Vui lòng nhập mật khẩu'
-                                            }
-                                        ]}
-                                    >
-                                        <Input.Password />
-                                    </Form.Item>
-                                    <Form.Item
                                         label={<Typography.Text style={{ fontWeight: 'bold' }}>Nhóm quyền</Typography.Text>}
                                         name="nhomquyen"
                                         rules={[
@@ -564,27 +613,6 @@ const PermissionEdit: React.FC = () => {
                                             <Select.Option value="Team 4">Team 4</Select.Option>
                                         </Select>
                                     </Form.Item>
-                                    <Form.Item
-                                        label={<Typography.Text style={{ fontWeight: 'bold' }}>Nhập lại mật khẩu</Typography.Text>}
-                                        name="nhaplaimatkhau"
-                                        dependencies={['matkhau']}
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Vui lòng nhập lại mật khẩu'
-                                            },
-                                            ({ getFieldValue }) => ({
-                                                validator(_, value) {
-                                                    if (!value || getFieldValue("matkhau") === value) {
-                                                        return Promise.resolve();
-                                                    }
-                                                    return Promise.reject('Mật khẩu không khớp nhau')
-                                                }
-                                            })
-                                        ]}
-                                    >
-                                        <Input.Password />
-                                    </Form.Item>
                                 </div>
                             </div>
                             <Form.Item {...submitFormLayout} style={{ marginTop: '10px', marginBottom: 'unset' }}>
@@ -608,7 +636,7 @@ const PermissionEdit: React.FC = () => {
                                 <div style={{ flex: 1 }}>
                                     <Form.Item
                                         label={<Typography.Text style={{ fontWeight: 'bold' }}>Tên nhóm</Typography.Text>}
-                                        name="Tên nhóm"
+                                        name="role_code"
                                         className={styles.addPermissionInputPlaceholder}
                                         rules={[
                                             {
@@ -649,7 +677,7 @@ const PermissionEdit: React.FC = () => {
                                 <div style={{ flex: 1 }}>
                                     <Form.Item
                                         label={<Typography.Text style={{ fontWeight: 'bold' }}>Mô tả</Typography.Text>}
-                                        name="Mô tả"
+                                        name="role_desc"
                                         className={styles.addPermissionInputPlaceholder}
                                         labelCol={{
                                             xs: {

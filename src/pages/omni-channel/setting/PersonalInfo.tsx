@@ -4,19 +4,38 @@ import { EditOutlined, WindowsFilled } from '@ant-design/icons';
 import styles from '../setting/style.less';
 import ImageAvatar from '../setting/avatar_test.png';
 import { requestGetInfoUser, UserInfoProps } from '@/services/user_info';
+import { requestEditUserInfo } from './services'
 
 const PersonalInfo: React.FC = () => {
   const [isEditUser, setEditUser] = useState(false);
   const [infoUser, setInfoUser] = useState<UserInfoProps>();
 
-  useEffect(() => {
-    const requestUserInfo = async () => {
-      const res = await requestGetInfoUser();
+  const token = window.localStorage.getItem("access_token")
 
-      if (res.success) {
-        setInfoUser(res.data[0]);
-      }
-    };
+  const requestEditUserInfoSubmit = async (name: string,
+    role: string,
+    department: string,
+    level: string,
+    organization: string,
+    home_address: string,
+    work_address: string,
+    phone_number: string,
+    ip_phone: string,
+  ) => {
+    const res = await requestEditUserInfo(name, role, department, level, organization, home_address, work_address, phone_number, ip_phone);
+    return res;
+  }
+
+  const requestUserInfo = async () => {
+    const res = await requestGetInfoUser(token);
+
+    if (res.success) {
+      setInfoUser(res.data[0]);
+    }
+  };
+
+  useEffect(() => {
+
     requestUserInfo();
   }, []);
 
@@ -27,6 +46,19 @@ const PersonalInfo: React.FC = () => {
   const handleOnFinishEditUser = (values: any) => {
     console.log(values);
     setEditUser(false);
+    const res = requestEditUserInfoSubmit(
+      values.name ? values.name : infoUser?.name,
+      values.role ? values.role : infoUser?.role,
+      values.department ? values.department : infoUser?.department,
+      values.level ? values.level : infoUser?.level,
+      values.organization ? values.organization : infoUser?.organization,
+      values.home_address ? values.home_address : infoUser?.home_address,
+      values.work_address ? values.work_address : infoUser?.work_address,
+      values.phone_number ? values.phone_number : infoUser?.phone_number,
+      values.ip_phone ? values.ip_phone : infoUser?.ip_phone,
+    )
+
+    res.then((result) => { setInfoUser(result.data[0]) })
   };
 
   const handleOnCancleEditUser = () => {
@@ -60,7 +92,7 @@ const PersonalInfo: React.FC = () => {
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>Họ tên</Typography.Text>
                   {isEditUser === true ? (
-                    <Form.Item name="username" className={styles.antFormItemMargin}>
+                    <Form.Item name="name" className={styles.antFormItemMargin}>
                       <Input
                         defaultValue={infoUser?.name}
                         style={{ width: '300px', textAlign: 'right' }}
@@ -73,7 +105,7 @@ const PersonalInfo: React.FC = () => {
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>Địa chỉ Mail</Typography.Text>
                   {isEditUser === true ? (
-                    <Form.Item name="email" className={styles.antFormItemMargin}>
+                    <Form.Item name="email_test" className={styles.antFormItemMargin}>
                       <Input
                         defaultValue={infoUser?.email}
                         style={{ width: '300px', textAlign: 'right' }}
@@ -86,7 +118,7 @@ const PersonalInfo: React.FC = () => {
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>Chức danh</Typography.Text>
                   {isEditUser === true ? (
-                    <Form.Item name="chucdanh" className={styles.antFormItemMargin}>
+                    <Form.Item name="role" className={styles.antFormItemMargin}>
                       <Input
                         defaultValue={infoUser?.role}
                         style={{ width: '300px', textAlign: 'right' }}
@@ -99,7 +131,7 @@ const PersonalInfo: React.FC = () => {
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>Phòng ban</Typography.Text>
                   {isEditUser === true ? (
-                    <Form.Item name="phongban" className={styles.antFormItemMargin}>
+                    <Form.Item name="department" className={styles.antFormItemMargin}>
                       <Input
                         defaultValue={infoUser?.department}
                         style={{ width: '300px', textAlign: 'right' }}
@@ -114,7 +146,7 @@ const PersonalInfo: React.FC = () => {
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>Cấp độ</Typography.Text>
                   {isEditUser === true ? (
-                    <Form.Item name="capdo" className={styles.antFormItemMargin}>
+                    <Form.Item name="level" className={styles.antFormItemMargin}>
                       <Input
                         defaultValue={infoUser?.level}
                         style={{ width: '300px', textAlign: 'right' }}
@@ -127,7 +159,7 @@ const PersonalInfo: React.FC = () => {
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>Tổ chức</Typography.Text>
                   {isEditUser === true ? (
-                    <Form.Item name="tochuc" className={styles.antFormItemMargin}>
+                    <Form.Item name="organization" className={styles.antFormItemMargin}>
                       <Input
                         defaultValue={infoUser?.organization}
                         style={{ width: '300px', textAlign: 'right' }}
@@ -142,7 +174,7 @@ const PersonalInfo: React.FC = () => {
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>Địa chỉ</Typography.Text>
                   {isEditUser === true ? (
-                    <Form.Item name="diachi" className={styles.antFormItemMargin}>
+                    <Form.Item name="home_address" className={styles.antFormItemMargin}>
                       <Input
                         defaultValue={infoUser?.home_address}
                         style={{ width: '300px', textAlign: 'right' }}
@@ -157,9 +189,9 @@ const PersonalInfo: React.FC = () => {
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>Công tác</Typography.Text>
                   {isEditUser === true ? (
-                    <Form.Item name="congtac" className={styles.antFormItemMargin}>
+                    <Form.Item name="work_address" className={styles.antFormItemMargin}>
                       <Input
-                        defaultValue={infoUser?.organization}
+                        defaultValue={infoUser?.work_address}
                         style={{ width: '300px', textAlign: 'right' }}
                       />
                     </Form.Item>
@@ -168,48 +200,6 @@ const PersonalInfo: React.FC = () => {
                       {infoUser?.organization}
                     </Typography.Text>
                   )}
-                </div>
-                <Typography.Text className={styles.antFieldDisplay}>Bảo mật</Typography.Text>
-                <hr></hr>
-                <div className={styles.antDataDisplay}>
-                  <Typography.Text className={styles.antTextStyle}>
-                    Mật khẩu hiện tại
-                  </Typography.Text>
-                  <Typography.Text className={styles.antBold}>{infoUser?.password}</Typography.Text>
-                </div>
-                {isEditUser === true ? (
-                  <>
-                    <div className={styles.antDataDisplay}>
-                      <Typography.Text
-                        className={styles.antTextStyle}
-                        style={{ fontStyle: 'italic' }}
-                      >
-                        *Mật khẩu mới
-                      </Typography.Text>
-                      <Form.Item name="matkhaumoi" className={styles.antFormItemMargin}>
-                        <Input style={{ width: '300px', textAlign: 'right' }} />
-                      </Form.Item>
-                    </div>
-                    <div className={styles.antDataDisplay}>
-                      <Typography.Text
-                        className={styles.antTextStyle}
-                        style={{ fontStyle: 'italic' }}
-                      >
-                        *Nhập lại mật khẩu mới
-                      </Typography.Text>
-                      <Form.Item name="nhaplaimatkhaumoi" className={styles.antFormItemMargin}>
-                        <Input style={{ width: '300px', textAlign: 'right' }} />
-                      </Form.Item>
-                    </div>
-                  </>
-                ) : (
-                  ''
-                )}
-                <div className={styles.antDataDisplay}>
-                  <Typography.Text className={styles.antTextStyle}>
-                    Lần cập nhật cuối cùng
-                  </Typography.Text>
-                  <Typography.Text className={styles.antBold}>01/09/2022</Typography.Text>
                 </div>
               </Col>
               <Col md={2}></Col>
@@ -221,7 +211,7 @@ const PersonalInfo: React.FC = () => {
                     Số điện thoại cá nhân
                   </Typography.Text>
                   {isEditUser === true ? (
-                    <Form.Item name="sodienthoai" className={styles.antFormItemMargin}>
+                    <Form.Item name="phone_number" className={styles.antFormItemMargin}>
                       <Input
                         defaultValue={infoUser?.phone_number}
                         style={{ width: '300px', textAlign: 'right' }}
@@ -236,7 +226,7 @@ const PersonalInfo: React.FC = () => {
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>IP Phone</Typography.Text>
                   {isEditUser === true ? (
-                    <Form.Item name="ipphone" className={styles.antFormItemMargin}>
+                    <Form.Item name="ip_phone" className={styles.antFormItemMargin}>
                       <Input
                         defaultValue={infoUser?.ip_phone}
                         style={{ width: '300px', textAlign: 'right' }}

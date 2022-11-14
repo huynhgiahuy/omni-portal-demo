@@ -39,11 +39,17 @@ export interface requeGetUserInfoProps extends requestProps {
   data: UserInfoProps;
 }
 
-export async function requestGetInfoUser(): Promise<requeGetUserInfoProps> {
+export async function requestGetInfoUser(token?: any): Promise<requeGetUserInfoProps> {
   return request(
     `${endpoint}/user-service/api/settings/user/get_user_info?current_user=nghiahm4%40fpt.com.vn`,
     {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        token,
+      },
     },
   );
 }

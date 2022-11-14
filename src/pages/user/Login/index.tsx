@@ -141,7 +141,7 @@ const Login: React.FC = () => {
       message.error(defaultLoginFailureMessage);
     }
   };
-  const { status, type: loginType } = userLoginState;
+  // const { status, type: loginType } = userLoginState;
 
   const handleClickLogin = async () => {
     const urlSSO = await getUrlSSO(api.UMI_API_URL);
@@ -174,7 +174,7 @@ const Login: React.FC = () => {
             // <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={styles.icon} />,
             // <WeiboCircleOutlined key="WeiboCircleOutlined" className={styles.icon} />,
             // ]}
-            // submitter={false}
+            submitter={false}
             onFinish={async (values) => {
               await handleSubmit(values as API.LoginParams);
             }}
@@ -196,17 +196,17 @@ const Login: React.FC = () => {
             /> */}
             </Tabs>
 
-            {status === 'error' && loginType === 'account' && (
+            {/* {status === 'error' && loginType === 'account' && (
               <LoginMessage
                 content={intl.formatMessage({
                   id: 'pages.login.accountLogin.errorMessage',
                   defaultMessage: '账户或密码错误(admin/ant.design)',
                 })}
               />
-            )}
+            )} */}
             {type === 'account' && (
               <>
-                <ProFormText
+                {/* <ProFormText
                   name="username"
                   fieldProps={{
                     size: 'large',
@@ -249,13 +249,9 @@ const Login: React.FC = () => {
                       ),
                     },
                   ]}
-                />
+                /> */}
 
-                <Button
-                  className={styles.loginBtn}
-                  onClick={handleClickLogin}
-                  style={{ marginBottom: 20 }}
-                >
+                <Button className={styles.loginBtn} onClick={handleClickLogin}>
                   Đăng nhập bằng SSO
                 </Button>
               </>
@@ -344,7 +340,7 @@ const Login: React.FC = () => {
                 />
               </>
             )} */}
-            <div
+            {/* <div
               style={{
                 marginBottom: 24,
               }}
@@ -357,9 +353,9 @@ const Login: React.FC = () => {
                   float: 'right',
                 }}
               >
-                {/* <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" /> */}
+                <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
               </a>
-            </div>
+            </div> */}
           </LoginForm>
         </div>
       )}
