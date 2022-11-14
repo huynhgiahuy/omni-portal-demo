@@ -1,5 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
+import api from '@/api';
 import { request } from 'umi';
 
 /** 获取当前的用户 GET /api/currentUser */
@@ -14,9 +15,17 @@ export async function currentUser(options?: { [key: string]: any }) {
 
 /** 退出登录接口 POST /api/login/outLogin */
 export async function outLogin(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('user-service/api/sso_logout', {
+  return request<Record<string, any>>(`${api.UMI_API_BASE_URL}/user-service/api/sso_logout`, {
     method: 'POST',
-    ...(options || {}),
+    data: {
+      redirect_uri: `${api.UMI_API_URL}`,
+    },
+  });
+}
+
+export async function outLoginTest() {
+  return request('user-service/api/sso_logout', {
+    method: 'POST',
   });
 }
 
