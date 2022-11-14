@@ -3,17 +3,16 @@ import request from '@/utils/request';
 
 const token = window.localStorage.getItem('access_token');
 export async function requestListUserRole(
-  offset: number,
-  limit: number,
   permission_code_list?: string[],
   role_code?: string,
   role_desc?: string,
 ) {
-  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/permission/read`, {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/role_and_perm/create`, {
     method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     data: {
-      offset,
-      limit,
       permission_code_list,
       role_code,
       role_desc,
