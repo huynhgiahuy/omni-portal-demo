@@ -1,27 +1,29 @@
-import { LoginForm } from '@ant-design/pro-form';
-import { Button, message, Tabs } from 'antd';
+import { getFakeCaptcha } from '@/services/ant-design-pro/login';
+import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
+import { LoginForm, ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
+import { Alert, Button, message, Tabs } from 'antd';
 import React, { useLayoutEffect, useState } from 'react';
-import { history, useIntl, useModel } from 'umi';
+import { FormattedMessage, history, useIntl, useModel } from 'umi';
 
 import styles from './index.less';
 import { getUrlSSO, requestGetInfoUser } from '@/services/auth';
 import api from '../../../api';
 
-// const LoginMessage: React.FC<{
-//   content: string;
-// }> = ({ content }) => (
-//   <Alert
-//     style={{
-//       marginBottom: 24,
-//     }}
-//     message={content}
-//     type="error"
-//     showIcon
-//   />
-// );
+const LoginMessage: React.FC<{
+  content: string;
+}> = ({ content }) => (
+  <Alert
+    style={{
+      marginBottom: 24,
+    }}
+    message={content}
+    type="error"
+    showIcon
+  />
+);
 
 const Login: React.FC = () => {
-  // const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
+  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const { initialState, setInitialState } = useModel('@@initialState');
@@ -90,56 +92,56 @@ const Login: React.FC = () => {
     }
   }, []);
 
-  // const handleSubmit = async (values: API.LoginParams) => {
-  //   try {
-  //     // 登录
-  //     // const msg = await login({ ...values, type });
-  //     // console.log(msg);
-  //     // if (msg.status === 'ok') {
-  //     //   const defaultLoginSuccessMessage = intl.formatMessage({
-  //     //     id: 'pages.login.success',
-  //     //     defaultMessage: 'Đăng nhập thành công',
-  //     //   });
-  //     //   message.success(defaultLoginSuccessMessage);
-  //     //   await fetchUserInfo();
-  //     //   /** 此方法会跳转到 redirect 参数所在的位置 */
-  //     //   if (!history) return;
-  //     //   const { query } = history.location;
-  //     //   const { redirect } = query as { redirect: string };
-  //     //   history.push(redirect || '/');
-  //     //   return;
-  //     // }
-  //     if (values.username === 'admin' && values.password === 'admin') {
-  //       const defaultLoginSuccessMessage = intl.formatMessage({
-  //         id: 'pages.login.success',
-  //         defaultMessage: 'Đăng nhập thành công',
-  //       });
-  //       message.success(defaultLoginSuccessMessage);
-  //       await fetchUserInfo();
-  //       /** 此方法会跳转到 redirect 参数所在的位置 */
-  //       if (!history) return;
-  //       const { query } = history.location;
-  //       const { redirect } = query as { redirect: string };
-  //       history.push(redirect || '/');
-  //       setUserLoginState({ currentAuthority: 'admin', status: 'ok', type: 'account' });
-  //     } else {
-  //       message.error('Mật khẩu hoặc tài khoản không đúng vui lòng thử lại');
-  //     }
+  const handleSubmit = async (values: API.LoginParams) => {
+    try {
+      // 登录
+      // const msg = await login({ ...values, type });
+      // console.log(msg);
+      // if (msg.status === 'ok') {
+      //   const defaultLoginSuccessMessage = intl.formatMessage({
+      //     id: 'pages.login.success',
+      //     defaultMessage: 'Đăng nhập thành công',
+      //   });
+      //   message.success(defaultLoginSuccessMessage);
+      //   await fetchUserInfo();
+      //   /** 此方法会跳转到 redirect 参数所在的位置 */
+      //   if (!history) return;
+      //   const { query } = history.location;
+      //   const { redirect } = query as { redirect: string };
+      //   history.push(redirect || '/');
+      //   return;
+      // }
+      if (values.username === 'admin' && values.password === 'admin') {
+        const defaultLoginSuccessMessage = intl.formatMessage({
+          id: 'pages.login.success',
+          defaultMessage: 'Đăng nhập thành công',
+        });
+        message.success(defaultLoginSuccessMessage);
+        await fetchUserInfo();
+        /** 此方法会跳转到 redirect 参数所在的位置 */
+        if (!history) return;
+        const { query } = history.location;
+        const { redirect } = query as { redirect: string };
+        history.push(redirect || '/');
+        setUserLoginState({ currentAuthority: 'admin', status: 'ok', type: 'account' });
+      } else {
+        message.error('Mật khẩu hoặc tài khoản không đúng vui lòng thử lại');
+      }
 
-  //     // console.log(msg);
+      // console.log(msg);
 
-  //     // 如果失败去设置用户错误信息
+      // 如果失败去设置用户错误信息
 
-  //     // setUserLoginState(msg);
-  //   } catch (error) {
-  //     const defaultLoginFailureMessage = intl.formatMessage({
-  //       id: 'pages.login.failure',
-  //       defaultMessage: '登录失败，请重试！',
-  //     });
-  //     message.error(defaultLoginFailureMessage);
-  //   }
-  // };
-  // const { status, type: loginType } = userLoginState;
+      // setUserLoginState(msg);
+    } catch (error) {
+      const defaultLoginFailureMessage = intl.formatMessage({
+        id: 'pages.login.failure',
+        defaultMessage: '登录失败，请重试！',
+      });
+      message.error(defaultLoginFailureMessage);
+    }
+  };
+  const { status, type: loginType } = userLoginState;
 
   const handleClickLogin = async () => {
     const urlSSO = await getUrlSSO(api.UMI_API_URL);
@@ -172,10 +174,10 @@ const Login: React.FC = () => {
             // <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={styles.icon} />,
             // <WeiboCircleOutlined key="WeiboCircleOutlined" className={styles.icon} />,
             // ]}
-            submitter={false}
-            // onFinish={async (values) => {
-            //   await handleSubmit(values as API.LoginParams);
-            // }}
+            // submitter={false}
+            onFinish={async (values) => {
+              await handleSubmit(values as API.LoginParams);
+            }}
           >
             <Tabs activeKey={type} onChange={setType}>
               <Tabs.TabPane
@@ -194,17 +196,17 @@ const Login: React.FC = () => {
             /> */}
             </Tabs>
 
-            {/* {status === 'error' && loginType === 'account' && (
+            {status === 'error' && loginType === 'account' && (
               <LoginMessage
                 content={intl.formatMessage({
                   id: 'pages.login.accountLogin.errorMessage',
                   defaultMessage: '账户或密码错误(admin/ant.design)',
                 })}
               />
-            )} */}
+            )}
             {type === 'account' && (
               <>
-                {/* <ProFormText
+                <ProFormText
                   name="username"
                   fieldProps={{
                     size: 'large',
@@ -247,9 +249,13 @@ const Login: React.FC = () => {
                       ),
                     },
                   ]}
-                /> */}
+                />
 
-                <Button className={styles.loginBtn} onClick={handleClickLogin}>
+                <Button
+                  className={styles.loginBtn}
+                  onClick={handleClickLogin}
+                  style={{ marginBottom: 20 }}
+                >
                   Đăng nhập bằng SSO
                 </Button>
               </>
@@ -338,7 +344,7 @@ const Login: React.FC = () => {
                 />
               </>
             )} */}
-            {/* <div
+            <div
               style={{
                 marginBottom: 24,
               }}
@@ -351,9 +357,9 @@ const Login: React.FC = () => {
                   float: 'right',
                 }}
               >
-                <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
+                {/* <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" /> */}
               </a>
-            </div> */}
+            </div>
           </LoginForm>
         </div>
       )}
