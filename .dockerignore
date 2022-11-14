@@ -14,7 +14,6 @@ yarn-error.log
 
 /coverage
 .idea
-yarn.lock
 package-lock.json
 *bak
 .vscode
@@ -33,3 +32,8 @@ functions/mock
 # screenshot
 screenshot
 .firebase
+
+#docker
+docker
+Dockerfile.dev
+Dockerfile.hub

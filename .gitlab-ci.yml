@@ -1,0 +1,43 @@
+stages:
+  - build-dist
+  - build-image
+  - deploy
+  
+.docker-dind:
+  image: docker:dind
+  services:
+    - name: docker:dind
+    
+.docker-login:
+  before_script:
+  - mkdir ~/.docker && touch ~/.docker/config.json && cp $DOCKER_AUTH_CONFIG ~/.docker/config.json
+  #- docker login $CI_REGISTRY_URL
+
+build-image-dev:
+  stage: build-image
+  extends: 
+    - .docker-dind
+    - .docker-login
+  tags:
+    - omnichannel
+  only:
+    - dev
+  script:
+    - mv $DEV_ENV .env
+    - cat .env
+    - DOCKER_BUILDKIT=1 docker build --tag $CI_REGISTRY_URL/$DEV_REGISTRY_NAME:$CI_COMMIT_SHA --tag $CI_REGISTRY_URL/$DEV_REGISTRY_NAME:latest -f Dockerfile .
+    - docker push $CI_REGISTRY_URL/$DEV_REGISTRY_NAME:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_URL/$DEV_REGISTRY_NAME:latest
+
+
+deploy-dev:
+  image: alpine
+  stage: deploy
+  tags:
+    - omnichannel
+  script:
+    - chmod og= $DEV_ID_RSA
+    - apk update && apk add openssh-client
+    - ssh  -i $DEV_ID_RSA -o StrictHostKeyChecking=no $DEV_SERVER_USER@$DEV_SERVER_IP "docker service update --with-registry-auth --image $CI_REGISTRY_URL/$DEV_REGISTRY_NAME omnichannel_portal"
+  only:
+    - dev

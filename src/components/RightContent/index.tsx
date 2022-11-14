@@ -1,6 +1,6 @@
 import { Space } from 'antd';
 // import { QuestionCircleOutlined } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useModel } from 'umi';
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
@@ -10,11 +10,6 @@ import NoticeIconView from '../NoticeIcon';
 import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
-import api from '@/api';
-import UserAgent from '@/utils/jssip';
-import JsSIP from 'jssip';
-import { history } from 'umi';
-import { verifySSO } from '@/services/auth';
 
 export type SiderTheme = 'light' | 'dark';
 

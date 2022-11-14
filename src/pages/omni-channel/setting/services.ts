@@ -1,6 +1,7 @@
 import api from '@/api';
 import request from '@/utils/request';
 
+const token = window.localStorage.getItem('access_token');
 export async function requestListUserRole(
   offset: number,
   limit: number,
@@ -25,12 +26,39 @@ export async function requestListUserInfo() {
     `${api.UMI_API_BASE_URL}/user-service/api/settings/user/get_user_info?current_user=nghiahm4%40fpt.com.vn`,
     {
       method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
   );
 }
 
-export async function requestEditUserInfo() {
+export async function requestEditUserInfo(
+  name: string,
+  role: string,
+  department: string,
+  level: string,
+  organization: string,
+  home_address: string,
+  work_address: string,
+  phone_number: string,
+  ip_phone: string,
+) {
   return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/user/update_user_infomation`, {
     method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      name,
+      role,
+      department,
+      level,
+      organization,
+      home_address,
+      work_address,
+      phone_number,
+      ip_phone,
+    },
   });
 }

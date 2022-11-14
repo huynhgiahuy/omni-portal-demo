@@ -174,6 +174,7 @@ const Login: React.FC = () => {
             // <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={styles.icon} />,
             // <WeiboCircleOutlined key="WeiboCircleOutlined" className={styles.icon} />,
             // ]}
+            // submitter={false}
             onFinish={async (values) => {
               await handleSubmit(values as API.LoginParams);
             }}
@@ -249,11 +250,19 @@ const Login: React.FC = () => {
                     },
                   ]}
                 />
+
+                <Button
+                  className={styles.loginBtn}
+                  onClick={handleClickLogin}
+                  style={{ marginBottom: 20 }}
+                >
+                  Đăng nhập bằng SSO
+                </Button>
               </>
             )}
 
-            {status === 'error' && loginType === 'mobile' && <LoginMessage content="验证码错误" />}
-            {type === 'mobile' && (
+            {/* {status === 'error' && loginType === 'mobile' && <LoginMessage content="验证码错误" />} */}
+            {/* {type === 'mobile' && (
               <>
                 <ProFormText
                   fieldProps={{
@@ -334,7 +343,7 @@ const Login: React.FC = () => {
                   }}
                 />
               </>
-            )}
+            )} */}
             <div
               style={{
                 marginBottom: 24,
@@ -348,11 +357,8 @@ const Login: React.FC = () => {
                   float: 'right',
                 }}
               >
-                <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
+                {/* <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" /> */}
               </a>
-              <Button className={styles.loginBtn} onClick={handleClickLogin}>
-                Đăng nhập bằng SSO
-              </Button>
             </div>
           </LoginForm>
         </div>
