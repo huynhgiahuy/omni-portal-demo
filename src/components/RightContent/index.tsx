@@ -11,6 +11,8 @@ import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
 import api from '@/api';
+import UserAgent from '@/utils/jssip';
+import JsSIP from 'jssip';
 import { history } from 'umi';
 import { verifySSO } from '@/services/auth';
 
@@ -27,33 +29,6 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconHistory, setActiveIconHistory] = useState(false);
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
-
-  useEffect(() => {
-    const requestSecurity = async () => {
-      if (window.location.href.includes('code')) {
-        const paramsString = history.location.search;
-        const params = new URLSearchParams(paramsString);
-        const code = params.get('code');
-        const state = params.get('state');
-        const session_state = params.get('session_state');
-
-        const data = {
-          state,
-          session_state,
-          code,
-          redirect_uri: `${api.UMI_API_URL}`,
-        };
-
-        const response = await verifySSO(data);
-        if (response?.success === true) {
-          window.localStorage.setItem('access_token', response?.data[0]?.id_token);
-          window.localStorage.setItem('rid', response?.data[0]?.refresh_token);
-          window.localStorage.setItem('user_id', response?.data[0]?.user_id);
-        }
-      }
-    };
-    requestSecurity();
-  }, []);
 
   if (!initialState || !initialState.settings) {
     return null;

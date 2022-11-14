@@ -2,16 +2,10 @@ import React from 'react';
 import { Breadcrumb } from 'antd';
 import { Link } from 'react-router-dom';
 
-type Arr = {
-    to: string;
-    title: string;
-}[]
 type BreadProps = {
     parentPath: string;
     parentPathTitle: string;
-    arr: Arr;
-    to: string;
-    title: string;
+    arr: string[];
 }
 
 const CustomizeBread: React.FC<BreadProps> = (props) => (
@@ -24,21 +18,11 @@ const CustomizeBread: React.FC<BreadProps> = (props) => (
             ''
         )}
         {props.arr &&
-            props.arr?.map(item => {
-                if (typeof item === 'object') {
-                    return (
-                        <Breadcrumb.Item key={item.title}>
-                            <Link to={item.to}>{item.title}</Link>
-                        </Breadcrumb.Item>
-                    );
-                } else {
-                    return (
-                        <>
-                            <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>
-                        </>
-                    );
-                }
-            })}
+            props.arr?.map(item => (
+                <>
+                    <Breadcrumb.Item>{item}</Breadcrumb.Item>
+                </>
+            ))}
     </Breadcrumb>
 
 )

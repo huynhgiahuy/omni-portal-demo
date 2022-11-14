@@ -1,6 +1,30 @@
 import { Button, message, notification } from 'antd';
 import { useIntl } from 'umi';
 import defaultSettings from '../config/defaultSettings';
+import api from './api';
+import { verifySSO } from './services/auth';
+import { history } from 'umi';
+
+if (window.location.href.includes('code')) {
+  const paramsString = history.location.search;
+  const params = new URLSearchParams(paramsString);
+  const code = params.get('code');
+  const state = params.get('state');
+  const session_state = params.get('session_state');
+
+  const data = {
+    state,
+    session_state,
+    code,
+    redirect_uri: `${api.UMI_API_URL}`,
+  };
+
+  const response = await verifySSO(data);
+  if (response?.success === true) {
+    window.localStorage.setItem('access_token', response?.data[0]?.access_token);
+    window.localStorage.setItem('rid', response?.data[0]?.refresh_token);
+  }
+}
 
 const { pwa } = defaultSettings;
 const isHttps = document.location.protocol === 'https:';

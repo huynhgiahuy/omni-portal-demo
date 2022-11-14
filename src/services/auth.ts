@@ -9,18 +9,56 @@ export const endpoint = api.UMI_API_BASE_URL;
  * @param {string} data.password
  * @returns {Promise<object>}
  */
-export async function verifySSO(data: any) {
-  if (api.ENV === 'local') {
-    return request(`${endpoint}/user/sso_verify`, {
-      method: 'POST',
-      data,
-    });
-  } else {
-    return request(`${endpoint}/user/sso_fpt_verify_code`, {
-      method: 'POST',
-      data,
-    });
-  }
+
+export interface requestProps {
+  success: boolean;
+  error_code: number;
+  length_data: number;
+  message_error: string;
+}
+
+export interface requeGetUrlSSOProps extends requestProps {
+  data: string[];
+}
+
+interface requestVerifySSO extends requestProps {
+  data: Array<{
+    access_token: string;
+    expires_at: number;
+    expires_in: number;
+    id_token: string;
+    'not-before-policy': number;
+    refresh_expires_in: number;
+    refresh_token: string;
+    scope: string;
+    session_state: string;
+    token_type: string;
+  }>;
+}
+
+export const getUrlSSO = (url?: string): Promise<requeGetUrlSSOProps> => {
+  return request(`${endpoint}/user-service/api/get_url_sso`, {
+    method: 'POST',
+    data: {
+      redirect_uri: url,
+    },
+  });
+};
+
+export async function verifySSO(data: any): Promise<requestVerifySSO> {
+  return request(`${endpoint}/user-service/api/get_token`, {
+    method: 'POST',
+    data,
+  });
+}
+
+export async function requestGetInfoUser(token: any): Promise<requeGetUrlSSOProps> {
+  return request(`${endpoint}/user-service/api/get_info_user`, {
+    method: 'POST',
+    data: {
+      token,
+    },
+  });
 }
 
 export async function requestLogin(data: any) {
@@ -163,8 +201,8 @@ export async function requestGetLicense(headers: any) {
  * @param {string} data.refreshToken
  * @returns {Promise<object>}
  */
-export async function requestRefreshToken(refreshToken: string) {
-  return request(`${endpoint}/user/sso_fpt_refresh_token`, {
+export async function requestRefreshToken(refreshToken: string): Promise<any> {
+  return request(`${endpoint}/user-service/api/get_token_from_refresh_token`, {
     method: 'POST',
     data: {
       refresh_token: refreshToken,

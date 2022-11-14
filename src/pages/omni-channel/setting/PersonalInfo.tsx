@@ -118,32 +118,6 @@ const PersonalInfo: React.FC = () => {
                                         <Typography.Text className={styles.antBold}>FPT Tân Thuận</Typography.Text>
                                     )}
                                 </div>
-                                <Typography.Text className={styles.antFieldDisplay}>Bảo mật</Typography.Text>
-                                <hr></hr>
-                                <div className={styles.antDataDisplay}>
-                                    <Typography.Text className={styles.antTextStyle}>Mật khẩu hiện tại</Typography.Text>
-                                    <Typography.Text className={styles.antBold}>Huyen2918***</Typography.Text>
-                                </div>
-                                {isEditUser === true ? (
-                                    <>
-                                        <div className={styles.antDataDisplay}>
-                                            <Typography.Text className={styles.antTextStyle} style={{ fontStyle: 'italic' }}>*Mật khẩu mới</Typography.Text>
-                                            <Form.Item name="matkhaumoi" className={styles.antFormItemMargin}>
-                                                <Input style={{ width: '300px', textAlign: 'right' }} />
-                                            </Form.Item>
-                                        </div>
-                                        <div className={styles.antDataDisplay}>
-                                            <Typography.Text className={styles.antTextStyle} style={{ fontStyle: 'italic' }}>*Nhập lại mật khẩu mới</Typography.Text>
-                                            <Form.Item name="nhaplaimatkhaumoi" className={styles.antFormItemMargin}>
-                                                <Input style={{ width: '300px', textAlign: 'right' }} />
-                                            </Form.Item>
-                                        </div>
-                                    </>
-                                ) : ('')}
-                                <div className={styles.antDataDisplay}>
-                                    <Typography.Text className={styles.antTextStyle}>Lần cập nhật cuối cùng</Typography.Text>
-                                    <Typography.Text className={styles.antBold}>01/09/2022</Typography.Text>
-                                </div>
                             </Col>
                             <Col md={2}></Col>
                             <Col md={9}>
