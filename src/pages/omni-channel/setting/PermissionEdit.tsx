@@ -150,8 +150,6 @@ const PermissionEdit: React.FC = () => {
 
     const fetchListUserRole = async (role_code: any, role_desc: any) => {
         const res = await requestListUserRole(
-            0,
-            0,
             valueCheckboxGeneralStatistic.concat(
                 valueCheckboxTransferShift,
                 valueCheckboxNightShift,
