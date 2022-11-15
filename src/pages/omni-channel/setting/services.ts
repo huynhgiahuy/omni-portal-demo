@@ -61,3 +61,35 @@ export async function requestEditUserInfo(
     },
   });
 }
+
+export async function requestGroupPermissionData() {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/role/read`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  });
+}
+
+export async function requestAddNewUser(
+  full_name: string,
+  email: string,
+  phone: string,
+  team: string,
+  role: string,
+) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/assign_user_role`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      full_name,
+      email,
+      phone,
+      team,
+      role,
+    },
+  });
+}
