@@ -8,6 +8,7 @@ import { FormattedMessage, history, useIntl, useModel } from 'umi';
 import styles from './index.less';
 import { getUrlSSO, requestGetInfoUser } from '@/services/auth';
 import api from '../../../api';
+import { UserInfoProps } from '@/services/user_info';
 
 const LoginMessage: React.FC<{
   content: string;
@@ -31,19 +32,38 @@ const Login: React.FC = () => {
   const { redirect } = query as { redirect: string };
   const intl = useIntl();
 
-  const fetchUserInfo = async (data?: any) => {
+  const fetchUserInfo = async (data: UserInfoProps[]) => {
+    const {
+      department,
+      equipment,
+      home_address,
+      id,
+      image,
+      ip_phone,
+      latest_update_password,
+      level,
+      notification,
+      organization,
+      phone_number,
+      role,
+      screen_mode,
+      status,
+      work_address,
+      email,
+      name,
+    } = data[0];
     const userInfo = {
       access: 'admin',
       address: '西湖区工专路 77 号',
       avatar: 'https://iili.io/mnXB2e.png',
       country: 'China',
-      email: data ? data[1] : 'antdesign@alipay.com',
+      email: email ? email : 'nghiahm4@fpt.com.vn',
       geographic: {
         province: { label: '浙江省', key: '330000' },
         city: { label: '杭州市', key: '330100' },
       },
       group: '蚂蚁金服－某某某事业群－某某平台部－某某技术部－UED',
-      name: data ? data[0] : 'Lâm Mỹ Huyền',
+      name: name ? name : 'Hồ Minh Nghĩa',
       notifyCount: 12,
       phone: '0752-268888888',
       signature: '海纳百川，有容乃大',
@@ -55,6 +75,21 @@ const Login: React.FC = () => {
       title: '交互专家',
       unreadCount: 11,
       userid: '00000001',
+      department,
+      equipment,
+      home_address,
+      id,
+      image,
+      ip_phone,
+      latest_update_password,
+      level,
+      notification,
+      organization,
+      phone_number,
+      role,
+      screen_mode,
+      status,
+      work_address,
     };
 
     await setInitialState((s) => ({
@@ -72,7 +107,7 @@ const Login: React.FC = () => {
       };
 
       requestInfoUser()
-        .then((res) => {
+        .then((res: any) => {
           if (res.success) {
             setIsLogin(false);
             fetchUserInfo(res.data);
@@ -111,27 +146,24 @@ const Login: React.FC = () => {
       //   history.push(redirect || '/');
       //   return;
       // }
-      if (values.username === 'admin' && values.password === 'admin') {
-        const defaultLoginSuccessMessage = intl.formatMessage({
-          id: 'pages.login.success',
-          defaultMessage: 'Đăng nhập thành công',
-        });
-        message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
-        /** 此方法会跳转到 redirect 参数所在的位置 */
-        if (!history) return;
-        const { query } = history.location;
-        const { redirect } = query as { redirect: string };
-        history.push(redirect || '/');
-        setUserLoginState({ currentAuthority: 'admin', status: 'ok', type: 'account' });
-      } else {
-        message.error('Mật khẩu hoặc tài khoản không đúng vui lòng thử lại');
-      }
-
+      // if (values.username === 'admin' && values.password === 'admin') {
+      //   const defaultLoginSuccessMessage = intl.formatMessage({
+      //     id: 'pages.login.success',
+      //     defaultMessage: 'Đăng nhập thành công',
+      //   });
+      //   message.success(defaultLoginSuccessMessage);
+      //   await fetchUserInfo();
+      //   /** 此方法会跳转到 redirect 参数所在的位置 */
+      //   if (!history) return;
+      //   const { query } = history.location;
+      //   const { redirect } = query as { redirect: string };
+      //   history.push(redirect || '/');
+      //   setUserLoginState({ currentAuthority: 'admin', status: 'ok', type: 'account' });
+      // } else {
+      //   message.error('Mật khẩu hoặc tài khoản không đúng vui lòng thử lại');
+      // }
       // console.log(msg);
-
       // 如果失败去设置用户错误信息
-
       // setUserLoginState(msg);
     } catch (error) {
       const defaultLoginFailureMessage = intl.formatMessage({
@@ -145,7 +177,6 @@ const Login: React.FC = () => {
 
   const handleClickLogin = async () => {
     const urlSSO = await getUrlSSO(api.UMI_API_URL);
-    console.log(urlSSO);
     if (urlSSO?.success) {
       window.location.href = urlSSO.data[0];
     }

@@ -18,6 +18,7 @@ import {
   Typography,
   Image,
   message,
+  Form,
 } from 'antd';
 import { history, useModel, FormattedMessage } from 'umi';
 import { stringify } from 'querystring';
@@ -149,8 +150,13 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   }
 
   const menuHeaderDropdown = (
-    <Menu className={styles.menu} selectedKeys={[]} mode="inline" onClick={onMenuClick}>
-      {/* {menu && (
+    <Form
+      onValuesChange={(e) => {
+        console.log(e);
+      }}
+    >
+      <Menu className={styles.menu} selectedKeys={[]} mode="inline" onClick={onMenuClick}>
+        {/* {menu && (
         <Menu.Item key="center">
           <UserOutlined />
           个人中心
@@ -163,208 +169,215 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         </Menu.Item>
       )}
       {menu && <Menu.Divider />} */}
-      <Menu.Item key="user">
-        <Avatar size="small" style={{ backgroundColor: 'color' }}>
-          <UserOutlined style={{ paddingLeft: '2px', width: '10px', color: 'black' }} />
-        </Avatar>
-        <span style={{ paddingLeft: '5px' }}>
-          <FormattedMessage id="menu.account.avatar.person" />
-        </span>
-      </Menu.Item>
-      <SubMenu
-        key="notify"
-        title={
-          <>
-            <Avatar size="small" style={{ backgroundColor: 'color' }}>
-              <NotificationOutlined style={{ paddingLeft: '2px', width: '10px', color: 'black' }} />
-            </Avatar>
-            <span style={{ paddingLeft: '5px' }}>
-              <FormattedMessage id="menu.account.avatar.notify" />
-            </span>
-          </>
-        }
-      >
-        <Row className={styles.notifyMenu}>
-          <Col span={20} className={styles.notifyMenuCol1}>
-            Thông báo cuộc gọi nhỡ
-          </Col>
-          <Col span={4} className={styles.notifyMenuSwitch}>
-            <Switch size="small" defaultChecked onChange={onChange} />
-          </Col>
-        </Row>
-        <Row className={styles.notifyMenu}>
-          <Col span={20} className={styles.notifyMenuCol1}>
-            Thông báo cuộc gọi đến
-          </Col>
-          <Col span={4} className={styles.notifyMenuSwitch}>
-            <Switch size="small" defaultChecked onChange={onChange} />
-          </Col>
-        </Row>
-        <Row className={styles.notifyMenu}>
-          <Col span={20} className={styles.notifyMenuCol1}>
-            Thông báo sự cố lớn
-          </Col>
-          <Col span={4} className={styles.notifyMenuSwitch}>
-            <Switch size="small" defaultChecked onChange={onChange} />
-          </Col>
-        </Row>
-        <Row className={styles.notifyMenu}>
-          <Col span={20} className={styles.notifyMenuCol1}>
-            Thông báo gửi kế hoạch đêm
-          </Col>
-          <Col span={4} className={styles.notifyMenuSwitch}>
-            <Switch size="small" defaultChecked onChange={onChange} />
-          </Col>
-        </Row>
-        <Row className={styles.notifyMenu}>
-          <Col span={20} className={styles.notifyMenuCol1}>
-            Thông báo bàn giao ca trực
-          </Col>
-          <Col span={4} className={styles.notifyMenuSwitch}>
-            <Switch size="small" defaultChecked onChange={onChange} />
-          </Col>
-        </Row>
-        <Row className={styles.notifyMenu}>
-          <Col span={20} className={styles.notifyMenuCol1}>
-            Thông báo quá hạn tin nhắn
-          </Col>
-          <Col span={4} className={styles.notifyMenuSwitch}>
-            <Switch size="small" defaultChecked onChange={onChange} />
-          </Col>
-        </Row>
-        <Divider
-          style={{
-            backgroundColor: '#B4B4B4',
-            marginTop: '10px',
-            marginBottom: '1px',
-          }}
-        />
-        <Row className={styles.notifyMenu}>
-          <Col
-            span={24}
+        <Menu.Item key="user">
+          <Avatar size="small" style={{ backgroundColor: 'color' }}>
+            <UserOutlined style={{ paddingLeft: '2px', width: '10px', color: 'black' }} />
+          </Avatar>
+          <span style={{ paddingLeft: '5px' }}>
+            <FormattedMessage id="menu.account.avatar.person" />
+          </span>
+        </Menu.Item>
+        <SubMenu
+          key="notify"
+          title={
+            <>
+              <Avatar size="small" style={{ backgroundColor: 'color' }}>
+                <NotificationOutlined
+                  style={{ paddingLeft: '2px', width: '10px', color: 'black' }}
+                />
+              </Avatar>
+              <span style={{ paddingLeft: '5px' }}>
+                <FormattedMessage id="menu.account.avatar.notify" />
+              </span>
+            </>
+          }
+        >
+          <Row className={styles.notifyMenu}>
+            <Col span={20} className={styles.notifyMenuCol1}>
+              Thông báo cuộc gọi nhỡ
+            </Col>
+            <Col span={4} className={styles.notifyMenuSwitch}>
+              <Switch size="small" defaultChecked onChange={onChange} />
+            </Col>
+          </Row>
+          <Row className={styles.notifyMenu}>
+            <Col span={20} className={styles.notifyMenuCol1}>
+              Thông báo cuộc gọi đến
+            </Col>
+            <Col span={4} className={styles.notifyMenuSwitch}>
+              <Switch size="small" defaultChecked onChange={onChange} />
+            </Col>
+          </Row>
+          <Row className={styles.notifyMenu}>
+            <Col span={20} className={styles.notifyMenuCol1}>
+              Thông báo sự cố lớn
+            </Col>
+            <Col span={4} className={styles.notifyMenuSwitch}>
+              <Switch size="small" defaultChecked onChange={onChange} />
+            </Col>
+          </Row>
+          <Row className={styles.notifyMenu}>
+            <Col span={20} className={styles.notifyMenuCol1}>
+              Thông báo gửi kế hoạch đêm
+            </Col>
+            <Col span={4} className={styles.notifyMenuSwitch}>
+              <Switch size="small" defaultChecked onChange={onChange} />
+            </Col>
+          </Row>
+          <Row className={styles.notifyMenu}>
+            <Col span={20} className={styles.notifyMenuCol1}>
+              Thông báo bàn giao ca trực
+            </Col>
+            <Col span={4} className={styles.notifyMenuSwitch}>
+              <Switch size="small" defaultChecked onChange={onChange} />
+            </Col>
+          </Row>
+          <Row className={styles.notifyMenu}>
+            <Col span={20} className={styles.notifyMenuCol1}>
+              Thông báo quá hạn tin nhắn
+            </Col>
+            <Col span={4} className={styles.notifyMenuSwitch}>
+              <Switch size="small" defaultChecked onChange={onChange} />
+            </Col>
+          </Row>
+          <Divider
             style={{
-              fontSize: '13px',
-              color: '#1890FF',
-              paddingLeft: '13px',
-              fontFamily: 'Roboto',
-              fontStyle: 'normal',
-              paddingTop: '5px',
+              backgroundColor: '#B4B4B4',
+              marginTop: '10px',
+              marginBottom: '1px',
             }}
-          >
-            Xem tất cả cài đặt
-          </Col>
-        </Row>
-      </SubMenu>
-      <SubMenu
-        key="displayAccessibility"
-        title={
-          <>
-            <Avatar size="small" style={{ backgroundColor: 'color' }}>
-              <SettingOutlined style={{ paddingLeft: '2px', width: '10px', color: 'black' }} />
-            </Avatar>
-            <span style={{ paddingLeft: '5px' }}>
-              <FormattedMessage id="menu.account.avatar.displayAccessibility" />
-            </span>
-          </>
-        }
-      >
-        <div className={styles.popupDisplay}>
-          <div className={styles.popupDisplayTitle}>
-            <Row>
-              <Col span={4}>
-                <Avatar size="small" style={{ backgroundColor: 'color' }}>
-                  {/* <SettingOutlined
+          />
+          <Row className={styles.notifyMenu}>
+            <Col
+              span={24}
+              style={{
+                fontSize: '13px',
+                color: '#1890FF',
+                paddingLeft: '13px',
+                fontFamily: 'Roboto',
+                fontStyle: 'normal',
+                paddingTop: '5px',
+              }}
+            >
+              Xem tất cả cài đặt
+            </Col>
+          </Row>
+        </SubMenu>
+        <SubMenu
+          key="displayAccessibility"
+          title={
+            <>
+              <Avatar size="small" style={{ backgroundColor: 'color' }}>
+                <SettingOutlined style={{ paddingLeft: '2px', width: '10px', color: 'black' }} />
+              </Avatar>
+              <span style={{ paddingLeft: '5px' }}>
+                <FormattedMessage id="menu.account.avatar.displayAccessibility" />
+              </span>
+            </>
+          }
+        >
+          <div className={styles.popupDisplay}>
+            <div className={styles.popupDisplayTitle}>
+              <Row>
+                <Col span={4}>
+                  <Avatar size="small" style={{ backgroundColor: 'color' }}>
+                    {/* <SettingOutlined
                     style={{ paddingRight: '13px', width: '10px', color: 'black' }}
                   /> */}
-                  {/* <Avatar style={{ verticalAlign: 'right' }} size={13} src={IconDark}></Avatar> */}
-                  <Image preview={false} src={IconDark}></Image>
-                </Avatar>
-              </Col>
-              <Col span={20}>
-                <FormattedMessage
-                  id="menu.account.monitor.omni.dark"
-                  defaultMessage="monitor setting"
-                />
-              </Col>
-            </Row>
+                    {/* <Avatar style={{ verticalAlign: 'right' }} size={13} src={IconDark}></Avatar> */}
+                    <Image preview={false} src={IconDark}></Image>
+                  </Avatar>
+                </Col>
+                <Col span={20}>
+                  <FormattedMessage
+                    id="menu.account.monitor.omni.dark"
+                    defaultMessage="monitor setting"
+                  />
+                </Col>
+              </Row>
+            </div>
+            <Form.Item name="theme">
+              <Radio.Group defaultValue={1}>
+                <p className={styles.popupDisplayContent}>
+                  Điều chỉnh giao diện của phần mềm để giảm độ chói và cho đôi mắt được nghỉ ngơi.
+                </p>
+                <Row onChange={handleLight}>
+                  <Col span={16}>
+                    <Title level={5} className={styles.popupDisplayColTitle}>
+                      Tắt
+                    </Title>
+                  </Col>
+                  <Col span={8}>
+                    <Radio className={styles.popupDisplayColRadio} value={1}></Radio>
+                  </Col>
+                </Row>
+                <Row onChange={handleDark}>
+                  <Col span={16}>
+                    <Title level={5} className={styles.popupDisplayColTitle}>
+                      Bật
+                    </Title>
+                  </Col>
+                  <Col span={8}>
+                    <Radio className={styles.popupDisplayColRadio} value={2}></Radio>
+                  </Col>
+                </Row>
+              </Radio.Group>
+            </Form.Item>
+            <div className={styles.popupDisplayTitle}>
+              <Row>
+                <Col span={4}>
+                  <Avatar size="small" style={{ backgroundColor: 'color' }}>
+                    <CompassFilled
+                      style={{ paddingRight: '13px', width: '10px', color: 'black' }}
+                    />
+                  </Avatar>
+                </Col>
+                <Col span={20}>
+                  <FormattedMessage
+                    id="menu.account.monitor.omni.zoom"
+                    defaultMessage="monitor setting"
+                  />
+                </Col>
+              </Row>
+            </div>
+            <Radio.Group defaultValue={1}>
+              <p className={styles.popupDisplayContent}>
+                Làm giảm kích thước phông chữ để có thêm nội dung vừa với màn hình.
+              </p>
+              <Row>
+                <Col span={16}>
+                  <Title level={5} className={styles.popupDisplayColTitle}>
+                    Tắt
+                  </Title>
+                </Col>
+                <Col span={8}>
+                  <Radio className={styles.popupDisplayColRadio} value={1}></Radio>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={16}>
+                  <Title level={5} className={styles.popupDisplayColTitle}>
+                    Bật
+                  </Title>
+                </Col>
+                <Col span={8}>
+                  <Radio className={styles.popupDisplayColRadio} value={2}></Radio>
+                </Col>
+              </Row>
+            </Radio.Group>
           </div>
-          <Radio.Group defaultValue={1}>
-            <p className={styles.popupDisplayContent}>
-              Điều chỉnh giao diện của phần mềm để giảm độ chói và cho đôi mắt được nghỉ ngơi.
-            </p>
-            <Row onChange={handleLight}>
-              <Col span={16}>
-                <Title level={5} className={styles.popupDisplayColTitle}>
-                  Tắt
-                </Title>
-              </Col>
-              <Col span={8}>
-                <Radio className={styles.popupDisplayColRadio} value={1}></Radio>
-              </Col>
-            </Row>
-            <Row onChange={handleDark}>
-              <Col span={16}>
-                <Title level={5} className={styles.popupDisplayColTitle}>
-                  Bật
-                </Title>
-              </Col>
-              <Col span={8}>
-                <Radio className={styles.popupDisplayColRadio} value={2}></Radio>
-              </Col>
-            </Row>
-          </Radio.Group>
-          <div className={styles.popupDisplayTitle}>
-            <Row>
-              <Col span={4}>
-                <Avatar size="small" style={{ backgroundColor: 'color' }}>
-                  <CompassFilled style={{ paddingRight: '13px', width: '10px', color: 'black' }} />
-                </Avatar>
-              </Col>
-              <Col span={20}>
-                <FormattedMessage
-                  id="menu.account.monitor.omni.zoom"
-                  defaultMessage="monitor setting"
-                />
-              </Col>
-            </Row>
-          </div>
-          <Radio.Group defaultValue={1}>
-            <p className={styles.popupDisplayContent}>
-              Làm giảm kích thước phông chữ để có thêm nội dung vừa với màn hình.
-            </p>
-            <Row>
-              <Col span={16}>
-                <Title level={5} className={styles.popupDisplayColTitle}>
-                  Tắt
-                </Title>
-              </Col>
-              <Col span={8}>
-                <Radio className={styles.popupDisplayColRadio} value={1}></Radio>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={16}>
-                <Title level={5} className={styles.popupDisplayColTitle}>
-                  Bật
-                </Title>
-              </Col>
-              <Col span={8}>
-                <Radio className={styles.popupDisplayColRadio} value={2}></Radio>
-              </Col>
-            </Row>
-          </Radio.Group>
-        </div>
-      </SubMenu>
-      <Menu.Divider />
-      <Menu.Item key="logout">
-        <Avatar size="small" style={{ backgroundColor: 'color' }}>
-          <LogoutOutlined style={{ paddingLeft: '2px', width: '10px', color: 'black' }} />
-        </Avatar>
-        <span style={{ paddingLeft: '5px' }}>
-          <FormattedMessage id="menu.account.avatar.logout" />
-        </span>
-      </Menu.Item>
-    </Menu>
+        </SubMenu>
+        <Menu.Divider />
+        <Menu.Item key="logout">
+          <Avatar size="small" style={{ backgroundColor: 'color' }}>
+            <LogoutOutlined style={{ paddingLeft: '2px', width: '10px', color: 'black' }} />
+          </Avatar>
+          <span style={{ paddingLeft: '5px' }}>
+            <FormattedMessage id="menu.account.avatar.logout" />
+          </span>
+        </Menu.Item>
+      </Menu>
+    </Form>
   );
   return (
     <HeaderDropdown overlay={menuHeaderDropdown}>
