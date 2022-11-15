@@ -197,7 +197,7 @@ const PersonalInfo: React.FC = () => {
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
-                      {infoUser?.organization}
+                      {infoUser?.work_address}
                     </Typography.Text>
                   )}
                 </div>
