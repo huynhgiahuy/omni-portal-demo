@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Card, Table, Typography, Form, Button, Input, Select, Modal, Tree, Checkbox } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
-import { requestGroupPermissionData, requestListUserRole, requestDetailUserPermission } from './services';
+import { requestGroupPermissionData, requestListUserRole, requestDetailUserPermission, requestEditUser } from './services';
 import { dataPermissionTable } from './FakeData';
 import {
     OPTIONS_PERMISSION_DB,
@@ -30,7 +31,6 @@ interface PermissionEdit_Update {
     setClickUpdatePermission: (state: boolean) => void;
     userKey: string;
 }
-
 interface DataTypePermissionTable {
     key: string;
     module: string;
@@ -145,6 +145,8 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
 
     const [listEditUserPermission, setListEditUserPermission] = useState<EditDetailUser>();
 
+    const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
+
     const fetchListUserRole = async (role_code: any, role_desc: any) => {
         const res = await requestListUserRole(
             valueCheckboxGeneralStatistic.concat(
@@ -176,6 +178,12 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
         }
     }
 
+    const handleSubmitForm = async (full_name: string, email: string, team: string, role: string) => {
+        const resSubmit = await requestEditUser(full_name, email, team, role);
+        return resSubmit;
+    }
+
+
     useEffect(() => {
         fetchGroupPermissionData();
         fetchDetaiUserPermission();
@@ -188,6 +196,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
 
     const handleOnFinishPermissionEdit = (values: any) => {
         setClickUpdatePermission(false);
+        handleSubmitForm(values.full_name, values.email, values.team, values.role)
     }
 
     const handleCancleUpdatePermission = () => {
@@ -519,7 +528,18 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                                                 {menu}
                                                 <div style={{ paddingLeft: '14px', paddingRight: '14px', paddingBottom: '10px' }}>
                                                     <hr></hr>
-                                                    <Input placeholder="Nhập team mới" />
+                                                    {/* <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                        <Input placeholder="Nhập team mới tại đây" />
+                                                        <Button type="primary" style={{ marginLeft: '10px' }}>Thêm</Button>
+                                                    </div> */}
+                                                    {clickAddNewTeam === false ? (
+                                                        <Button style={{ padding: 'unset', color: 'rgba(0,0,0,0.4)' }} type='text' onClick={() => setClickAddNewTeam(true)}>Thêm team mới</Button>
+                                                    ) : (
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                            <Input placeholder="Nhập team mới tại đây" />
+                                                            <Button type="primary" style={{ marginLeft: '10px' }}>Thêm</Button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </>
                                         )}
@@ -588,7 +608,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                                     },
                                 }}
                             >
-                                <Input placeholder='Nhập tên nhóm quyền của bạn' className={styles.addPermissionInput} />
+                                <Input placeholder='Nhập tên nhóm quyền mới' className={styles.addPermissionInput} />
                             </Form.Item>
                         </div>
                         <div style={{ flex: 1 }}>
@@ -619,7 +639,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                                     },
                                 }}
                             >
-                                <Input placeholder='Nhập mô tả cho nhóm quyền' className={styles.addPermissionInput} />
+                                <Input placeholder='Nhập mô tả ngắn gọn' className={styles.addPermissionInput} />
                             </Form.Item>
                         </div>
                     </div>

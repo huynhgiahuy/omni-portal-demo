@@ -72,10 +72,9 @@ export async function requestGroupPermissionData() {
   });
 }
 
-export async function requestAddNewUser(
+export async function requestEditUser(
   full_name: string,
   email: string,
-  phone: string,
   team: string,
   role: string,
 ) {
@@ -87,7 +86,6 @@ export async function requestAddNewUser(
     data: {
       full_name,
       email,
-      phone,
       team,
       role,
     },

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Typography, Table, Space, Avatar, Modal, Button, Spin } from 'antd';
+import { Card, Table, Space, Modal, Spin } from 'antd';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, CloseCircleFilled } from '@ant-design/icons';
 import PermissionEdit_Update from './PermissionEdit_Update';
 import { requestAllUserPermission, requestDeleteUserPermission } from './services';
 
@@ -29,7 +29,7 @@ const PermissionEdit: React.FC = () => {
 
     const [pagination, setPagination] = useState<PaginationProps>({
         current: 1,
-        pageSize: 10,
+        pageSize: 3,
         showSizeChanger: true,
         showQuickJumper: true,
         pageSizeOptions: ['10', '20', '30', '50']
@@ -61,16 +61,16 @@ const PermissionEdit: React.FC = () => {
     }
     const handleClickDeleteUser = (user_id: string) => {
         Modal.confirm({
-            title: 'Bạn có muốn xóa user này?',
-            content: 'Vui lòng xác nhận hoặc hủy',
-            okText: 'Xác nhận',
+            title: 'Thao tác xóa?',
+            content: 'Bạn chắc chắn muốn xóa thông tin này',
+            okText: 'Xóa',
             onOk() {
-                {
-                    handleDeleteUserPermission(user_id);
-                    fetchListAllUserPermission({ pagination })
-                }
+                handleDeleteUserPermission(user_id);
+                fetchListAllUserPermission({ pagination })
             },
             cancelText: 'Hủy',
+            icon: <CloseCircleFilled style={{ color: 'red' }} />,
+            okButtonProps: { danger: true }
         });
     };
     const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
@@ -86,7 +86,12 @@ const PermissionEdit: React.FC = () => {
             dataIndex: 'stt',
             key: 'stt',
             align: 'center',
-            width: '20px'
+            width: '20px',
+            render: (text, record) => (
+                <div>
+                    {(pagination.current - 1) * pagination.pageSize + listAllUserPermission?.data[0].indexOf(record) + 1}
+                </div>
+            )
         },
         {
             title: 'Thành viên',
@@ -108,9 +113,9 @@ const PermissionEdit: React.FC = () => {
             // )
         },
         {
-            title: 'SĐT',
-            dataIndex: 'phone_number',
-            key: 'phone_number',
+            title: 'Email',
+            dataIndex: 'email',
+            key: 'email',
             align: 'center'
         },
         {
@@ -167,6 +172,7 @@ const PermissionEdit: React.FC = () => {
                                 locale: {
                                     items_per_page: '/ Trang',
                                     jump_to: 'Đến trang',
+                                    page: '',
                                     next_page: 'Trang sau',
                                     prev_page: 'Trang trước',
                                     next_3: '3 trang sau',
@@ -176,7 +182,7 @@ const PermissionEdit: React.FC = () => {
                                 },
                             }}
                             scroll={{ x: 300 }}
-                            loading={{ indicator: <div><Spin /></div>, spinning: !listAllUserPermission }}
+                            loading={{ indicator: <div><Spin /></div>, spinning: !listAllUserPermission?.data[0] }}
                         />
                     </Card>
                 </>

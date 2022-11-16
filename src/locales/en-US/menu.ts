@@ -59,5 +59,6 @@ export default {
   //Omni Channel
   'menu.omni-channel': 'Omni Channel',
   'menu.omni-channel.report': 'Report',
-  'menu.omni-channel.setting': 'Setting',
+  //'menu.omni-channel.setting': 'Setting',
+  'menu.omni-channel.profile': 'Profile',
 };
