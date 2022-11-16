@@ -61,3 +61,74 @@ export async function requestEditUserInfo(
     },
   });
 }
+
+export async function requestGroupPermissionData() {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/role/read`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  });
+}
+
+export async function requestAddNewUser(
+  full_name: string,
+  email: string,
+  phone: string,
+  team: string,
+  role: string,
+) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/assign_user_role`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      full_name,
+      email,
+      phone,
+      team,
+      role,
+    },
+  });
+}
+
+export async function requestAllUserPermission(limit: number, offset: number) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/get_user_permission`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      limit,
+      offset,
+    },
+  });
+}
+
+export async function requestDetailUserPermission(limit: number, offset: number, user_id: string) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/get_user_permission`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      limit,
+      offset,
+      user_id,
+    },
+  });
+}
+
+export async function requestDeleteUserPermission(user_id: string) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/delete_user_permission`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      user_id,
+    },
+  });
+}
