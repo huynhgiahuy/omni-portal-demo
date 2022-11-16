@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, Table, Typography, Form, Button, Input, Select, Modal, Tree, Checkbox } from 'antd';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
-import { requestGroupPermissionData, requestListUserRole } from './services';
+import { requestGroupPermissionData, requestListUserRole, requestDetailUserPermission } from './services';
 import { dataPermissionTable } from './FakeData';
 import {
     OPTIONS_PERMISSION_DB,
@@ -47,6 +47,25 @@ interface TreeData {
     key: string;
 }
 
+interface EditDetailUser {
+    data: any[];
+    error?: string;
+    error_code?: string;
+    length: number;
+    success: boolean;
+}
+
+interface EditDetailUserData {
+    user_id?: string;
+    email?: string;
+    full_name: string;
+    phone_number: string;
+    team: string;
+    role: string;
+    active: string;
+    updated: string;
+}
+
 const formItemLayout = {
     labelCol: {
         xs: {
@@ -88,7 +107,6 @@ const submitFormLayout = {
 };
 
 const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePermission, userKey }) => {
-    console.log(userKey)
     const [listGroupPermission, setListGroupPermission] = useState<GroupPermission[]>([]);
     const [isAddNewPermission, setAddNetPermission] = useState(false);
     const [listRoleCode, setListRoleCode] = useState<string | any>([]);
@@ -125,6 +143,8 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
     const [valueCheckboxTTCT, setValueCheckboxTTCT] = useState<string | any>([]);
     const [valueCheckboxGroupsPer, setValueCheckboxGroupsPer] = useState<string | any>([]);
 
+    const [listEditUserPermission, setListEditUserPermission] = useState<EditDetailUser>();
+
     const fetchListUserRole = async (role_code: any, role_desc: any) => {
         const res = await requestListUserRole(
             valueCheckboxGeneralStatistic.concat(
@@ -149,8 +169,16 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
         }
     }
 
+    const fetchDetaiUserPermission = async () => {
+        const resDetail = await requestDetailUserPermission(3, 1, userKey);
+        if (resDetail.success === true) {
+            setListEditUserPermission(resDetail);
+        }
+    }
+
     useEffect(() => {
         fetchGroupPermissionData();
+        fetchDetaiUserPermission();
     }, [])
 
 
@@ -400,120 +428,116 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
             <Card
                 className={styles.detailCardLayoutNoMar}
             >
-                <Form {...formItemLayout} layout="vertical" onFinish={handleOnFinishPermissionEdit}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', paddingLeft: '10%' }}>
-                        <div style={{ flex: 1 }}>
-                            <Form.Item
-                                label={<Typography.Text style={{ fontWeight: 'bold' }}>Họ và tên đệm</Typography.Text>}
-                                name="hovatendem"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập họ tên'
-                                    },
-                                    {
-                                        min: 5,
-                                        message: 'Họ tên tối thiểu 5 ký tự'
-                                    },
-                                    {
-                                        max: 50,
-                                        message: 'Họ tên tối đa 50 ký tự'
-                                    }
-                                ]}
-                            >
-                                <Input />
-                            </Form.Item>
-                            <Form.Item
-                                label={<Typography.Text style={{ fontWeight: 'bold' }}>Số điện thoại</Typography.Text>}
-                                name="sodienthoai"
-                                required={true}
-                                rules={[
-                                    {
-                                        validator(_, value) {
-                                            if (value === undefined || value === '') {
-                                                return Promise.reject('Vui lòng nhập số điện thoại')
-                                            }
-                                            if (value.length === 9) {
-                                                return Promise.resolve();
-                                            }
-                                            if (!value.match(/^[0-9]+$/)) {
-                                                return Promise.reject('Vui lòng nhập số điện thoại hợp lệ')
-                                            }
-                                            return Promise.reject('Số điện thoại phải 9 số')
+                {listEditUserPermission && listEditUserPermission.data[0]?.map((item: EditDetailUserData) => (
+                    <Form
+                        {...formItemLayout}
+                        layout="vertical"
+                        onFinish={handleOnFinishPermissionEdit}
+                        requiredMark={false}
+                        initialValues={{ full_name: item.full_name, email: item.email, phone_number: item.phone_number, team: item.team, role: item.role }}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', paddingLeft: '10%' }}>
+                            <div style={{ flex: 1 }}>
+                                <Form.Item
+                                    label={<Typography.Text style={{ fontWeight: 'bold' }}>Họ và tên đệm <span style={{ color: 'red' }}>(*)</span></Typography.Text>}
+                                    name="full_name"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập họ tên'
+                                        },
+                                        {
+                                            min: 5,
+                                            message: 'Họ tên tối thiểu 5 ký tự'
+                                        },
+                                        {
+                                            max: 50,
+                                            message: 'Họ tên tối đa 50 ký tự'
                                         }
-                                    }
-                                ]}
-                            >
-                                <Input addonBefore="+84" className={styles.inputPhonePrefix} />
-                            </Form.Item>
-                            <Form.Item
-                                label={<Typography.Text style={{ fontWeight: 'bold' }}>Nhóm quyền</Typography.Text>}
-                                name="nhomquyen"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập nhóm quyền'
-                                    }
-                                ]}
-                            >
-                                <Select
-                                    dropdownRender={(menu) => (
-                                        <>
-                                            {menu}
-                                            <div style={{ paddingLeft: '14px', paddingRight: '14px', paddingBottom: '10px' }}>
-                                                <hr></hr>
-                                                <Button style={{ padding: 'unset', color: 'rgba(0,0,0,0.4)' }} type='text' onClick={handleAddNewPermission}>Thêm quyền mới</Button>
-                                            </div>
-                                        </>
-                                    )}
+                                    ]}
                                 >
-                                    {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
-                                        <Select.Option value={item.code}>{item.code}</Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
+                                    <Input disabled={true} style={{ fontWeight: 'bold' }} />
+                                </Form.Item>
+                                <Form.Item
+                                    label={<Typography.Text style={{ fontWeight: 'bold' }}>Nhóm quyền <span style={{ color: 'red' }}>(*)</span></Typography.Text>}
+                                    name="role"
+                                    initialValue={{ name: item.role }}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập nhóm quyền'
+                                        }
+                                    ]}
+                                >
+                                    <Select
+                                        dropdownRender={(menu) => (
+                                            <>
+                                                {menu}
+                                                <div style={{ paddingLeft: '14px', paddingRight: '14px', paddingBottom: '10px' }}>
+                                                    <hr></hr>
+                                                    <Button style={{ padding: 'unset', color: 'rgba(0,0,0,0.4)' }} type='text' onClick={handleAddNewPermission}>Thêm quyền mới</Button>
+                                                </div>
+                                            </>
+                                        )}
+                                    >
+                                        {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
+                                            <Select.Option value={item.code}>{item.code}</Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <Form.Item
+                                    label={<Typography.Text style={{ fontWeight: 'bold' }}>Email <span style={{ color: 'red' }}>(*)</span></Typography.Text>}
+                                    name="email"
+                                    rules={[
+                                        {
+                                            type: 'email',
+                                            message: 'Vui lòng nhập email hợp lệ'
+                                        },
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập email'
+                                        }
+                                    ]}
+                                >
+                                    <Input disabled={true} style={{ fontWeight: 'bold' }} />
+                                </Form.Item>
+                                <Form.Item
+                                    label={<Typography.Text style={{ fontWeight: 'bold' }}>Team <span style={{ color: 'red' }}>(*)</span></Typography.Text>}
+                                    name="team"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập team'
+                                        }
+                                    ]}
+                                >
+                                    <Select
+                                        dropdownRender={(menu) => (
+                                            <>
+                                                {menu}
+                                                <div style={{ paddingLeft: '14px', paddingRight: '14px', paddingBottom: '10px' }}>
+                                                    <hr></hr>
+                                                    <Input placeholder="Nhập team mới" />
+                                                </div>
+                                            </>
+                                        )}
+                                    >
+                                        <Select.Option value="Team 1">Team 1</Select.Option>
+                                        <Select.Option value="Team 2">Team 2</Select.Option>
+                                        <Select.Option value="Team 3">Team 3</Select.Option>
+                                        <Select.Option value="Team 4">Team 4</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
                         </div>
-                        <div style={{ flex: 1 }}>
-                            <Form.Item
-                                label={<Typography.Text style={{ fontWeight: 'bold' }}>Email</Typography.Text>}
-                                name="email"
-                                rules={[
-                                    {
-                                        type: 'email',
-                                        message: 'Vui lòng nhập email hợp lệ'
-                                    },
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập email'
-                                    }
-                                ]}
-                            >
-                                <Input />
-                            </Form.Item>
-                            <Form.Item
-                                label={<Typography.Text style={{ fontWeight: 'bold' }}>Team</Typography.Text>}
-                                name="team"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng nhập team'
-                                    }
-                                ]}
-                            >
-                                <Select >
-                                    <Select.Option value="Team 1">Team 1</Select.Option>
-                                    <Select.Option value="Team 2">Team 2</Select.Option>
-                                    <Select.Option value="Team 3">Team 3</Select.Option>
-                                    <Select.Option value="Team 4">Team 4</Select.Option>
-                                </Select>
-                            </Form.Item>
-                        </div>
-                    </div>
-                    <Form.Item {...submitFormLayout} style={{ marginTop: '10px', marginBottom: 'unset' }}>
-                        <Button className={styles.cancleBtn} onClick={handleCancleUpdatePermission}>Hủy</Button>
-                        <Button type='primary' htmlType="submit">Cập nhật</Button>
-                    </Form.Item>
-                </Form>
+                        <Form.Item {...submitFormLayout} style={{ marginTop: '10px', marginBottom: 'unset' }}>
+                            <Button className={styles.cancleBtn} onClick={handleCancleUpdatePermission}>Hủy</Button>
+                            <Button type='primary' htmlType="submit">Cập nhật</Button>
+                        </Form.Item>
+                    </Form>
+                ))}
             </Card>
             <Modal
                 open={isAddNewPermission}
