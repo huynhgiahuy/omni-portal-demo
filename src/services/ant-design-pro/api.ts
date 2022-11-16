@@ -15,7 +15,7 @@ export async function currentUser(options?: { [key: string]: any }) {
 
 /** 退出登录接口 POST /api/login/outLogin */
 export async function outLogin(options?: { [key: string]: any }) {
-  return request<Record<string, any>>(`${api.UMI_API_BASE_URL}/user-service/api/sso_logout`, {
+  return request<Record<string, any>>(`${api.UMI_API_BASE_URL}/auth-service/api/sso_logout`, {
     method: 'POST',
     data: {
       redirect_uri: `${api.UMI_API_URL}`,
