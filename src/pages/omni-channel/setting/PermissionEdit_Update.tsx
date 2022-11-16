@@ -151,12 +151,12 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
         fetchGroupPermissionData();
     }, [])
 
+
     const handleAddNewPermission = () => {
         setAddNetPermission(true);
     }
 
     const handleOnFinishPermissionEdit = (values: any) => {
-        console.log(values)
         setClickUpdatePermission(false);
     }
 
@@ -263,9 +263,9 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
     };
 
     const handleOnFinishPermissionAddNew = (values: any) => {
-        console.log(values)
         handleCancleAddNewPermission();
         fetchListUserRole(values.role_code, values.role_desc);
+        fetchGroupPermissionData();
     }
 
     const columnsPermissionTable: ColumnsType<DataTypePermissionTable> = [

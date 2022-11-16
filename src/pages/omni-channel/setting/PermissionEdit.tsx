@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Card, Typography, Table, Space, Avatar, Breadcrumb } from 'antd';
+import { Card, Typography, Table, Space, Avatar, Modal, Button } from 'antd';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
-import { EditOutlined, DeleteOutlined, PlusSquareFilled } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { dataPermission } from './FakeData';
 //import CustomizeBread from '@/components/CustomizeBread/CustomizeBread';
 import ImageAvatar from '../setting/avatar_test.png';
-import PermissionEdit_Add from './PermissionEdit_Add';
 import PermissionEdit_Update from './PermissionEdit_Update';
 
 interface DataType {
@@ -21,7 +20,6 @@ interface DataType {
 }
 
 const PermissionEdit: React.FC = () => {
-    const [isClickAddPermission, setClickAddPermission] = useState(false);
     const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
     const [userKey, setUserKey] = useState<string | any>();
 
@@ -35,15 +33,21 @@ const PermissionEdit: React.FC = () => {
     //     fetchListUserInfo();
     // }, [])
 
-    const handleClickAddPermission = () => {
-        setClickAddPermission(true);
-    }
+
     const handleClickUpdatePermission = () => {
         setClickUpdatePermission(true);
     }
     const handleGetKeyUser = (key: any) => {
         setUserKey(key);
     }
+    const handleClickDeleteUser = () => {
+        Modal.confirm({
+            title: 'Bạn có muốn xóa user này?',
+            content: 'Vui lòng xác nhận hoặc hủy',
+            okText: 'Xác nhận',
+            cancelText: 'Hủy',
+        });
+    };
     const columns: ColumnsType<DataType> = [
         {
             title: '#',
@@ -107,18 +111,15 @@ const PermissionEdit: React.FC = () => {
             render: (record) => (
                 <Space size="large">
                     <EditOutlined style={{ color: '#1890FF', fontSize: '20px' }} onClick={() => { handleClickUpdatePermission(); handleGetKeyUser(record.key) }} />
-                    <DeleteOutlined style={{ color: '#F5222D', fontSize: '20px' }} />
+                    <DeleteOutlined style={{ color: '#F5222D', fontSize: '20px' }} onClick={handleClickDeleteUser} />
                 </Space>
             )
         },
     ];
     return (
         <>
-            {isClickAddPermission === false && isClickUpdatePermission === false ? (
+            {isClickUpdatePermission === false ? (
                 <>
-                    <div style={{ marginTop: '10px', textAlign: 'right' }}>
-                        <PlusSquareFilled className={styles.addPermissionIcon} onClick={handleClickAddPermission} />
-                    </div>
                     <Card
                         className={styles.detailCardLayoutNoMar}
                     >
@@ -140,8 +141,6 @@ const PermissionEdit: React.FC = () => {
                         />
                     </Card>
                 </>
-            ) : (isClickAddPermission === true && isClickUpdatePermission === false) ? (
-                <PermissionEdit_Add setClickAddPermission={setClickAddPermission} />
             ) : (
                 <PermissionEdit_Update setClickUpdatePermission={setClickUpdatePermission} userKey={userKey} />
             )
