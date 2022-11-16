@@ -22,7 +22,12 @@ declare namespace API {
     address?: string;
     phone?: string;
     department?: string;
-    equipment?: string[];
+    equipment?: {
+      active_time: string;
+      device: string;
+      location: string;
+      status: boolean;
+    }[];
     home_address?: string;
     id?: string;
     image?: string;

@@ -100,7 +100,20 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
                 // console.log('app.tsx :>> ', 2);
                 setInitialState((preInitialState) => ({
                   ...preInitialState,
-                  settings,
+                  settings: {
+                    navTheme: initialState?.currentUser?.screen_mode?.dark_mode
+                      ? 'realDark'
+                      : 'light',
+                    primaryColor: '#1890ff',
+                    layout: 'side',
+                    contentWidth: 'Fluid',
+                    fixedHeader: true,
+                    fixSiderbar: true,
+                    pwa: false,
+                    logo: '/logo_theme.svg',
+                    headerHeight: 48,
+                    splitMenus: false,
+                  },
                 }));
               }}
             />

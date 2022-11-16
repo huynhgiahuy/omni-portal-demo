@@ -35,11 +35,13 @@ export type UserInfoProps = {
   id: string;
 };
 
+const token = window.localStorage.getItem('access_token');
+
 export interface requeGetUserInfoProps extends requestProps {
   data: UserInfoProps;
 }
 
-export async function requestGetInfoUser(token?: any): Promise<requeGetUserInfoProps> {
+export async function requestGetInfoUser(): Promise<requeGetUserInfoProps> {
   return request(
     `${endpoint}/user-service/api/settings/user/get_user_info?current_user=nghiahm4%40fpt.com.vn`,
     {
@@ -52,4 +54,46 @@ export async function requestGetInfoUser(token?: any): Promise<requeGetUserInfoP
       },
     },
   );
+}
+
+export async function requestUpdateStatusUser(data: string): Promise<requeGetUserInfoProps> {
+  return request(`${endpoint}/user-service/api/settings/user/update_user_status`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      status: data,
+    },
+  });
+}
+
+export async function requestUpdateScreenMode(dark_mode: boolean): Promise<requeGetUserInfoProps> {
+  return request(`${endpoint}/user-service/api/settings/user/update_user_screen_mode`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      dark_mode,
+      simple_mode: false,
+    },
+  });
+}
+
+export async function requestUpdatenotification(data: {
+  missed_call: boolean;
+  incoming_call: boolean;
+  critic_issue: boolean;
+  night_plan: boolean;
+  shift: boolean;
+  overdue_message: boolean;
+}): Promise<requeGetUserInfoProps> {
+  return request(`${endpoint}/user-service/api/settings/user/update_user_notification`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data,
+  });
 }
