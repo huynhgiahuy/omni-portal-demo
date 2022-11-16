@@ -1,50 +1,86 @@
-import React, { useState } from 'react';
-import { Card, Typography, Table, Space, Avatar, Breadcrumb } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Card, Typography, Table, Space, Avatar, Modal, Button, Spin } from 'antd';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
-import { EditOutlined, DeleteOutlined, PlusSquareFilled } from '@ant-design/icons';
-import { dataPermission } from './FakeData';
-//import CustomizeBread from '@/components/CustomizeBread/CustomizeBread';
-import ImageAvatar from '../setting/avatar_test.png';
-import PermissionEdit_Add from './PermissionEdit_Add';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import PermissionEdit_Update from './PermissionEdit_Update';
+import { requestAllUserPermission, requestDeleteUserPermission } from './services';
 
-interface DataType {
-    key: string;
-    stt: string;
-    thanhvien: string;
-    sdt: string;
-    team: string;
-    permission: string;
-    activity: string;
-    lastEdit: string;
+interface DataAllUserPermission {
+    data: any[];
+    error?: string;
+    error_code?: string;
+    length: number;
+    success: boolean;
+}
+
+interface PaginationProps {
+    current: number;
+    pageSize: number;
+    showSizeChanger: boolean;
+    showQuickJumper: boolean;
+    pageSizeOptions: string[];
 }
 
 const PermissionEdit: React.FC = () => {
-    const [isClickAddPermission, setClickAddPermission] = useState(false);
     const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
     const [userKey, setUserKey] = useState<string | any>();
+    const [listAllUserPermission, setListAllUserPermission] = useState<DataAllUserPermission>();
 
-    // const fetchListUserInfo = async () => {
-    //     const response_1 = await requestListUserInfo();
-    //     if (response_1.success === true) {
-    //         return response_1.data
-    //     }
-    // }
-    // useEffect(() => {
-    //     fetchListUserInfo();
-    // }, [])
+    const [pagination, setPagination] = useState<PaginationProps>({
+        current: 1,
+        pageSize: 10,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        pageSizeOptions: ['10', '20', '30', '50']
+    })
 
-    const handleClickAddPermission = () => {
-        setClickAddPermission(true);
+    const fetchListAllUserPermission = async (params: any) => {
+        const response_all = await requestAllUserPermission(params.pagination.pageSize, params.pagination.current);
+        if (response_all.success === true) {
+            setListAllUserPermission(response_all)
+        }
     }
+
+    const handleDeleteUserPermission = async (user_id: string) => {
+        const response_delete = await requestDeleteUserPermission(user_id);
+        if (response_delete.success === true) {
+            return response_delete.data;
+        }
+    }
+
+    useEffect(() => {
+        fetchListAllUserPermission({ pagination })
+    }, [pagination])
+
     const handleClickUpdatePermission = () => {
         setClickUpdatePermission(true);
     }
     const handleGetKeyUser = (key: any) => {
         setUserKey(key);
     }
-    const columns: ColumnsType<DataType> = [
+    const handleClickDeleteUser = (user_id: string) => {
+        Modal.confirm({
+            title: 'Bạn có muốn xóa user này?',
+            content: 'Vui lòng xác nhận hoặc hủy',
+            okText: 'Xác nhận',
+            onOk() {
+                {
+                    handleDeleteUserPermission(user_id);
+                    fetchListAllUserPermission({ pagination })
+                }
+            },
+            cancelText: 'Hủy',
+        });
+    };
+    const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
+        setPagination({
+            ...pagination,
+            current: newPagination.current,
+            pageSize: newPagination.pageSize,
+        });
+    };
+    const columns: ColumnsType<DataAllUserPermission> = [
         {
             title: '#',
             dataIndex: 'stt',
@@ -54,27 +90,27 @@ const PermissionEdit: React.FC = () => {
         },
         {
             title: 'Thành viên',
-            dataIndex: 'thanhvien',
-            key: 'thanhvien',
+            dataIndex: 'full_name',
+            key: 'full_name',
             align: 'center',
             width: '200px',
-            render: (text, record) => (
-                <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-                    <div>
-                        <Avatar src={ImageAvatar} size="large" />
-                    </div>
-                    <div>
-                        <Typography.Text>{record.thanhvien}</Typography.Text>
-                        <br></br>
-                        <Typography.Text style={{ paddingLeft: '10px', fontSize: '10px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 400 }}>HuyenLM2@fpt.com.vn</Typography.Text>
-                    </div>
-                </div>
-            )
+            // render: (text, record) => (
+            //     <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+            //         <div>
+            //             <Avatar src={ImageAvatar} size="large" />
+            //         </div>
+            //         <div>
+            //             <Typography.Text>{record.thanhvien}</Typography.Text>
+            //             <br></br>
+            //             <Typography.Text style={{ paddingLeft: '10px', fontSize: '10px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 400 }}>HuyenLM2@fpt.com.vn</Typography.Text>
+            //         </div>
+            //     </div>
+            // )
         },
         {
             title: 'SĐT',
-            dataIndex: 'sdt',
-            key: 'sdt',
+            dataIndex: 'phone_number',
+            key: 'phone_number',
             align: 'center'
         },
         {
@@ -85,20 +121,20 @@ const PermissionEdit: React.FC = () => {
         },
         {
             title: 'Nhóm quyền',
-            dataIndex: 'permission',
-            key: 'permission',
+            dataIndex: 'role',
+            key: 'role',
             align: 'center'
         },
         {
             title: 'Hoạt động lúc',
-            dataIndex: 'activity',
-            key: 'activity',
+            dataIndex: 'active',
+            key: 'active',
             align: 'center'
         },
         {
             title: 'Cập nhật lần cuối',
-            dataIndex: 'lastEdit',
-            key: 'lastEdit',
+            dataIndex: 'updated',
+            key: 'updated',
             align: 'center'
         },
         {
@@ -106,42 +142,44 @@ const PermissionEdit: React.FC = () => {
             align: 'center',
             render: (record) => (
                 <Space size="large">
-                    <EditOutlined style={{ color: '#1890FF', fontSize: '20px' }} onClick={() => { handleClickUpdatePermission(); handleGetKeyUser(record.key) }} />
-                    <DeleteOutlined style={{ color: '#F5222D', fontSize: '20px' }} />
+                    <EditOutlined style={{ color: '#1890FF', fontSize: '20px' }} onClick={() => { handleClickUpdatePermission(); handleGetKeyUser(record.user_id) }} />
+                    <DeleteOutlined style={{ color: '#F5222D', fontSize: '20px' }} onClick={() => { handleClickDeleteUser(record.user_id) }} />
                 </Space>
             )
         },
     ];
     return (
         <>
-            {isClickAddPermission === false && isClickUpdatePermission === false ? (
+            {isClickUpdatePermission === false ? (
                 <>
-                    <div style={{ marginTop: '10px', textAlign: 'right' }}>
-                        <PlusSquareFilled className={styles.addPermissionIcon} onClick={handleClickAddPermission} />
-                    </div>
                     <Card
                         className={styles.detailCardLayoutNoMar}
                     >
                         <Table
-                            dataSource={dataPermission}
+                            dataSource={listAllUserPermission?.data[0]}
                             columns={columns}
                             style={{ paddingLeft: '20px' }}
                             className={styles.permissionTable}
+                            onChange={handleTableChange}
                             pagination={{
-                                pageSize: 5,
-                                showQuickJumper: true,
-                                showSizeChanger: true,
+                                ...pagination,
+                                total: listAllUserPermission?.length,
                                 locale: {
-                                    jump_to: 'Go to',
-                                    page: ''
-                                }
+                                    items_per_page: '/ Trang',
+                                    jump_to: 'Đến trang',
+                                    next_page: 'Trang sau',
+                                    prev_page: 'Trang trước',
+                                    next_3: '3 trang sau',
+                                    next_5: '5 trang sau',
+                                    prev_3: '3 trang trước',
+                                    prev_5: '5 trang trước',
+                                },
                             }}
                             scroll={{ x: 300 }}
+                            loading={{ indicator: <div><Spin /></div>, spinning: !listAllUserPermission }}
                         />
                     </Card>
                 </>
-            ) : (isClickAddPermission === true && isClickUpdatePermission === false) ? (
-                <PermissionEdit_Add setClickAddPermission={setClickAddPermission} />
             ) : (
                 <PermissionEdit_Update setClickUpdatePermission={setClickUpdatePermission} userKey={userKey} />
             )
