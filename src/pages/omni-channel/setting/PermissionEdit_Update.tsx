@@ -91,6 +91,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
     console.log(userKey)
     const [listGroupPermission, setListGroupPermission] = useState<GroupPermission[]>([]);
     const [isAddNewPermission, setAddNetPermission] = useState(false);
+    const [listRoleCode, setListRoleCode] = useState<string | any>([]);
 
     const [selectListDB, setSelectListDB] = useState<string | any>([]);
     const [indeterminateDB, setIndeterminateDB] = useState(false);
@@ -144,6 +145,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
         const resPer = await requestGroupPermissionData();
         if (resPer.success === true) {
             setListGroupPermission(resPer.data)
+            setListRoleCode(resPer.data?.map((item: GroupPermission) => item.code))
         }
     }
 
@@ -263,9 +265,18 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
     };
 
     const handleOnFinishPermissionAddNew = (values: any) => {
-        handleCancleAddNewPermission();
-        fetchListUserRole(values.role_code, values.role_desc);
-        fetchGroupPermissionData();
+        if (listRoleCode.includes(values.role_code)) {
+            Modal.warning({
+                title: 'Thông báo',
+                content: 'Nhóm quyền vừa nhập đã có. Vui lòng nhập tên nhóm quyền khác!',
+                okText: 'Xác nhận',
+            });
+        }
+        else {
+            handleCancleAddNewPermission();
+            fetchListUserRole(values.role_code, values.role_desc);
+            fetchGroupPermissionData();
+        }
     }
 
     const columnsPermissionTable: ColumnsType<DataTypePermissionTable> = [
