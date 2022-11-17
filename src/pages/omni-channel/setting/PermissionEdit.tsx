@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Typography, Table, Space, Avatar, Modal, Button, Spin } from 'antd';
+import { Card, Table, Space, Modal, Spin, Avatar, Typography } from 'antd';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, CloseCircleFilled } from '@ant-design/icons';
 import PermissionEdit_Update from './PermissionEdit_Update';
 import { requestAllUserPermission, requestDeleteUserPermission } from './services';
+import ImagaAvatar from './avatar_test.png';
 
 interface DataAllUserPermission {
     data: any[];
@@ -12,6 +13,8 @@ interface DataAllUserPermission {
     error_code?: string;
     length: number;
     success: boolean;
+    full_name?: string;
+    email?: string;
 }
 
 interface PaginationProps {
@@ -29,7 +32,7 @@ const PermissionEdit: React.FC = () => {
 
     const [pagination, setPagination] = useState<PaginationProps>({
         current: 1,
-        pageSize: 10,
+        pageSize: 3,
         showSizeChanger: true,
         showQuickJumper: true,
         pageSizeOptions: ['10', '20', '30', '50']
@@ -61,16 +64,16 @@ const PermissionEdit: React.FC = () => {
     }
     const handleClickDeleteUser = (user_id: string) => {
         Modal.confirm({
-            title: 'Bạn có muốn xóa user này?',
-            content: 'Vui lòng xác nhận hoặc hủy',
-            okText: 'Xác nhận',
+            title: 'Thao tác xóa?',
+            content: 'Bạn chắc chắn muốn xóa thông tin này',
+            okText: 'Xóa',
             onOk() {
-                {
-                    handleDeleteUserPermission(user_id);
-                    fetchListAllUserPermission({ pagination })
-                }
+                handleDeleteUserPermission(user_id);
+                fetchListAllUserPermission({ pagination })
             },
             cancelText: 'Hủy',
+            icon: <CloseCircleFilled style={{ color: 'red' }} />,
+            okButtonProps: { danger: true }
         });
     };
     const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
@@ -83,34 +86,39 @@ const PermissionEdit: React.FC = () => {
     const columns: ColumnsType<DataAllUserPermission> = [
         {
             title: '#',
-            dataIndex: 'stt',
-            key: 'stt',
+            dataIndex: 'user_id',
+            key: 'user_id',
             align: 'center',
-            width: '20px'
+            width: '20px',
+            render: (text, record) => (
+                <>
+                    {(pagination.current - 1) * pagination.pageSize + listAllUserPermission?.data[0].indexOf(record) + 1}
+                </>
+            )
         },
         {
-            title: 'Thành viên',
+            title: 'Tên người dùng',
             dataIndex: 'full_name',
             key: 'full_name',
             align: 'center',
             width: '200px',
-            // render: (text, record) => (
-            //     <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-            //         <div>
-            //             <Avatar src={ImageAvatar} size="large" />
-            //         </div>
-            //         <div>
-            //             <Typography.Text>{record.thanhvien}</Typography.Text>
-            //             <br></br>
-            //             <Typography.Text style={{ paddingLeft: '10px', fontSize: '10px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 400 }}>HuyenLM2@fpt.com.vn</Typography.Text>
-            //         </div>
-            //     </div>
-            // )
+            render: (text, record) => (
+                <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+                    <div style={{ flex: 1 }}>
+                        <Avatar src={ImagaAvatar} size="large" />
+                    </div>
+                    <div style={{ flex: 2 }}>
+                        <Typography.Text>{record.full_name}</Typography.Text>
+                        <br></br>
+                        <Typography.Text style={{ paddingLeft: '10px', fontSize: '10px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 400 }}>{record.email}</Typography.Text>
+                    </div>
+                </div>
+            )
         },
         {
-            title: 'SĐT',
-            dataIndex: 'phone_number',
-            key: 'phone_number',
+            title: 'Số IPP',
+            dataIndex: 'ip_phone',
+            key: 'ip_phone',
             align: 'center'
         },
         {
@@ -167,6 +175,7 @@ const PermissionEdit: React.FC = () => {
                                 locale: {
                                     items_per_page: '/ Trang',
                                     jump_to: 'Đến trang',
+                                    page: '',
                                     next_page: 'Trang sau',
                                     prev_page: 'Trang trước',
                                     next_3: '3 trang sau',
@@ -176,7 +185,7 @@ const PermissionEdit: React.FC = () => {
                                 },
                             }}
                             scroll={{ x: 300 }}
-                            loading={{ indicator: <div><Spin /></div>, spinning: !listAllUserPermission }}
+                            loading={{ indicator: <div><Spin /></div>, spinning: !listAllUserPermission?.data[0] }}
                         />
                     </Card>
                 </>

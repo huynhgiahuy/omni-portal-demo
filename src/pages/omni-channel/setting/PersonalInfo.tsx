@@ -133,7 +133,7 @@ const PersonalInfo: React.FC = () => {
                 src={`data:image/jpeg;base64,${dataImage}`}
                 className={styles.antImg}
               ></Avatar>
-              <Upload
+              {/* <Upload
                 {...props}
                 beforeUpload={beforeUpload}
                 onChange={async ({ file }) => {
@@ -149,7 +149,7 @@ const PersonalInfo: React.FC = () => {
                 showUploadList={false}
               >
                 <CameraFilled style={{ fontSize: 40, color: 'white' }} />
-              </Upload>
+              </Upload> */}
             </div>
             <div style={{ textAlign: 'right' }}>
               <EditOutlined style={{ fontSize: '22px' }} onClick={handleEditUser} />
@@ -436,8 +436,8 @@ const PersonalInfo: React.FC = () => {
                                   initialState.currentUser?.equipment[0]?.status
                                     ? '#689B4F'
                                     : initialState.currentUser?.screen_mode?.dark_mode
-                                    ? '#9B9B9B'
-                                    : '#4A4A4A'
+                                      ? '#9B9B9B'
+                                      : '#4A4A4A'
                                 }
                                 style={{ borderRadius: '4px' }}
                               >
@@ -487,8 +487,8 @@ const PersonalInfo: React.FC = () => {
                                 initialState.currentUser?.equipment[1]?.status
                                   ? '#689B4F'
                                   : initialState.currentUser?.screen_mode?.dark_mode
-                                  ? '#9B9B9B'
-                                  : '#4A4A4A'
+                                    ? '#9B9B9B'
+                                    : '#4A4A4A'
                               }
                               style={{ borderRadius: '4px' }}
                             >
