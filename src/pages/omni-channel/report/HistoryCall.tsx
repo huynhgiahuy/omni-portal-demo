@@ -69,14 +69,16 @@ const HistoryCall: React.FC = () => {
             render: (text, record) => {
                 if (record.huongcuocgoi === 'gọi vào') {
                     return (
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
-                            <img src={PhoneCallIn} style={{ width: '20px', height: '20px' }} /><Typography.Text>{record.huongcuocgoi}</Typography.Text>
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <img src={PhoneCallIn} style={{ width: '15px', height: '15px', flex: 0.2 }} />
+                            <Typography.Text style={{ flex: 0.5 }}>{record.huongcuocgoi}</Typography.Text>
                         </div>
                     )
                 }
                 return (
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
-                        <img src={PhoneCallOut} style={{ width: '20px', height: '20px' }} /><Typography.Text>{record.huongcuocgoi}</Typography.Text>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <img src={PhoneCallOut} style={{ width: '15px', height: '15px', flex: 0.2 }} />
+                        <Typography.Text style={{ flex: 0.5 }}>{record.huongcuocgoi}</Typography.Text>
                     </div>
                 )
             }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Card, Table, Typography, Form, Button, Input, Select, Modal, Tree, Checkbox } from 'antd';
-import { EditOutlined } from '@ant-design/icons';
+import { Card, Table, Typography, Form, Button, Input, Select, Modal, Tree, Checkbox, Space } from 'antd';
+import { SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import { requestGroupPermissionData, requestListUserRole, requestDetailUserPermission, requestEditUser } from './services';
@@ -196,7 +196,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
 
     const handleOnFinishPermissionEdit = (values: any) => {
         setClickUpdatePermission(false);
-        handleSubmitForm(values.full_name, values.email, values.team, values.role)
+        handleSubmitForm(values.full_name, values.email, values.team, values.role);
     }
 
     const handleCancleUpdatePermission = () => {
@@ -328,6 +328,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                             indeterminate={indeterminateDB}
                             onChange={handleCheckAllFilterDB}
                             checked={checkAllDB}
+                            className={styles.checkboxStyle}
                         />
                     )
                 }
@@ -337,6 +338,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                             indeterminate={indeterminateIM}
                             onChange={handleCheckAllFilterIM}
                             checked={checkAllIM}
+                            className={styles.checkboxStyle}
                         />
                     )
                 }
@@ -346,6 +348,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                             indeterminate={indeterminateEM}
                             onChange={handleCheckAllFilterEM}
                             checked={checkAllEM}
+                            className={styles.checkboxStyle}
                         />
                     )
                 }
@@ -355,6 +358,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                             indeterminate={indeterminateCM}
                             onChange={handleCheckAllFilterCM}
                             checked={checkAllCM}
+                            className={styles.checkboxStyle}
                         />
                     )
                 }
@@ -364,6 +368,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                             indeterminate={indeterminateRF}
                             onChange={handleCheckAllFilterRF}
                             checked={checkAllRF}
+                            className={styles.checkboxStyle}
                         />
                     )
                 }
@@ -373,6 +378,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                             indeterminate={indeterminateDesign}
                             onChange={handleCheckAllFilterDesign}
                             checked={checkAllDesign}
+                            className={styles.checkboxStyle}
                         />
                     )
                 }
@@ -392,39 +398,116 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
             width: '450px',
             render: (record) => {
                 if (record.module === 'Dashboard') {
-                    return <Checkbox.Group options={OPTIONS_PERMISSION_DB} className={styles.antCheckboxGroup} onChange={handleCheckFilterDB} value={selectListDB} />
+                    return (
+                        <Checkbox.Group
+                            options={OPTIONS_PERMISSION_DB}
+                            className={styles.antCheckboxGroup}
+                            onChange={handleCheckFilterDB}
+                            value={selectListDB}
+                        />
+                    )
                 }
                 else if (record.module === 'Incident Management') {
-                    return <Checkbox.Group options={OPTIONS_PERMISSION_IM} className={styles.antCheckboxGroup} onChange={handleCheckFilterIM} value={selectListIM} />
+                    return (
+                        <Checkbox.Group
+                            options={OPTIONS_PERMISSION_IM}
+                            className={styles.antCheckboxGroup}
+                            onChange={handleCheckFilterIM}
+                            value={selectListIM}
+                        />
+                    )
                 }
                 else if (record.module === 'Event Management') {
-                    return <Checkbox.Group options={OPTIONS_PERMISSION_EM} className={styles.antCheckboxGroup} onChange={handleCheckFilterEM} value={selectListEM} />
+                    return (
+                        <Checkbox.Group
+                            options={OPTIONS_PERMISSION_EM}
+                            className={styles.antCheckboxGroup}
+                            onChange={handleCheckFilterEM}
+                            value={selectListEM}
+                        />
+                    )
                 }
                 else if (record.module === 'Change Management') {
-                    return <Checkbox.Group options={OPTIONS_PERMISSION_CM} className={styles.antCheckboxGroup} onChange={handleCheckFilterCM} value={selectListCM} />
+                    return (
+                        <Checkbox.Group
+                            options={OPTIONS_PERMISSION_CM}
+                            className={styles.antCheckboxGroup}
+                            onChange={handleCheckFilterCM}
+                            value={selectListCM}
+                        />
+                    )
                 }
                 else if (record.module === 'Request Fulfillment') {
-                    return <Checkbox.Group options={OPTIONS_PERMISSION_RF} className={styles.antCheckboxGroup} onChange={handleCheckFilterRF} value={selectListRF} />
+                    return (
+                        <Checkbox.Group
+                            options={OPTIONS_PERMISSION_RF}
+                            className={styles.antCheckboxGroup}
+                            onChange={handleCheckFilterRF}
+                            value={selectListRF}
+                        />
+                    )
                 }
                 else if (record.module === 'Thiết kế') {
-                    return <Checkbox.Group options={OPTIONS_PERMISSION_DESIGN} className={styles.antCheckboxGroup} onChange={handleCheckFilterDesign} value={selectListDesign} />
+                    return (
+                        <Checkbox.Group
+                            options={OPTIONS_PERMISSION_DESIGN}
+                            className={styles.antCheckboxGroup}
+                            onChange={handleCheckFilterDesign}
+                            value={selectListDesign}
+                        />
+                    )
                 }
                 else if (record.module === 'Báo cáo') {
                     return (
                         <>
-                            <Tree treeData={TREE_DATA_TKC} checkable onCheck={onCheckDataTreeGeneralStatistic} />
-                            <Tree treeData={TREE_DATA_BGCT} checkable onCheck={onCheckDataTreeTransferShift} />
-                            <Tree treeData={TREE_DATA_KHD} checkable onCheck={onCheckDataTreeNightShift} />
-                            <Tree treeData={TREE_DATA_LSCG} checkable onCheck={onCheckDataTreeHistoryCall} />
+                            <Tree
+                                treeData={TREE_DATA_TKC}
+                                checkable
+                                onCheck={onCheckDataTreeGeneralStatistic}
+                                className={styles.treeDataCheckbox}
+                            />
+                            <Tree
+                                treeData={TREE_DATA_BGCT}
+                                checkable
+                                onCheck={onCheckDataTreeTransferShift}
+                                className={styles.treeDataCheckbox}
+                            />
+                            <Tree
+                                treeData={TREE_DATA_KHD}
+                                checkable
+                                onCheck={onCheckDataTreeNightShift}
+                                className={styles.treeDataCheckbox}
+                            />
+                            <Tree
+                                treeData={TREE_DATA_LSCG}
+                                checkable
+                                onCheck={onCheckDataTreeHistoryCall}
+                                className={styles.treeDataCheckbox}
+                            />
                         </>
                     )
                 }
                 else {
                     return (
                         <>
-                            <Tree treeData={TREE_DATA_TTCN} checkable onCheck={onCheckDataTreeTTCN} />
-                            <Tree treeData={TREE_DATA_TTCT} checkable onCheck={onCheckDataTreeTTCT} />
-                            <Tree treeData={TREE_DATA_NQ} checkable onCheck={onCheckDataTreeGroupsPer} />
+                            <Tree
+                                treeData={TREE_DATA_TTCN}
+                                checkable
+                                onCheck={onCheckDataTreeTTCN}
+                                className={styles.treeDataCheckbox}
+                            />
+                            <Tree
+                                treeData={TREE_DATA_TTCT}
+                                checkable
+                                onCheck={onCheckDataTreeTTCT}
+                                className={styles.treeDataCheckbox}
+                            />
+                            <Tree
+                                treeData={TREE_DATA_NQ}
+                                checkable
+                                onCheck={onCheckDataTreeGroupsPer}
+                                className={styles.treeDataCheckbox}
+                            />
                         </>
                     )
                 }
@@ -443,9 +526,22 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                         layout="vertical"
                         onFinish={handleOnFinishPermissionEdit}
                         requiredMark={false}
-                        initialValues={{ full_name: item.full_name, email: item.email, phone_number: item.phone_number, team: item.team, role: item.role }}
+                        initialValues={{
+                            full_name: item.full_name,
+                            email: item.email,
+                            phone_number: item.phone_number,
+                            team: item.team,
+                            role: item.role
+                        }}
                     >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', paddingLeft: '10%' }}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                flexWrap: 'wrap',
+                                paddingLeft: '10%'
+                            }}
+                        >
                             <div style={{ flex: 1 }}>
                                 <Form.Item
                                     label={<Typography.Text style={{ fontWeight: 'bold' }}>Họ và tên đệm <span style={{ color: 'red' }}>(*)</span></Typography.Text>}
@@ -528,16 +624,21 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                                                 {menu}
                                                 <div style={{ paddingLeft: '14px', paddingRight: '14px', paddingBottom: '10px' }}>
                                                     <hr></hr>
-                                                    {/* <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                        <Input placeholder="Nhập team mới tại đây" />
-                                                        <Button type="primary" style={{ marginLeft: '10px' }}>Thêm</Button>
-                                                    </div> */}
                                                     {clickAddNewTeam === false ? (
-                                                        <Button style={{ padding: 'unset', color: 'rgba(0,0,0,0.4)' }} type='text' onClick={() => setClickAddNewTeam(true)}>Thêm team mới</Button>
+                                                        <Button
+                                                            style={{ padding: 'unset', color: 'rgba(0,0,0,0.4)' }}
+                                                            type='text'
+                                                            onClick={() => setClickAddNewTeam(true)}
+                                                        >
+                                                            Thêm team mới
+                                                        </Button>
                                                     ) : (
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                             <Input placeholder="Nhập team mới tại đây" />
-                                                            <Button type="primary" style={{ marginLeft: '10px' }}>Thêm</Button>
+                                                            <Space>
+                                                                <SaveOutlined style={{ marginLeft: 10, fontSize: 14 }} />
+                                                                <CloseOutlined style={{ fontSize: 14 }} onClick={() => setClickAddNewTeam(false)} />
+                                                            </Space>
                                                         </div>
                                                     )}
                                                 </div>
@@ -568,17 +669,17 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                 footer={false}
                 centered
             >
-                <Form layout="vertical" onFinish={handleOnFinishPermissionAddNew}>
+                <Form layout="vertical" onFinish={handleOnFinishPermissionAddNew} requiredMark={false}>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div style={{ flex: 1 }}>
                             <Form.Item
-                                label={<Typography.Text style={{ fontWeight: 'bold' }}>Tên nhóm quyền</Typography.Text>}
+                                label={<Typography.Text style={{ fontWeight: 'bold' }}>Tên nhóm quyền <span style={{ color: 'red' }}>(*)</span></Typography.Text>}
                                 name="role_code"
                                 className={styles.addPermissionInputPlaceholder}
                                 rules={[
                                     {
                                         required: true,
-                                        message: 'Vui lòng nhập tên nhóm'
+                                        message: 'Không được để trống thông tin này'
                                     },
                                     {
                                         max: 30,
@@ -593,7 +694,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                                         span: 24
                                     },
                                     md: {
-                                        span: 7,
+                                        span: 10,
                                     },
                                 }}
                                 wrapperCol={{
@@ -624,7 +725,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({ setClickUpdatePer
                                         span: 24
                                     },
                                     md: {
-                                        span: 7,
+                                        span: 10,
                                     },
                                 }}
                                 wrapperCol={{
