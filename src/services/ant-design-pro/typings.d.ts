@@ -21,6 +21,36 @@ declare namespace API {
     };
     address?: string;
     phone?: string;
+    department?: string;
+    equipment?: {
+      active_time: string;
+      device: string;
+      location: string;
+      status: boolean;
+    }[];
+    home_address?: string;
+    id?: string;
+    image?: string;
+    ip_phone?: string;
+    latest_update_password?: string;
+    level?: string;
+    notification?: {
+      critic_issue?: boolean;
+      incoming_call?: boolean;
+      missed_call?: boolean;
+      night_plan?: boolean;
+      overdue_message?: boolean;
+      shift?: boolean;
+    };
+    organization?: string;
+    phone_number?: string;
+    role?: string;
+    screen_mode?: {
+      dark_mode?: boolean;
+      simple_mode?: boolean;
+    };
+    status?: string;
+    work_address?: string;
   };
 
   type LoginResult = {

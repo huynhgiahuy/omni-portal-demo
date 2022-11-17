@@ -130,3 +130,18 @@ export async function requestDeleteUserPermission(user_id: string) {
     },
   });
 }
+
+export async function requestReadRoleAndPerm(data?: {
+  role_code?: string;
+  permission_code?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/read_role_and_perm`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data,
+  });
+}

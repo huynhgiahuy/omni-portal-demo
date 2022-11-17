@@ -1,50 +1,62 @@
 import React, { useState } from 'react';
 import { Segmented } from 'antd';
-import { UserOutlined, ContainerOutlined, TeamOutlined } from '@ant-design/icons';
 import styles from '../setting/style.less';
 import PersonalInfo from './PersonalInfo';
 import ShiftInfo from './ShiftInfo';
 import PermissionEdit from './PermissionEdit';
+import HistoryCall from '../report/HistoryCall';
+import PermissionRole from './PermissionRole';
 
 const Setting: React.FC = () => {
   const [isChangeView, setChangeView] = useState<String | Number>('Thông tin cá nhân');
   const handleChangeSegmented = (value: String | Number) => {
     setChangeView(value);
-  }
+  };
   return (
     <>
       <Segmented
-        size='middle'
+        size="middle"
         options={[
           {
             label: 'Thông tin cá nhân',
             value: 'Thông tin cá nhân',
-            icon: <UserOutlined />
           },
           {
-            label: 'Thông tin ca trực',
-            value: 'Thông tin ca trực',
-            icon: <ContainerOutlined />
+            label: 'Thông tin người dùng',
+            value: 'Thông tin người dùng',
           },
           {
             label: 'Nhóm quyền',
             value: 'Nhóm quyền',
-            icon: <TeamOutlined />
+          },
+          {
+            label: 'Lịch sử cuộc gọi',
+            value: 'Lịch sử cuộc gọi',
+          },
+          {
+            label: 'Danh bạ',
+            value: 'Danh bạ',
           },
         ]}
         className={styles.antSegmented}
         onChange={handleChangeSegmented}
-        style={{ backgroundColor: "#e3eaf4" }}
+        style={{ backgroundColor: '#e3eaf4' }}
       />
       {isChangeView === 'Thông tin cá nhân' ? (
         <PersonalInfo />
       ) : isChangeView === 'Thông tin ca trực' ? (
         <ShiftInfo />
+      ) : isChangeView === 'Lịch sử cuộc gọi' ? (
+        <HistoryCall />
+      ) : isChangeView === 'Danh bạ' ? (
+        <HistoryCall />
+      ) : isChangeView === 'Nhóm quyền' ? (
+        <PermissionRole />
       ) : (
         <PermissionEdit />
       )}
     </>
-  )
-}
+  );
+};
 
 export default Setting;
