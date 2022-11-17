@@ -30,7 +30,7 @@ import {
   TREE_DATA_NQ,
 } from '@/constants';
 
-interface PermissionEdit_Update {
+interface PermissionRole_Update {
   setClickUpdatePermission: (state: boolean) => void;
   userKey: string;
 }
@@ -110,7 +110,7 @@ const submitFormLayout = {
   },
 };
 
-const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
+const PermissionRoleUpdate: React.FC<PermissionRole_Update> = ({
   setClickUpdatePermission,
   userKey,
 }) => {
@@ -742,4 +742,4 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
   );
 };
 
-export default PermissionEdit_Add;
+export default PermissionRoleUpdate;

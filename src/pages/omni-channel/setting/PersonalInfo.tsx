@@ -68,7 +68,6 @@ const PersonalInfo: React.FC = () => {
   };
 
   const handleOnFinishEditUser = (values: any) => {
-    setEditUser(false);
     const res = requestEditUserInfoSubmit(
       values.name ? values.name : initialState?.currentUser?.name,
       values.role ? values.role : initialState?.currentUser?.role,
@@ -88,6 +87,7 @@ const PersonalInfo: React.FC = () => {
           currentUser: result.data[0],
         }));
         message.success('Cập nhập thành công');
+        setEditUser(false);
       } else {
         message.error('Lưu không thành công, vui lòng thử lại');
         return;
@@ -346,7 +346,7 @@ const PersonalInfo: React.FC = () => {
                 <hr></hr>
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>
-                    Số điện thoại cá nhân{' '}
+                    Số điện thoại cá nhân
                     {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
                   </Typography.Text>
                   {isEditUser === true ? (
@@ -361,6 +361,10 @@ const PersonalInfo: React.FC = () => {
                         },
                         {
                           pattern: new RegExp('(0[3|5|7|8|9])+([0-9]{8})'),
+                          message: 'Số điện thoại không hợp lệ',
+                        },
+                        {
+                          max: 10,
                           message: 'Số điện thoại không hợp lệ',
                         },
                       ]}

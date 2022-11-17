@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Card, Table, Space, Modal, Spin, message } from 'antd';
+import { Card, Table, Space, Modal, Spin, message, Input, Row, Col, Button } from 'antd';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import PermissionEdit_Update from './PermissionEdit_Update';
 import {
   requestAllUserPermission,
@@ -10,6 +10,7 @@ import {
   requestReadRoleAndPerm,
 } from './services';
 import { useRequest } from 'umi';
+import { debounce } from 'lodash';
 
 interface DataAllRolePermission {
   code: string;
@@ -32,16 +33,14 @@ interface PaginationProps {
 }
 
 const PermissionRole: React.FC = () => {
-  const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
-  const [userKey, setUserKey] = useState<string | any>();
   const [listAllRolePermission, setListAllRolePermission] = useState<DataAllRolePermission[]>([]);
-  const { data } = useRequest(
+  const { data: dataReadRoleAndPerm, refresh: mutateReadRoleAndPerm } = useRequest(
     () => {
       return requestReadRoleAndPerm({});
     },
     {
       onSuccess: (res) => {
-        setListAllRolePermission(data);
+        setListAllRolePermission(dataReadRoleAndPerm);
       },
       onError: (error) => {
         message.error('Error');
@@ -75,12 +74,6 @@ const PermissionRole: React.FC = () => {
     }
   };
 
-  const handleClickUpdatePermission = () => {
-    setClickUpdatePermission(true);
-  };
-  const handleGetKeyUser = (key: any) => {
-    setUserKey(key);
-  };
   const handleClickDeleteUser = (user_id: string) => {
     Modal.confirm({
       title: 'Bạn có muốn xóa user này?',
@@ -109,12 +102,14 @@ const PermissionRole: React.FC = () => {
       key: 'stt',
       align: 'center',
       width: '20px',
+      render: (text, record, idx) => {
+        return idx + 1;
+      },
     },
     {
       title: 'Tên vai trò',
       dataIndex: 'code',
       key: 'code',
-      align: 'center',
       width: '200px',
       // render: (text, record) => (
       //     <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
@@ -133,39 +128,40 @@ const PermissionRole: React.FC = () => {
       title: 'Mô tả vai trò',
       dataIndex: 'desc',
       key: 'desc',
-      align: 'center',
+      render: (text) => {
+        return text ? text : '-';
+      },
     },
     {
       title: 'Người tạo',
       dataIndex: 'team',
       key: 'team',
-      align: 'center',
+      render: (text) => {
+        return text ? text : '-';
+      },
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'role',
       key: 'role',
-      align: 'center',
+      render: (text) => {
+        return text ? text : '-';
+      },
     },
     {
       title: 'Ngày sửa gần nhất',
       dataIndex: 'active',
       key: 'active',
-      align: 'center',
+      render: (text) => {
+        return text ? text : '-';
+      },
     },
 
     {
       title: '',
-      align: 'center',
       render: (text: string, record: DataAllRolePermission) => (
         <Space size="large">
-          <EditOutlined
-            style={{ color: '#1890FF', fontSize: '20px' }}
-            onClick={() => {
-              handleClickUpdatePermission();
-              handleGetKeyUser(record.id);
-            }}
-          />
+          <EditOutlined style={{ color: '#1890FF', fontSize: '20px' }} onClick={() => {}} />
           <DeleteOutlined
             style={{ color: '#F5222D', fontSize: '20px' }}
             onClick={() => {
@@ -178,47 +174,71 @@ const PermissionRole: React.FC = () => {
   ];
   return (
     <>
-      {isClickUpdatePermission === false ? (
-        <>
-          <Card className={styles.detailCardLayoutNoMar}>
-            <Table
-              dataSource={listAllRolePermission}
-              columns={columns}
-              style={{ paddingLeft: '20px' }}
-              className={styles.permissionTable}
-              onChange={handleTableChange}
-              pagination={{
-                ...pagination,
-                total: listAllRolePermission?.length,
-                locale: {
-                  items_per_page: '/ Trang',
-                  jump_to: 'Đến trang',
-                  next_page: 'Trang sau',
-                  prev_page: 'Trang trước',
-                  next_3: '3 trang sau',
-                  next_5: '5 trang sau',
-                  prev_3: '3 trang trước',
-                  prev_5: '5 trang trước',
-                },
-              }}
-              scroll={{ x: 300 }}
-              loading={{
-                indicator: (
-                  <div>
-                    <Spin />
-                  </div>
-                ),
-                spinning: !listAllRolePermission,
-              }}
-            />
-          </Card>
-        </>
-      ) : (
-        <PermissionEdit_Update
-          setClickUpdatePermission={setClickUpdatePermission}
-          userKey={userKey}
+      <Row>
+        <Col span={16}></Col>
+        <Col span={4}>
+          <Input
+            key="search"
+            prefix={<SearchOutlined />}
+            placeholder="Nhập từ khoá"
+            allowClear
+            onChange={debounce(
+              (e) => {
+                const { value } = e.target;
+                console.log(value);
+              },
+              500,
+              {
+                trailing: true,
+                leading: false,
+              },
+            )}
+          />
+        </Col>
+
+        <Col span={4}>
+          <Button
+            onClick={() => {
+              mutateReadRoleAndPerm();
+            }}
+          >
+            122444
+          </Button>
+        </Col>
+      </Row>
+
+      <Card className={styles.detailCardLayoutNoMar}>
+        <Table
+          dataSource={listAllRolePermission}
+          columns={columns}
+          style={{ paddingLeft: '20px' }}
+          className={styles.permissionTable}
+          onChange={handleTableChange}
+          pagination={{
+            ...pagination,
+            total: listAllRolePermission?.length,
+            locale: {
+              items_per_page: '/ Trang',
+              jump_to: 'Đến trang',
+              next_page: 'Trang sau',
+              prev_page: 'Trang trước',
+              next_3: '3 trang sau',
+              next_5: '5 trang sau',
+              prev_3: '3 trang trước',
+              prev_5: '5 trang trước',
+            },
+          }}
+          scroll={{ x: 300 }}
+          loading={{
+            indicator: (
+              <div>
+                <Spin />
+              </div>
+            ),
+            spinning: !listAllRolePermission,
+          }}
         />
-      )}
+      </Card>
     </>
   );
 };
