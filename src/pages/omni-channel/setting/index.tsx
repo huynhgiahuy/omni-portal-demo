@@ -6,6 +6,7 @@ import ShiftInfo from './ShiftInfo';
 import PermissionEdit from './PermissionEdit';
 import HistoryCall from '../report/HistoryCall';
 import PermissionRole from './PermissionRole';
+import PhoneBook from '../report/PhoneBook';
 
 const Setting: React.FC = () => {
   const [isChangeView, setChangeView] = useState<String | Number>('Thông tin cá nhân');
@@ -49,7 +50,7 @@ const Setting: React.FC = () => {
       ) : isChangeView === 'Lịch sử cuộc gọi' ? (
         <HistoryCall />
       ) : isChangeView === 'Danh bạ' ? (
-        <HistoryCall />
+        <PhoneBook />
       ) : isChangeView === 'Nhóm quyền' ? (
         <PermissionRole />
       ) : (
