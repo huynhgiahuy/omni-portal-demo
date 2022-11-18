@@ -29,8 +29,8 @@
         component: './omni-channel/report/index',
       },
       {
-        path: '/omni-channel/setting',
-        name: 'setting',
+        path: '/omni-channel/profile',
+        name: 'profile',
         component: './omni-channel/setting/index',
       },
     ],

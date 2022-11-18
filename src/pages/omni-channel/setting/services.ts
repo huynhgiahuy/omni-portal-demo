@@ -34,7 +34,7 @@ export async function requestListUserInfo() {
 
 export async function requestEditUserInfo(
   name: string,
-  role: string,
+  position: string,
   department: string,
   level: string,
   organization: string,
@@ -50,7 +50,7 @@ export async function requestEditUserInfo(
     },
     data: {
       name,
-      role,
+      position,
       department,
       level,
       organization,
@@ -72,10 +72,9 @@ export async function requestGroupPermissionData() {
   });
 }
 
-export async function requestAddNewUser(
+export async function requestEditUser(
   full_name: string,
   email: string,
-  phone: string,
   team: string,
   role: string,
 ) {
@@ -87,7 +86,6 @@ export async function requestAddNewUser(
     data: {
       full_name,
       email,
-      phone,
       team,
       role,
     },
@@ -95,40 +93,79 @@ export async function requestAddNewUser(
 }
 
 export async function requestAllUserPermission(limit: number, offset: number) {
-  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/get_user_permission`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
+  return request(
+    `${api.UMI_API_BASE_URL}/user-service/api/settings/user/get_user_permission_info_data`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        limit,
+        offset,
+      },
     },
-    data: {
-      limit,
-      offset,
-    },
-  });
+  );
 }
 
 export async function requestDetailUserPermission(limit: number, offset: number, user_id: string) {
-  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/get_user_permission`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
+  return request(
+    `${api.UMI_API_BASE_URL}/user-service/api/settings/user/get_user_permission_info_data`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        limit,
+        offset,
+        user_id,
+      },
     },
-    data: {
-      limit,
-      offset,
-      user_id,
-    },
-  });
+  );
 }
 
 export async function requestDeleteUserPermission(user_id: string) {
-  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/delete_user_permission`, {
+  return request(
+    `${api.UMI_API_BASE_URL}/user-service/api/settings/user/delete_user_permission_info_data`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        user_id,
+      },
+    },
+  );
+}
+
+export async function requestReadRoleAndPerm(data?: {
+  role_code?: string;
+  permission_code?: string;
+  limit?: number;
+  offset?: number;
+}) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/read_role_and_perm`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    data: {
-      user_id,
-    },
+    data,
   });
+}
+
+export async function requestDeleteRoleAndPermission(role_id: string) {
+  return request(
+    `${api.UMI_API_BASE_URL}/user-service/api/authorization/delete_role_and_permission`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        role_id,
+      },
+    },
+  );
 }

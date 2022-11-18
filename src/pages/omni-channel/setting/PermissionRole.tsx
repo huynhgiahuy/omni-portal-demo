@@ -1,56 +1,78 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Table,
-  Typography,
-  Form,
-  Button,
-  Input,
-  Select,
-  Modal,
-  Tree,
-  Checkbox,
   Space,
+  Modal,
+  Spin,
+  message,
+  Input,
+  Row,
+  Col,
+  Button,
+  Form,
+  Typography,
+  Checkbox,
+  Tree,
 } from 'antd';
-import { SaveOutlined, CloseOutlined } from '@ant-design/icons';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import {
+  EditOutlined,
+  DeleteOutlined,
+  SearchOutlined,
+  PlusSquareFilled,
+  CloseCircleFilled,
+} from '@ant-design/icons';
+import {
+  requestDeleteRoleAndPermission,
   requestGroupPermissionData,
   requestListUserRole,
-  requestDetailUserPermission,
-  requestEditUser,
+  requestReadRoleAndPerm,
 } from './services';
+import { useRequest } from 'umi';
+import { debounce } from 'lodash';
 import { dataPermissionTable } from './FakeData';
 import {
-  OPTIONS_PERMISSION_DB,
-  OPTIONS_PERMISSION_IM,
-  OPTIONS_PERMISSION_EM,
   OPTIONS_PERMISSION_CM,
-  OPTIONS_PERMISSION_RF,
-  OPTIONS_PERMISSION_DESIGN,
-  OPTIONS_PERMISSION_DB_VALUE,
-  OPTIONS_PERMISSION_IM_VALUE,
-  OPTIONS_PERMISSION_EM_VALUE,
   OPTIONS_PERMISSION_CM_VALUE,
-  OPTIONS_PERMISSION_RF_VALUE,
+  OPTIONS_PERMISSION_DB,
+  OPTIONS_PERMISSION_DB_VALUE,
+  OPTIONS_PERMISSION_DESIGN,
   OPTIONS_PERMISSION_DESIGN_VALUE,
-  TREE_DATA_TKC,
+  OPTIONS_PERMISSION_EM,
+  OPTIONS_PERMISSION_EM_VALUE,
+  OPTIONS_PERMISSION_IM,
+  OPTIONS_PERMISSION_IM_VALUE,
+  OPTIONS_PERMISSION_RF,
+  OPTIONS_PERMISSION_RF_VALUE,
   TREE_DATA_BGCT,
   TREE_DATA_KHD,
   TREE_DATA_LSCG,
+  TREE_DATA_NQ,
+  TREE_DATA_TKC,
   TREE_DATA_TTCN,
   TREE_DATA_TTCT,
-  TREE_DATA_NQ,
 } from '@/constants';
 
-interface PermissionEdit_Update {
-  setClickUpdatePermission: (state: boolean) => void;
-  userKey: string;
+interface DataAllRolePermission {
+  code: string;
+  desc: string;
+  id: string;
+  permission_list: {
+    code: string;
+    desc: string;
+    group: string;
+    id: string;
+  }[];
 }
-interface DataTypePermissionTable {
-  key: string;
-  module: string;
+
+interface PaginationProps {
+  current: number;
+  pageSize: number;
+  showSizeChanger: boolean;
+  showQuickJumper: boolean;
+  pageSizeOptions: string[];
 }
 
 interface GroupPermission {
@@ -59,87 +81,46 @@ interface GroupPermission {
   id?: string;
 }
 
+interface RoleIdProps extends GroupPermission {
+  permission_list: {
+    code: string;
+    desc: string;
+    group: string;
+    id: string;
+  }[];
+}
+
+interface DataTypePermissionTable {
+  key: string;
+  module: string;
+}
+
 interface TreeData {
   title: string;
   key: string;
 }
 
-interface EditDetailUser {
-  data: any[];
-  error?: string;
-  error_code?: string;
-  length: number;
-  success: boolean;
-}
-
-interface EditDetailUserData {
-  user_id?: string;
-  email?: string;
-  full_name: string;
-  phone_number: string;
-  team: string;
-  role: string;
-  active: string;
-  updated: string;
-}
-
-const formItemLayout = {
-  labelCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 24,
-    },
-    md: {
-      span: 7,
-    },
-  },
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 24,
-    },
-    md: {
-      span: 18,
-    },
-  },
-};
-
-const submitFormLayout = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 10,
-    },
-    md: {
-      span: 10,
-      offset: 11,
-    },
-  },
-};
-
-const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
-  setClickUpdatePermission,
-  userKey,
-}) => {
-  const [listGroupPermission, setListGroupPermission] = useState<GroupPermission[]>([]);
+const PermissionRole: React.FC = () => {
+  const [listAllRolePermission, setListAllRolePermission] = useState<DataAllRolePermission[]>([]);
   const [isAddNewPermission, setAddNetPermission] = useState(false);
-  const [listRoleCode, setListRoleCode] = useState<string | any>([]);
+  const [isEditRole, setIsEditRole] = useState(false);
 
+  const [valueCheckboxGeneralStatistic, setValueCheckboxGeneralStatistic] = useState<string | any>(
+    [],
+  );
+  const [checkAllDB, setCheckAllDB] = useState(false);
   const [selectListDB, setSelectListDB] = useState<string | any>([]);
   const [indeterminateDB, setIndeterminateDB] = useState(false);
-  const [checkAllDB, setCheckAllDB] = useState(false);
+  const [listRoleCode, setListRoleCode] = useState<string | any>([]);
+  const [listGroupPermission, setListGroupPermission] = useState<GroupPermission[]>([]);
+  const [dataRoleId, setDataRoleId] = useState<RoleIdProps>();
 
-  console.log(selectListDB);
-
-  const [selectListIM, setSelectListIM] = useState<string | any>([]);
-  const [indeterminateIM, setIndeterminateIM] = useState(false);
-  const [checkAllIM, setCheckAllIM] = useState(false);
+  const [valueCheckboxTransferShift, setValueCheckboxTransferShift] = useState<string | any>([]);
+  const [valueCheckboxNightShift, setValueCheckboxNightShift] = useState<string | any>([]);
+  const [valueCheckboxHistoryCall, setValueCheckboxHistoryCall] = useState<string | any>([]);
+  const [valueCheckboxTTCN, setValueCheckboxTTCN] = useState<string | any>([]);
+  const [valueCheckboxTTCT, setValueCheckboxTTCT] = useState<string | any>([]);
+  const [valueCheckboxGroupsPer, setValueCheckboxGroupsPer] = useState<string | any>([]);
 
   const [selectListEM, setSelectListEM] = useState<string | any>([]);
   const [indeterminateEM, setIndeterminateEM] = useState(false);
@@ -157,114 +138,92 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
   const [indeterminateDesign, setIndeterminateDesign] = useState(false);
   const [checkAllDesign, setCheckAllDesign] = useState(false);
 
-  const [valueCheckboxGeneralStatistic, setValueCheckboxGeneralStatistic] = useState<string | any>(
-    [],
+  const [selectListIM, setSelectListIM] = useState<string | any>([]);
+  const [indeterminateIM, setIndeterminateIM] = useState(false);
+  const [checkAllIM, setCheckAllIM] = useState(false);
+
+  const { data: dataReadRoleAndPerm, refresh: refreshReadRoleAndPerm } = useRequest(
+    () => {
+      return requestReadRoleAndPerm({});
+    },
+    {
+      onSuccess: (res) => {
+        setListAllRolePermission(dataReadRoleAndPerm);
+      },
+      onError: (error) => {
+        message.error('Error');
+        console.log(error);
+      },
+    },
   );
-  const [valueCheckboxTransferShift, setValueCheckboxTransferShift] = useState<string | any>([]);
-  const [valueCheckboxNightShift, setValueCheckboxNightShift] = useState<string | any>([]);
-  const [valueCheckboxHistoryCall, setValueCheckboxHistoryCall] = useState<string | any>([]);
-  const [valueCheckboxTTCN, setValueCheckboxTTCN] = useState<string | any>([]);
-  const [valueCheckboxTTCT, setValueCheckboxTTCT] = useState<string | any>([]);
-  const [valueCheckboxGroupsPer, setValueCheckboxGroupsPer] = useState<string | any>([]);
 
-  const [listEditUserPermission, setListEditUserPermission] = useState<EditDetailUser>();
-  const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
+  const { run: runDeleteRoleAndPermission } = useRequest(
+    (id: string) => requestDeleteRoleAndPermission(id),
+    {
+      onSuccess: () => {
+        message.success('Xoá thành công');
+        refreshReadRoleAndPerm();
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      manual: true,
+    },
+  );
 
-  const fetchListUserRole = async (role_code: any, role_desc: any) => {
-    const res = await requestListUserRole(
-      valueCheckboxGeneralStatistic.concat(
-        valueCheckboxTransferShift,
-        valueCheckboxNightShift,
-        valueCheckboxHistoryCall,
-        valueCheckboxTTCN,
-        valueCheckboxTTCT,
-        valueCheckboxGroupsPer,
-      ),
-      role_code,
-      role_desc,
-    );
-    return res;
+  const [pagination, setPagination] = useState<PaginationProps>({
+    current: 1,
+    pageSize: 10,
+    showSizeChanger: true,
+    showQuickJumper: true,
+    pageSizeOptions: ['10', '20', '30', '50'],
+  });
+
+  const handleClickDeleteRole = (role_id: string) => {
+    Modal.confirm({
+      title: 'Thao tác xoá?',
+      content: 'Bạn có chắc chắn muốn xoá thông tin này',
+      okText: 'Xoá',
+      okType: 'danger',
+      okButtonProps: {
+        type: 'primary',
+      },
+      icon: <CloseCircleFilled style={{ color: 'red', fontSize: 22 }} />,
+      onOk() {
+        {
+          runDeleteRoleAndPermission(role_id);
+        }
+      },
+
+      cancelText: 'Hủy',
+    });
   };
-
-  const fetchGroupPermissionData = async () => {
-    const resPer = await requestGroupPermissionData();
-    if (resPer.success === true) {
-      setListGroupPermission(resPer.data);
-      setListRoleCode(resPer.data?.map((item: GroupPermission) => item.code));
-
-      const fetchListUserRole = async (role_code: any, role_desc: any) => {
-        const res = await requestListUserRole(
-          valueCheckboxGeneralStatistic.concat(
-            valueCheckboxTransferShift,
-            valueCheckboxNightShift,
-            valueCheckboxHistoryCall,
-            valueCheckboxTTCN,
-            valueCheckboxTTCT,
-            valueCheckboxGroupsPer,
-          ),
-          role_code,
-          role_desc,
-        );
-        return res;
-      };
-    }
+  const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
+    setPagination({
+      ...pagination,
+      current: newPagination.current,
+      pageSize: newPagination.pageSize,
+    });
   };
-
-  const fetchDetaiUserPermission = async () => {
-    const resDetail = await requestDetailUserPermission(3, 1, userKey);
-    if (resDetail.success === true) {
-      setListEditUserPermission(resDetail);
-    }
-  };
-
-  useEffect(() => {
-    fetchGroupPermissionData();
-    fetchDetaiUserPermission();
-  }, []);
-
-  const handleSubmitForm = async (full_name: string, email: string, team: string, role: string) => {
-    const resSubmit = await requestEditUser(full_name, email, team, role);
-    return resSubmit;
-  };
-
-  useEffect(() => {
-    fetchGroupPermissionData();
-    fetchDetaiUserPermission();
-  }, []);
 
   const handleAddNewPermission = () => {
     setAddNetPermission(true);
+    setIsEditRole(false);
   };
 
-  const handleOnFinishPermissionEdit = (values: any) => {
-    setClickUpdatePermission(false);
-    handleSubmitForm(values.full_name, values.email, values.team, values.role);
-  };
-
-  const handleCancleUpdatePermission = () => {
-    setClickUpdatePermission(false);
+  const handleEditRole = (data: RoleIdProps) => {
+    setAddNetPermission(true);
+    setIsEditRole(true);
   };
 
   const handleCancleAddNewPermission = () => {
     setAddNetPermission(false);
   };
 
-  const handleCheckFilterDB = (list: any) => {
-    setIndeterminateDB(!!list.length && list.length < OPTIONS_PERMISSION_DB.length);
-    setCheckAllDB(list.length === OPTIONS_PERMISSION_DB.length);
-    setSelectListDB(list);
-  };
-
   const handleCheckAllFilterDB = (e: any) => {
     setSelectListDB(e.target.checked ? OPTIONS_PERMISSION_DB_VALUE : []);
     setIndeterminateDB(false);
     setCheckAllDB(e.target.checked);
-  };
-
-  const handleCheckFilterIM = (list: any) => {
-    setIndeterminateIM(!!list.length && list.length < OPTIONS_PERMISSION_IM.length);
-    setCheckAllIM(list.length === OPTIONS_PERMISSION_IM.length);
-    setSelectListIM(list);
   };
 
   const handleCheckAllFilterIM = (e: any) => {
@@ -320,7 +279,19 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
     setIndeterminateDesign(false);
     setCheckAllDesign(e.target.checked);
   };
-  ///
+
+  const handleCheckFilterDB = (list: any) => {
+    setIndeterminateDB(!!list.length && list.length < OPTIONS_PERMISSION_DB.length);
+    setCheckAllDB(list.length === OPTIONS_PERMISSION_DB.length);
+    setSelectListDB(list);
+  };
+
+  const handleCheckFilterIM = (list: any) => {
+    setIndeterminateIM(!!list.length && list.length < OPTIONS_PERMISSION_IM.length);
+    setCheckAllIM(list.length === OPTIONS_PERMISSION_IM.length);
+    setSelectListIM(list);
+  };
+
   const onCheckDataTreeGeneralStatistic = (checkedKeys: any, info: any) => {
     setValueCheckboxGeneralStatistic(info.node?.children?.map((item: TreeData) => item.key));
   };
@@ -343,8 +314,34 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
     setValueCheckboxGroupsPer(info.node?.children?.map((item: TreeData) => item.key));
   };
 
+  const fetchListUserRole = async (role_code: any, role_desc: any) => {
+    const res = await requestListUserRole(
+      valueCheckboxGeneralStatistic.concat(
+        valueCheckboxTransferShift,
+        valueCheckboxNightShift,
+        valueCheckboxHistoryCall,
+        valueCheckboxTTCN,
+        valueCheckboxTTCT,
+        valueCheckboxGroupsPer,
+      ),
+      role_code,
+      role_desc,
+    );
+    return res;
+  };
+
+  const fetchGroupPermissionData = async () => {
+    const resPer = await requestGroupPermissionData();
+    if (resPer.success === true) {
+      setListGroupPermission(resPer.data);
+      setListRoleCode(resPer.data?.map((item: GroupPermission) => item.code));
+    }
+  };
+
+  const dataNameCodeRole = dataReadRoleAndPerm?.map((role: { code: string }) => role?.code);
+
   const handleOnFinishPermissionAddNew = (values: any) => {
-    if (listRoleCode.includes(values.role_code)) {
+    if (dataNameCodeRole.includes(values.role_code)) {
       Modal.warning({
         title: 'Thông báo',
         content: 'Nhóm quyền vừa nhập đã có. Vui lòng nhập tên nhóm quyền khác!',
@@ -356,6 +353,89 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
       fetchGroupPermissionData();
     }
   };
+
+  const columns: ColumnsType<DataAllRolePermission> = [
+    {
+      title: '#',
+      dataIndex: 'stt',
+      key: 'stt',
+      align: 'center',
+      width: '20px',
+      render: (text, record, idx) => {
+        return idx + 1;
+      },
+    },
+    {
+      title: 'Tên vai trò',
+      dataIndex: 'code',
+      key: 'code',
+      width: '200px',
+      // render: (text, record) => (
+      //     <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+      //         <div>
+      //             <Avatar src={ImageAvatar} size="large" />
+      //         </div>
+      //         <div>
+      //             <Typography.Text>{record.thanhvien}</Typography.Text>
+      //             <br></br>
+      //             <Typography.Text style={{ paddingLeft: '10px', fontSize: '10px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 400 }}>HuyenLM2@fpt.com.vn</Typography.Text>
+      //         </div>
+      //     </div>
+      // )
+    },
+    {
+      title: 'Mô tả vai trò',
+      dataIndex: 'desc',
+      key: 'desc',
+      render: (text) => {
+        return text ? text : '-';
+      },
+    },
+    {
+      title: 'Người tạo',
+      dataIndex: 'team',
+      key: 'team',
+      render: (text) => {
+        return text ? text : '-';
+      },
+    },
+    {
+      title: 'Ngày tạo',
+      dataIndex: 'role',
+      key: 'role',
+      render: (text) => {
+        return text ? text : '-';
+      },
+    },
+    {
+      title: 'Ngày sửa gần nhất',
+      dataIndex: 'active',
+      key: 'active',
+      render: (text) => {
+        return text ? text : '-';
+      },
+    },
+
+    {
+      title: '',
+      render: (text: string, record: DataAllRolePermission) => (
+        <Space size="large">
+          <EditOutlined
+            style={{ color: '#1890FF', fontSize: '20px' }}
+            onClick={() => {
+              handleEditRole(record);
+            }}
+          />
+          <DeleteOutlined
+            style={{ color: '#F5222D', fontSize: '20px' }}
+            onClick={() => {
+              handleClickDeleteRole(record.id);
+            }}
+          />
+        </Space>
+      ),
+    },
+  ];
 
   const columnsPermissionTable: ColumnsType<DataTypePermissionTable> = [
     {
@@ -542,209 +622,83 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
       },
     },
   ];
-
   return (
     <>
+      <Row style={{ marginTop: 15 }}>
+        <Col span={16}></Col>
+        <Col span={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Space>
+            <Input
+              key="search"
+              prefix={<SearchOutlined />}
+              placeholder="Nhập từ khoá"
+              allowClear
+              onChange={debounce(
+                (e) => {
+                  const { value } = e.target;
+                  console.log(value);
+                },
+                500,
+                {
+                  trailing: true,
+                  leading: false,
+                },
+              )}
+            />
+            <PlusSquareFilled
+              style={{ fontSize: 32, color: '#478D46' }}
+              onClick={handleAddNewPermission}
+            />
+          </Space>
+        </Col>
+      </Row>
+
       <Card className={styles.detailCardLayoutNoMar}>
-        {listEditUserPermission &&
-          listEditUserPermission.data[0]?.map((item: EditDetailUserData) => (
-            <Form
-              {...formItemLayout}
-              layout="vertical"
-              onFinish={handleOnFinishPermissionEdit}
-              requiredMark={false}
-              initialValues={{
-                full_name: item.full_name,
-                email: item.email,
-                phone_number: item.phone_number,
-                team: item.team,
-                role: item.role,
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  paddingLeft: '10%',
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <Form.Item
-                    label={
-                      <Typography.Text style={{ fontWeight: 'bold' }}>
-                        Họ và tên đệm <span style={{ color: 'red' }}>(*)</span>
-                      </Typography.Text>
-                    }
-                    name="full_name"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Vui lòng nhập họ tên',
-                      },
-                      {
-                        min: 5,
-                        message: 'Họ tên tối thiểu 5 ký tự',
-                      },
-                      {
-                        max: 50,
-                        message: 'Họ tên tối đa 50 ký tự',
-                      },
-                    ]}
-                  >
-                    <Input disabled={true} style={{ fontWeight: 'bold' }} />
-                  </Form.Item>
-                  <Form.Item
-                    label={
-                      <Typography.Text style={{ fontWeight: 'bold' }}>
-                        Nhóm quyền <span style={{ color: 'red' }}>(*)</span>
-                      </Typography.Text>
-                    }
-                    name="role"
-                    initialValue={{ name: item.role }}
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Vui lòng nhập nhóm quyền',
-                      },
-                    ]}
-                  >
-                    <Select
-                      dropdownRender={(menu) => (
-                        <>
-                          {menu}
-                          <div
-                            style={{
-                              paddingLeft: '14px',
-                              paddingRight: '14px',
-                              paddingBottom: '10px',
-                            }}
-                          >
-                            <hr></hr>
-                            <Button
-                              style={{ padding: 'unset', color: 'rgba(0,0,0,0.4)' }}
-                              type="text"
-                              onClick={handleAddNewPermission}
-                            >
-                              Thêm quyền mới
-                            </Button>
-                          </div>
-                        </>
-                      )}
-                    >
-                      {listGroupPermission &&
-                        listGroupPermission.map((item: GroupPermission) => (
-                          <Select.Option value={item.code}>{item.code}</Select.Option>
-                        ))}
-                    </Select>
-                  </Form.Item>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <Form.Item
-                    label={
-                      <Typography.Text style={{ fontWeight: 'bold' }}>
-                        Email <span style={{ color: 'red' }}>(*)</span>
-                      </Typography.Text>
-                    }
-                    name="email"
-                    rules={[
-                      {
-                        type: 'email',
-                        message: 'Vui lòng nhập email hợp lệ',
-                      },
-                      {
-                        required: true,
-                        message: 'Vui lòng nhập email',
-                      },
-                    ]}
-                  >
-                    <Input disabled={true} style={{ fontWeight: 'bold' }} />
-                  </Form.Item>
-                  <Form.Item
-                    label={
-                      <Typography.Text style={{ fontWeight: 'bold' }}>
-                        Team <span style={{ color: 'red' }}>(*)</span>
-                      </Typography.Text>
-                    }
-                    name="team"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Vui lòng nhập team',
-                      },
-                    ]}
-                  >
-                    <Select
-                      dropdownRender={(menu) => (
-                        <>
-                          {menu}
-                          <div
-                            style={{
-                              paddingLeft: '14px',
-                              paddingRight: '14px',
-                              paddingBottom: '10px',
-                            }}
-                          >
-                            <hr></hr>
-                            {clickAddNewTeam === false ? (
-                              <Button
-                                style={{ padding: 'unset', color: 'rgba(0,0,0,0.4)' }}
-                                type="text"
-                                onClick={() => setClickAddNewTeam(true)}
-                              >
-                                Thêm team mới
-                              </Button>
-                            ) : (
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  justifyContent: 'space-between',
-                                  alignItems: 'center',
-                                }}
-                              >
-                                <Input placeholder="Nhập team mới tại đây" />
-                                <Space>
-                                  <SaveOutlined style={{ marginLeft: 10, fontSize: 14 }} />
-                                  <CloseOutlined
-                                    style={{ fontSize: 14 }}
-                                    onClick={() => setClickAddNewTeam(false)}
-                                  />
-                                </Space>
-                              </div>
-                            )}
-                          </div>
-                        </>
-                      )}
-                    >
-                      <Select.Option value="Team 1">Team 1</Select.Option>
-                      <Select.Option value="Team 2">Team 2</Select.Option>
-                      <Select.Option value="Team 3">Team 3</Select.Option>
-                      <Select.Option value="Team 4">Team 4</Select.Option>
-                    </Select>
-                  </Form.Item>
-                </div>
+        <Table
+          dataSource={listAllRolePermission}
+          columns={columns}
+          style={{ paddingLeft: '20px' }}
+          className={styles.permissionTable}
+          onChange={handleTableChange}
+          pagination={{
+            ...pagination,
+            total: listAllRolePermission?.length,
+            locale: {
+              items_per_page: '/ Trang',
+              jump_to: 'Đến trang',
+              next_page: 'Trang sau',
+              prev_page: 'Trang trước',
+              next_3: '3 trang sau',
+              next_5: '5 trang sau',
+              prev_3: '3 trang trước',
+              prev_5: '5 trang trước',
+            },
+          }}
+          scroll={{ x: 300 }}
+          loading={{
+            indicator: (
+              <div>
+                <Spin />
               </div>
-              <Form.Item {...submitFormLayout} style={{ marginTop: '10px', marginBottom: 'unset' }}>
-                <Button className={styles.cancleBtn} onClick={handleCancleUpdatePermission}>
-                  Hủy
-                </Button>
-                <Button type="primary" htmlType="submit">
-                  Cập nhật
-                </Button>
-              </Form.Item>
-            </Form>
-          ))}
+            ),
+            spinning: !listAllRolePermission,
+          }}
+        />
       </Card>
       <Modal
         open={isAddNewPermission}
         onCancel={handleCancleAddNewPermission}
-        title={<Typography.Text style={{ fontWeight: 'bold' }}>Phân quyền mới</Typography.Text>}
+        title={
+          <Typography.Text style={{ fontWeight: 'bold' }}>
+            {isEditRole ? 'Chỉnh sửa quyền' : 'Phân quyền mới'}
+          </Typography.Text>
+        }
         width={900}
         bodyStyle={{ height: 600 }}
         footer={false}
         centered
       >
-        <Form layout="vertical" onFinish={handleOnFinishPermissionAddNew} requiredMark={false}>
+        <Form requiredMark={false} layout="vertical" onFinish={handleOnFinishPermissionAddNew}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
               <Form.Item
@@ -807,7 +761,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
                     span: 24,
                   },
                   md: {
-                    span: 10,
+                    span: 7,
                   },
                 }}
                 wrapperCol={{
@@ -822,7 +776,10 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
                   },
                 }}
               >
-                <Input placeholder="Nhập mô tả ngắn gọn" className={styles.addPermissionInput} />
+                <Input
+                  placeholder="Nhập mô tả cho nhóm quyền"
+                  className={styles.addPermissionInput}
+                />
               </Form.Item>
             </div>
           </div>
@@ -847,5 +804,4 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
     </>
   );
 };
-
-export default PermissionEdit_Add;
+export default PermissionRole;

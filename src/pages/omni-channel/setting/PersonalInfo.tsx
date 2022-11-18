@@ -13,7 +13,13 @@ import {
   message,
   Upload,
 } from 'antd';
-import { AppleFilled, CameraFilled, EditOutlined, WindowsFilled } from '@ant-design/icons';
+import {
+  AppleFilled,
+  CameraFilled,
+  EditOutlined,
+  UserOutlined,
+  WindowsFilled,
+} from '@ant-design/icons';
 import styles from '../setting/style.less';
 import { requeGetUserInfoProps } from '@/services/user_info';
 import { requestEditUserInfo } from './services';
@@ -25,10 +31,11 @@ const PersonalInfo: React.FC = () => {
   const [isEditUser, setEditUser] = useState(false);
   const { initialState, setInitialState } = useModel('@@initialState');
   const token = window.localStorage.getItem('access_token');
+  const [form] = Form.useForm();
 
   const requestEditUserInfoSubmit = async (
     name: string,
-    role: string,
+    position: string,
     department: string,
     level: string,
     organization: string,
@@ -39,7 +46,7 @@ const PersonalInfo: React.FC = () => {
   ) => {
     const res = await requestEditUserInfo(
       name,
-      role,
+      position,
       department,
       level,
       organization,
@@ -68,10 +75,9 @@ const PersonalInfo: React.FC = () => {
   };
 
   const handleOnFinishEditUser = (values: any) => {
-    setEditUser(false);
     const res = requestEditUserInfoSubmit(
       values.name ? values.name : initialState?.currentUser?.name,
-      values.role ? values.role : initialState?.currentUser?.role,
+      values.position ? values.position : initialState?.currentUser?.position,
       values.department ? values.department : initialState?.currentUser?.department,
       values.level ? values.level : initialState?.currentUser?.level,
       values.organization ? values.organization : initialState?.currentUser?.organization,
@@ -88,6 +94,7 @@ const PersonalInfo: React.FC = () => {
           currentUser: result.data[0],
         }));
         message.success('Cập nhập thành công');
+        setEditUser(false);
       } else {
         message.error('Lưu không thành công, vui lòng thử lại');
         return;
@@ -97,6 +104,7 @@ const PersonalInfo: React.FC = () => {
 
   const handleOnCancleEditUser = () => {
     setEditUser(false);
+    form.resetFields();
   };
 
   const props: UploadProps = {
@@ -130,15 +138,15 @@ const PersonalInfo: React.FC = () => {
           <div>
             <div className={styles.antAvatarImg}>
               <Avatar
-                src={`data:image/jpeg;base64,${dataImage}`}
+                src={dataImage && `data:image/jpeg;base64,${dataImage}`}
                 className={styles.antImg}
-              ></Avatar>
+                icon={!dataImage && <UserOutlined style={{ fontSize: 100 }} />}
+              />
               <Upload
                 {...props}
                 beforeUpload={beforeUpload}
                 onChange={async ({ file }) => {
                   if (file?.response?.success) {
-                    // console.log(file?.response?.data[0]);
                     await setInitialState((s) => ({
                       ...s,
                       currentUser: file?.response?.data[0],
@@ -159,7 +167,7 @@ const PersonalInfo: React.FC = () => {
         className={styles.detailCardLayout}
       >
         <div style={{ paddingTop: '10px' }}>
-          <Form onFinish={handleOnFinishEditUser}>
+          <Form form={form} onFinish={handleOnFinishEditUser}>
             <Row>
               <Col md={3}></Col>
               <Col md={9}>
@@ -224,9 +232,9 @@ const PersonalInfo: React.FC = () => {
                   </Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
-                      name="role"
+                      name="position"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.role}
+                      initialValue={initialState?.currentUser?.position}
                       rules={[
                         {
                           required: true,
@@ -238,7 +246,7 @@ const PersonalInfo: React.FC = () => {
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.role}
+                      {initialState?.currentUser?.position}
                     </Typography.Text>
                   )}
                 </div>
@@ -264,30 +272,6 @@ const PersonalInfo: React.FC = () => {
                   ) : (
                     <Typography.Text className={styles.antBold}>
                       {initialState?.currentUser?.level}
-                    </Typography.Text>
-                  )}
-                </div>
-                <div className={styles.antDataDisplay}>
-                  <Typography.Text className={styles.antTextStyle}>
-                    Tổ chức {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
-                  </Typography.Text>
-                  {isEditUser === true ? (
-                    <Form.Item
-                      name="organization"
-                      className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.organization}
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Vui lòng không để trống thông tin',
-                        },
-                      ]}
-                    >
-                      <Input style={{ width: '300px' }} />
-                    </Form.Item>
-                  ) : (
-                    <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.organization}
                     </Typography.Text>
                   )}
                 </div>
@@ -323,7 +307,7 @@ const PersonalInfo: React.FC = () => {
                     <Form.Item
                       name="work_address"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.work_address}
+                      initialValue={initialState?.currentUser?.organization}
                       rules={[
                         {
                           required: true,
@@ -346,7 +330,7 @@ const PersonalInfo: React.FC = () => {
                 <hr></hr>
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>
-                    Số điện thoại cá nhân{' '}
+                    Số điện thoại cá nhân
                     {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
                   </Typography.Text>
                   {isEditUser === true ? (
@@ -361,6 +345,10 @@ const PersonalInfo: React.FC = () => {
                         },
                         {
                           pattern: new RegExp('(0[3|5|7|8|9])+([0-9]{8})'),
+                          message: 'Số điện thoại không hợp lệ',
+                        },
+                        {
+                          max: 10,
                           message: 'Số điện thoại không hợp lệ',
                         },
                       ]}

@@ -69,14 +69,16 @@ const HistoryCall: React.FC = () => {
             render: (text, record) => {
                 if (record.huongcuocgoi === 'gọi vào') {
                     return (
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
-                            <img src={PhoneCallIn} style={{ width: '20px', height: '20px' }} /><Typography.Text>{record.huongcuocgoi}</Typography.Text>
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <img src={PhoneCallIn} style={{ width: '15px', height: '15px', flex: 0.2 }} />
+                            <Typography.Text style={{ flex: 0.5 }}>{record.huongcuocgoi}</Typography.Text>
                         </div>
                     )
                 }
                 return (
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
-                        <img src={PhoneCallOut} style={{ width: '20px', height: '20px' }} /><Typography.Text>{record.huongcuocgoi}</Typography.Text>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <img src={PhoneCallOut} style={{ width: '15px', height: '15px', flex: 0.2 }} />
+                        <Typography.Text style={{ flex: 0.5 }}>{record.huongcuocgoi}</Typography.Text>
                     </div>
                 )
             }
@@ -213,84 +215,34 @@ const HistoryCall: React.FC = () => {
             <Card
                 className={styles.detailCardLayout}
             >
-                {isChangeViewHistory === true ? (
-                    <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ paddingLeft: '10px', width: '100px' }}>
-                                <Select defaultValue="Lịch sử" onChange={handleSelectHistory} suffixIcon={<img src={TwoArrowIcon} style={{ width: '15px', height: '15px' }} />} style={{ border: 'unset' }}>
-                                    <Select.Option value="Lịch sử" style={{ fontSize: '14px' }}>Lịch sử</Select.Option>
-                                    <Select.Option value="Danh bạ" style={{ fontSize: '14px' }}>Danh bạ</Select.Option>
-                                </Select>
-                            </div>
-                            <div>
-                                <Button style={{ marginRight: '10px' }}>
-                                    <FilterOutlined /> Bộ lọc
-                                </Button>
-                                <Input
-                                    style={{ width: '300px', marginRight: '10px' }}
-                                    addonBefore={<SearchOutlined />}
-                                    placeholder="Tìm kiếm"
-                                />
-                                <Button style={{ marginRight: '10px' }}>Voice Analytics</Button>
-                                <Button style={{ backgroundColor: '#7fb77e', color: '#fff' }}><ExportIcon /> Export</Button>
-                            </div>
-                        </div>
-                        <Table
-                            dataSource={data}
-                            columns={columns}
-                            style={{ paddingLeft: '10px', paddingTop: '10px' }}
-                            className={styles.tableStyle}
-                            pagination={{
-                                pageSize: 5,
-                                showQuickJumper: true,
-                                showSizeChanger: true,
-                                locale: {
-                                    jump_to: 'Go to',
-                                    page: ''
-                                }
-                            }}
-                            scroll={{ x: 300 }}
-                        />
-                    </>
-
-                ) : (
-                    <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ paddingLeft: '10px', width: '100px' }}>
-                                <Select defaultValue="Lịch sử" onChange={handleSelectHistory} suffixIcon={<img src={TwoArrowIcon} style={{ width: '15px', height: '15px' }} />} style={{ border: 'unset' }}>
-                                    <Select.Option value="Lịch sử" style={{ fontSize: '14px' }}>Lịch sử</Select.Option>
-                                    <Select.Option value="Danh bạ" style={{ fontSize: '14px' }}>Danh bạ</Select.Option>
-                                </Select>
-                            </div>
-                            <div>
-                                <Button style={{ marginRight: '10px' }}>
-                                    <FilterOutlined /> Bộ lọc
-                                </Button>
-                                <Input
-                                    style={{ width: '300px' }}
-                                    addonBefore={<SearchOutlined />}
-                                    placeholder="Tìm kiếm"
-                                />
-                            </div>
-                        </div>
-                        <Table
-                            dataSource={dataDanhba}
-                            columns={columnsDanhba}
-                            style={{ paddingLeft: '10px', paddingTop: '10px' }}
-                            className={styles.tableStyle}
-                            pagination={{
-                                pageSize: 5,
-                                showQuickJumper: true,
-                                showSizeChanger: true,
-                                locale: {
-                                    jump_to: 'Go to',
-                                    page: ''
-                                }
-                            }}
-                            scroll={{ x: 300 }}
-                        />
-                    </>
-                )}
+                <div style={{ display: 'flex', justifyContent: 'right' }}>
+                    <Button style={{ marginRight: '10px' }} type="text">
+                        <FilterOutlined /> Bộ lọc
+                    </Button>
+                    <Input
+                        style={{ width: '300px', marginRight: '10px' }}
+                        addonBefore={<SearchOutlined />}
+                        placeholder="Tìm kiếm"
+                    />
+                    <Button style={{ marginRight: '10px' }}>Voice Analytics</Button>
+                    <Button style={{ backgroundColor: '#7fb77e', color: '#fff' }}><ExportIcon /> Export</Button>
+                </div>
+                <Table
+                    dataSource={data}
+                    columns={columns}
+                    style={{ paddingLeft: '10px', paddingTop: '10px' }}
+                    className={styles.tableStyle}
+                    pagination={{
+                        pageSize: 5,
+                        showQuickJumper: true,
+                        showSizeChanger: true,
+                        locale: {
+                            jump_to: 'Go to',
+                            page: ''
+                        }
+                    }}
+                    scroll={{ x: 300 }}
+                />
             </Card>
         </>
     )
