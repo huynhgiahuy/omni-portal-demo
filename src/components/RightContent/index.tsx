@@ -10,6 +10,7 @@ import NoticeIconView from '../NoticeIcon';
 import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
+import io from 'socket.io-client';
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -24,6 +25,24 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconHistory, setActiveIconHistory] = useState(false);
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
+
+  // const access_token = localStorage.getItem('access_token');
+  // const socket = io('http://172.27.228.201:9003', {
+  //   path: '/ws/socket.io',
+  //   auth: {
+  //     token: access_token,
+  //   },
+  // });
+  // console.log({ socket });
+  // const sendMessage = () => {
+  //   console.log({ message: 'send message for server' });
+  //   socket.emit('send_message', { message: 'Hello, I am client' });
+  // };
+
+  const socket = io('http://localhost:3001');
+  console.log({ socket });
+  let { id } = socket;
+  console.log({ id });
 
   if (!initialState || !initialState.settings) {
     return null;
@@ -121,12 +140,12 @@ const GlobalHeaderRight: React.FC = () => {
           position: 'absolute',
           left: 0,
           background: 'white',
-          color: 'white',
+          color: 'red',
           borderColor: 'white',
           bottom: 0,
         }}
       >
-        Button
+        Button Call
       </a>
 
       <AgentModalRing
