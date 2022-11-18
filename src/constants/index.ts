@@ -402,6 +402,3 @@ export const OPTIONS_PERMISSION_TEST_VALUE = [
   'Xuất báo cáo',
   'Phân tích',
 ];
-
-/// User Role URL
-export const USER_ROLE_URL = 'http://172.27.228.201:9001';

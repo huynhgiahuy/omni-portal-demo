@@ -34,7 +34,7 @@ export async function requestListUserInfo() {
 
 export async function requestEditUserInfo(
   name: string,
-  role: string,
+  position: string,
   department: string,
   level: string,
   organization: string,
@@ -50,7 +50,7 @@ export async function requestEditUserInfo(
     },
     data: {
       name,
-      role,
+      position,
       department,
       level,
       organization,
@@ -153,4 +153,19 @@ export async function requestReadRoleAndPerm(data?: {
     },
     data,
   });
+}
+
+export async function requestDeleteRoleAndPermission(role_id: string) {
+  return request(
+    `${api.UMI_API_BASE_URL}/user-service/api/authorization/delete_role_and_permission`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        role_id,
+      },
+    },
+  );
 }
