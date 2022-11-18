@@ -154,3 +154,13 @@ export async function requestReadRoleAndPerm(data?: {
     data,
   });
 }
+
+export async function requestTeamPermissionData() {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_team`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  });
+}

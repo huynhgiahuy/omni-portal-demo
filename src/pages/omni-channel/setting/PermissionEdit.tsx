@@ -1,20 +1,52 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Table, Space, Modal, Spin, Avatar, Typography, Form, Input, Button, Select } from 'antd';
+import {
+    Card,
+    Table,
+    Space,
+    Modal,
+    Spin,
+    Avatar,
+    Typography,
+    Form,
+    Input,
+    Button,
+    Select
+} from 'antd';
+import {
+    EditOutlined,
+    DeleteOutlined,
+    CloseCircleFilled,
+    SaveOutlined,
+    CloseOutlined,
+    SearchOutlined
+} from '@ant-design/icons';
+import {
+    requestAllUserPermission,
+    requestDetailUserPermission,
+    requestDeleteUserPermission,
+    requestGroupPermissionData,
+    requestTeamPermissionData
+} from './services';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
-import { EditOutlined, DeleteOutlined, CloseCircleFilled, SaveOutlined, CloseOutlined } from '@ant-design/icons';
-//import PermissionEdit_Update from './PermissionEdit_Update';
-import { requestAllUserPermission, requestDeleteUserPermission, requestGroupPermissionData } from './services';
 import ImagaAvatar from './avatar_test.png';
 
 interface DataAllUserPermission {
     data: any[];
     error?: string;
     error_code?: string;
-    length: number;
-    success: boolean;
+    length?: number;
+    success?: boolean;
     full_name?: string;
     email?: string;
+}
+
+interface EditDetailUser {
+    data: any[];
+    error?: string;
+    error_code?: string;
+    length: number;
+    success: boolean;
 }
 
 interface PaginationProps {
@@ -28,6 +60,11 @@ interface PaginationProps {
 interface GroupPermission {
     code?: string;
     desc?: string;
+    id?: string;
+}
+
+interface TeamPermission {
+    name?: string;
     id?: string;
 }
 
@@ -73,9 +110,13 @@ const submitFormLayout = {
 
 const PermissionEdit: React.FC = () => {
     const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
-    const [userKey, setUserKey] = useState<string | any>();
+    //const [userKey, setUserKey] = useState<string | any>();
+
     const [listAllUserPermission, setListAllUserPermission] = useState<DataAllUserPermission>();
+    const [listEditUserPermission, setListEditUserPermission] = useState<EditDetailUser>();
     const [listGroupPermission, setListGroupPermission] = useState<GroupPermission[]>([]);
+    const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
+
     const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
 
     const [pagination, setPagination] = useState<PaginationProps>({
@@ -93,6 +134,13 @@ const PermissionEdit: React.FC = () => {
         }
     }
 
+    const fetchDetaiUserPermission = async (userKey: any) => {
+        const resDetail = await requestDetailUserPermission(3, 1, userKey);
+        if (resDetail.success === true) {
+            setListEditUserPermission(resDetail);
+        }
+    }
+
     const handleDeleteUserPermission = async (user_id: string) => {
         const response_delete = await requestDeleteUserPermission(user_id);
         if (response_delete.success === true) {
@@ -107,22 +155,29 @@ const PermissionEdit: React.FC = () => {
         }
     }
 
+    const fetchTeamPermissionData = async () => {
+        const resTeam = await requestTeamPermissionData();
+        if (resTeam.success === true) {
+            setListTeamPermission(resTeam.data)
+        }
+    }
+
     useEffect(() => {
         fetchListAllUserPermission({ pagination })
     }, [pagination])
 
-    useEffect(() => {
-        fetchGroupPermissionData();
-    }, [])
+    // useEffect(() => {
+    //     fetchGroupPermissionData();
+    //     fetchTeamPermissionData();
+    // }, [])
+
+    console.log(listTeamPermission)
 
     const handleClickUpdatePermission = () => {
         setClickUpdatePermission(true);
     }
     const handleCancleUpdatePermission = () => {
         setClickUpdatePermission(false);
-    }
-    const handleGetKeyUser = (key: any) => {
-        setUserKey(key);
     }
     const handleClickDeleteUser = (user_id: string) => {
         Modal.confirm({
@@ -212,7 +267,17 @@ const PermissionEdit: React.FC = () => {
             align: 'center',
             render: (record) => (
                 <Space size="large">
-                    <EditOutlined style={{ color: '#1890FF', fontSize: '20px' }} onClick={() => { handleClickUpdatePermission(); handleGetKeyUser(record.user_id) }} />
+                    <EditOutlined
+                        style={{ color: '#1890FF', fontSize: '20px' }}
+                        onClick={
+                            () => {
+                                handleClickUpdatePermission();
+                                fetchDetaiUserPermission(record.user_id);
+                                fetchGroupPermissionData();
+                                fetchTeamPermissionData();
+                            }
+                        }
+                    />
                     <DeleteOutlined style={{ color: '#F5222D', fontSize: '20px' }} onClick={() => { handleClickDeleteUser(record.user_id) }} />
                 </Space>
             )
@@ -220,6 +285,13 @@ const PermissionEdit: React.FC = () => {
     ];
     return (
         <>
+            <div style={{ marginTop: '10px', textAlign: 'right' }}>
+                <Input
+                    style={{ width: '300px' }}
+                    addonBefore={<SearchOutlined />}
+                    placeholder="Tìm kiếm"
+                />
+            </div>
             <Card
                 className={styles.detailCardLayoutNoMar}
             >
@@ -295,10 +367,9 @@ const PermissionEdit: React.FC = () => {
                                             </>
                                         )}
                                     >
-                                        <Select.Option value="Team 1">Team 1</Select.Option>
-                                        <Select.Option value="Team 2">Team 2</Select.Option>
-                                        <Select.Option value="Team 3">Team 3</Select.Option>
-                                        <Select.Option value="Team 4">Team 4</Select.Option>
+                                        {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
+                                            <Select.Option value={item.name}>{item.name}</Select.Option>
+                                        ))}
                                     </Select>
                                 </Form.Item>
                                 <Form.Item
