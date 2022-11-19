@@ -431,11 +431,11 @@ const PermissionRole: React.FC = () => {
       fetchListUpdateRole(values.role_code, values.role_desc);
     } else {
       const res = fetchListUserRole(values.role_code, values.role_desc);
-      res.then((result: { success: boolean }) => {
-        if (!result?.success && permissionList.length) {
+      res.then((result: { error_code: number }) => {
+        if (result?.error_code === 4000104 && permissionList.length) {
           Modal.warning({
             title: 'Thông báo',
-            content: `Nhóm quyền ${values.role_code} đã có. Vui lòng nhập tên nhóm quyền khác!`,
+            content: `Đã tồn tại ${values.role_code}. không thể tạo mới!`,
             okText: 'Xác nhận',
           });
         }

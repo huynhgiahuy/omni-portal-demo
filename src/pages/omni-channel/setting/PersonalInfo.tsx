@@ -307,7 +307,7 @@ const PersonalInfo: React.FC = () => {
                     <Form.Item
                       name="work_address"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.organization}
+                      initialValue={initialState?.currentUser?.work_address}
                       rules={[
                         {
                           required: true,

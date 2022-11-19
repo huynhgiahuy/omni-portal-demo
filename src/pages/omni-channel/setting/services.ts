@@ -41,18 +41,6 @@ export async function requestUpdateRole(
   );
 }
 
-export async function requestListUserInfo() {
-  return request(
-    `${api.UMI_API_BASE_URL}/user-service/api/settings/user/get_user_info?current_user=nghiahm4%40fpt.com.vn`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  );
-}
-
 export async function requestEditUserInfo(
   name: string,
   position: string,
@@ -189,4 +177,14 @@ export async function requestDeleteRoleAndPermission(role_id: string) {
       },
     },
   );
+}
+
+export async function requestTeamPermissionData() {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_team`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  });
 }
