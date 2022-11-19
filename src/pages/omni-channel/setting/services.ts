@@ -7,7 +7,7 @@ export async function requestListUserRole(
   role_code?: string,
   role_desc?: string,
 ) {
-  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/role_and_perm/create`, {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/create_role_and_perm`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -18,6 +18,27 @@ export async function requestListUserRole(
       role_desc,
     },
   });
+}
+
+export async function requestUpdateRole(
+  permission_code_list?: string[],
+  role_code?: string,
+  role_desc?: string,
+) {
+  return request(
+    `${api.UMI_API_BASE_URL}/user-service/api/authorization/update_role_and_permission`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        permission_code_list,
+        role_code,
+        role_desc,
+      },
+    },
+  );
 }
 
 export async function requestListUserInfo() {
