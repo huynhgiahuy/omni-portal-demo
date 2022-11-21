@@ -164,3 +164,28 @@ export async function requestTeamPermissionData() {
     data: {},
   });
 }
+
+export async function requestDeleteTeamPermission(team_id: string) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/delete_team`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      team_id,
+    },
+  });
+}
+
+export async function requestAllUserInfo(limit: number, offset: number) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_user_and_role`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      limit,
+      offset,
+    },
+  });
+}

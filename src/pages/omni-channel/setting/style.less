@@ -166,6 +166,10 @@
     }
   }
 }
+.emailPermissionTable {
+  color: #595959;
+  font-size: 10px;
+}
 .inputPhonePrefix {
   :global {
     .ant-input-group-addon {
@@ -239,6 +243,12 @@
     background: #87c686;
     border-radius: 99px;
   }
+  .ant-input {
+    border-radius: 4px;
+  }
+  .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    border-radius: 4px;
+  }
 }
 .antFormItemMargin {
   margin-bottom: unset;
@@ -274,4 +284,17 @@
       transform: rotate(45deg) scale(1) translate(-100%, -20%);
     }
   }
+}
+.addNewTeamPlaceholder {
+  font-style: italic;
+  :global {
+    .ant-input:placeholder-shown {
+      font-style: italic;
+    }
+  }
+}
+.flexLayout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }

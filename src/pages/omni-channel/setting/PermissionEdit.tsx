@@ -220,14 +220,14 @@ const PermissionEdit: React.FC = () => {
             align: 'center',
             width: '200px',
             render: (text, record) => (
-                <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div style={{ flex: 1 }}>
                         <Avatar src={ImagaAvatar} size="large" />
                     </div>
-                    <div style={{ flex: 2 }}>
-                        <Typography.Text>{record.full_name}</Typography.Text>
+                    <div style={{ flex: 2, textAlign: 'left' }}>
+                        <Typography.Text >{record.full_name}</Typography.Text>
                         <br></br>
-                        <Typography.Text style={{ paddingLeft: '10px', fontSize: '10px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 400 }}>{record.email}</Typography.Text>
+                        <Typography.Text className={styles.emailPermissionTable} style={{ textAlign: 'center', alignItems: 'center' }}>{record.email}</Typography.Text>
                     </div>
                 </div>
             )

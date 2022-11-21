@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Card, Table, Select, Button, Typography, Input, Tag } from 'antd';
+import { Card, Table, Button, Typography, Input, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlayCircleFilled, SearchOutlined, FilterOutlined, StarOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 //import FilterIcon from '../../../components/FilterIcon/filter_icon.png'
-import TwoArrowIcon from '../../../components/TwoArrowIcon/two_arrow_icon_final.png'
 import PhoneCallOut from '../../../components/PhoneCall/phone_call_out_final.png'
 import PhoneCallIn from '../../../components/PhoneCall/phone_call_in_final.png'
+import PhoneCallGreen from '../../../../public/phone_call_green.svg';
 import { data, dataDanhba } from './FakeData';
 import styles from '../report/style.less'
 
@@ -40,7 +40,6 @@ const HistoryCall: React.FC = () => {
     const handleSelectHistory = (value: any) => {
         if (value === 'Lịch sử') {
             setChangeViewHistory(true);
-            console.log('aa')
         }
         else if (value === 'Danh bạ') {
             setChangeViewHistory(false);
@@ -205,7 +204,10 @@ const HistoryCall: React.FC = () => {
             dataIndex: 'loai',
             key: 'loai',
             align: 'center',
-            width: '100px'
+            width: '100px',
+            render: (text, record) => {
+                return (<img src={PhoneCallGreen} />)
+            }
         },
 
     ]

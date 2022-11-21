@@ -111,7 +111,7 @@ export const dataDanhba: DataTypeDanhBa[] = [
     sodidong: '0909090909',
     somaynhanh: '449003',
     email: 'robertfox@gmail.com',
-    loai: 'Nội bộ',
+    loai: '',
   },
   {
     key: '2',
@@ -120,7 +120,7 @@ export const dataDanhba: DataTypeDanhBa[] = [
     sodidong: '0909090909',
     somaynhanh: '449003',
     email: 'robertfox@gmail.com',
-    loai: 'Nội bộ',
+    loai: '',
   },
   {
     key: '3',
@@ -129,7 +129,7 @@ export const dataDanhba: DataTypeDanhBa[] = [
     sodidong: '0909090909',
     somaynhanh: '449003',
     email: 'robertfox@gmail.com',
-    loai: 'Nội bộ',
+    loai: '',
   },
   {
     key: '4',
@@ -138,7 +138,7 @@ export const dataDanhba: DataTypeDanhBa[] = [
     sodidong: '0909090909',
     somaynhanh: '449003',
     email: 'robertfox@gmail.com',
-    loai: 'Nội bộ',
+    loai: '',
   },
   {
     key: '5',
@@ -147,7 +147,7 @@ export const dataDanhba: DataTypeDanhBa[] = [
     sodidong: '0909090909',
     somaynhanh: '449003',
     email: 'robertfox@gmail.com',
-    loai: 'Nội bộ',
+    loai: '',
   },
   {
     key: '6',
@@ -156,6 +156,6 @@ export const dataDanhba: DataTypeDanhBa[] = [
     sodidong: '0909090909',
     somaynhanh: '449003',
     email: 'robertfox@gmail.com',
-    loai: 'Nội bộ',
+    loai: '',
   },
 ];

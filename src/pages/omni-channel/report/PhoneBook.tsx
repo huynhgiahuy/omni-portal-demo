@@ -3,6 +3,7 @@ import { Select, Button, Input, Table, Card, Segmented } from 'antd';
 import { PlayCircleFilled, SearchOutlined, FilterOutlined, StarOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import { dataDanhba } from './FakeData';
+import PhoneCallGreen from '../../../../public/phone_call_green.svg';
 import styles from '../report/style.less';
 
 
@@ -56,11 +57,14 @@ const PhoneBook: React.FC = () => {
             width: '100px'
         },
         {
-            title: 'Loại',
-            dataIndex: 'loai',
-            key: 'loai',
+            title: '',
             align: 'center',
-            width: '100px'
+            width: '100px',
+            render: (text, record) => {
+                return (
+                    <img src={PhoneCallGreen} style={{ background: '#52C41A', color: '#fff', padding: 6, borderRadius: 20, fontSize: 25 }} />
+                )
+            }
         },
     ];
 
@@ -81,6 +85,7 @@ const PhoneBook: React.FC = () => {
                             }
                         ]}
                         className={styles.antSegmented}
+                        style={{ backgroundColor: '#e3eaf4' }}
                     />
                 </div>
                 <div>
