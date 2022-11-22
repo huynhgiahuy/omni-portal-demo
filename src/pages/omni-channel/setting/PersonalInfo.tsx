@@ -120,6 +120,26 @@ const PersonalInfo: React.FC = () => {
 
   const dataImage = initialState?.currentUser?.image;
 
+  const labelPosition = (key: string): string => {
+    switch (key) {
+      case 'cbgs':
+        return 'Cán bộ Giám sát';
+      case 'cbhtkt':
+        return 'Cán bộ HTKT';
+      case 'l2':
+        return 'L2';
+      case 'tc':
+        return 'Trường ca';
+      case 'cbqlp':
+        return 'CBQLP';
+      case 'da':
+        return 'Dự án';
+
+      default:
+        return '';
+    }
+  };
+
   return (
     <>
       <Card
@@ -241,7 +261,7 @@ const PersonalInfo: React.FC = () => {
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.position}
+                      {initialState?.currentUser?.position === 'mb' ? 'Miền Bắc' : 'Miền Nam'}
                     </Typography.Text>
                   )}
                 </div>
@@ -275,7 +295,8 @@ const PersonalInfo: React.FC = () => {
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.position}
+                      {initialState?.currentUser?.position &&
+                        labelPosition(initialState?.currentUser?.position)}
                     </Typography.Text>
                   )}
                 </div>
