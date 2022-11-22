@@ -24,6 +24,7 @@ export async function requestUpdateRole(
   permission_code_list?: string[],
   role_code?: string,
   role_desc?: string,
+  role_id?: string,
 ) {
   return request(
     `${api.UMI_API_BASE_URL}/user-service/api/authorization/update_role_and_permission`,
@@ -36,6 +37,7 @@ export async function requestUpdateRole(
         permission_code_list,
         role_code,
         role_desc,
+        role_id,
       },
     },
   );

@@ -420,7 +420,7 @@ const PermissionRole: React.FC = () => {
     return res;
   };
 
-  const fetchListUpdateRole = async (role_code: string, role_desc: string) => {
+  const fetchListUpdateRole = async (role_code: string, role_desc: string, id?: string) => {
     if (permissionList.length === 0) {
       Modal.warning({
         title: 'Thông báo',
@@ -429,7 +429,7 @@ const PermissionRole: React.FC = () => {
       });
       return;
     }
-    const res = await requestUpdateRole(permissionList, role_code, role_desc);
+    const res = await requestUpdateRole(permissionList, role_code, role_desc, id);
 
     if (res?.success) {
       message.success('Cập nhập nhóm quyền thành công');
@@ -443,7 +443,7 @@ const PermissionRole: React.FC = () => {
 
   const handleOnFinishPermissionAddNew = (values: any) => {
     if (isEditRole) {
-      fetchListUpdateRole(values.role_code, values.role_desc);
+      fetchListUpdateRole(values.role_code, values.role_desc, dataRoleId?.id);
     } else {
       const res = fetchListUserRole(values.role_code, values.role_desc);
       res.then((result: { error_code: number }) => {
