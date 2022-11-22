@@ -144,7 +144,7 @@ const PersonalInfo: React.FC = () => {
                 className={styles.antImg}
                 icon={!dataImage && <UserOutlined style={{ fontSize: 100 }} />}
               />
-              {/* <Upload
+              <Upload
                 {...props}
                 beforeUpload={beforeUpload}
                 onChange={async ({ file }) => {
@@ -159,7 +159,7 @@ const PersonalInfo: React.FC = () => {
                 showUploadList={false}
               >
                 <CameraFilled style={{ fontSize: 40, color: 'white' }} />
-              </Upload> */}
+              </Upload>
             </div>
             <div style={{ textAlign: 'right' }}>
               <EditOutlined style={{ fontSize: '22px' }} onClick={handleEditUser} />
