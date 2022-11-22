@@ -1,30 +1,13 @@
-import { getFakeCaptcha } from '@/services/ant-design-pro/login';
-import { LockOutlined, MobileOutlined, UserOutlined } from '@ant-design/icons';
-import { LoginForm, ProFormCaptcha, ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
-import { Alert, Button, message, Tabs } from 'antd';
+import { LoginForm } from '@ant-design/pro-form';
+import { Button, message, Tabs } from 'antd';
 import React, { useLayoutEffect, useState } from 'react';
-import { FormattedMessage, history, useIntl, useModel } from 'umi';
+import { history, useIntl, useModel } from 'umi';
 
 import styles from './index.less';
 import { getUrlSSO, requestGetInfoUser } from '@/services/auth';
 import api from '../../../api';
-import { UserInfoProps } from '@/services/user_info';
-
-const LoginMessage: React.FC<{
-  content: string;
-}> = ({ content }) => (
-  <Alert
-    style={{
-      marginBottom: 24,
-    }}
-    message={content}
-    type="error"
-    showIcon
-  />
-);
 
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const { initialState, setInitialState } = useModel('@@initialState');
@@ -32,7 +15,7 @@ const Login: React.FC = () => {
   const { redirect } = query as { redirect: string };
   const intl = useIntl();
 
-  const fetchUserInfo = async (data: UserInfoProps[]) => {
+  const fetchUserInfo = async (data: API.CurrentUser[]) => {
     await setInitialState((s) => ({
       ...s,
       currentUser: data[0],
@@ -44,7 +27,7 @@ const Login: React.FC = () => {
       const tokent = window.localStorage.getItem('access_token');
       const requestInfoUser = async () => {
         setIsLogin(false);
-        return await requestGetInfoUser(tokent);
+        return tokent && (await requestGetInfoUser(tokent));
       };
 
       requestInfoUser()
@@ -114,7 +97,6 @@ const Login: React.FC = () => {
       message.error(defaultLoginFailureMessage);
     }
   };
-  // const { status, type: loginType } = userLoginState;
 
   const handleClickLogin = async () => {
     const urlSSO = await getUrlSSO(api.UMI_API_URL);

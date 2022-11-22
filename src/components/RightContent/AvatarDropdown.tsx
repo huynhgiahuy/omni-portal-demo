@@ -206,7 +206,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 
   const { currentUser } = initialState;
 
-  if (!currentUser || !currentUser.email) {
+  if (!currentUser) {
     return loading;
   }
 
@@ -467,8 +467,9 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         <Avatar
           size="small"
           className={styles.avatar}
-          src={`data:image/jpeg;base64,${dataImage}`}
+          src={dataImage && `data:image/jpeg;base64,${dataImage}`}
           alt="avatar"
+          icon={!dataImage && <UserOutlined style={{ fontSize: 20, color: 'gray' }} />}
         />
         {/* <span className={`${styles.name} anticon`}>{currentUser.name}</span> */}
       </span>

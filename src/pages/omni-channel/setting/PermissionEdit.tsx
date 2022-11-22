@@ -25,7 +25,9 @@ import {
     requestDetailUserPermission,
     requestDeleteUserPermission,
     requestGroupPermissionData,
-    requestTeamPermissionData
+    requestTeamPermissionData,
+    requestDeleteTeamPermission,
+    requestAllUserInfo
 } from './services';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
@@ -39,6 +41,7 @@ interface DataAllUserPermission {
     success?: boolean;
     full_name?: string;
     email?: string;
+    name?: string;
 }
 
 interface EditDetailUser {
@@ -64,8 +67,31 @@ interface GroupPermission {
 }
 
 interface TeamPermission {
+    name: string;
+    id: string;
+}
+
+interface DataAllUserInfo {
+    image?: string;
     name?: string;
+    email?: string;
+    position?: string;
+    department?: string;
+    level?: string;
+    organization?: string;
+    home_address?: string;
+    work_address?: string;
+    phone_number?: string;
+    ip_phone?: string;
+    equipment?: any[];
+    status?: string;
+    team?: string;
+    notification?: any;
+    screen_mode?: any;
+    last_active?: string;
+    last_update?: string;
     id?: string;
+    role?: string;
 }
 
 const formItemLayout = {
@@ -113,6 +139,8 @@ const PermissionEdit: React.FC = () => {
     //const [userKey, setUserKey] = useState<string | any>();
 
     const [listAllUserPermission, setListAllUserPermission] = useState<DataAllUserPermission>();
+    const [listAllUserInfo, setListAllUserInfo] = useState<DataAllUserInfo[]>([]);
+    const [listAllUserInfoLength, setListAllUserInfoLength] = useState<string | any>();
     const [listEditUserPermission, setListEditUserPermission] = useState<EditDetailUser>();
     const [listGroupPermission, setListGroupPermission] = useState<GroupPermission[]>([]);
     const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
@@ -131,6 +159,14 @@ const PermissionEdit: React.FC = () => {
         const response_all = await requestAllUserPermission(params.pagination.pageSize, params.pagination.current);
         if (response_all.success === true) {
             setListAllUserPermission(response_all)
+        }
+    }
+
+    const fetchListAllUserInfo = async (params: any) => {
+        const resAll = await requestAllUserInfo(params.pagination.pageSize, params.pagination.current);
+        if (resAll.success === true) {
+            setListAllUserInfo(resAll.data);
+            setListAllUserInfoLength(resAll.length);
         }
     }
 
@@ -162,16 +198,31 @@ const PermissionEdit: React.FC = () => {
         }
     }
 
+    const handleDeleteTeamPermission = async (team_id: string) => {
+        const resDelTeam = await requestDeleteTeamPermission(team_id);
+        if (resDelTeam.success === true) {
+            return resDelTeam.data
+        }
+    }
+
+    const handleClickDeleteTeam = (e: any, id: string) => {
+        e.stopPropagation();
+        e.preventDefault();
+        handleDeleteTeamPermission(id);
+        fetchTeamPermissionData();
+        // const updated = [...listTeamPermission];
+        // updated.splice(id, 1);
+        // setListTeamPermission(updated);
+    }
+
+    const handleSelectTeam = (values: any) => {
+        setClickAddNewTeam(false);
+    }
+
     useEffect(() => {
-        fetchListAllUserPermission({ pagination })
+        //fetchListAllUserPermission({ pagination })
+        fetchListAllUserInfo({ pagination })
     }, [pagination])
-
-    // useEffect(() => {
-    //     fetchGroupPermissionData();
-    //     fetchTeamPermissionData();
-    // }, [])
-
-    console.log(listTeamPermission)
 
     const handleClickUpdatePermission = () => {
         setClickUpdatePermission(true);
@@ -200,23 +251,21 @@ const PermissionEdit: React.FC = () => {
             pageSize: newPagination.pageSize,
         });
     };
-    const columns: ColumnsType<DataAllUserPermission> = [
+    const columns: ColumnsType<DataAllUserInfo> = [
         {
-            title: '#',
-            dataIndex: 'user_id',
-            key: 'user_id',
+            title: '',
             align: 'center',
             width: '20px',
             render: (text, record) => (
                 <>
-                    {(pagination.current - 1) * pagination.pageSize + listAllUserPermission?.data[0].indexOf(record) + 1}
+                    {(pagination.current - 1) * pagination.pageSize + listAllUserInfo.indexOf(record) + 1}
                 </>
             )
         },
         {
             title: 'Tên người dùng',
-            dataIndex: 'full_name',
-            key: 'full_name',
+            dataIndex: 'name',
+            key: 'name',
             align: 'center',
             width: '200px',
             render: (text, record) => (
@@ -225,7 +274,7 @@ const PermissionEdit: React.FC = () => {
                         <Avatar src={ImagaAvatar} size="large" />
                     </div>
                     <div style={{ flex: 2, textAlign: 'left' }}>
-                        <Typography.Text >{record.full_name}</Typography.Text>
+                        <Typography.Text >{record.name}</Typography.Text>
                         <br></br>
                         <Typography.Text className={styles.emailPermissionTable} style={{ textAlign: 'center', alignItems: 'center' }}>{record.email}</Typography.Text>
                     </div>
@@ -252,14 +301,14 @@ const PermissionEdit: React.FC = () => {
         },
         {
             title: 'Hoạt động lúc',
-            dataIndex: 'active',
-            key: 'active',
+            dataIndex: 'last_active',
+            key: 'last_active',
             align: 'center'
         },
         {
             title: 'Cập nhật lần cuối',
-            dataIndex: 'updated',
-            key: 'updated',
+            dataIndex: 'last_update',
+            key: 'last_update',
             align: 'center'
         },
         {
@@ -278,7 +327,10 @@ const PermissionEdit: React.FC = () => {
                             }
                         }
                     />
-                    <DeleteOutlined style={{ color: '#F5222D', fontSize: '20px' }} onClick={() => { handleClickDeleteUser(record.user_id) }} />
+                    <DeleteOutlined
+                        style={{ color: '#F5222D', fontSize: '20px' }}
+                        onClick={() => { handleClickDeleteUser(record.user_id) }}
+                    />
                 </Space>
             )
         },
@@ -288,22 +340,24 @@ const PermissionEdit: React.FC = () => {
             <div style={{ marginTop: '10px', textAlign: 'right' }}>
                 <Input
                     style={{ width: '300px' }}
-                    addonBefore={<SearchOutlined />}
+                    prefix={<SearchOutlined />}
                     placeholder="Tìm kiếm"
+                    allowClear
                 />
             </div>
             <Card
                 className={styles.detailCardLayoutNoMar}
             >
                 <Table
-                    dataSource={listAllUserPermission?.data[0]}
+                    //dataSource={listAllUserPermission?.data[0]}
+                    dataSource={listAllUserInfo}
                     columns={columns}
                     style={{ paddingLeft: '20px' }}
                     className={styles.permissionTable}
                     onChange={handleTableChange}
                     pagination={{
                         ...pagination,
-                        total: listAllUserPermission?.length,
+                        total: listAllUserInfoLength,
                         locale: {
                             items_per_page: '/ Trang',
                             jump_to: 'Đến trang',
@@ -317,7 +371,7 @@ const PermissionEdit: React.FC = () => {
                         },
                     }}
                     scroll={{ x: 300 }}
-                    loading={{ indicator: <div><Spin /></div>, spinning: !listAllUserPermission?.data[0] }}
+                    loading={{ indicator: <div><Spin /></div>, spinning: !listAllUserInfo }}
                 />
                 <Modal
                     open={isClickUpdatePermission}
@@ -341,6 +395,7 @@ const PermissionEdit: React.FC = () => {
                                     name="team"
                                 >
                                     <Select
+                                        onChange={handleSelectTeam}
                                         dropdownRender={(menu) => (
                                             <>
                                                 {menu}
@@ -348,18 +403,26 @@ const PermissionEdit: React.FC = () => {
                                                     <hr></hr>
                                                     {clickAddNewTeam === false ? (
                                                         <Button
-                                                            style={{ padding: 'unset', color: 'rgba(0,0,0,0.4)' }}
+                                                            style={{ padding: 'unset', color: 'rgba(0,0,0,0.5)', fontStyle: 'italic' }}
                                                             type='text'
                                                             onClick={() => setClickAddNewTeam(true)}
                                                         >
-                                                            Thêm team mới
+                                                            Chỉnh sửa / Thêm team mới
                                                         </Button>
                                                     ) : (
-                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                            <Input placeholder="Nhập team mới tại đây" />
+                                                        <div className={styles.flexLayout}>
+                                                            <Input
+                                                                placeholder="Nhập team mới tại đây"
+                                                                className={styles.addNewTeamPlaceholder}
+                                                            />
                                                             <Space>
-                                                                <SaveOutlined style={{ marginLeft: 10, fontSize: 14 }} />
-                                                                <CloseOutlined style={{ fontSize: 14 }} onClick={() => setClickAddNewTeam(false)} />
+                                                                <SaveOutlined
+                                                                    style={{ marginLeft: 10, fontSize: 14 }}
+                                                                />
+                                                                <CloseOutlined
+                                                                    style={{ fontSize: 14 }}
+                                                                    onClick={() => setClickAddNewTeam(false)}
+                                                                />
                                                             </Space>
                                                         </div>
                                                     )}
@@ -368,7 +431,16 @@ const PermissionEdit: React.FC = () => {
                                         )}
                                     >
                                         {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
-                                            <Select.Option value={item.name}>{item.name}</Select.Option>
+                                            <Select.Option value={item.id}>
+                                                <div className={styles.flexLayout}>
+                                                    <div>
+                                                        {item.name}
+                                                    </div>
+                                                    {clickAddNewTeam === true ? (
+                                                        <DeleteOutlined onClick={(e) => handleClickDeleteTeam(e, item.id)} />
+                                                    ) : ('')}
+                                                </div>
+                                            </Select.Option>
                                         ))}
                                     </Select>
                                 </Form.Item>
@@ -404,7 +476,11 @@ const PermissionEdit: React.FC = () => {
                                 >
                                     <Select>
                                         {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
-                                            <Select.Option value={item.code}>{item.code}</Select.Option>
+                                            <Select.Option
+                                                value={item.code}
+                                            >
+                                                {item.code}
+                                            </Select.Option>
                                         ))}
                                     </Select>
                                 </Form.Item>

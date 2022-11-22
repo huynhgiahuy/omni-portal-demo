@@ -9,7 +9,9 @@ import { requeGetUserInfoProps, requestUpdateStatusUser } from '@/services/user_
 const WorkingStatus = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
 
-  const [option, setOption] = useState(initialState?.currentUser?.status);
+  const [option, setOption] = useState(
+    initialState?.currentUser?.status ? initialState?.currentUser?.status : '1',
+  );
 
   useEffect(() => {
     if (

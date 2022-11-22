@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Card, Table, Button, Typography, Input, Tag } from 'antd';
+import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlayCircleFilled, SearchOutlined, FilterOutlined, StarOutlined } from '@ant-design/icons';
+import { PlayCircleFilled, SearchOutlined, FilterOutlined, DownOutlined, UpOutlined, EditOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 //import FilterIcon from '../../../components/FilterIcon/filter_icon.png'
@@ -24,27 +24,15 @@ interface DataType {
     ghiam: string;
     ghichu: string;
 }
-interface DataTypeDanhBa {
-    key: string;
-    stt: string;
-    hovaten: string;
-    sodidong: string;
-    somaynhanh: string;
-    email: string;
-    loai: string;
-}
 
 const HistoryCall: React.FC = () => {
-    const [isChangeViewHistory, setChangeViewHistory] = useState(true);
+    const [isClickFilterBtn, setClickFilterBtn] = useState(false);
+    const [isActiveFilterBtn, setActiveFilterBtn] = useState(false);
+    const [listValueHCG, setListValueHCG] = useState<string | any>('');
+    const [listValueKQ, setListValueKQ] = useState<string | any>('');
 
-    const handleSelectHistory = (value: any) => {
-        if (value === 'Lịch sử') {
-            setChangeViewHistory(true);
-        }
-        else if (value === 'Danh bạ') {
-            setChangeViewHistory(false);
-        }
-    }
+    const [form] = Form.useForm();
+
     const handleViewResult = (result: any) => {
         let color;
         if (result === 'Thành công') {
@@ -143,7 +131,7 @@ const HistoryCall: React.FC = () => {
             dataIndex: 'ghiam',
             key: 'ghiam',
             align: 'center',
-            width: '80px',
+            width: '100px',
             render: (text, record) => {
                 return (
                     <>
@@ -160,57 +148,37 @@ const HistoryCall: React.FC = () => {
             align: 'center',
             width: '250px'
         },
+        Table.EXPAND_COLUMN,
     ];
 
-    const columnsDanhba: ColumnsType<DataTypeDanhBa> = [
-        {
-            title: '',
-            dataIndex: 'stt',
-            key: 'stt',
-            align: 'center',
-            width: '10px',
-            render: (text, record) => <StarOutlined />
-        },
-        {
-            title: 'Họ và tên',
-            dataIndex: 'hovaten',
-            key: 'hovaten',
-            align: 'center',
-            width: '10px'
-        },
-        {
-            title: 'Số di động',
-            dataIndex: 'sodidong',
-            key: 'sodidong',
-            align: 'center',
-            width: '100px'
-        },
-        {
-            title: 'Số máy nhánh',
-            dataIndex: 'somaynhanh',
-            key: 'somaynhanh',
-            align: 'center',
-            width: '100px'
-        },
-        {
-            title: 'Email',
-            dataIndex: 'email',
-            key: 'email',
-            align: 'center',
-            width: '100px'
-        },
-        {
-            title: 'Loại',
-            dataIndex: 'loai',
-            key: 'loai',
-            align: 'center',
-            width: '100px',
-            render: (text, record) => {
-                return (<img src={PhoneCallGreen} />)
-            }
-        },
+    const handleSelectValueHCG = (values: any) => {
+        if (values !== undefined || values !== '') {
+            setListValueHCG(values);
+            setActiveFilterBtn(true);
+        }
+        else {
+            setActiveFilterBtn(false);
+        }
+    }
 
-    ]
+    const handleSelectValueKQ = (values: any) => {
+        if (values !== undefined || values !== '') {
+            setListValueKQ(values);
+            setActiveFilterBtn(true);
+        }
+        else {
+            setActiveFilterBtn(false);
+        }
+    }
+
+    const onReset = () => {
+        form.resetFields();
+        setActiveFilterBtn(false);
+    };
+
+    const handleSubmitNoteForm = (values: any) => {
+        console.log(values);
+    }
 
     return (
         <>
@@ -218,17 +186,51 @@ const HistoryCall: React.FC = () => {
                 className={styles.detailCardLayout}
             >
                 <div style={{ display: 'flex', justifyContent: 'right' }}>
-                    <Button style={{ marginRight: '10px' }} type="text">
-                        <FilterOutlined /> Bộ lọc
+                    <Button
+                        style={{ marginRight: '10px' }}
+                        onClick={() => setClickFilterBtn(!isClickFilterBtn)}
+                        className={isActiveFilterBtn ? `${styles.activeBtnFilter}` : `${styles.notActiveBtnFilter}`}
+                    >
+                        <FilterOutlined className={isActiveFilterBtn ? `${styles.activeIconFilter}` : `${styles.notActiveIconFilter}`} /> Bộ lọc
                     </Button>
                     <Input
                         style={{ width: '300px', marginRight: '10px' }}
-                        addonBefore={<SearchOutlined />}
+                        prefix={<SearchOutlined />}
                         placeholder="Tìm kiếm"
                     />
-                    <Button style={{ marginRight: '10px' }}>Voice Analytics</Button>
                     <Button style={{ backgroundColor: '#7fb77e', color: '#fff' }}><ExportIcon /> Export</Button>
                 </div>
+                {isClickFilterBtn === true ? (
+                    <div style={{ padding: '20px', backgroundColor: '#f0f0f0', marginLeft: '50%', marginTop: '10px' }}>
+                        <Form layout='vertical' form={form}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+                                <div style={{ flex: 1 }}>
+                                    <Form.Item label="Hướng cuộc gọi" name="Hướng cuộc gọi">
+                                        <Select onChange={handleSelectValueHCG} value={listValueHCG}>
+                                            <Select.Option value="Gọi ra">Gọi ra</Select.Option>
+                                            <Select.Option value="Gọi vào">Gọi vào</Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <Form.Item label="Kết quả" name="Kết quả">
+                                        <Select onChange={handleSelectValueKQ} value={listValueKQ}>
+                                            <Select.Option value="Tất cả">Tất cả</Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <Form.Item label="Thời gian" name="Thời gian">
+                                        <Select />
+                                    </Form.Item>
+                                </div>
+                            </div>
+                            <Form.Item style={{ marginBottom: 'unset' }}>
+                                <Button type='text' style={{ color: 'blue' }} onClick={onReset}>Reset</Button>
+                            </Form.Item>
+                        </Form>
+                    </div>
+                ) : ('')}
                 <Table
                     dataSource={data}
                     columns={columns}
@@ -244,6 +246,46 @@ const HistoryCall: React.FC = () => {
                         }
                     }}
                     scroll={{ x: 300 }}
+                    expandable={{
+                        expandedRowRender: (record) => (
+                            <>
+                                <div style={{ textAlign: 'center', paddingTop: '5%' }}>
+                                    <Typography.Text>Chưa có ghi chú</Typography.Text>
+                                </div>
+                                <div style={{ paddingTop: '5%' }}>
+                                    <Divider orientation='left'>NhuVTT33 <EditOutlined /></Divider>
+                                    <Form layout='vertical' onFinish={handleSubmitNoteForm}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <div style={{ flex: 1 }}>
+                                                <Form.Item
+                                                    name="note"
+                                                    rules={[
+                                                        {
+                                                            required: true,
+                                                            message: 'Vui lòng nhập ghi chú'
+                                                        }
+                                                    ]}
+                                                >
+                                                    <Input />
+                                                </Form.Item>
+                                            </div>
+                                            <div style={{ marginLeft: '10px' }}>
+                                                <Form.Item>
+                                                    <Button style={{ backgroundColor: '#1890ff', color: '#fff' }} htmlType="submit">Lưu</Button>
+                                                </Form.Item>
+                                            </div>
+                                        </div>
+                                    </Form>
+                                </div>
+                            </>
+                        ),
+                        expandIcon: ({ expanded, onExpand, record }) =>
+                            expanded ? (
+                                <UpOutlined onClick={e => onExpand(record, e)} />
+                            ) : (
+                                <DownOutlined onClick={e => onExpand(record, e)} />
+                            )
+                    }}
                 />
             </Card>
         </>
