@@ -166,9 +166,9 @@ const PermissionRole: React.FC = () => {
       onSuccess: (res) => {
         setListAllRolePermission(dataReadRoleAndPerm);
       },
+
       onError: (error) => {
-        message.error('Error');
-        console.log(error);
+        message.error('Lỗi không thể lấy data');
       },
     },
   );

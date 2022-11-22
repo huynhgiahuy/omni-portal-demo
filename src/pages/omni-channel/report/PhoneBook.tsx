@@ -1,16 +1,36 @@
 import React, { useState } from 'react';
-import { Button, Input, Table, Card, Segmented, Space, Image, Modal, Form, Typography } from 'antd';
+import {
+  Button,
+  Input,
+  Table,
+  Card,
+  Segmented,
+  Space,
+  Image,
+  Modal,
+  Form,
+  Typography,
+  message,
+} from 'antd';
 import {
   SearchOutlined,
   FilterOutlined,
   StarOutlined,
   PlusSquareFilled,
   StarFilled,
+  DeleteOutlined,
+  CloseCircleFilled,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
-import { dataDanhba, DataTypeDanhBa } from './FakeData';
 import styles from '../report/style.less';
 import Phone from '../../../../public/phone.svg';
+import {
+  dataUserContactProps,
+  requestAddUserContact,
+  requestGetUserContact,
+  requestUpdateUserContact,
+} from './services';
+import { useRequest } from 'umi';
 
 const formItemLayout = {
   labelCol: {
@@ -41,17 +61,60 @@ const PhoneBook: React.FC = () => {
   const [form] = Form.useForm();
   const [openModal, setOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [dataModalEdit, setDataModalEdit] = useState<DataTypeDanhBa>({
-    key: '',
-    stt: '',
-    name: '',
-    phone_number: '',
-    ip_phone: '',
-    email: '',
-    loai: ' ',
-    note: '',
-    work_address: '',
+  const [dataContact, setDataContact] = useState<dataUserContactProps[]>([]);
+
+  const getUserContact = useRequest(requestGetUserContact, {
+    onSuccess: (res) => {
+      if (res) {
+        setDataContact(res);
+      } else {
+        message.error('Không lấy được danh bạ');
+      }
+    },
+    onError: (error) => {
+      message.error('Thêm thất bại, vui lòng thử lại');
+    },
   });
+
+  const addUserContact = useRequest(
+    (data) => {
+      return requestAddUserContact(data);
+    },
+    {
+      manual: true,
+      onSuccess: (res) => {
+        if (res) {
+          message.success('Thêm thành công');
+          getUserContact.refresh();
+        } else {
+          message.error('Thêm thất bại, vui lòng thử lại');
+        }
+      },
+      onError: (error) => {
+        message.error('Thêm thất bại, vui lòng thử lại');
+      },
+    },
+  );
+
+  const updateUserContact = useRequest(
+    (data) => {
+      return requestUpdateUserContact(data);
+    },
+    {
+      manual: true,
+      onSuccess: (res) => {
+        if (res) {
+          message.success('Cập nhập thành công');
+          getUserContact.refresh();
+        } else {
+          message.error('Cập nhập thất bại');
+        }
+      },
+      onError: (error) => {
+        message.error('Cập nhập thất bại');
+      },
+    },
+  );
 
   const handleOpenModal = () => {
     setOpenModal(true);
@@ -62,11 +125,34 @@ const PhoneBook: React.FC = () => {
     setOpenModal(false);
   };
 
-  const handleOnFinish = (value: DataTypeDanhBa) => {
-    console.log(value);
+  const handleOnFinish = (values: dataUserContactProps) => {
+    if (isEdit) {
+      updateUserContact.run(values);
+    } else {
+      addUserContact.run(values);
+    }
   };
 
-  const columnsDanhba: ColumnsType<DataTypeDanhBa> = [
+  const handleConfirmDelete = (role_id: string) => {
+    Modal.confirm({
+      title: 'Thao tác xoá?',
+      content: 'Bạn có chắc chắn muốn xoá thông tin này',
+      okText: 'Xoá',
+      okType: 'danger',
+      okButtonProps: {
+        type: 'primary',
+      },
+      icon: <CloseCircleFilled style={{ color: 'red', fontSize: 22 }} />,
+      onOk() {
+        {
+        }
+      },
+
+      cancelText: 'Hủy',
+    });
+  };
+
+  const columnsDanhba: ColumnsType<dataUserContactProps> = [
     {
       title: '',
       dataIndex: 'stt',
@@ -85,8 +171,8 @@ const PhoneBook: React.FC = () => {
     },
     {
       title: 'Họ và tên',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'full_name',
+      key: 'full_name',
       align: 'center',
       width: '200px',
       render: (text, record) => {
@@ -113,8 +199,8 @@ const PhoneBook: React.FC = () => {
     },
     {
       title: 'Đơn vị',
-      dataIndex: 'sodidong',
-      key: 'sodidong',
+      dataIndex: 'work_unit',
+      key: 'work_unit',
       align: 'center',
       width: '265px',
     },
@@ -140,9 +226,17 @@ const PhoneBook: React.FC = () => {
       width: '100px',
       render: (text, record) => {
         return (
-          <div style={{ cursor: 'pointer' }}>
-            <Image className={styles.call} width={30} src={Phone} preview={false} />
-          </div>
+          <Space size="middle">
+            <div style={{ cursor: 'pointer' }}>
+              <Image className={styles.call} width={30} src={Phone} preview={false} />
+            </div>
+            <DeleteOutlined
+              style={{ color: '#F5222D', fontSize: '20px' }}
+              onClick={() => {
+                record.id && handleConfirmDelete(record.id);
+              }}
+            />
+          </Space>
         );
       },
     },
@@ -171,6 +265,7 @@ const PhoneBook: React.FC = () => {
           <div style={{ marginRight: '10px', cursor: 'pointer' }}>
             <FilterOutlined /> Bộ lọc
           </div>
+
           <Input style={{ width: '300px' }} prefix={<SearchOutlined />} placeholder="Tìm kiếm" />
           <PlusSquareFilled
             style={{ fontSize: 32, color: '#478D46' }}
@@ -184,7 +279,7 @@ const PhoneBook: React.FC = () => {
       </div>
 
       <Table
-        dataSource={dataDanhba}
+        dataSource={dataContact}
         columns={columnsDanhba}
         style={{ paddingLeft: '10px', paddingTop: '10px' }}
         className={styles.tableStyle}
@@ -215,7 +310,7 @@ const PhoneBook: React.FC = () => {
               Họ và tên <span style={{ color: 'red' }}>(*)</span>
             </Typography.Text>
             <Form.Item
-              name="name"
+              name="full_name"
               style={{ marginTop: 8 }}
               rules={[
                 { required: true, message: 'Vui lòng không để trống thông tin' },
@@ -241,7 +336,7 @@ const PhoneBook: React.FC = () => {
                   message: 'Vui lòng không để trống thông tin',
                 },
                 {
-                  pattern: new RegExp('(0[3|5|7|8|9])+([0-9]{8})'),
+                  pattern: new RegExp('([3|5|7|8|9]{1})+([0-9]{8})'),
                   message: 'Số điện thoại không hợp lệ',
                 },
                 {
@@ -300,7 +395,7 @@ const PhoneBook: React.FC = () => {
               Đơn vị công tác <span style={{ color: 'red' }}>(*)</span>
             </Typography.Text>
             <Form.Item
-              name="work_address"
+              name="work_unit"
               style={{ marginTop: 8 }}
               rules={[
                 { required: true, message: 'Vui lòng không để trống thông tin' },

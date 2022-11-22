@@ -1,5 +1,5 @@
 interface DataType {
-  key: string;
+  id: string;
   huongcuocgoi: string;
   somaygoi: string;
   tennguoigoi: string;
@@ -13,11 +13,11 @@ interface DataType {
 }
 
 export interface DataTypeDanhBa {
-  key: string;
+  id: string;
   stt: string;
-  name: string;
+  full_name: string;
   phone_number: string;
-  work_address: string;
+  work_unit: string;
   ip_phone: string;
   email: string;
   loai: string;
@@ -26,7 +26,7 @@ export interface DataTypeDanhBa {
 
 export const data: DataType[] = [
   {
-    key: '1',
+    id: '1',
     huongcuocgoi: 'gọi vào',
     somaygoi: '09098029992',
     tennguoigoi: 'Nguyễn Thu Hương',
@@ -39,7 +39,7 @@ export const data: DataType[] = [
     ghichu: 'Hỗ trợ ticket SC01293192312312. Hỗ trợ sớm nha anh chị. Cảm ơn anh chị',
   },
   {
-    key: '2',
+    id: '2',
     huongcuocgoi: 'gọi vào',
     somaygoi: '09098029992',
     tennguoigoi: 'Nguyễn Thu Hương',
@@ -52,7 +52,7 @@ export const data: DataType[] = [
     ghichu: 'test',
   },
   {
-    key: '3',
+    id: '3',
     huongcuocgoi: 'gọi ra',
     somaygoi: '09098029992',
     tennguoigoi: 'Nguyễn Thu Hương',
@@ -65,7 +65,7 @@ export const data: DataType[] = [
     ghichu: 'test',
   },
   {
-    key: '4',
+    id: '4',
     huongcuocgoi: 'gọi ra',
     somaygoi: '09098029992',
     tennguoigoi: 'Nguyễn Thu Hương',
@@ -78,7 +78,7 @@ export const data: DataType[] = [
     ghichu: 'test',
   },
   {
-    key: '5',
+    id: '5',
     huongcuocgoi: 'gọi vào',
     somaygoi: '09098029992',
     tennguoigoi: 'Nguyễn Thu Hương',
@@ -91,7 +91,7 @@ export const data: DataType[] = [
     ghichu: 'test',
   },
   {
-    key: '6',
+    id: '6',
     huongcuocgoi: 'gọi ra',
     somaygoi: '09098029992',
     tennguoigoi: 'Nguyễn Thu Hương',
@@ -107,69 +107,69 @@ export const data: DataType[] = [
 
 export const dataDanhba: DataTypeDanhBa[] = [
   {
-    key: '1',
+    id: '1',
     stt: '',
-    name: 'Robert Fox1',
+    full_name: 'Robert Fox1',
     phone_number: '0909090909',
     ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: '',
     note: '',
-    work_address: 'SCC',
+    work_unit: 'SCC',
   },
   {
-    key: '2',
+    id: '2',
     stt: '',
-    name: 'Robert Fox2',
+    full_name: 'Robert Fox2',
     phone_number: '0909090909',
     ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: '',
     note: '',
-    work_address: 'SCC',
+    work_unit: 'SCC',
   },
   {
-    key: '3',
+    id: '3',
     stt: '',
-    name: 'Robert Fox3',
+    full_name: 'Robert Fox3',
     phone_number: '0909090909',
     ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: '',
     note: '',
-    work_address: 'SCC',
+    work_unit: 'SCC',
   },
   {
-    key: '4',
+    id: '4',
     stt: '',
-    name: 'Robert Fox4',
+    full_name: 'Robert Fox4',
     phone_number: '0909090909',
     ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: '',
     note: '',
-    work_address: 'SCC',
+    work_unit: 'SCC',
   },
   {
-    key: '5',
+    id: '5',
     stt: '',
-    name: 'Robert Fox5',
+    full_name: 'Robert Fox5',
     phone_number: '0909090909',
     ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: '',
     note: '',
-    work_address: 'SCC',
+    work_unit: 'SCC',
   },
   {
-    key: '6',
+    id: '6',
     stt: '',
-    name: 'Robert Fox6',
+    full_name: 'Robert Fox6',
     phone_number: '0909090909',
     ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: '',
     note: '',
-    work_address: 'SCC',
+    work_unit: 'SCC',
   },
 ];

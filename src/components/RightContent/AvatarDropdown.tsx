@@ -99,7 +99,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         return;
       }
       if (key === 'user') {
-        history.push(`/omni-channel/setting`);
+        history.push(`/omni-channel/profile`);
         return;
       }
       if (key === 'notify') {

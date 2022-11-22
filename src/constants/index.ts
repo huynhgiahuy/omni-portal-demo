@@ -557,3 +557,30 @@ export const OPTIONS_PERMISSION_TEST_VALUE = [
   'Xuất báo cáo',
   'Phân tích',
 ];
+
+export const OPTIONS_POSITION = [
+  {
+    label: 'Cán bộ Giám sát',
+    value: 'cbgs',
+  },
+  {
+    label: 'Cán bộ HTKT',
+    value: 'cbhtkt',
+  },
+  {
+    label: 'L2',
+    value: 'l2'
+  },
+  {
+    label: 'Trưởng ca',
+    value: 'tc'
+  },
+  {
+    label: 'CBQLP',
+    value: 'cbqlp'
+  },
+  {
+    label: 'Dự án',
+    value: 'da'
+  },
+];
