@@ -26,18 +26,18 @@ const GlobalHeaderRight: React.FC = () => {
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
 
-  // const access_token = localStorage.getItem('access_token');
-  // const socket = io('http://172.27.228.201:9003', {
-  //   path: '/ws/socket.io',
-  //   auth: {
-  //     token: access_token,
-  //   },
-  // });
-  // console.log({ socket });
-  // const sendMessage = () => {
-  //   console.log({ message: 'send message for server' });
-  //   socket.emit('send_message', { message: 'Hello, I am client' });
-  // };
+  const access_token = localStorage.getItem('access_token');
+  const socket = io('http://172.27.228.201:9003', {
+    path: '/ws/socket.io',
+    auth: {
+      token: access_token,
+    },
+  });
+  console.log({ socket });
+  const sendMessage = () => {
+    console.log({ message: 'send message for server' });
+    socket.emit('send_message', { message: 'Hello, I am client' });
+  };
 
   const socket = io('http://localhost:3001');
   console.log({ socket });
