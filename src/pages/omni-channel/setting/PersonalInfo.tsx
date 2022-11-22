@@ -221,9 +221,9 @@ const PersonalInfo: React.FC = () => {
                   </Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
-                      name="position"
+                      name="work_address"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.position}
+                      initialValue={initialState?.currentUser?.work_address}
                       rules={[
                         {
                           required: true,
@@ -264,8 +264,12 @@ const PersonalInfo: React.FC = () => {
                       <Select
                         style={{ width: '300px' }}
                         options={[
-                          { value: 'mb', label: 'Miền Bắc' },
-                          { value: 'mn', label: 'Miền Nam' },
+                          { value: 'cbgs', label: 'Cán bộ Giám sát' },
+                          { value: 'cbhtkt', label: 'Cán bộ HTKT' },
+                          { value: 'l2', label: 'L2' },
+                          { value: 'tc', label: 'Trưởng ca' },
+                          { value: 'cbqlp', label: 'CBQLP' },
+                          { value: 'da', label: 'Dự án' },
                         ]}
                       />
                     </Form.Item>
@@ -332,34 +336,6 @@ const PersonalInfo: React.FC = () => {
                     </Typography.Text>
                   )}
                 </div>
-                <div className={styles.antDataDisplay}>
-                  <Typography.Text className={styles.antTextStyle}>
-                    Công tác {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
-                  </Typography.Text>
-                  {isEditUser === true ? (
-                    <Form.Item
-                      name="work_address"
-                      className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.work_address}
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Vui lòng không để trống thông tin',
-                        },
-                        {
-                          max: 255,
-                          message: 'Vui lòng không nhập quá 255 kí tự',
-                        },
-                      ]}
-                    >
-                      <Input style={{ width: '300px' }} />
-                    </Form.Item>
-                  ) : (
-                    <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.organization}
-                    </Typography.Text>
-                  )}
-                </div>
               </Col>
               <Col md={2}></Col>
               <Col md={9}>
@@ -381,7 +357,7 @@ const PersonalInfo: React.FC = () => {
                           message: 'Vui lòng không để trống thông tin',
                         },
                         {
-                          pattern: new RegExp('(0[3|5|7|8|9])+([0-9]{8})'),
+                          pattern: new RegExp('([3|5|7|8|9]{1})+([0-9]{8})'),
                           message: 'Số điện thoại không hợp lệ',
                         },
                         {
