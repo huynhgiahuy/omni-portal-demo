@@ -353,7 +353,7 @@ export const TREE_DATA_TTCT = [
       },
       {
         title: 'Chỉnh sửa',
-        key: 'shift_info_edit',
+        key: 'shift_info_update',
       },
       {
         title: 'Xoá',
@@ -369,7 +369,7 @@ export const TREE_DATA_TTCT = [
 
 export const OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE = [
   'shift_info_create',
-  'shift_info_edit',
+  'shift_info_update',
   'shift_info_delete',
   'shift_info_export',
 ];
@@ -381,7 +381,7 @@ export const TREE_DATA_TTCN = [
     children: [
       {
         title: 'Chỉnh sửa',
-        key: 'personal_info_edit',
+        key: 'personal_info_update',
       },
       {
         title: 'Xoá',
@@ -392,7 +392,7 @@ export const TREE_DATA_TTCN = [
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE = [
-  'personal_info_edit',
+  'personal_info_update',
   'personal_info_delete',
 ];
 
@@ -403,7 +403,7 @@ export const TREE_DATA_TTND = [
     children: [
       {
         title: 'Chỉnh sửa',
-        key: 'user_profile_edit',
+        key: 'user_profile_update',
       },
       {
         title: 'Xoá',
@@ -413,7 +413,10 @@ export const TREE_DATA_TTND = [
   },
 ];
 
-export const OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE = ['user_profile_edit', 'user_profile_delete'];
+export const OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE = [
+  'user_profile_update',
+  'user_profile_delete',
+];
 
 export const TREE_DATA_NQ = [
   {
@@ -422,11 +425,11 @@ export const TREE_DATA_NQ = [
     children: [
       {
         title: 'Tạo mới',
-        key: 'permission_group_add',
+        key: 'permission_group_create',
       },
       {
         title: 'Chỉnh sửa',
-        key: 'permission_group_edit',
+        key: 'permission_group_update',
       },
       {
         title: 'Xóa',
@@ -437,12 +440,11 @@ export const TREE_DATA_NQ = [
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE = [
-  'permission_group_add',
-  'permission_group_edit',
+  'permission_group_create',
+  'permission_group_update',
   'permission_group_delete',
 ];
 
-////
 export const OPTIONS_PERMISSION_TKC = [
   {
     label: 'Truy vấn',
@@ -554,4 +556,31 @@ export const OPTIONS_PERMISSION_TEST_VALUE = [
   'Xóa lịch sử',
   'Xuất báo cáo',
   'Phân tích',
+];
+
+export const OPTIONS_POSITION = [
+  {
+    label: 'Cán bộ Giám sát',
+    value: 'cbgs',
+  },
+  {
+    label: 'Cán bộ HTKT',
+    value: 'cbhtkt',
+  },
+  {
+    label: 'L2',
+    value: 'l2'
+  },
+  {
+    label: 'Trưởng ca',
+    value: 'tc'
+  },
+  {
+    label: 'CBQLP',
+    value: 'cbqlp'
+  },
+  {
+    label: 'Dự án',
+    value: 'da'
+  },
 ];

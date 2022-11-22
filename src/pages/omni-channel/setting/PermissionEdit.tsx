@@ -11,7 +11,7 @@ import {
     Input,
     Button,
     Select,
-    DatePicker,
+    Checkbox
 } from 'antd';
 import {
     EditOutlined,
@@ -19,7 +19,8 @@ import {
     CloseCircleFilled,
     SaveOutlined,
     CloseOutlined,
-    FilterOutlined
+    FilterOutlined,
+    CheckOutlined
 } from '@ant-design/icons';
 import {
     requestAllUserPermission,
@@ -37,6 +38,7 @@ import {
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import ImagaAvatar from './avatar_test.png';
+import { OPTIONS_POSITION } from '@/constants';
 
 interface DataAllUserPermission {
     data: any[];
@@ -454,6 +456,10 @@ const PermissionEdit: React.FC = () => {
         }
     }
 
+    const handleSelectValuePosition = (value: { value: string; label: React.ReactNode }) => {
+        console.log(value)
+    }
+
     return (
         <>
             <div style={{ marginTop: '10px', textAlign: 'right' }}>
@@ -667,7 +673,12 @@ const PermissionEdit: React.FC = () => {
                                     label="Chức danh"
                                     name="position"
                                 >
-                                    <Input />
+                                    <Select
+                                        options={OPTIONS_POSITION}
+                                        menuItemSelectedIcon={<CheckOutlined />}
+                                        onChange={handleSelectValuePosition}
+                                        labelInValue
+                                    />
                                 </Form.Item>
                                 <Form.Item
                                     label="IP Phone"
