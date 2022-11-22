@@ -1,3 +1,4 @@
+/* stylelint-disable selector-pseudo-element-colon-notation */
 @import (reference) '~antd/es/style/themes/index';
 
 .antSegmented {
@@ -215,7 +216,7 @@
 .antCheckboxGroup {
   :global {
     .ant-checkbox-group-item {
-      margin-right: 30px;
+      margin-right: 20px;
     }
     .ant-checkbox-checked .ant-checkbox-inner,
     .ant-checkbox-indeterminate .ant-checkbox-inner {
@@ -276,5 +277,17 @@
       left: 50%;
       transform: rotate(45deg) scale(1) translate(-100%, -20%);
     }
+  }
+}
+
+.inputNumber {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
+  /* stylelint-disable-next-line selector-attribute-quotes */
+  &[type='number'] {
+    -moz-appearance: textfield;
   }
 }

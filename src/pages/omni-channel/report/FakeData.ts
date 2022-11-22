@@ -12,14 +12,16 @@ interface DataType {
   ghichu: string;
 }
 
-interface DataTypeDanhBa {
+export interface DataTypeDanhBa {
   key: string;
   stt: string;
-  hovaten: string;
-  sodidong: string;
-  somaynhanh: string;
+  name: string;
+  phone_number: string;
+  work_address: string;
+  ip_phone: string;
   email: string;
   loai: string;
+  note: string;
 }
 
 export const data: DataType[] = [
@@ -107,55 +109,67 @@ export const dataDanhba: DataTypeDanhBa[] = [
   {
     key: '1',
     stt: '',
-    hovaten: 'Robert Fox',
-    sodidong: '0909090909',
-    somaynhanh: '449003',
+    name: 'Robert Fox1',
+    phone_number: '0909090909',
+    ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: 'Nội bộ',
+    note: '',
+    work_address: 'SCC',
   },
   {
     key: '2',
     stt: '',
-    hovaten: 'Robert Fox',
-    sodidong: '0909090909',
-    somaynhanh: '449003',
+    name: 'Robert Fox2',
+    phone_number: '0909090909',
+    ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: 'Nội bộ',
+    note: '',
+    work_address: 'SCC',
   },
   {
     key: '3',
     stt: '',
-    hovaten: 'Robert Fox',
-    sodidong: '0909090909',
-    somaynhanh: '449003',
+    name: 'Robert Fox3',
+    phone_number: '0909090909',
+    ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: 'Nội bộ',
+    note: '',
+    work_address: 'SCC',
   },
   {
     key: '4',
     stt: '',
-    hovaten: 'Robert Fox',
-    sodidong: '0909090909',
-    somaynhanh: '449003',
+    name: 'Robert Fox4',
+    phone_number: '0909090909',
+    ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: 'Nội bộ',
+    note: '',
+    work_address: 'SCC',
   },
   {
     key: '5',
     stt: '',
-    hovaten: 'Robert Fox',
-    sodidong: '0909090909',
-    somaynhanh: '449003',
+    name: 'Robert Fox5',
+    phone_number: '0909090909',
+    ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: 'Nội bộ',
+    note: '',
+    work_address: 'SCC',
   },
   {
     key: '6',
     stt: '',
-    hovaten: 'Robert Fox',
-    sodidong: '0909090909',
-    somaynhanh: '449003',
+    name: 'Robert Fox6',
+    phone_number: '0909090909',
+    ip_phone: '449003',
     email: 'robertfox@gmail.com',
     loai: 'Nội bộ',
+    note: '',
+    work_address: 'SCC',
   },
 ];

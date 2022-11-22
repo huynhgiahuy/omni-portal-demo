@@ -1,5 +1,9 @@
 export const OPTIONS_PERMISSION_DB = [
   {
+    label: 'Xem',
+    value: 'dashboard_read',
+  },
+  {
     label: 'Tạo mới',
     value: 'dashboard_create',
   },
@@ -18,6 +22,7 @@ export const OPTIONS_PERMISSION_DB = [
 ];
 
 export const OPTIONS_PERMISSION_DB_VALUE = [
+  'dashboard_read',
   'dashboard_create',
   'dashboard_update',
   'dashboard_delete',
@@ -25,6 +30,10 @@ export const OPTIONS_PERMISSION_DB_VALUE = [
 ];
 
 export const OPTIONS_PERMISSION_IM = [
+  {
+    label: 'Xem',
+    value: 'incident_management_read',
+  },
   {
     label: 'Tạo mới',
     value: 'incident_management_create',
@@ -48,6 +57,7 @@ export const OPTIONS_PERMISSION_IM = [
 ];
 
 export const OPTIONS_PERMISSION_IM_VALUE = [
+  'incident_management_read',
   'incident_management_create',
   'incident_management_process',
   'incident_management_delete',
@@ -56,6 +66,10 @@ export const OPTIONS_PERMISSION_IM_VALUE = [
 ];
 
 export const OPTIONS_PERMISSION_EM = [
+  {
+    label: 'Xem',
+    value: 'event_management_read',
+  },
   {
     label: 'Tạo mới',
     value: 'event_management_create',
@@ -75,6 +89,7 @@ export const OPTIONS_PERMISSION_EM = [
 ];
 
 export const OPTIONS_PERMISSION_EM_VALUE = [
+  'event_management_read',
   'event_management_create',
   'event_management_process',
   'event_management_delete',
@@ -82,6 +97,10 @@ export const OPTIONS_PERMISSION_EM_VALUE = [
 ];
 
 export const OPTIONS_PERMISSION_CM = [
+  {
+    label: 'Xem',
+    value: 'change_management_read',
+  },
   {
     label: 'Tạo mới',
     value: 'change_management_create',
@@ -101,6 +120,7 @@ export const OPTIONS_PERMISSION_CM = [
 ];
 
 export const OPTIONS_PERMISSION_CM_VALUE = [
+  'change_management_read',
   'change_management_create',
   'change_management_process',
   'change_management_delete',
@@ -108,6 +128,10 @@ export const OPTIONS_PERMISSION_CM_VALUE = [
 ];
 
 export const OPTIONS_PERMISSION_RF = [
+  {
+    label: 'Xem',
+    value: 'request_fufillment_read',
+  },
   {
     label: 'Tạo mới',
     value: 'request_fufillment_create',
@@ -131,6 +155,7 @@ export const OPTIONS_PERMISSION_RF = [
 ];
 
 export const OPTIONS_PERMISSION_RF_VALUE = [
+  'request_fufillment_read',
   'request_fufillment_create',
   'request_fufillment_process',
   'request_fufillment_delete',

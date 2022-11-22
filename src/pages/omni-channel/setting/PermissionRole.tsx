@@ -143,7 +143,20 @@ const PermissionRole: React.FC = () => {
   const [indeterminateIM, setIndeterminateIM] = useState(false);
   const [checkAllIM, setCheckAllIM] = useState(false);
 
-  // console.log(selectListDB, selectListIM, selectListEM, selectListCM, selectListRF);
+  const permissionList = valueCheckboxGeneralStatistic.concat(
+    valueCheckboxTransferShift,
+    valueCheckboxNightShift,
+    valueCheckboxHistoryCall,
+    valueCheckboxTTCN,
+    valueCheckboxTTCT,
+    valueCheckboxTTND,
+    valueCheckboxGroupsPer,
+    selectListDB,
+    selectListIM,
+    selectListEM,
+    selectListCM,
+    selectListRF,
+  );
 
   const { data: dataReadRoleAndPerm, refresh: refreshReadRoleAndPerm } = useRequest(
     () => {
@@ -242,6 +255,7 @@ const PermissionRole: React.FC = () => {
     setValueCheckboxTTCN([]);
     setValueCheckboxTTND([]);
     setValueCheckboxGroupsPer([]);
+
     setDataRoleId(data);
     form.setFieldValue('role_code', data.code);
     form.setFieldValue('role_desc', data.desc);
@@ -250,6 +264,7 @@ const PermissionRole: React.FC = () => {
   };
 
   const handleCancleAddNewPermission = () => {
+    setIsEditRole(false);
     setAddNetPermission(false);
   };
 
@@ -371,20 +386,20 @@ const PermissionRole: React.FC = () => {
     setValueCheckboxGroupsPer(checkedKeys.filter((data: string) => data !== 'permission_group'));
   };
 
-  const permissionList = valueCheckboxGeneralStatistic.concat(
-    valueCheckboxTransferShift,
-    valueCheckboxNightShift,
-    valueCheckboxHistoryCall,
-    valueCheckboxTTCN,
-    valueCheckboxTTCT,
-    valueCheckboxTTND,
-    valueCheckboxGroupsPer,
-    selectListDB,
-    selectListIM,
-    selectListEM,
-    selectListCM,
-    selectListRF,
-  );
+  // const permissionList = valueCheckboxGeneralStatistic.concat(
+  //   valueCheckboxTransferShift,
+  //   valueCheckboxNightShift,
+  //   valueCheckboxHistoryCall,
+  //   valueCheckboxTTCN,
+  //   valueCheckboxTTCT,
+  //   valueCheckboxTTND,
+  //   valueCheckboxGroupsPer,
+  //   selectListDB,
+  //   selectListIM,
+  //   selectListEM,
+  //   selectListCM,
+  //   selectListRF,
+  // );
 
   const fetchListUserRole = async (role_code: string, role_desc: string) => {
     if (permissionList.length === 0) {
@@ -475,11 +490,11 @@ const PermissionRole: React.FC = () => {
     }
 
     if (
-      valueCheckboxGeneralStatistic.length == 2 &&
-      valueCheckboxTransferShift.length == 3 &&
-      valueCheckboxNightShift.length == 3 &&
-      valueCheckboxHistoryCall.length == 4 &&
-      valueCheckboxTTCT.length == 4
+      valueCheckboxGeneralStatistic.length == OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE.length &&
+      valueCheckboxTransferShift.length == OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE.length &&
+      valueCheckboxNightShift.length == OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE.length &&
+      valueCheckboxHistoryCall.length == OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE.length &&
+      valueCheckboxTTCT.length == OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE.length
     ) {
       setIndeterminateReport(false);
       setCheckAllReport(true);
@@ -518,9 +533,9 @@ const PermissionRole: React.FC = () => {
     }
 
     if (
-      valueCheckboxTTCN.length == 2 &&
-      valueCheckboxTTND.length == 2 &&
-      valueCheckboxGroupsPer.length == 3
+      valueCheckboxTTCN.length == OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE.length &&
+      valueCheckboxTTND.length == OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE.length &&
+      valueCheckboxGroupsPer.length == OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE.length
     ) {
       setIndeterminateProfile(false);
       setCheckAllProfile(true);
@@ -620,7 +635,7 @@ const PermissionRole: React.FC = () => {
         setValueCheckboxGroupsPer(defaultDataGroupsPer);
       }
     }
-  }, [dataRoleId]);
+  }, [dataRoleId, isEditRole]);
 
   const columns: ColumnsType<DataAllRolePermission> = [
     {
