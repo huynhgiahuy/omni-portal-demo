@@ -12,6 +12,8 @@ import {
   Form,
   message,
   Upload,
+  Select,
+  InputNumber,
 } from 'antd';
 import {
   AppleFilled,
@@ -142,7 +144,7 @@ const PersonalInfo: React.FC = () => {
                 className={styles.antImg}
                 icon={!dataImage && <UserOutlined style={{ fontSize: 100 }} />}
               />
-              <Upload
+              {/* <Upload
                 {...props}
                 beforeUpload={beforeUpload}
                 onChange={async ({ file }) => {
@@ -157,7 +159,7 @@ const PersonalInfo: React.FC = () => {
                 showUploadList={false}
               >
                 <CameraFilled style={{ fontSize: 40, color: 'white' }} />
-              </Upload>
+              </Upload> */}
             </div>
             <div style={{ textAlign: 'right' }}>
               <EditOutlined style={{ fontSize: '22px' }} onClick={handleEditUser} />
@@ -228,6 +230,36 @@ const PersonalInfo: React.FC = () => {
                 </div>
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>
+                    Nơi làm việc {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
+                  </Typography.Text>
+                  {isEditUser === true ? (
+                    <Form.Item
+                      name="position"
+                      className={styles.antFormItemMargin}
+                      initialValue={initialState?.currentUser?.position}
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng không để trống thông tin',
+                        },
+                      ]}
+                    >
+                      <Select
+                        style={{ width: '300px' }}
+                        options={[
+                          { value: 'mb', label: 'Miền Bắc' },
+                          { value: 'mn', label: 'Miền Nam' },
+                        ]}
+                      />
+                    </Form.Item>
+                  ) : (
+                    <Typography.Text className={styles.antBold}>
+                      {initialState?.currentUser?.position}
+                    </Typography.Text>
+                  )}
+                </div>
+                <div className={styles.antDataDisplay}>
+                  <Typography.Text className={styles.antTextStyle}>
                     Chức danh {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
                   </Typography.Text>
                   {isEditUser === true ? (
@@ -242,7 +274,13 @@ const PersonalInfo: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} />
+                      <Select
+                        style={{ width: '300px' }}
+                        options={[
+                          { value: 'mb', label: 'Miền Bắc' },
+                          { value: 'mn', label: 'Miền Nam' },
+                        ]}
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -264,6 +302,10 @@ const PersonalInfo: React.FC = () => {
                         {
                           required: true,
                           message: 'Vui lòng không để trống thông tin',
+                        },
+                        {
+                          max: 255,
+                          message: 'Vui lòng không nhập quá 255 kí tự',
                         },
                       ]}
                     >
@@ -289,6 +331,10 @@ const PersonalInfo: React.FC = () => {
                           required: true,
                           message: 'Vui lòng không để trống thông tin',
                         },
+                        {
+                          max: 255,
+                          message: 'Vui lòng không nhập quá 255 kí tự',
+                        },
                       ]}
                     >
                       <Input style={{ width: '300px' }} />
@@ -307,11 +353,15 @@ const PersonalInfo: React.FC = () => {
                     <Form.Item
                       name="work_address"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.organization}
+                      initialValue={initialState?.currentUser?.work_address}
                       rules={[
                         {
                           required: true,
                           message: 'Vui lòng không để trống thông tin',
+                        },
+                        {
+                          max: 255,
+                          message: 'Vui lòng không nhập quá 255 kí tự',
                         },
                       ]}
                     >
@@ -353,7 +403,11 @@ const PersonalInfo: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} />
+                      <Input
+                        style={{ width: '300px' }}
+                        className={styles.inputNumber}
+                        type="number"
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -375,9 +429,17 @@ const PersonalInfo: React.FC = () => {
                           required: true,
                           message: 'Vui lòng không để trống thông tin',
                         },
+                        {
+                          max: 6,
+                          message: 'Vui lòng không nhập quá 6 số',
+                        },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} />
+                      <Input
+                        style={{ width: '300px' }}
+                        className={styles.inputNumber}
+                        type="number"
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -420,8 +482,8 @@ const PersonalInfo: React.FC = () => {
                                   initialState.currentUser?.equipment[0]?.status
                                     ? '#689B4F'
                                     : initialState.currentUser?.screen_mode?.dark_mode
-                                    ? '#9B9B9B'
-                                    : '#4A4A4A'
+                                      ? '#9B9B9B'
+                                      : '#4A4A4A'
                                 }
                                 style={{ borderRadius: '4px' }}
                               >
@@ -471,8 +533,8 @@ const PersonalInfo: React.FC = () => {
                                 initialState.currentUser?.equipment[1]?.status
                                   ? '#689B4F'
                                   : initialState.currentUser?.screen_mode?.dark_mode
-                                  ? '#9B9B9B'
-                                  : '#4A4A4A'
+                                    ? '#9B9B9B'
+                                    : '#4A4A4A'
                               }
                               style={{ borderRadius: '4px' }}
                             >

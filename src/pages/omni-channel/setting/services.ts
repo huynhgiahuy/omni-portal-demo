@@ -7,7 +7,7 @@ export async function requestListUserRole(
   role_code?: string,
   role_desc?: string,
 ) {
-  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/role_and_perm/create`, {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/create_role_and_perm`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -20,13 +20,22 @@ export async function requestListUserRole(
   });
 }
 
-export async function requestListUserInfo() {
+export async function requestUpdateRole(
+  permission_code_list?: string[],
+  role_code?: string,
+  role_desc?: string,
+) {
   return request(
-    `${api.UMI_API_BASE_URL}/user-service/api/settings/user/get_user_info?current_user=nghiahm4%40fpt.com.vn`,
+    `${api.UMI_API_BASE_URL}/user-service/api/authorization/update_role_and_permission`,
     {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
+      },
+      data: {
+        permission_code_list,
+        role_code,
+        role_desc,
       },
     },
   );
@@ -155,6 +164,40 @@ export async function requestReadRoleAndPerm(data?: {
   });
 }
 
+export async function requestTeamPermissionData() {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_team`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  });
+}
+
+export async function requestDeleteTeamPermission(team_id: string) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/delete_team`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      team_id,
+    },
+  });
+}
+
+export async function requestAllUserInfo(limit: number, offset: number) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_user_and_role`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      limit,
+      offset,
+    },
+  });
+}
 export async function requestDeleteRoleAndPermission(role_id: string) {
   return request(
     `${api.UMI_API_BASE_URL}/user-service/api/authorization/delete_role_and_permission`,
