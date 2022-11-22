@@ -594,7 +594,7 @@ const PermissionRole: React.FC = () => {
       }
 
       const defaultDataKHD = dataRoleId?.permission_list
-        .filter(({ group }) => group === 'night_transfer')
+        .filter(({ group }) => group === 'night_shift')
         .map(({ code }) => code);
       if (defaultDataKHD?.length) {
         setValueCheckboxNightShift(defaultDataKHD);
@@ -608,7 +608,7 @@ const PermissionRole: React.FC = () => {
       }
 
       const defaultDataTTCT = dataRoleId?.permission_list
-        .filter(({ group }) => group === 'call_history')
+        .filter(({ group }) => group === 'shift_info')
         .map(({ code }) => code);
       if (defaultDataTTCT?.length) {
         setValueCheckboxTTCT(defaultDataTTCT);
