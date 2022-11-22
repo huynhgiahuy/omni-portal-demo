@@ -102,18 +102,19 @@ interface DataAllUserInfo {
 }
 
 interface DataAllUserInfoFinal {
-    name?: string;
-    email?: string;
-    id?: string;
-    team_name?: string;
-    team_id?: string;
-    role_id?: string;
-    role_code?: string;
-    ip_phone?: string;
-    home_address?: string;
-    work_address?: string;
-    level?: string;
-    position?: string;
+    name: string;
+    email: string;
+    id: string;
+    team_name: string;
+    team_id: string;
+    role_id: string;
+    role_code: string;
+    ip_phone: string;
+    home_address: string;
+    work_address: string;
+    level: string;
+    position: string;
+    phone_number: string;
 }
 
 const formItemLayout = {
@@ -217,7 +218,7 @@ const PermissionEdit: React.FC = () => {
     const fetchDetaiUserInfoFinal = async (user_id: any) => {
         const resDetail = await requestDetailUserInfoFinal(user_id);
         if (resDetail.success === true) {
-            setListEditUserInfoFinal(resDetail);
+            setListEditUserInfoFinal(resDetail.data);
         }
     }
 
@@ -396,6 +397,7 @@ const PermissionEdit: React.FC = () => {
                         style={{ color: '#1890FF', fontSize: '20px' }}
                         onClick={
                             () => {
+                                form.setFieldsValue(record)
                                 handleClickUpdatePermission();
                                 fetchDetaiUserInfoFinal(record.id);
                                 fetchGroupPermissionData();
@@ -551,8 +553,16 @@ const PermissionEdit: React.FC = () => {
                 >
                     <Form
                         {...formItemLayout}
+                        form={form}
                         layout="vertical"
                         onFinish={handleSubmitUpdateUserInfoFinal}
+                        initialValues={{
+                            email: listEditUserInfoFinal[0]?.email,
+                            phone_number: listEditUserInfoFinal[0]?.phone_number,
+                            ip_phone: listEditUserInfoFinal[0]?.ip_phone,
+                            level: listEditUserInfoFinal[0]?.level,
+                            home_address: listEditUserInfoFinal[0]?.home_address
+                        }}
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div style={{ flex: 1 }}>
