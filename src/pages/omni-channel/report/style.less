@@ -81,3 +81,33 @@
 }
 .notActiveIconFilter {
 }
+.call {
+  padding: 6px;
+  background: #52c41a;
+  border-radius: 100%;
+}
+
+.modal {
+  :global {
+    .ant-modal-title {
+      font-weight: 700 !important;
+      font-size: 24px !important;
+    }
+
+    .ant-modal-close-icon svg {
+      font-size: 20px;
+    }
+  }
+}
+
+.inputNumber {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
+  /* stylelint-disable-next-line selector-attribute-quotes */
+  &[type='number'] {
+    -moz-appearance: textfield;
+  }
+}
