@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider } from 'antd';
+import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlayCircleFilled, SearchOutlined, FilterOutlined, DownOutlined, UpOutlined, EditOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
-//import FilterIcon from '../../../components/FilterIcon/filter_icon.png'
 import PhoneCallOut from '../../../components/PhoneCall/phone_call_out_final.png'
 import PhoneCallIn from '../../../components/PhoneCall/phone_call_in_final.png'
-import PhoneCallGreen from '../../../../public/phone_call_green.svg';
 import { data, dataDanhba } from './FakeData';
 import styles from '../report/style.less'
 
+const { RangePicker } = DatePicker;
 interface DataType {
     key: string;
     huongcuocgoi: string;
@@ -180,6 +179,10 @@ const HistoryCall: React.FC = () => {
         console.log(values);
     }
 
+    const handleChangeValueRangePicker = (value: any, dateString: any) => {
+        console.log(value, dateString);
+    }
+
     return (
         <>
             <Card
@@ -201,7 +204,7 @@ const HistoryCall: React.FC = () => {
                     <Button style={{ backgroundColor: '#7fb77e', color: '#fff' }}><ExportIcon /> Export</Button>
                 </div>
                 {isClickFilterBtn === true ? (
-                    <div style={{ padding: '20px', backgroundColor: '#f0f0f0', marginLeft: '50%', marginTop: '10px' }}>
+                    <div style={{ padding: '20px', backgroundColor: '#E8E8E8', marginLeft: '50%', marginTop: '10px' }}>
                         <Form layout='vertical' form={form}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
                                 <div style={{ flex: 1 }}>
@@ -221,7 +224,7 @@ const HistoryCall: React.FC = () => {
                                 </div>
                                 <div style={{ flex: 1 }}>
                                     <Form.Item label="Thời gian" name="Thời gian">
-                                        <Select />
+                                        <RangePicker onChange={handleChangeValueRangePicker} placeholder={['Từ ngày', 'Đến ngày']}/>
                                     </Form.Item>
                                 </div>
                             </div>
