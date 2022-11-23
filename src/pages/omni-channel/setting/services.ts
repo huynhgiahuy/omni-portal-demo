@@ -2,7 +2,7 @@ import api from '@/api';
 import request from '@/utils/request';
 
 const token = window.localStorage.getItem('access_token');
-export async function requestListUserRole(
+export async function requestCreateRoleAndPerm(
   permission_code_list?: string[],
   role_code?: string,
   role_desc?: string,
@@ -152,6 +152,7 @@ export async function requestDeleteUserPermission(user_id: string) {
 }
 
 export async function requestReadRoleAndPerm(data?: {
+  keyword?: string;
   role_code?: string;
   permission_code?: string;
   limit?: number;
