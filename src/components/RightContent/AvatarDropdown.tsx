@@ -88,6 +88,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     shift: initialState?.currentUser?.notification?.shift ? true : false,
     overdue_message: initialState?.currentUser?.notification?.overdue_message ? true : false,
   });
+  const token = window.localStorage.getItem('access_token');
 
   const onMenuClick = useCallback(
     (event: MenuInfo) => {
@@ -116,7 +117,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   async function onChange() {
     const { critic_issue, incoming_call, missed_call, night_plan, overdue_message, shift } = values;
     const data = { missed_call, incoming_call, critic_issue, night_plan, shift, overdue_message };
-    const res = await requestUpdatenotification(data);
+    const res = await requestUpdatenotification(data, token ? token : '');
     if (res.success) {
       await setInitialState((s) => ({
         ...s,
@@ -124,10 +125,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       }));
     } else {
       message.error('Cập nhập trạng thái không thành công, vui lòng thử lại');
-      await setInitialState((s) => ({
-        ...s,
-        currentUser: res.data[0],
-      }));
       return;
     }
   }
@@ -137,18 +134,23 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       values.radio_theme !== initialState?.currentUser?.screen_mode?.dark_mode &&
       initialState?.currentUser?.screen_mode?.dark_mode !== undefined
     ) {
-      const res = requestUpdateScreenMode(values.radio_theme);
+      const res = requestUpdateScreenMode(values.radio_theme, token ? token : '');
 
-      res.then(async (result: requeGetUserInfoProps) => {
-        if (result.success) {
-          await setInitialState((s) => ({
-            ...s,
-            currentUser: result.data[0],
-          }));
-        } else {
+      res
+        .then(async (result: requeGetUserInfoProps) => {
+          if (result.success) {
+            await setInitialState((s) => ({
+              ...s,
+              currentUser: result.data[0],
+            }));
+          } else {
+            return;
+          }
+        })
+        .catch((error) => {
+          message.error('Chuyển giao diện lỗi vui lòng thử lại');
           return;
-        }
-      });
+        });
     }
   }, [values.radio_theme]);
 

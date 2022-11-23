@@ -11,10 +11,11 @@ import {
   Form,
   Typography,
   message,
+  Select,
+  Spin,
 } from 'antd';
 import {
   SearchOutlined,
-  FilterOutlined,
   StarOutlined,
   PlusSquareFilled,
   StarFilled,
@@ -27,6 +28,7 @@ import Phone from '../../../../public/phone.svg';
 import {
   dataUserContactProps,
   requestAddUserContact,
+  requestDeleteUserContact,
   requestGetUserContact,
   requestUpdateUserContact,
 } from './services';
@@ -59,64 +61,98 @@ const formItemLayout = {
 
 const PhoneBook: React.FC = () => {
   const [form] = Form.useForm();
+  const [external, setExternal] = useState('Khách hàng');
   const [openModal, setOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [dataContact, setDataContact] = useState<dataUserContactProps[]>([]);
+  const [dataContacts, setDataContacts] = useState<dataUserContactProps[]>([]);
 
-  const getUserContact = useRequest(requestGetUserContact, {
-    onSuccess: (res) => {
-      if (res) {
-        setDataContact(res);
-      } else {
+  const getUserContact = useRequest(
+    async () => {
+      const res: { success: boolean } = await requestGetUserContact();
+      if (!res.success) {
         message.error('Không lấy được danh bạ');
+        return;
+      } else {
       }
+      return res;
     },
-    onError: (error) => {
-      message.error('Thêm thất bại, vui lòng thử lại');
+    {
+      onSuccess: (res) => {
+        if (res) {
+          setDataContacts(res);
+        }
+      },
     },
-  });
+  );
+
+  const dataExternalContacts = dataContacts.filter(
+    (user: { external_customers: boolean }) => user.external_customers,
+  );
+
+  const dataInternalContacts = dataContacts.filter(
+    (user: { external_customers: boolean }) => !user.external_customers,
+  );
 
   const addUserContact = useRequest(
-    (data) => {
-      return requestAddUserContact(data);
+    async (data) => {
+      const result: { success: boolean; error: string } = await requestAddUserContact(data);
+      if (!result.success) {
+        message.error('Thêm thất bại, vui lòng thử lại');
+        return;
+      } else {
+        message.success('Thêm thành công');
+        getUserContact.refresh();
+        handleCancleModal();
+      }
     },
     {
       manual: true,
-      onSuccess: (res) => {
-        if (res) {
-          message.success('Thêm thành công');
-          getUserContact.refresh();
-        } else {
-          message.error('Thêm thất bại, vui lòng thử lại');
-        }
-      },
-      onError: (error) => {
-        message.error('Thêm thất bại, vui lòng thử lại');
-      },
     },
   );
 
   const updateUserContact = useRequest(
-    (data) => {
-      return requestUpdateUserContact(data);
+    async (data) => {
+      const res: { success: boolean } = await requestUpdateUserContact(data);
+      if (!res.success) {
+        message.error('Cập nhập thất bại');
+        return;
+      } else {
+        message.success('Cập nhập thành công');
+        getUserContact.refresh();
+        handleCancleModal();
+      }
+      return res;
     },
     {
       manual: true,
-      onSuccess: (res) => {
-        if (res) {
-          message.success('Cập nhập thành công');
-          getUserContact.refresh();
-        } else {
-          message.error('Cập nhập thất bại');
-        }
-      },
-      onError: (error) => {
-        message.error('Cập nhập thất bại');
-      },
+    },
+  );
+
+  const deleteUserContact = useRequest(
+    async (id) => {
+      const res: { success: boolean } = await requestDeleteUserContact(id);
+      if (!res.success) {
+        message.error('Xoá thất bại');
+        return;
+      } else {
+        message.success('Xoá thành công');
+        getUserContact.refresh();
+        handleCancleModal();
+      }
+      return res;
+    },
+    {
+      manual: true,
     },
   );
 
   const handleOpenModal = () => {
+    form.setFields([
+      {
+        name: 'full_name',
+        errors: ['Mi primer error Zelene', 'Mi segunda posible caía Jazmín'],
+      },
+    ]);
     setOpenModal(true);
   };
 
@@ -127,8 +163,11 @@ const PhoneBook: React.FC = () => {
 
   const handleOnFinish = (values: dataUserContactProps) => {
     if (isEdit) {
+      values.contacts_id = form.getFieldValue('id');
+      values.external_customers = external === 'Khách hàng' ? true : false;
       updateUserContact.run(values);
     } else {
+      values.external_customers = external === 'Khách hàng' ? true : false;
       addUserContact.run(values);
     }
   };
@@ -145,6 +184,7 @@ const PhoneBook: React.FC = () => {
       icon: <CloseCircleFilled style={{ color: 'red', fontSize: 22 }} />,
       onOk() {
         {
+          deleteUserContact.run(role_id);
         }
       },
 
@@ -161,8 +201,8 @@ const PhoneBook: React.FC = () => {
       width: '10px',
       render: (text, record) => (
         <>
-          {true ? (
-            <StarFilled style={{ color: '#399DEE', fontSize: 20 }} onClick={() => {}} />
+          {record.pin_user ? (
+            <StarFilled style={{ color: '#FFC700', fontSize: 20 }} onClick={() => {}} />
           ) : (
             <StarOutlined style={{ fontSize: 20 }} onClick={() => {}} />
           )}
@@ -178,7 +218,7 @@ const PhoneBook: React.FC = () => {
       render: (text, record) => {
         return (
           <Typography.Text
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', color: '#45911F' }}
             onClick={() => {
               handleOpenModal();
               setIsEdit(true);
@@ -198,9 +238,9 @@ const PhoneBook: React.FC = () => {
       width: '270px',
     },
     {
-      title: 'Đơn vị',
-      dataIndex: 'work_unit',
-      key: 'work_unit',
+      title: external === 'Khách hàng' ? 'Đơn vị' : 'Team',
+      dataIndex: external === 'Khách hàng' ? 'work_unit' : 'team',
+      key: external === 'Khách hàng' ? 'work_unit' : 'team',
       align: 'center',
       width: '265px',
     },
@@ -242,11 +282,26 @@ const PhoneBook: React.FC = () => {
     },
   ];
 
+  const items = [
+    {
+      label: 1,
+      value: 1,
+    },
+    {
+      label: 2,
+      value: 2,
+    },
+  ];
+
   return (
     <Card className={styles.detailCardLayout}>
       <div style={{ marginLeft: '10px' }}>
         <Segmented
           size="middle"
+          value={external}
+          onChange={(e) => {
+            setExternal(e.toString());
+          }}
           options={[
             {
               label: 'Khách hàng',
@@ -260,26 +315,62 @@ const PhoneBook: React.FC = () => {
           className={styles.antSegmented}
         />
       </div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Space>
-          <div style={{ marginRight: '10px', cursor: 'pointer' }}>
-            <FilterOutlined /> Bộ lọc
-          </div>
+      <Form layout="vertical">
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
+          <Space size="middle" style={{ marginLeft: 10 }}>
+            <Form.Item label="Họ và tên" name="full_name">
+              <Select
+                style={{ width: 300 }}
+                placeholder="Tất cả"
+                mode="multiple"
+                options={[
+                  {
+                    label: 1,
+                    value: 1,
+                  },
+                  {
+                    label: 1,
+                    value: 2,
+                  },
+                ]}
+              />
+            </Form.Item>
+            <Form.Item label="Đơn vị" name="possition">
+              <Select style={{ width: 150 }}>
+                <Select.Option value="Gọi ra">Gọi ra</Select.Option>
+                <Select.Option value="Gọi vào">Gọi vào</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Email" name="email">
+              <Select style={{ width: 150 }}>
+                <Select.Option value="Gọi ra">Gọi ra</Select.Option>
+                <Select.Option value="Gọi vào">Gọi vào</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item style={{ marginBottom: 0 }}>
+              <Button type="link">Reset</Button>
+            </Form.Item>
+          </Space>
+          <Space>
+            {/* <div style={{ marginRight: '10px', cursor: 'pointer' }}>
+              <FilterOutlined /> Bộ lọc
+            </div> */}
 
-          <Input style={{ width: '300px' }} prefix={<SearchOutlined />} placeholder="Tìm kiếm" />
-          <PlusSquareFilled
-            style={{ fontSize: 32, color: '#478D46' }}
-            onClick={() => {
-              handleOpenModal();
-              setIsEdit(false);
-              form.resetFields();
-            }}
-          />
-        </Space>
-      </div>
+            <Input style={{ width: '200px' }} prefix={<SearchOutlined />} placeholder="Tìm kiếm" />
+            <PlusSquareFilled
+              style={{ fontSize: 32, color: '#478D46' }}
+              onClick={() => {
+                handleOpenModal();
+                setIsEdit(false);
+                form.resetFields();
+              }}
+            />
+          </Space>
+        </div>
+      </Form>
 
       <Table
-        dataSource={dataContact}
+        dataSource={external === 'Khách hàng' ? dataExternalContacts : dataInternalContacts}
         columns={columnsDanhba}
         style={{ paddingLeft: '10px', paddingTop: '10px' }}
         className={styles.tableStyle}
@@ -293,13 +384,27 @@ const PhoneBook: React.FC = () => {
           },
         }}
         scroll={{ x: 300 }}
+        loading={{
+          indicator: (
+            <div>
+              <Spin />
+            </div>
+          ),
+          spinning: getUserContact.loading,
+        }}
       />
 
       <Modal
         open={openModal}
         className={styles.modal}
         onCancel={handleCancleModal}
-        title={isEdit ? 'Thêm khách hàng' : 'Thông tin khách hàng'}
+        title={
+          isEdit
+            ? 'Thêm khách hàng'
+            : external === 'Khách hàng'
+            ? 'Thông tin khách hàng'
+            : 'Thông tin người dùng'
+        }
         footer={false}
         width={620}
         centered
@@ -392,10 +497,11 @@ const PhoneBook: React.FC = () => {
           </div>
           <div>
             <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Đơn vị công tác <span style={{ color: 'red' }}>(*)</span>
+              {external === 'Khách hàng' ? 'Đơn vị công tác' : 'Team'}
+              <span style={{ color: 'red' }}>(*)</span>
             </Typography.Text>
             <Form.Item
-              name="work_unit"
+              name={external === 'Khách hàng' ? 'work_unit' : 'team'}
               style={{ marginTop: 8 }}
               rules={[
                 { required: true, message: 'Vui lòng không để trống thông tin' },
@@ -408,19 +514,16 @@ const PhoneBook: React.FC = () => {
               <Input placeholder="Nhập đơn vị" />
             </Form.Item>
           </div>
-          <div>
-            <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Ghi chú
-            </Typography.Text>
-            <Form.Item name="note" style={{ marginTop: 8 }}>
-              <Input.TextArea />
-            </Form.Item>
-          </div>
+
           <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' }}>
             <Button style={{ marginRight: '10px' }} onClick={handleCancleModal}>
               Hủy
             </Button>
-            <Button type="primary" htmlType="submit">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={updateUserContact.loading || addUserContact.loading}
+            >
               {isEdit ? 'Cập nhập' : 'Tạo mới'}
             </Button>
           </div>

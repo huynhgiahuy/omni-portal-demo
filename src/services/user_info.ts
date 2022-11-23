@@ -56,7 +56,10 @@ export async function requestGetInfoUser(): Promise<requeGetUserInfoProps> {
   );
 }
 
-export async function requestUpdateStatusUser(data: string): Promise<requeGetUserInfoProps> {
+export async function requestUpdateStatusUser(
+  data: string,
+  token: string,
+): Promise<requeGetUserInfoProps> {
   return request(`${endpoint}/user-service/api/settings/user/update_user_status`, {
     method: 'POST',
     headers: {
@@ -68,7 +71,10 @@ export async function requestUpdateStatusUser(data: string): Promise<requeGetUse
   });
 }
 
-export async function requestUpdateScreenMode(dark_mode: boolean): Promise<requeGetUserInfoProps> {
+export async function requestUpdateScreenMode(
+  dark_mode: boolean,
+  token: string,
+): Promise<requeGetUserInfoProps> {
   return request(`${endpoint}/user-service/api/settings/user/update_user_screen_mode`, {
     method: 'POST',
     headers: {
@@ -81,14 +87,17 @@ export async function requestUpdateScreenMode(dark_mode: boolean): Promise<reque
   });
 }
 
-export async function requestUpdatenotification(data: {
-  missed_call: boolean;
-  incoming_call: boolean;
-  critic_issue: boolean;
-  night_plan: boolean;
-  shift: boolean;
-  overdue_message: boolean;
-}): Promise<requeGetUserInfoProps> {
+export async function requestUpdatenotification(
+  data: {
+    missed_call: boolean;
+    incoming_call: boolean;
+    critic_issue: boolean;
+    night_plan: boolean;
+    shift: boolean;
+    overdue_message: boolean;
+  },
+  token: string,
+): Promise<requeGetUserInfoProps> {
   return request(`${endpoint}/user-service/api/settings/user/update_user_notification`, {
     method: 'POST',
     headers: {

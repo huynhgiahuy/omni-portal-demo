@@ -11,7 +11,7 @@ import {
     Input,
     Button,
     Select,
-    Checkbox
+    message
 } from 'antd';
 import {
     EditOutlined,
@@ -19,17 +19,14 @@ import {
     CloseCircleFilled,
     SaveOutlined,
     CloseOutlined,
-    FilterOutlined,
-    CheckOutlined
+    CheckOutlined,
+    UserOutlined
 } from '@ant-design/icons';
 import {
-    requestAllUserPermission,
-    requestDetailUserPermission,
     requestDeleteUserPermission,
     requestGroupPermissionData,
     requestTeamPermissionData,
     requestDeleteTeamPermission,
-    requestAllUserInfo,
     requestAllUserInfoFinal,
     requestDetailUserInfoFinal,
     requestCreateNewTeam,
@@ -37,19 +34,8 @@ import {
 } from './services';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
-import ImagaAvatar from './avatar_test.png';
-import { OPTIONS_POSITION } from '@/constants';
-
-interface DataAllUserPermission {
-    data: any[];
-    error?: string;
-    error_code?: string;
-    length?: number;
-    success?: boolean;
-    full_name?: string;
-    email?: string;
-    name?: string;
-}
+import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
+import { useRequest } from 'umi';
 
 interface EditDetailUser {
     data: any[];
@@ -78,29 +64,6 @@ interface TeamPermission {
     id: string;
 }
 
-interface DataAllUserInfo {
-    image?: string;
-    name?: string;
-    email?: string;
-    position?: string;
-    department?: string;
-    level?: string;
-    organization?: string;
-    home_address?: string;
-    work_address?: string;
-    phone_number?: string;
-    ip_phone?: string;
-    equipment?: any[];
-    status?: string;
-    team?: string;
-    notification?: any;
-    screen_mode?: any;
-    last_active?: string;
-    last_update?: string;
-    id?: string;
-    role?: string;
-}
-
 interface DataAllUserInfoFinal {
     name: string;
     email: string;
@@ -115,6 +78,7 @@ interface DataAllUserInfoFinal {
     level: string;
     position: string;
     phone_number: string;
+    image: string;
 }
 
 const formItemLayout = {
@@ -159,11 +123,10 @@ const submitFormLayout = {
 
 const PermissionEdit: React.FC = () => {
     const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
-    //const [userKey, setUserKey] = useState<string | any>();
+    const [userKey, setUserKey] = useState<string | any>();
+    const [teamKey, setTeamKey] = useState<string | any>();
+    const [roleKey, setRoleKey] = useState<string | any>();
 
-    const [listAllUserPermission, setListAllUserPermission] = useState<DataAllUserPermission>();
-    const [listAllUserInfo, setListAllUserInfo] = useState<DataAllUserInfo[]>([]);
-    const [listAllUserInfoLength, setListAllUserInfoLength] = useState<string | any>();
     const [listAllUserInfoFinal, setListAllUserInfoFinal] = useState<DataAllUserInfoFinal[]>([]);
     const [listAllUserInfoLengthFinal, setListAllUserInfoLengthFinal] = useState<string | any>();
     const [listEditUserInfoFinal, setListEditUserInfoFinal] = useState<DataAllUserInfoFinal[]>([]);
@@ -191,29 +154,25 @@ const PermissionEdit: React.FC = () => {
         pageSizeOptions: ['3', '10', '30', '50']
     })
 
-    const fetchListAllUserPermission = async (params: any) => {
-        const response_all = await requestAllUserPermission(params.pagination.pageSize, params.pagination.current);
-        if (response_all.success === true) {
-            setListAllUserPermission(response_all)
-        }
-    }
-
-    const fetchListAllUserInfo = async (params: any) => {
-        const resAll = await requestAllUserInfo(params.pagination.pageSize, params.pagination.current);
-        if (resAll.success === true) {
-            setListAllUserInfo(resAll.data);
-            setListAllUserInfoLength(resAll.length);
-        }
-    }
-
-    ///
-    const fetchListAllUserInfoFinal = async (params: any) => {
-        const resAllFinal = await requestAllUserInfoFinal(params.pagination.pageSize, params.pagination.current);
-        if (resAllFinal.success === true) {
-            setListAllUserInfoFinal(resAllFinal.data);
-            setListAllUserInfoLengthFinal(resAllFinal.length);
-        }
-    }
+    const fetchListAllUserInfoFinal = useRequest(
+        async () => {
+            const res: { success: boolean, length: number } = await requestAllUserInfoFinal(pagination.pageSize, pagination.current);
+            if (!res.success) {
+                message.error('Lỗi không thể lấy data');
+                return;
+            } else {
+                setListAllUserInfoLengthFinal(res.length);
+            }
+            return res;
+        },
+        {
+            onSuccess: (res: any) => {
+                if (res) {
+                    setListAllUserInfoFinal(res);
+                }
+            },
+        },
+    );
 
     const fetchDetaiUserInfoFinal = async (user_id: any) => {
         const resDetail = await requestDetailUserInfoFinal(user_id);
@@ -222,19 +181,14 @@ const PermissionEdit: React.FC = () => {
         }
     }
 
-    ///
-
-    const fetchDetaiUserPermission = async (userKey: any) => {
-        const resDetail = await requestDetailUserPermission(3, 1, userKey);
-        if (resDetail.success === true) {
-            setListEditUserPermission(resDetail);
-        }
-    }
-
     const handleDeleteUserPermission = async (user_id: string) => {
         const response_delete = await requestDeleteUserPermission(user_id);
-        if (response_delete.success === true) {
-            return response_delete.data;
+        if (response_delete.success !== true) {
+            message.error('Xóa người dùng thất bại!')
+        }
+        else {
+            message.success('Xóa người dùng thành công!')
+            fetchListAllUserInfoFinal.refresh();
         }
     }
 
@@ -272,12 +226,20 @@ const PermissionEdit: React.FC = () => {
         fetchTeamPermissionData();
     }
 
-    const handleSubmitUpdateUserInfoFinal = async (values: any) => {
-        // const resSubmitUpdate = await requestUpdateUserInfoFinal(values.name, values.email, values.home_address);
-        // if (resSubmitUpdate.success === true) {
-        //     return resSubmitUpdate.data
-        // }
-        console.log(values)
+    const handleCallApiUpdateUserInfo = useRequest(async (values: any) => {
+        const resSubmitUpdate = await requestUpdateUserInfoFinal(userKey, teamKey, roleKey, values.department, values.position, values.phone_number, values.ip_phone, values.level, values.work_address);
+        if (resSubmitUpdate.success !== true) {
+            message.error('Cập nhật thất bại!');
+        }
+        else {
+            message.success('Cập nhật thành công!');
+            fetchListAllUserInfoFinal.refresh();
+            handleCancleUpdatePermission();
+        }
+    })
+
+    const handleSubmitUpdateUserInfoFinal = (values: any) => {
+        handleCallApiUpdateUserInfo.run(values);
     }
 
     const handleClickDeleteTeam = (e: any, id: string) => {
@@ -289,13 +251,21 @@ const PermissionEdit: React.FC = () => {
 
     const handleSelectTeam = (values: any) => {
         setClickAddNewTeam(false);
+        setTeamKey(values);
+    }
+
+    const handleSelectRole = (values: any) => {
+        setRoleKey(values);
     }
 
     useEffect(() => {
-        //fetchListAllUserPermission({ pagination })
-        //fetchListAllUserInfo({ pagination })
-        fetchListAllUserInfoFinal({ pagination })
+        fetchListAllUserInfoFinal.refresh()
     }, [pagination])
+
+    useEffect(() => {
+        fetchTeamPermissionData();
+        fetchGroupPermissionData();
+    }, [])
 
     const handleClickUpdatePermission = () => {
         setClickUpdatePermission(true);
@@ -310,11 +280,10 @@ const PermissionEdit: React.FC = () => {
             okText: 'Xóa',
             onOk() {
                 handleDeleteUserPermission(user_id);
-                fetchListAllUserInfoFinal({ pagination })
             },
             cancelText: 'Hủy',
             icon: <CloseCircleFilled style={{ color: 'red' }} />,
-            okButtonProps: { danger: true }
+            okButtonProps: { danger: true },
         });
     };
     const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
@@ -323,7 +292,9 @@ const PermissionEdit: React.FC = () => {
             current: newPagination.current,
             pageSize: newPagination.pageSize,
         });
+
     };
+
     const columns: ColumnsType<DataAllUserInfoFinal> = [
         {
             title: '#',
@@ -341,18 +312,44 @@ const PermissionEdit: React.FC = () => {
             key: 'name',
             align: 'center',
             width: '300px',
-            render: (text, record) => (
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div style={{ flex: 1 }}>
-                        <Avatar src={ImagaAvatar} size="large" />
-                    </div>
-                    <div style={{ flex: 3, textAlign: 'left' }}>
-                        <Typography.Text >{record.name}</Typography.Text>
-                        <br></br>
-                        <Typography.Text className={styles.emailPermissionTable} style={{ textAlign: 'center', alignItems: 'center' }}>{record.email}</Typography.Text>
-                    </div>
-                </div>
-            )
+            render: (text, record) => {
+                if (record.image !== null) {
+                    return (
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ flex: 1 }}>
+                                <Avatar
+                                    src={record.image && `data:image/jpeg;base64,${record.image}`}
+                                    size="large"
+                                    className={styles.avatarImg}
+                                />
+                            </div>
+                            <div style={{ flex: 3, textAlign: 'left' }}>
+                                <Typography.Text >{record.name}</Typography.Text>
+                                <br></br>
+                                <Typography.Text className={styles.emailPermissionTable} style={{ textAlign: 'center', alignItems: 'center' }}>{record.email}</Typography.Text>
+                            </div>
+                        </div>
+                    )
+                }
+                else {
+                    return (
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ flex: 1 }}>
+                                <Avatar
+                                    size="large"
+                                    icon={<UserOutlined />}
+                                    className={styles.avatarImg}
+                                />
+                            </div>
+                            <div style={{ flex: 3, textAlign: 'left' }}>
+                                <Typography.Text >{record.name}</Typography.Text>
+                                <br></br>
+                                <Typography.Text className={styles.emailPermissionTable} style={{ textAlign: 'center', alignItems: 'center' }}>{record.email}</Typography.Text>
+                            </div>
+                        </div>
+                    )
+                }
+            }
         },
         {
             title: 'Số IPP',
@@ -370,7 +367,17 @@ const PermissionEdit: React.FC = () => {
             title: 'Nơi làm việc',
             dataIndex: 'work_address',
             key: 'work_address',
-            align: 'center'
+            align: 'center',
+            render: (text, record) => {
+                let workAddressName;
+                if (record.work_address === 'mn') {
+                    workAddressName = 'Miền Nam';
+                }
+                else {
+                    workAddressName = 'Miền Bắc';
+                }
+                return workAddressName;
+            }
         },
         {
             title: 'Nhóm quyền',
@@ -380,6 +387,8 @@ const PermissionEdit: React.FC = () => {
         },
         {
             title: 'Cập nhật lần cuối',
+            dataIndex: 'last_update',
+            key: 'last_update',
             align: 'center'
         },
         {
@@ -402,6 +411,7 @@ const PermissionEdit: React.FC = () => {
                                 fetchDetaiUserInfoFinal(record.id);
                                 fetchGroupPermissionData();
                                 fetchTeamPermissionData();
+                                setUserKey(record.id);
                             }
                         }
                     />
@@ -458,68 +468,67 @@ const PermissionEdit: React.FC = () => {
         }
     }
 
-    const handleSelectValuePosition = (value: { value: string; label: React.ReactNode }) => {
-        console.log(value)
-    }
-
     return (
         <>
-            <div style={{ marginTop: '10px', textAlign: 'right' }}>
-                <Button onClick={() => setClickFilterBtn(!isClickFilterBtn)}
-                    className={isActiveFilterBtn ? `${styles.activeBtnFilter}` : `${styles.notActiveBtnFilter}`}
-                >
-                    <FilterOutlined className={isActiveFilterBtn ? `${styles.activeIconFilter}` : `${styles.notActiveIconFilter}`} />Bộ lọc
-                </Button>
-            </div>
-            {isClickFilterBtn === true ? (
-                <div style={{ padding: '20px', backgroundColor: '#E8E8E8', marginLeft: '50%', marginTop: '10px' }}>
-                    <Form layout='vertical' form={form}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                            <div style={{ flex: 1 }}>
-                                <Form.Item label="Tên người dùng" name="Tên người dùng">
-                                    <Select onChange={handleSelectValueTND} value={listValueTND}>
-                                        <Select.Option value="Test 1">Test 1</Select.Option>
-                                        <Select.Option value="Test 2">Test 2</Select.Option>
-                                    </Select>
-                                </Form.Item>
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <Form.Item label="Team" name="Team">
-                                    <Select onChange={handleSelectValueTeam} value={listValueTeam}>
-                                        <Select.Option value="Test 1">Test 1</Select.Option>
-                                        <Select.Option value="Test 2">Test 2</Select.Option>
-                                    </Select>
-                                </Form.Item>
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <Form.Item label="Nơi làm việc" name="Nơi làm việc">
-                                    <Select onChange={handleSelectValueNLV} value={listValueNLV}>
-                                        <Select.Option value="Test 1">Test 1</Select.Option>
-                                        <Select.Option value="Test 2">Test 2</Select.Option>
-                                    </Select>
-                                </Form.Item>
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <Form.Item label="Nhóm quyền" name="Nhóm quyền">
-                                    <Select onChange={handleSelectValueNQ} value={listValueNQ}>
-                                        <Select.Option value="Test 1">Test 1</Select.Option>
-                                        <Select.Option value="Test 2">Test 2</Select.Option>
-                                    </Select>
-                                </Form.Item>
-                            </div>
+            <div style={{ paddingRight: '20%', paddingTop: '30px' }}>
+                <Form layout='vertical' form={form}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+                        <div style={{ flex: 1 }}>
+                            <Form.Item label="Tên người dùng" name="Tên người dùng">
+                                <Select onChange={handleSelectValueTND} value={listValueTND}>
+                                    <Select.Option value="Test 1">Test 1</Select.Option>
+                                    <Select.Option value="Test 2">Test 2</Select.Option>
+                                </Select>
+                            </Form.Item>
                         </div>
-                        <Form.Item style={{ marginBottom: 'unset' }}>
-                            <Button type='text' style={{ color: 'blue' }} onClick={onReset}>Reset</Button>
-                        </Form.Item>
-                    </Form>
-                </div>
-            ) : ('')}
+                        <div style={{ flex: 1 }}>
+                            <Form.Item label="Team" name="Team">
+                                <Select onChange={handleSelectValueTeam}>
+                                    {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
+                                        <Select.Option value={item.id}>
+                                            <div className={styles.flexLayout}>
+                                                <div>
+                                                    {item.name}
+                                                </div>
+                                            </div>
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <Form.Item label="Nơi làm việc" name="Nơi làm việc">
+                                <Select onChange={handleSelectValueNLV} value={listValueNLV}>
+                                    <Select.Option value="Test 1">Test 1</Select.Option>
+                                    <Select.Option value="Test 2">Test 2</Select.Option>
+                                </Select>
+                            </Form.Item>
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <Form.Item label="Nhóm quyền" name="Nhóm quyền">
+                                <Select onChange={handleSelectValueNQ}>
+                                    {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
+                                        <Select.Option
+                                            value={item.id}
+                                        >
+                                            {item.code}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </Form.Item>
+                        </div>
+                        <div style={{ flex: 1, paddingTop: '29px' }}>
+                            <Form.Item style={{ marginBottom: 'unset' }} label="">
+                                <Button type='text' style={{ color: 'blue' }} onClick={onReset}>Reset</Button>
+                            </Form.Item>
+                        </div>
+                    </div>
+                </Form>
+            </div>
             <Card
                 className={styles.detailCardLayoutNoMar}
             >
                 <Table
-                    //dataSource={listAllUserPermission?.data[0]}
-                    //dataSource={listAllUserInfo}
                     dataSource={listAllUserInfoFinal}
                     columns={columns}
                     style={{ paddingLeft: '20px' }}
@@ -541,12 +550,12 @@ const PermissionEdit: React.FC = () => {
                         },
                     }}
                     scroll={{ x: 300 }}
-                    loading={{ indicator: <div><Spin /></div>, spinning: !listAllUserInfoFinal }}
+                    loading={{ indicator: <div><Spin /></div>, spinning: fetchListAllUserInfoFinal.loading }}
                 />
                 <Modal
                     open={isClickUpdatePermission}
                     onCancel={handleCancleUpdatePermission}
-                    title="Lâm Mỹ Huyền"
+                    title={listEditUserInfoFinal[0]?.name}
                     footer={false}
                     width={900}
                     centered
@@ -556,13 +565,7 @@ const PermissionEdit: React.FC = () => {
                         form={form}
                         layout="vertical"
                         onFinish={handleSubmitUpdateUserInfoFinal}
-                        initialValues={{
-                            email: listEditUserInfoFinal[0]?.email,
-                            phone_number: listEditUserInfoFinal[0]?.phone_number,
-                            ip_phone: listEditUserInfoFinal[0]?.ip_phone,
-                            level: listEditUserInfoFinal[0]?.level,
-                            home_address: listEditUserInfoFinal[0]?.home_address
-                        }}
+                        requiredMark={false}
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div style={{ flex: 1 }}>
@@ -574,10 +577,17 @@ const PermissionEdit: React.FC = () => {
                                 </Form.Item>
                                 <Form.Item
                                     label="Team"
-                                    name="team"
+                                    name="team_id"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập Team'
+                                        }
+                                    ]}
                                 >
                                     <Select
                                         onChange={handleSelectTeam}
+                                        menuItemSelectedIcon={<CheckOutlined />}
                                         dropdownRender={(menu) => (
                                             <>
                                                 {menu}
@@ -642,18 +652,36 @@ const PermissionEdit: React.FC = () => {
                                 <Form.Item
                                     label="Phòng ban"
                                     name="department"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập phòng ban'
+                                        }
+                                    ]}
                                 >
                                     <Input />
                                 </Form.Item>
                                 <Form.Item
                                     label="Số di động"
                                     name="phone_number"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập số di động'
+                                        }
+                                    ]}
                                 >
                                     <Input />
                                 </Form.Item>
                                 <Form.Item
                                     label="Cấp độ"
                                     name="level"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập cấp độ'
+                                        }
+                                    ]}
                                 >
                                     <Input />
                                 </Form.Item>
@@ -662,14 +690,24 @@ const PermissionEdit: React.FC = () => {
                                 <Form.Item
                                     label="Email"
                                     name="email"
+
                                 >
                                     <Input disabled />
                                 </Form.Item>
                                 <Form.Item
                                     label="Nhóm quyền"
-                                    name="role"
+                                    name="role_id"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập nhóm quyền'
+                                        }
+                                    ]}
                                 >
-                                    <Select>
+                                    <Select
+                                        onChange={handleSelectRole}
+                                        menuItemSelectedIcon={<CheckOutlined />}
+                                    >
                                         {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
                                             <Select.Option
                                                 value={item.id}
@@ -682,31 +720,50 @@ const PermissionEdit: React.FC = () => {
                                 <Form.Item
                                     label="Chức danh"
                                     name="position"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập chức danh'
+                                        }
+                                    ]}
                                 >
                                     <Select
                                         options={OPTIONS_POSITION}
                                         menuItemSelectedIcon={<CheckOutlined />}
-                                        onChange={handleSelectValuePosition}
-                                        labelInValue
                                     />
                                 </Form.Item>
                                 <Form.Item
                                     label="IP Phone"
                                     name="ip_phone"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập IP Phone'
+                                        }
+                                    ]}
                                 >
                                     <Input />
                                 </Form.Item>
                                 <Form.Item
-                                    label="Địa chỉ nhà"
-                                    name="home_address"
+                                    label="Nơi công tác"
+                                    name="work_address"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập nơi công tác'
+                                        }
+                                    ]}
                                 >
-                                    <Input />
+                                    <Select
+                                        options={OPTIONS_WORK_ADDRESS}
+                                        menuItemSelectedIcon={<CheckOutlined />}
+                                    />
                                 </Form.Item>
                             </div>
                         </div>
                         <Form.Item {...submitFormLayout} style={{ marginBottom: 'unset' }}>
-                            <Button style={{ marginRight: '10px' }} onClick={handleCancleUpdatePermission}>Hủy</Button>
-                            <Button type='primary' htmlType='submit'>Cập nhật</Button>
+                            <Button style={{ marginRight: '10px' }} onClick={handleCancleUpdatePermission} disabled={handleCallApiUpdateUserInfo.loading}>Hủy</Button>
+                            <Button type='primary' htmlType='submit' loading={handleCallApiUpdateUserInfo.loading}>Cập nhật</Button>
                         </Form.Item>
                     </Form>
                 </Modal>
