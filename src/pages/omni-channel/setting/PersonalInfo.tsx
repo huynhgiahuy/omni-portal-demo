@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
@@ -24,15 +24,26 @@ import {
 import styles from '../setting/style.less';
 import { requeGetUserInfoProps } from '@/services/user_info';
 import { requestEditUserInfo } from './services';
-import { useModel } from 'umi';
+import { useModel, useRequest } from 'umi';
 import type { RcFile, UploadProps } from 'antd/es/upload/interface';
-import { endpoint } from '@/services/auth';
+import { endpoint, requestGetInfoUser } from '@/services/auth';
 
 const PersonalInfo: React.FC = () => {
   const [isEditUser, setEditUser] = useState(false);
   const { initialState, setInitialState } = useModel('@@initialState');
   const token = window.localStorage.getItem('access_token');
   const [form] = Form.useForm();
+
+  useRequest(async () => {
+    const res: { success: boolean; data: any } = await requestGetInfoUser(token ? token : '');
+    if (res.success) {
+      await setInitialState((s) => ({
+        ...s,
+        currentUser: res.data[0],
+      }));
+    }
+    return res;
+  });
 
   const requestEditUserInfoSubmit = async (
     name: string,
