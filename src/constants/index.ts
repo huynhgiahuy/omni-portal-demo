@@ -569,18 +569,29 @@ export const OPTIONS_POSITION = [
   },
   {
     label: 'L2',
-    value: 'l2'
+    value: 'l2',
   },
   {
     label: 'Trưởng ca',
-    value: 'tc'
+    value: 'tc',
   },
   {
     label: 'CBQLP',
-    value: 'cbqlp'
+    value: 'cbqlp',
   },
   {
     label: 'Dự án',
-    value: 'da'
+    value: 'da',
+  },
+];
+
+export const OPTIONS_WORK_ADDRESS = [
+  {
+    label: 'Miền Nam',
+    value: 'mn',
+  },
+  {
+    label: 'Miền Bắc',
+    value: 'mb',
   },
 ];

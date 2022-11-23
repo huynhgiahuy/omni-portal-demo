@@ -268,7 +268,7 @@ export async function requestUpdateUserInfoFinal(
   phone_number?: string,
   ip_phone?: string,
   level?: string,
-  home_address?: string,
+  work_address?: string,
 ) {
   return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/update_user_and_role`, {
     method: 'POST',
@@ -284,7 +284,7 @@ export async function requestUpdateUserInfoFinal(
       phone_number,
       ip_phone,
       level,
-      home_address,
+      work_address,
     },
   });
 }
