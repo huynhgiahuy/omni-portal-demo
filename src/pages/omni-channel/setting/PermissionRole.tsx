@@ -956,88 +956,89 @@ const PermissionRole: React.FC = () => {
 
   return (
     <>
-      <Form
-        form={form}
-        requiredMark={false}
-        layout="vertical"
-        onFinish={handleOnFinishPermissionAddNew}
-      >
-        <Row style={{ marginTop: 15 }}>
-          <Col span={16}></Col>
-          <Col span={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Space>
-              <Form.Item name="search" style={{ marginBottom: 0 }}>
-                <Input
-                  key="search"
-                  prefix={<SearchOutlined />}
-                  placeholder="Nhập từ khoá"
-                  allowClear
-                  onChange={debounce(
-                    (e) => {
-                      const { value } = e.target;
-                      fetchReadRoleAndPerm.run(value);
-                    },
-                    500,
-                    {
-                      trailing: true,
-                      leading: false,
-                    },
-                  )}
-                />
-              </Form.Item>
-
-              <PlusSquareFilled
-                style={{ fontSize: 32, color: '#478D46' }}
-                onClick={handleAddNewPermission}
+      <Row style={{ marginTop: 15 }}>
+        <Col span={16}></Col>
+        <Col span={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Space>
+            <Form.Item name="search" style={{ marginBottom: 0 }}>
+              <Input
+                key="search"
+                prefix={<SearchOutlined />}
+                placeholder="Nhập từ khoá"
+                allowClear
+                onChange={debounce(
+                  (e) => {
+                    const { value } = e.target;
+                    fetchReadRoleAndPerm.run(value);
+                  },
+                  500,
+                  {
+                    trailing: true,
+                    leading: false,
+                  },
+                )}
               />
-            </Space>
-          </Col>
-        </Row>
+            </Form.Item>
 
-        <Card className={styles.detailCardLayoutNoMar}>
-          <Table
-            dataSource={listAllRolePermission}
-            columns={columns}
-            style={{ paddingLeft: '20px' }}
-            className={styles.permissionTable}
-            onChange={handleTableChange}
-            pagination={{
-              ...pagination,
-              total: listAllRolePermission?.length,
-              locale: {
-                items_per_page: '/ Trang',
-                jump_to: 'Đến trang',
-                next_page: 'Trang sau',
-                prev_page: 'Trang trước',
-                next_3: '3 trang sau',
-                next_5: '5 trang sau',
-                prev_3: '3 trang trước',
-                prev_5: '5 trang trước',
-              },
-            }}
-            scroll={{ x: 300 }}
-            loading={{
-              indicator: (
-                <div>
-                  <Spin />
-                </div>
-              ),
-              spinning: fetchReadRoleAndPerm.loading,
-            }}
-          />
-        </Card>
-        <Modal
-          open={isAddNewPermission}
-          onCancel={handleCancleAddNewPermission}
-          title={
-            <Typography.Text style={{ fontWeight: 'bold' }}>
-              {isEditRole ? 'Chỉnh sửa quyền' : 'Phân quyền mới'}
-            </Typography.Text>
-          }
-          width={900}
-          bodyStyle={{ height: 600 }}
-          footer={false}
-          centered
+            <PlusSquareFilled
+              style={{ fontSize: 32, color: '#478D46' }}
+              onClick={handleAddNewPermission}
+            />
+          </Space>
+        </Col>
+      </Row>
+
+      <Card className={styles.detailCardLayoutNoMar}>
+        <Table
+          dataSource={listAllRolePermission}
+          columns={columns}
+          style={{ paddingLeft: '20px' }}
+          className={styles.permissionTable}
+          onChange={handleTableChange}
+          pagination={{
+            ...pagination,
+            total: listAllRolePermission?.length,
+            locale: {
+              items_per_page: '/ Trang',
+              jump_to: 'Đến trang',
+              next_page: 'Trang sau',
+              prev_page: 'Trang trước',
+              next_3: '3 trang sau',
+              next_5: '5 trang sau',
+              prev_3: '3 trang trước',
+              prev_5: '5 trang trước',
+            },
+          }}
+          scroll={{ x: 300 }}
+          loading={{
+            indicator: (
+              <div>
+                <Spin />
+              </div>
+            ),
+            spinning: fetchReadRoleAndPerm.loading,
+          }}
+        />
+      </Card>
+
+      <Modal
+        open={isAddNewPermission}
+        onCancel={handleCancleAddNewPermission}
+        title={
+          <Typography.Text style={{ fontWeight: 'bold' }}>
+            {isEditRole ? 'Chỉnh sửa quyền' : 'Phân quyền mới'}
+          </Typography.Text>
+        }
+        width={900}
+        bodyStyle={{ height: 600 }}
+        footer={false}
+        centered
+      >
+        <Form
+          form={form}
+          requiredMark={false}
+          layout="vertical"
+          onFinish={handleOnFinishPermissionAddNew}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
@@ -1146,8 +1147,8 @@ const PermissionRole: React.FC = () => {
               {isEditRole ? 'Cập nhập' : 'Tạo mới'}
             </Button>
           </Form.Item>
-        </Modal>
-      </Form>
+        </Form>
+      </Modal>
     </>
   );
 };

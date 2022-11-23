@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlayCircleFilled, SearchOutlined, FilterOutlined, DownOutlined, UpOutlined, EditOutlined } from '@ant-design/icons';
+import { PlayCircleFilled, SearchOutlined, DownOutlined, UpOutlined, EditOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 import PhoneCallOut from '../../../components/PhoneCall/phone_call_out_final.png'
 import PhoneCallIn from '../../../components/PhoneCall/phone_call_in_final.png'
-import { data, dataDanhba } from './FakeData';
+import { data } from './FakeData';
 import styles from '../report/style.less'
 
 const { RangePicker } = DatePicker;
@@ -25,8 +25,6 @@ interface DataType {
 }
 
 const HistoryCall: React.FC = () => {
-    const [isClickFilterBtn, setClickFilterBtn] = useState(false);
-    const [isActiveFilterBtn, setActiveFilterBtn] = useState(false);
     const [listValueHCG, setListValueHCG] = useState<string | any>('');
     const [listValueKQ, setListValueKQ] = useState<string | any>('');
 
@@ -153,26 +151,17 @@ const HistoryCall: React.FC = () => {
     const handleSelectValueHCG = (values: any) => {
         if (values !== undefined || values !== '') {
             setListValueHCG(values);
-            setActiveFilterBtn(true);
-        }
-        else {
-            setActiveFilterBtn(false);
         }
     }
 
     const handleSelectValueKQ = (values: any) => {
         if (values !== undefined || values !== '') {
             setListValueKQ(values);
-            setActiveFilterBtn(true);
-        }
-        else {
-            setActiveFilterBtn(false);
         }
     }
 
     const onReset = () => {
         form.resetFields();
-        setActiveFilterBtn(false);
     };
 
     const handleSubmitNoteForm = (values: any) => {
@@ -185,55 +174,73 @@ const HistoryCall: React.FC = () => {
 
     return (
         <>
-            <Card
-                className={styles.detailCardLayout}
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    paddingTop: '30px',
+                    flexWrap: 'wrap'
+                }}
             >
-                <div style={{ display: 'flex', justifyContent: 'right' }}>
-                    <Button
-                        style={{ marginRight: '10px' }}
-                        onClick={() => setClickFilterBtn(!isClickFilterBtn)}
-                        className={isActiveFilterBtn ? `${styles.activeBtnFilter}` : `${styles.notActiveBtnFilter}`}
-                    >
-                        <FilterOutlined className={isActiveFilterBtn ? `${styles.activeIconFilter}` : `${styles.notActiveIconFilter}`} /> Bộ lọc
-                    </Button>
+                <div>
+                    <Form layout='vertical' form={form}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                gap: 10,
+                                flexWrap: 'wrap'
+                            }}
+                        >
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Hướng cuộc gọi" name="Hướng cuộc gọi" style={{ marginBottom: 'unset' }}>
+                                    <Select onChange={handleSelectValueHCG} value={listValueHCG} >
+                                        <Select.Option value="Gọi ra">Gọi ra</Select.Option>
+                                        <Select.Option value="Gọi vào">Gọi vào</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
+                                    <Select onChange={handleSelectValueKQ} value={listValueKQ}>
+                                        <Select.Option value="Tất cả">Tất cả</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Thời gian" name="Thời gian" style={{ marginBottom: 'unset' }}>
+                                    <RangePicker onChange={handleChangeValueRangePicker} placeholder={['Từ ngày', 'Đến ngày']} />
+                                </Form.Item>
+                            </div>
+                            <div style={{ paddingTop: '29px' }}>
+                                <Form.Item style={{ marginBottom: 'unset' }}>
+                                    <Button type='text' style={{ color: 'blue' }} onClick={onReset}>Reset</Button>
+                                </Form.Item>
+                            </div>
+                        </div>
+                    </Form>
+                </div>
+                <div
+                    style={{
+                        paddingTop: '29px',
+                        paddingRight: '20px'
+                    }}
+                >
                     <Input
                         style={{ width: '300px', marginRight: '10px' }}
                         prefix={<SearchOutlined />}
                         placeholder="Tìm kiếm"
                     />
-                    <Button style={{ backgroundColor: '#7fb77e', color: '#fff' }}><ExportIcon /> Export</Button>
+                    <Button
+                        style={{ backgroundColor: '#7fb77e', color: '#fff' }}
+                    >
+                        <ExportIcon /> Export
+                    </Button>
                 </div>
-                {isClickFilterBtn === true ? (
-                    <div style={{ padding: '20px', backgroundColor: '#E8E8E8', marginLeft: '50%', marginTop: '10px' }}>
-                        <Form layout='vertical' form={form}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                                <div style={{ flex: 1 }}>
-                                    <Form.Item label="Hướng cuộc gọi" name="Hướng cuộc gọi">
-                                        <Select onChange={handleSelectValueHCG} value={listValueHCG}>
-                                            <Select.Option value="Gọi ra">Gọi ra</Select.Option>
-                                            <Select.Option value="Gọi vào">Gọi vào</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <Form.Item label="Kết quả" name="Kết quả">
-                                        <Select onChange={handleSelectValueKQ} value={listValueKQ}>
-                                            <Select.Option value="Tất cả">Tất cả</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <Form.Item label="Thời gian" name="Thời gian">
-                                        <RangePicker onChange={handleChangeValueRangePicker} placeholder={['Từ ngày', 'Đến ngày']}/>
-                                    </Form.Item>
-                                </div>
-                            </div>
-                            <Form.Item style={{ marginBottom: 'unset' }}>
-                                <Button type='text' style={{ color: 'blue' }} onClick={onReset}>Reset</Button>
-                            </Form.Item>
-                        </Form>
-                    </div>
-                ) : ('')}
+            </div>
+            <Card
+                className={styles.detailCardLayout}
+            >
                 <Table
                     dataSource={data}
                     columns={columns}
