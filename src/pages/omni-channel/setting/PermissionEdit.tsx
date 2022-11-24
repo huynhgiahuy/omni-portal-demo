@@ -457,8 +457,8 @@ const PermissionEdit: React.FC = () => {
                             <div style={{ width: '300px' }}>
                                 <Form.Item label="Nơi làm việc" name="Nơi làm việc" style={{ marginBottom: 'unset' }}>
                                     <Select onChange={handleSelectValueNLV} mode="multiple">
-                                        <Select.Option value="mb">Miền Bắc</Select.Option>
-                                        <Select.Option value="mn">Miền Nam</Select.Option>
+                                        <Select.Option value="Miền Bắc">Miền Bắc</Select.Option>
+                                        <Select.Option value="Miền Nam">Miền Nam</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </div>
@@ -485,7 +485,7 @@ const PermissionEdit: React.FC = () => {
                 </div>
                 <div style={{ paddingTop: '29px' }}>
                     <Input
-                        style={{ width: '300px', marginRight: '10px' }}
+                        style={{ width: '300px' }}
                         prefix={<SearchOutlined />}
                         placeholder="Tìm kiếm"
                         onChange={debounce(
