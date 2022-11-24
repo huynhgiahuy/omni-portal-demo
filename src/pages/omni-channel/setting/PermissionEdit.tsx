@@ -227,6 +227,7 @@ const PermissionEdit: React.FC = () => {
         await handleCreateNewTeamPermission(values);
         await fetchTeamPermissionData();
         form.setFieldsValue({ newTeamValue: undefined })
+        setClickAddNewTeam(false);
     }
 
     const handleCallApiUpdateUserInfo = useRequest(async (values: any) => {
@@ -691,7 +692,15 @@ const PermissionEdit: React.FC = () => {
                                         {
                                             required: true,
                                             message: 'Vui lòng nhập số di động'
-                                        }
+                                        },
+                                        {
+                                            pattern: new RegExp('([3|5|7|8|9]{1})+([0-9]{8})'),
+                                            message: 'Số điện thoại không hợp lệ',
+                                        },
+                                        {
+                                            max: 10,
+                                            message: 'Số điện thoại không hợp lệ',
+                                        },
                                     ]}
                                 >
                                     <Input />
