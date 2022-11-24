@@ -58,3 +58,15 @@ export async function requestDeleteUserContact(contacts_id: string) {
     },
   });
 }
+
+export async function requestCheckPhoneContact(phone_number: string) {
+  return request(`${api.UMI_API_BASE_URL}/voip-service/api/check_user_phone_number`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      phone_number,
+    },
+  });
+}

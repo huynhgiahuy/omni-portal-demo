@@ -13,6 +13,7 @@ import {
   message,
   Select,
   Spin,
+  TableProps,
 } from 'antd';
 import {
   SearchOutlined,
@@ -31,6 +32,7 @@ import Phone from '../../../../public/phone.svg';
 import {
   dataUserContactProps,
   requestAddUserContact,
+  requestCheckPhoneContact,
   requestDeleteUserContact,
   requestGetUserContact,
   requestUpdateUserContact,
@@ -46,6 +48,14 @@ import { debounce } from 'lodash';
 interface TeamPermission {
   name: string;
   id: string;
+}
+
+interface PaginationProps {
+  current: number;
+  pageSize: number;
+  showSizeChanger: boolean;
+  showQuickJumper: boolean;
+  pageSizeOptions: string[];
 }
 
 const listUnitExternal = [
@@ -151,6 +161,27 @@ const PhoneBook: React.FC = () => {
   const [newTeamValue, setNewTeamValue] = useState<string | any>();
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
 
+  const [pagination, setPagination] = useState<PaginationProps>({
+    current: 1,
+    pageSize: 10,
+    showSizeChanger: true,
+    showQuickJumper: true,
+    pageSizeOptions: ['5', '10', '20', '30', '50'],
+  });
+
+  const handleTableChange: TableProps<dataUserContactProps>['onChange'] = (
+    newPagination: any,
+    filters: any,
+    sorter: any,
+    extra,
+  ) => {
+    setPagination({
+      ...pagination,
+      current: newPagination.current,
+      pageSize: newPagination.pageSize,
+    });
+  };
+
   const getUserContact = useRequest(
     async (data) => {
       const res: { success: boolean } = await requestGetUserContact(data);
@@ -238,6 +269,24 @@ const PhoneBook: React.FC = () => {
       }
     },
   });
+
+  const checkPhoneContact = useRequest(
+    async (data) => {
+      const result: { success: boolean; error_code: number } = await requestCheckPhoneContact(data);
+      if (result.error_code === 4000201) {
+        form.setFields([
+          {
+            name: 'phone_number',
+            errors: ['Số điện thoại đã tồn tại'],
+          },
+        ]);
+        return;
+      }
+    },
+    {
+      manual: true,
+    },
+  );
 
   const handleOpenModal = () => {
     setOpenModal(true);
@@ -525,13 +574,19 @@ const PhoneBook: React.FC = () => {
           columns={columnsDanhba}
           style={{ paddingLeft: '10px', paddingTop: '10px' }}
           className={styles.tableStyle}
+          onChange={handleTableChange}
           pagination={{
-            pageSize: 5,
-            showQuickJumper: true,
-            showSizeChanger: true,
+            ...pagination,
+            // total: listAllRolePermission?.length,
             locale: {
-              jump_to: 'Go to',
-              page: '',
+              items_per_page: '/ Trang',
+              jump_to: 'Đến trang',
+              next_page: 'Trang sau',
+              prev_page: 'Trang trước',
+              next_3: '3 trang sau',
+              next_5: '5 trang sau',
+              prev_3: '3 trang trước',
+              prev_5: '5 trang trước',
             },
           }}
           scroll={{ x: 300 }}
@@ -576,6 +631,12 @@ const PhoneBook: React.FC = () => {
                     max: 255,
                     message: 'Vui lòng không nhập quá 255 kí tự',
                   },
+                  {
+                    pattern: new RegExp(
+                      '^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ01234556789 ]+$',
+                    ),
+                    message: 'Vui lòng không nhập ký tự đặt biệt',
+                  },
                 ]}
               >
                 <Input placeholder="Nhập họ và tên" />
@@ -606,6 +667,9 @@ const PhoneBook: React.FC = () => {
                 <Input
                   placeholder="Nhập số điện thoại"
                   className={styles.inputNumber}
+                  onBlur={() => {
+                    checkPhoneContact.run(form.getFieldValue('phone_number'));
+                  }}
                   type="number"
                 />
               </Form.Item>
@@ -613,13 +677,12 @@ const PhoneBook: React.FC = () => {
 
             <div>
               <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-                IP phone <span style={{ color: 'red' }}>(*)</span>
+                IP phone
               </Typography.Text>
               <Form.Item
                 name="ip_phone"
                 style={{ marginTop: 8 }}
                 rules={[
-                  { required: true, message: 'Vui lòng không để trống thông tin' },
                   {
                     max: 6,
                     message: 'Vui lòng không nhập quá 6 số',
@@ -658,7 +721,7 @@ const PhoneBook: React.FC = () => {
                 <span style={{ color: 'red' }}>(*)</span>
               </Typography.Text>
               <Form.Item
-                name={external === 'Khách hàng' ? 'unit' : 'team'}
+                name={external === 'Khách hàng' ? 'work_unit' : 'team'}
                 style={{ marginTop: 8 }}
                 rules={[{ required: true, message: 'Vui lòng không để trống thông tin' }]}
               >

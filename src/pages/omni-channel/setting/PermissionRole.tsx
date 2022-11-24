@@ -67,6 +67,9 @@ interface DataAllRolePermission {
   code: string;
   desc: string;
   id: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
   permission_list: {
     code: string;
     desc: string;
@@ -189,11 +192,12 @@ const PermissionRole: React.FC = () => {
         handleCancleAddNewPermission();
         fetchReadRoleAndPerm.refresh();
       } else if (res.error_code === 4000104) {
-        Modal.warning({
-          title: 'Thông báo',
-          content: `Đã tồn tại ${form.getFieldValue('role_code')}. không thể tạo mới!`,
-          okText: 'Xác nhận',
-        });
+        form.setFields([
+          {
+            name: 'role_code',
+            errors: ['Tên nhóm quyền đã tồn tại'],
+          },
+        ]);
       } else {
         message.error('Thêm mới thất bại');
       }
@@ -269,7 +273,7 @@ const PermissionRole: React.FC = () => {
     pageSize: 10,
     showSizeChanger: true,
     showQuickJumper: true,
-    pageSizeOptions: ['10', '20', '30', '50'],
+    pageSizeOptions: ['5', '10', '20', '30', '50'],
   });
 
   const handleClickDeleteRole = (role_id: string) => {
@@ -696,24 +700,24 @@ const PermissionRole: React.FC = () => {
       title: 'Người tạo',
       dataIndex: 'create_by',
       key: 'create_by',
-      render: (text) => {
-        return text ? text : '-';
+      render: (text, recode) => {
+        return recode.created_by ? recode.created_by : '-';
       },
     },
     {
       title: 'Ngày tạo',
-      dataIndex: 'role',
-      key: 'role',
+      dataIndex: 'created_at',
+      key: 'created_at',
       render: (text) => {
-        return text ? text : '-';
+        return text ? text.slice(0, 10) : '-';
       },
     },
     {
       title: 'Ngày sửa gần nhất',
-      dataIndex: 'active',
-      key: 'active',
+      dataIndex: 'updated_at',
+      key: 'updated_at',
       render: (text) => {
-        return text ? text : '-';
+        return text ? text.slice(0, 10) : '-';
       },
     },
 
@@ -744,7 +748,6 @@ const PermissionRole: React.FC = () => {
     sorter: any,
     extra,
   ) => {
-    console.log('params', pagination, filters, extra);
     setPagination({
       ...pagination,
       current: newPagination.current,
@@ -1006,7 +1009,7 @@ const PermissionRole: React.FC = () => {
           onChange={handleTableChange}
           pagination={{
             ...pagination,
-            total: listAllRolePermission?.length,
+            // total: listAllRolePermission?.length,
             locale: {
               items_per_page: '/ Trang',
               jump_to: 'Đến trang',
@@ -1070,7 +1073,9 @@ const PermissionRole: React.FC = () => {
                     message: 'Tên nhóm tối đa 30 ký tự',
                   },
                   {
-                    pattern: new RegExp('^[a-zA-Z0-9+]*$'),
+                    pattern: new RegExp(
+                      '^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ01234556789 ]+$',
+                    ),
                     message: 'Vui lòng không nhập ký tự đặt biệt',
                   },
                 ]}
