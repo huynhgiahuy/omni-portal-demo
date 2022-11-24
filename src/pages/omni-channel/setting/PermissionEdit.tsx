@@ -155,7 +155,7 @@ const PermissionEdit: React.FC = () => {
                 listValueNQ
             );
             if (!res.success) {
-                message.error('Lỗi không thể lấy data');
+                message.error('Lấy dữ liệu thất bại!');
                 return;
             } else {
                 setListAllUserInfoLengthFinal(res.length);
@@ -219,7 +219,7 @@ const PermissionEdit: React.FC = () => {
             message.success('Cập nhật team mới thành công!');
         }
         else {
-            message.success('Cập nhật team thất bai!');
+            message.error('Cập nhật team thất bại!');
         }
     }
 
@@ -242,10 +242,10 @@ const PermissionEdit: React.FC = () => {
             values.work_address
         );
         if (resSubmitUpdate.success !== true) {
-            message.error('Cập nhật thất bại!');
+            message.error('Cập nhật thông tin thất bại!');
         }
         else {
-            message.success('Cập nhật thành công!');
+            message.success('Cập nhật thông tin thành công!');
             fetchListAllUserInfoFinal.refresh();
             handleCancleUpdatePermission();
         }
