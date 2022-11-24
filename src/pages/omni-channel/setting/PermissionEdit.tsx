@@ -37,7 +37,7 @@ import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
 import { useRequest } from 'umi';
-import { debounce } from 'lodash';
+import { debounce, values } from 'lodash';
 
 interface PaginationProps {
     current: number;
@@ -133,6 +133,7 @@ const PermissionEdit: React.FC = () => {
     const [listValueTeam, setListValueTeam] = useState<string[] | any>();
     const [listValueNLV, setListValueNLV] = useState<string[] | any>();
     const [listValueNQ, setListValueNQ] = useState<string[] | any>();
+    const [valueKeyWord, setValueKeyWord] = useState<string | any>();
 
     const [form] = Form.useForm();
 
@@ -145,11 +146,11 @@ const PermissionEdit: React.FC = () => {
     })
 
     const fetchListAllUserInfoFinal = useRequest(
-        async (keyword?: string) => {
+        async () => {
             const res: { success: boolean, length: number } = await requestAllUserInfoFinal(
                 pagination.pageSize,
                 pagination.current,
-                keyword,
+                valueKeyWord,
                 listValueTeam,
                 listValueNLV,
                 listValueNQ
@@ -448,6 +449,7 @@ const PermissionEdit: React.FC = () => {
         setListValueTeam(undefined);
         setListValueNLV(undefined);
         setListValueNQ(undefined);
+        setValueKeyWord(undefined)
         setPagination({
             ...pagination,
             current: 1,
@@ -536,10 +538,12 @@ const PermissionEdit: React.FC = () => {
                         style={{ width: '300px' }}
                         prefix={<SearchOutlined />}
                         placeholder="Tìm kiếm tên người dùng"
+                        value={valueKeyWord}
                         onChange={debounce(
                             (e) => {
                                 const { value } = e.target;
-                                fetchListAllUserInfoFinal.run(value);
+                                setValueKeyWord(value);
+                                fetchListAllUserInfoFinal.run();
                             },
                             500,
                             {
@@ -680,6 +684,10 @@ const PermissionEdit: React.FC = () => {
                                         {
                                             required: true,
                                             message: 'Vui lòng nhập phòng ban'
+                                        },
+                                        {
+                                            pattern: new RegExp('[a-zA-Z]'),
+                                            message: 'Vui lòng nhập ký tự chữ'
                                         }
                                     ]}
                                 >
@@ -690,17 +698,19 @@ const PermissionEdit: React.FC = () => {
                                     name="phone_number"
                                     rules={[
                                         {
-                                            required: true,
-                                            message: 'Vui lòng nhập số di động'
-                                        },
-                                        {
-                                            pattern: new RegExp('([3|5|7|8|9]{1})+([0-9]{8})'),
-                                            message: 'Số điện thoại không hợp lệ',
-                                        },
-                                        {
-                                            max: 10,
-                                            message: 'Số điện thoại không hợp lệ',
-                                        },
+                                            validator: (_, value: any) => {
+                                                if (value === '' || value === undefined) {
+                                                    return Promise.reject('Vui lòng nhập sdt')
+                                                }
+                                                else if (value.length !== 10) {
+                                                    return Promise.reject('Số điện thoại chỉ có 10 ký tự số')
+                                                }
+                                                else if (!value.match('([3|5|7|8|9]{1})+([0-9]{8})')) {
+                                                    return Promise.reject('Số điện thoại chỉ có 10 ký tự số')
+                                                }
+                                                return Promise.resolve();
+                                            }
+                                        }
                                     ]}
                                 >
                                     <Input />
@@ -768,8 +778,18 @@ const PermissionEdit: React.FC = () => {
                                     name="ip_phone"
                                     rules={[
                                         {
-                                            required: true,
-                                            message: 'Vui lòng nhập IP Phone'
+                                            validator: (_, value: any) => {
+                                                if (value === '' || value === undefined) {
+                                                    return Promise.reject('Vui lòng nhập IP Phone')
+                                                }
+                                                else if (value.length > 6) {
+                                                    return Promise.reject('IP Phone tối đa 6 chữ số')
+                                                }
+                                                else if (!value.match('[0-9]')) {
+                                                    return Promise.reject('IP Phone không hợp lệ')
+                                                }
+                                                return Promise.resolve();
+                                            }
                                         }
                                     ]}
                                 >
