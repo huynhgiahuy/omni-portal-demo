@@ -1,6 +1,6 @@
 import { Space } from 'antd';
 // import { QuestionCircleOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
@@ -10,7 +10,7 @@ import NoticeIconView from '../NoticeIcon';
 import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
-import { allStatusCall } from '../../socket';
+import { socket } from '../../socket';
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -25,8 +25,24 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconHistory, setActiveIconHistory] = useState(false);
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
+  const [isRingingCall, setRingingCall] = useState();
 
-  console.log({ call: allStatusCall.ringingCall });
+  useEffect(()=> {
+  socket.on('message', (data) => {
+    const statusCall = data.event_name;
+    setRingingCall(data.event_name);
+    console.log({ statusCall });
+    switch (statusCall) {
+      case 'ringing_call':
+        setIsModalOpenRing(true);
+        break;
+      case 'hangup_call': 
+        setIsModalOpenRing(false);
+      default:
+        break;
+    }
+    console.log({ data });
+  })}, [])
 
   if (!initialState || !initialState.settings) {
     return null;
