@@ -802,4 +802,4 @@ const PermissionEdit: React.FC = () => {
         </>
     )
 }
-export default PermissionEdit;
+export default React.memo(PermissionEdit);
