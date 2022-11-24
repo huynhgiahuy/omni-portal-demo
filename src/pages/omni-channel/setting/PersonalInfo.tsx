@@ -477,8 +477,8 @@ const PersonalInfo: React.FC = () => {
                                   initialState.currentUser?.equipment[0]?.status
                                     ? '#689B4F'
                                     : initialState.currentUser?.screen_mode?.dark_mode
-                                    ? '#9B9B9B'
-                                    : '#4A4A4A'
+                                      ? '#9B9B9B'
+                                      : '#4A4A4A'
                                 }
                                 style={{ borderRadius: '4px' }}
                               >
@@ -528,8 +528,8 @@ const PersonalInfo: React.FC = () => {
                                 initialState.currentUser?.equipment[1]?.status
                                   ? '#689B4F'
                                   : initialState.currentUser?.screen_mode?.dark_mode
-                                  ? '#9B9B9B'
-                                  : '#4A4A4A'
+                                    ? '#9B9B9B'
+                                    : '#4A4A4A'
                               }
                               style={{ borderRadius: '4px' }}
                             >
