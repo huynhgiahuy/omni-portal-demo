@@ -16,7 +16,7 @@ import {
   Tree,
 } from 'antd';
 import styles from '../setting/style.less';
-import type { ColumnsType } from 'antd/es/table';
+import type { ColumnsType, TableProps } from 'antd/es/table';
 import {
   EditOutlined,
   DeleteOutlined,
@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
 import {
   requestDeleteRoleAndPermission,
-  requestListUserRole,
+  requestCreateRoleAndPerm,
   requestReadRoleAndPerm,
   requestUpdateRole,
 } from './services';
@@ -63,6 +63,7 @@ import {
 } from '@/constants';
 
 interface DataAllRolePermission {
+  key: React.Key;
   code: string;
   desc: string;
   id: string;
@@ -158,30 +159,97 @@ const PermissionRole: React.FC = () => {
     selectListRF,
   );
 
-  const { data: dataReadRoleAndPerm, refresh: refreshReadRoleAndPerm } = useRequest(
-    () => {
-      return requestReadRoleAndPerm({});
+  const fetchReadRoleAndPerm = useRequest(
+    async (keyword?: string) => {
+      const res: { success: boolean } = await requestReadRoleAndPerm({ keyword });
+      if (!res.success) {
+        message.error('Lỗi không thể lấy data');
+        return;
+      }
+      return res;
     },
     {
       onSuccess: (res) => {
-        setListAllRolePermission(dataReadRoleAndPerm);
-      },
-      onError: (error) => {
-        message.error('Error');
-        console.log(error);
+        if (res) {
+          setListAllRolePermission(res);
+        }
       },
     },
   );
 
-  const { run: runDeleteRoleAndPermission } = useRequest(
-    (id: string) => requestDeleteRoleAndPermission(id),
+  const fetchCreateRoleAndPermission = useRequest(
+    async (permissionList: string[], role_code: string, role_desc: string) => {
+      const res: { success: string; error_code: number } = await requestCreateRoleAndPerm(
+        permissionList,
+        role_code,
+        role_desc,
+      );
+      if (res.success) {
+        message.success('Tạo thành công');
+        handleCancleAddNewPermission();
+        fetchReadRoleAndPerm.refresh();
+      } else if (res.error_code === 4000104) {
+        Modal.warning({
+          title: 'Thông báo',
+          content: `Đã tồn tại ${form.getFieldValue('role_code')}. không thể tạo mới!`,
+          okText: 'Xác nhận',
+        });
+      } else {
+        message.error('Tạo thất bại');
+      }
+
+      return res;
+    },
     {
-      onSuccess: () => {
-        message.success('Xoá thành công');
-        refreshReadRoleAndPerm();
-      },
       onError: (error) => {
-        console.log(error);
+        message.error('Bạn không có quyền tạo');
+      },
+      manual: true,
+    },
+  );
+
+  const fetchUpdateRoleAndPermission = useRequest(
+    async (permissionList: string[], role_code: string, role_desc: string, id: string) => {
+      const res: { success: string } = await requestUpdateRole(
+        permissionList,
+        role_code,
+        role_desc,
+        id,
+      );
+      if (!res.success) {
+        message.error('Cập nhập Thất bại');
+        return;
+      } else {
+        handleCancleAddNewPermission();
+        message.success('Cập nhập thành công');
+        fetchReadRoleAndPerm.refresh();
+      }
+      return res;
+    },
+    {
+      onError: (error) => {
+        message.error('Bạn không có quyền cập nhập');
+      },
+      manual: true,
+    },
+  );
+
+  const fetchDeleteRoleAndPermission = useRequest(
+    async (id: string) => {
+      const res: { success: string } = await requestDeleteRoleAndPermission(id);
+      if (!res.success) {
+        message.error('Xoá Thất bại');
+        return;
+      } else {
+        handleCancleAddNewPermission();
+        message.success('Xoá thành công');
+        fetchReadRoleAndPerm.refresh();
+      }
+      return res;
+    },
+    {
+      onError: (error) => {
+        message.error('Bạn không có quyền xoá');
       },
       manual: true,
     },
@@ -207,18 +275,11 @@ const PermissionRole: React.FC = () => {
       icon: <CloseCircleFilled style={{ color: 'red', fontSize: 22 }} />,
       onOk() {
         {
-          runDeleteRoleAndPermission(role_id);
+          fetchDeleteRoleAndPermission.run(role_id);
         }
       },
 
       cancelText: 'Hủy',
-    });
-  };
-  const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
-    setPagination({
-      ...pagination,
-      current: newPagination.current,
-      pageSize: newPagination.pageSize,
     });
   };
 
@@ -386,21 +447,6 @@ const PermissionRole: React.FC = () => {
     setValueCheckboxGroupsPer(checkedKeys.filter((data: string) => data !== 'permission_group'));
   };
 
-  // const permissionList = valueCheckboxGeneralStatistic.concat(
-  //   valueCheckboxTransferShift,
-  //   valueCheckboxNightShift,
-  //   valueCheckboxHistoryCall,
-  //   valueCheckboxTTCN,
-  //   valueCheckboxTTCT,
-  //   valueCheckboxTTND,
-  //   valueCheckboxGroupsPer,
-  //   selectListDB,
-  //   selectListIM,
-  //   selectListEM,
-  //   selectListCM,
-  //   selectListRF,
-  // );
-
   const fetchListUserRole = async (role_code: string, role_desc: string) => {
     if (permissionList.length === 0) {
       Modal.warning({
@@ -410,17 +456,10 @@ const PermissionRole: React.FC = () => {
       });
       return;
     }
-    const res = await requestListUserRole(permissionList, role_code, role_desc);
-
-    if (res?.success) {
-      message.success('Tạo nhóm quyền thành công');
-      handleCancleAddNewPermission();
-      refreshReadRoleAndPerm();
-    }
-    return res;
+    fetchCreateRoleAndPermission.run(permissionList, role_code, role_desc);
   };
 
-  const fetchListUpdateRole = async (role_code: string, role_desc: string) => {
+  const fetchListUpdateRole = async (role_code: string, role_desc: string, id?: string) => {
     if (permissionList.length === 0) {
       Modal.warning({
         title: 'Thông báo',
@@ -429,32 +468,14 @@ const PermissionRole: React.FC = () => {
       });
       return;
     }
-    const res = await requestUpdateRole(permissionList, role_code, role_desc);
-
-    if (res?.success) {
-      message.success('Cập nhập nhóm quyền thành công');
-      handleCancleAddNewPermission();
-      refreshReadRoleAndPerm();
-    } else {
-      message.error('Cập nhập nhóm quyền thất bại');
-    }
-    return res;
+    fetchUpdateRoleAndPermission.run(permissionList, role_code, role_desc, id ? id : '');
   };
 
-  const handleOnFinishPermissionAddNew = (values: any) => {
+  const handleOnFinishPermissionAddNew = (values: { role_code: string; role_desc: string }) => {
     if (isEditRole) {
-      fetchListUpdateRole(values.role_code, values.role_desc);
+      fetchListUpdateRole(values.role_code, values.role_desc, dataRoleId?.id);
     } else {
-      const res = fetchListUserRole(values.role_code, values.role_desc);
-      res.then((result: { error_code: number }) => {
-        if (result?.error_code === 4000104 && permissionList.length) {
-          Modal.warning({
-            title: 'Thông báo',
-            content: `Đã tồn tại ${values.role_code}. không thể tạo mới!`,
-            okText: 'Xác nhận',
-          });
-        }
-      });
+      fetchListUserRole(values.role_code, values.role_desc);
     }
   };
 
@@ -653,18 +674,6 @@ const PermissionRole: React.FC = () => {
       dataIndex: 'code',
       key: 'code',
       width: '200px',
-      // render: (text, record) => (
-      //     <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-      //         <div>
-      //             <Avatar src={ImageAvatar} size="large" />
-      //         </div>
-      //         <div>
-      //             <Typography.Text>{record.thanhvien}</Typography.Text>
-      //             <br></br>
-      //             <Typography.Text style={{ paddingLeft: '10px', fontSize: '10px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 400 }}>HuyenLM2@fpt.com.vn</Typography.Text>
-      //         </div>
-      //     </div>
-      // )
     },
     {
       title: 'Mô tả vai trò',
@@ -719,6 +728,20 @@ const PermissionRole: React.FC = () => {
       ),
     },
   ];
+
+  const handleTableChange: TableProps<DataAllRolePermission>['onChange'] = (
+    newPagination: any,
+    filters: any,
+    sorter: any,
+    extra,
+  ) => {
+    console.log('params', pagination, filters, extra);
+    setPagination({
+      ...pagination,
+      current: newPagination.current,
+      pageSize: newPagination.pageSize,
+    });
+  };
 
   const columnsPermissionTable: ColumnsType<DataTypePermissionTable> = [
     {
@@ -933,85 +956,88 @@ const PermissionRole: React.FC = () => {
 
   return (
     <>
-      <Row style={{ marginTop: 15 }}>
-        <Col span={16}></Col>
-        <Col span={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Space>
-            <Input
-              key="search"
-              prefix={<SearchOutlined />}
-              placeholder="Nhập từ khoá"
-              allowClear
-              onChange={debounce(
-                (e) => {
-                  const { value } = e.target;
-                  console.log(value);
-                },
-                500,
-                {
-                  trailing: true,
-                  leading: false,
-                },
-              )}
-            />
-            <PlusSquareFilled
-              style={{ fontSize: 32, color: '#478D46' }}
-              onClick={handleAddNewPermission}
-            />
-          </Space>
-        </Col>
-      </Row>
-
-      <Card className={styles.detailCardLayoutNoMar}>
-        <Table
-          dataSource={listAllRolePermission}
-          columns={columns}
-          style={{ paddingLeft: '20px' }}
-          className={styles.permissionTable}
-          onChange={handleTableChange}
-          pagination={{
-            ...pagination,
-            total: listAllRolePermission?.length,
-            locale: {
-              items_per_page: '/ Trang',
-              jump_to: 'Đến trang',
-              next_page: 'Trang sau',
-              prev_page: 'Trang trước',
-              next_3: '3 trang sau',
-              next_5: '5 trang sau',
-              prev_3: '3 trang trước',
-              prev_5: '5 trang trước',
-            },
-          }}
-          scroll={{ x: 300 }}
-          loading={{
-            indicator: (
-              <div>
-                <Spin />
-              </div>
-            ),
-            spinning: !listAllRolePermission,
-          }}
-        />
-      </Card>
-      <Modal
-        open={isAddNewPermission}
-        onCancel={handleCancleAddNewPermission}
-        title={
-          <Typography.Text style={{ fontWeight: 'bold' }}>
-            {isEditRole ? 'Chỉnh sửa quyền' : 'Phân quyền mới'}
-          </Typography.Text>
-        }
-        width={900}
-        bodyStyle={{ height: 600 }}
-        footer={false}
-        centered
+      <Form
+        form={form}
+        requiredMark={false}
+        layout="vertical"
+        onFinish={handleOnFinishPermissionAddNew}
       >
-        <Form
-          form={form}
-          requiredMark={false}
-          layout="vertical"
-          onFinish={handleOnFinishPermissionAddNew}
+        <Row style={{ marginTop: 15 }}>
+          <Col span={16}></Col>
+          <Col span={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <Space>
+              <Form.Item name="search" style={{ marginBottom: 0 }}>
+                <Input
+                  key="search"
+                  prefix={<SearchOutlined />}
+                  placeholder="Nhập từ khoá"
+                  allowClear
+                  onChange={debounce(
+                    (e) => {
+                      const { value } = e.target;
+                      fetchReadRoleAndPerm.run(value);
+                    },
+                    500,
+                    {
+                      trailing: true,
+                      leading: false,
+                    },
+                  )}
+                />
+              </Form.Item>
+
+              <PlusSquareFilled
+                style={{ fontSize: 32, color: '#478D46' }}
+                onClick={handleAddNewPermission}
+              />
+            </Space>
+          </Col>
+        </Row>
+
+        <Card className={styles.detailCardLayoutNoMar}>
+          <Table
+            dataSource={listAllRolePermission}
+            columns={columns}
+            style={{ paddingLeft: '20px' }}
+            className={styles.permissionTable}
+            onChange={handleTableChange}
+            pagination={{
+              ...pagination,
+              total: listAllRolePermission?.length,
+              locale: {
+                items_per_page: '/ Trang',
+                jump_to: 'Đến trang',
+                next_page: 'Trang sau',
+                prev_page: 'Trang trước',
+                next_3: '3 trang sau',
+                next_5: '5 trang sau',
+                prev_3: '3 trang trước',
+                prev_5: '5 trang trước',
+              },
+            }}
+            scroll={{ x: 300 }}
+            loading={{
+              indicator: (
+                <div>
+                  <Spin />
+                </div>
+              ),
+              spinning: fetchReadRoleAndPerm.loading,
+            }}
+          />
+        </Card>
+        <Modal
+          open={isAddNewPermission}
+          onCancel={handleCancleAddNewPermission}
+          title={
+            <Typography.Text style={{ fontWeight: 'bold' }}>
+              {isEditRole ? 'Chỉnh sửa quyền' : 'Phân quyền mới'}
+            </Typography.Text>
+          }
+          width={900}
+          bodyStyle={{ height: 600 }}
+          footer={false}
+          centered
         >
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
@@ -1112,12 +1138,16 @@ const PermissionRole: React.FC = () => {
             <Button style={{ marginRight: '10px' }} onClick={handleCancleAddNewPermission}>
               Hủy
             </Button>
-            <Button type="primary" htmlType="submit">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={fetchCreateRoleAndPermission.loading || fetchUpdateRoleAndPermission.loading}
+            >
               {isEditRole ? 'Cập nhập' : 'Tạo mới'}
             </Button>
           </Form.Item>
-        </Form>
-      </Modal>
+        </Modal>
+      </Form>
     </>
   );
 };

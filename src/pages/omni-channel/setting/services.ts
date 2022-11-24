@@ -2,7 +2,7 @@ import api from '@/api';
 import request from '@/utils/request';
 
 const token = window.localStorage.getItem('access_token');
-export async function requestListUserRole(
+export async function requestCreateRoleAndPerm(
   permission_code_list?: string[],
   role_code?: string,
   role_desc?: string,
@@ -24,6 +24,7 @@ export async function requestUpdateRole(
   permission_code_list?: string[],
   role_code?: string,
   role_desc?: string,
+  role_id?: string,
 ) {
   return request(
     `${api.UMI_API_BASE_URL}/user-service/api/authorization/update_role_and_permission`,
@@ -36,6 +37,7 @@ export async function requestUpdateRole(
         permission_code_list,
         role_code,
         role_desc,
+        role_id,
       },
     },
   );
@@ -150,6 +152,7 @@ export async function requestDeleteUserPermission(user_id: string) {
 }
 
 export async function requestReadRoleAndPerm(data?: {
+  keyword?: string;
   role_code?: string;
   permission_code?: string;
   limit?: number;
@@ -215,12 +218,7 @@ export async function requestDeleteRoleAndPermission(role_id: string) {
 
 /// API FINAL USER PERMISSION
 
-export async function requestAllUserInfoFinal(
-  limit?: number,
-  offset?: number,
-  user_id?: string,
-  keyword?: string,
-) {
+export async function requestAllUserInfoFinal(limit?: number, offset?: number, keyword?: string) {
   return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_user_and_role`, {
     method: 'POST',
     headers: {
@@ -229,7 +227,6 @@ export async function requestAllUserInfoFinal(
     data: {
       limit,
       offset,
-      user_id,
       keyword,
     },
   });

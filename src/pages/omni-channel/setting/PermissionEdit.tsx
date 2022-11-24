@@ -20,7 +20,8 @@ import {
     SaveOutlined,
     CloseOutlined,
     CheckOutlined,
-    UserOutlined
+    UserOutlined,
+    SearchOutlined,
 } from '@ant-design/icons';
 import {
     requestDeleteUserPermission,
@@ -36,14 +37,7 @@ import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
 import { useRequest } from 'umi';
-
-interface EditDetailUser {
-    data: any[];
-    error?: string;
-    error_code?: string;
-    length: number;
-    success: boolean;
-}
+import { debounce } from 'lodash';
 
 interface PaginationProps {
     current: number;
@@ -130,19 +124,16 @@ const PermissionEdit: React.FC = () => {
     const [listAllUserInfoFinal, setListAllUserInfoFinal] = useState<DataAllUserInfoFinal[]>([]);
     const [listAllUserInfoLengthFinal, setListAllUserInfoLengthFinal] = useState<string | any>();
     const [listEditUserInfoFinal, setListEditUserInfoFinal] = useState<DataAllUserInfoFinal[]>([]);
-    const [listEditUserPermission, setListEditUserPermission] = useState<EditDetailUser>();
     const [newTeamValue, setNewTeamValue] = useState<string | any>();
     const [listGroupPermission, setListGroupPermission] = useState<GroupPermission[]>([]);
     const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
 
     const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
 
-    const [isClickFilterBtn, setClickFilterBtn] = useState(false);
-    const [isActiveFilterBtn, setActiveFilterBtn] = useState(false);
-    const [listValueTND, setListValueTND] = useState<string | any>('');
-    const [listValueTeam, setListValueTeam] = useState<string | any>('');
-    const [listValueNLV, setListValueNLV] = useState<string | any>('');
-    const [listValueNQ, setListValueNQ] = useState<string | any>('');
+    // const [listValueTND, setListValueTND] = useState<string | any>('');
+    // const [listValueTeam, setListValueTeam] = useState<string | any>('');
+    // const [listValueNLV, setListValueNLV] = useState<string | any>('');
+    // const [listValueNQ, setListValueNQ] = useState<string | any>('');
 
     const [form] = Form.useForm();
 
@@ -155,8 +146,8 @@ const PermissionEdit: React.FC = () => {
     })
 
     const fetchListAllUserInfoFinal = useRequest(
-        async () => {
-            const res: { success: boolean, length: number } = await requestAllUserInfoFinal(pagination.pageSize, pagination.current);
+        async (keyword?: string) => {
+            const res: { success: boolean, length: number } = await requestAllUserInfoFinal(pagination.pageSize, pagination.current, keyword);
             if (!res.success) {
                 message.error('Lỗi không thể lấy data');
                 return;
@@ -425,109 +416,91 @@ const PermissionEdit: React.FC = () => {
     ];
     const onReset = () => {
         form.resetFields();
-        setActiveFilterBtn(false);
     };
 
-    const handleSelectValueTND = (values: any) => {
-        if (values !== undefined || values !== '') {
-            setListValueTND(values);
-            setActiveFilterBtn(true);
-        }
-        else {
-            setActiveFilterBtn(false);
-        }
-    }
-
     const handleSelectValueTeam = (values: any) => {
-        if (values !== undefined || values !== '') {
-            setListValueTeam(values);
-            setActiveFilterBtn(true);
-        }
-        else {
-            setActiveFilterBtn(false);
-        }
+        console.log(values)
     }
 
     const handleSelectValueNLV = (values: any) => {
-        if (values !== undefined || values !== '') {
-            setListValueNLV(values);
-            setActiveFilterBtn(true);
-        }
-        else {
-            setActiveFilterBtn(false);
-        }
+        console.log(values)
     }
 
     const handleSelectValueNQ = (values: any) => {
-        // if (values !== undefined || values !== '') {
-        //     setListValueNQ(values);
-        //     setActiveFilterBtn(true);
-        // }
-        // else {
-        //     setActiveFilterBtn(false);
-        // }
         console.log(values);
     }
 
-    const fillRole = listGroupPermission.map((item: GroupPermission) => ({ label: item.code, value: item.id }))
-    console.log(fillRole)
-
     return (
         <>
-            <div style={{ paddingRight: '20%', paddingTop: '30px' }}>
-                <Form layout='vertical' form={form}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                        <div style={{ flex: 1 }}>
-                            <Form.Item label="Tên người dùng" name="Tên người dùng">
-                                <Select onChange={handleSelectValueTND} value={listValueTND}>
-                                    <Select.Option value="Test 1">Test 1</Select.Option>
-                                    <Select.Option value="Test 2">Test 2</Select.Option>
-                                </Select>
-                            </Form.Item>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    paddingTop: '30px',
+                    flexWrap: 'wrap'
+                }}
+            >
+                <div>
+                    <Form layout='vertical' form={form}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Team" name="Team" style={{ marginBottom: 'unset' }}>
+                                    <Select onChange={handleSelectValueTeam} mode="multiple">
+                                        {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
+                                            <Select.Option value={item.name}>
+                                                {item.name}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Nơi làm việc" name="Nơi làm việc" style={{ marginBottom: 'unset' }}>
+                                    <Select onChange={handleSelectValueNLV} mode="multiple">
+                                        <Select.Option value="mb">Miền Bắc</Select.Option>
+                                        <Select.Option value="mn">Miền Nam</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Nhóm quyền" name="Nhóm quyền" style={{ marginBottom: 'unset' }}>
+                                    <Select onChange={handleSelectValueNQ} mode="multiple">
+                                        {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
+                                            <Select.Option
+                                                value={item.code}
+                                            >
+                                                {item.code}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ paddingTop: '29px' }}>
+                                <Form.Item style={{ marginBottom: 'unset' }} label="">
+                                    <Button type='text' style={{ color: 'blue' }} onClick={onReset}>Reset</Button>
+                                </Form.Item>
+                            </div>
                         </div>
-                        <div style={{ flex: 1 }}>
-                            <Form.Item label="Team" name="Team">
-                                <Select onChange={handleSelectValueTeam}>
-                                    {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
-                                        <Select.Option value={item.id}>
-                                            <div className={styles.flexLayout}>
-                                                <div>
-                                                    {item.name}
-                                                </div>
-                                            </div>
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <Form.Item label="Nơi làm việc" name="Nơi làm việc">
-                                <Select onChange={handleSelectValueNLV} value={listValueNLV}>
-                                    <Select.Option value="Test 1">Test 1</Select.Option>
-                                    <Select.Option value="Test 2">Test 2</Select.Option>
-                                </Select>
-                            </Form.Item>
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <Form.Item label="Nhóm quyền" name="Nhóm quyền">
-                                <Select onChange={handleSelectValueNQ} mode="multiple">
-                                    {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
-                                        <Select.Option
-                                            value={item.id}
-                                        >
-                                            {item.code}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
-                            </Form.Item>
-                        </div>
-                        <div style={{ flex: 1, paddingTop: '29px' }}>
-                            <Form.Item style={{ marginBottom: 'unset' }} label="">
-                                <Button type='text' style={{ color: 'blue' }} onClick={onReset}>Reset</Button>
-                            </Form.Item>
-                        </div>
-                    </div>
-                </Form>
+                    </Form>
+                </div>
+                <div style={{ paddingTop: '29px' }}>
+                    <Input
+                        style={{ width: '300px', marginRight: '10px' }}
+                        prefix={<SearchOutlined />}
+                        placeholder="Tìm kiếm"
+                        onChange={debounce(
+                            (e) => {
+                                const { value } = e.target;
+                                fetchListAllUserInfoFinal.run(value);
+                            },
+                            500,
+                            {
+                                trailing: true,
+                                leading: false,
+                            },
+                        )}
+                    />
+                </div>
             </div>
             <Card
                 className={styles.detailCardLayoutNoMar}

@@ -5,6 +5,35 @@ import api from './api';
 import { verifySSO } from './services/auth';
 import { history } from 'umi';
 
+const myBrowser = () => {
+  if ((navigator.userAgent.indexOf('Opera') || navigator.userAgent.indexOf('OPR')) != -1) {
+    return 'Opera';
+  } else if (navigator.userAgent.indexOf('Edg') != -1) {
+    return 'Edge';
+  } else if (navigator.userAgent.indexOf('Chrome') != -1) {
+    return 'Chrome';
+  } else if (navigator.userAgent.indexOf('Safari') != -1) {
+    return 'Safari';
+  } else if (navigator.userAgent.indexOf('Firefox') != -1) {
+    return 'Firefox';
+  } else if (navigator.userAgent.indexOf('MSIE') != -1) {
+    //IF IE > 10
+    return 'IE';
+  } else {
+    return 'unknown';
+  }
+};
+
+const myDevice = () => {
+  if (window.navigator.platform.includes('Mac')) {
+    return 'Macbook';
+  } else if (window.navigator.platform.includes('Win')) {
+    return 'Windows';
+  } else {
+    return 'Linux';
+  }
+};
+
 if (window.location.href.includes('code')) {
   const paramsString = history.location.search;
   const params = new URLSearchParams(paramsString);
@@ -17,6 +46,8 @@ if (window.location.href.includes('code')) {
     session_state,
     code,
     redirect_uri: `${api.UMI_API_URL}`,
+    browser: myBrowser(),
+    device: myDevice(),
   };
 
   const response = await verifySSO(data);

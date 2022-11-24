@@ -240,6 +240,10 @@ export const TREE_DATA_TKC = [
     key: 'general_statistic',
     children: [
       {
+        title: 'Xem',
+        key: 'general_statistic_read',
+      },
+      {
         title: 'Truy vấn',
         key: 'general_statistic_query',
       },
@@ -252,6 +256,7 @@ export const TREE_DATA_TKC = [
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE = [
+  'general_statistic_read',
   'general_statistic_query',
   'general_statistic_export',
 ];
@@ -261,6 +266,10 @@ export const TREE_DATA_BGCT = [
     title: 'Bàn giao ca trực',
     key: 'transfer_shift',
     children: [
+      {
+        title: 'Xem',
+        key: 'transfer_shift_read',
+      },
       {
         title: 'Tạo mới',
         key: 'transfer_shift_create',
@@ -278,6 +287,7 @@ export const TREE_DATA_BGCT = [
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE = [
+  'transfer_shift_read',
   'transfer_shift_create',
   'transfer_shift_process',
   'transfer_shift_export',
@@ -288,6 +298,10 @@ export const TREE_DATA_KHD = [
     title: 'Kế hoạch đêm',
     key: 'night_shift',
     children: [
+      {
+        title: 'Xem',
+        key: 'night_shift_read',
+      },
       {
         title: 'Tạo mới',
         key: 'night_shift_create',
@@ -305,6 +319,7 @@ export const TREE_DATA_KHD = [
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE = [
+  'night_shift_read',
   'night_shift_create',
   'night_shift_process',
   'night_shift_export',
@@ -315,6 +330,10 @@ export const TREE_DATA_LSCG = [
     title: 'Lịch sử cuộc gọi',
     key: 'call_history',
     children: [
+      {
+        title: 'Xem',
+        key: 'call_history_read',
+      },
       {
         title: 'Nghe ghi âm',
         key: 'call_history_record',
@@ -336,6 +355,7 @@ export const TREE_DATA_LSCG = [
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE = [
+  'call_history_read',
   'call_history_record',
   'call_history_delete',
   'call_history_export',
@@ -347,6 +367,10 @@ export const TREE_DATA_TTCT = [
     title: 'Thông tin ca trực',
     key: 'shift_info',
     children: [
+      {
+        title: 'Xem',
+        key: 'shift_info_read',
+      },
       {
         title: 'Tạo mới',
         key: 'shift_info_create',
@@ -368,6 +392,7 @@ export const TREE_DATA_TTCT = [
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE = [
+  'shift_info_read',
   'shift_info_create',
   'shift_info_update',
   'shift_info_delete',
@@ -379,6 +404,10 @@ export const TREE_DATA_TTCN = [
     title: 'Thông tin cá nhân',
     key: 'personal_info',
     children: [
+      {
+        title: 'Xem',
+        key: 'personal_info_read',
+      },
       {
         title: 'Chỉnh sửa',
         key: 'personal_info_update',
@@ -392,6 +421,7 @@ export const TREE_DATA_TTCN = [
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE = [
+  'personal_info_read',
   'personal_info_update',
   'personal_info_delete',
 ];
@@ -401,6 +431,10 @@ export const TREE_DATA_TTND = [
     title: 'Thông tin người dùng',
     key: 'user_profile',
     children: [
+      {
+        title: 'Xem',
+        key: 'user_profile_read',
+      },
       {
         title: 'Chỉnh sửa',
         key: 'user_profile_update',
@@ -414,6 +448,7 @@ export const TREE_DATA_TTND = [
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE = [
+  'user_profile_read',
   'user_profile_update',
   'user_profile_delete',
 ];
@@ -423,6 +458,10 @@ export const TREE_DATA_NQ = [
     title: 'Nhóm quyền',
     key: 'permission_group',
     children: [
+      {
+        title: 'Xem',
+        key: 'permission_group_read',
+      },
       {
         title: 'Tạo mới',
         key: 'permission_group_create',
@@ -440,6 +479,7 @@ export const TREE_DATA_NQ = [
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE = [
+  'permission_group_read',
   'permission_group_create',
   'permission_group_update',
   'permission_group_delete',
