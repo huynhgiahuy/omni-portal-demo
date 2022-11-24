@@ -21,6 +21,9 @@ import {
   StarFilled,
   DeleteOutlined,
   CloseCircleFilled,
+  CheckOutlined,
+  SaveOutlined,
+  CloseOutlined,
 } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import styles from '../report/style.less';
@@ -33,6 +36,84 @@ import {
   requestUpdateUserContact,
 } from './services';
 import { useRequest } from 'umi';
+import {
+  requestCreateNewTeam,
+  requestDeleteTeamPermission,
+  requestTeamPermissionData,
+} from '../setting/services';
+import { debounce } from 'lodash';
+
+interface TeamPermission {
+  name: string;
+  id: string;
+}
+
+const listUnitExternal = [
+  {
+    label: 'NOC',
+    value: 'NOC',
+  },
+  {
+    label: 'IDC',
+    value: 'IDC',
+  },
+  {
+    label: 'PMB',
+    value: 'PMB',
+  },
+  {
+    label: 'FPL',
+    value: 'FPL',
+  },
+  {
+    label: 'CSOC',
+    value: 'CSOC',
+  },
+  {
+    label: 'ISC',
+    value: 'ISC',
+  },
+  {
+    label: 'CADS',
+    value: 'CADS',
+  },
+  {
+    label: 'FSS',
+    value: 'FSS',
+  },
+  {
+    label: 'CS',
+    value: 'CS',
+  },
+  {
+    label: 'CC',
+    value: 'CC',
+  },
+  {
+    label: 'TIN/PNC',
+    value: 'TIN/PNC',
+  },
+  {
+    label: 'FOXPAY',
+    value: 'FOXPAY',
+  },
+  {
+    label: 'INF',
+    value: 'INF',
+  },
+  {
+    label: 'HiFPT',
+    value: 'HiFPT',
+  },
+  {
+    label: 'FTI',
+    value: 'FTI',
+  },
+  {
+    label: 'FTQ',
+    value: 'FTQ',
+  },
+];
 
 const formItemLayout = {
   labelCol: {
@@ -65,10 +146,14 @@ const PhoneBook: React.FC = () => {
   const [openModal, setOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [dataContacts, setDataContacts] = useState<dataUserContactProps[]>([]);
+  const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
+  const [teamKey, setTeamKey] = useState<string | any>();
+  const [newTeamValue, setNewTeamValue] = useState<string | any>();
+  const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
 
   const getUserContact = useRequest(
-    async () => {
-      const res: { success: boolean } = await requestGetUserContact();
+    async (data) => {
+      const res: { success: boolean } = await requestGetUserContact(data);
       if (!res.success) {
         message.error('Không lấy được danh bạ');
         return;
@@ -146,13 +231,15 @@ const PhoneBook: React.FC = () => {
     },
   );
 
+  const getListTeam = useRequest(requestTeamPermissionData, {
+    onSuccess: (res) => {
+      if (res) {
+        setListTeamPermission(res);
+      }
+    },
+  });
+
   const handleOpenModal = () => {
-    form.setFields([
-      {
-        name: 'full_name',
-        errors: ['Mi primer error Zelene', 'Mi segunda posible caía Jazmín'],
-      },
-    ]);
     setOpenModal(true);
   };
 
@@ -282,20 +369,51 @@ const PhoneBook: React.FC = () => {
     },
   ];
 
-  const items = [
-    {
-      label: 1,
-      value: 1,
-    },
-    {
-      label: 2,
-      value: 2,
-    },
-  ];
+  const handleSelectTeam = (values: any) => {
+    setClickAddNewTeam(false);
+    setTeamKey(values);
+  };
+
+  const fetchTeamPermissionData = async () => {
+    const resTeam = await requestTeamPermissionData();
+    if (resTeam.success === true) {
+      console.log('get');
+      setListTeamPermission(resTeam.data);
+    }
+  };
+
+  const handleCreateNewTeamPermission = async (newTeamValue: string) => {
+    const resNewTeam = await requestCreateNewTeam(newTeamValue);
+    if (resNewTeam.success === true) {
+      message.success('Tạo thành công');
+      getListTeam.refresh();
+    }
+  };
+
+  const handleDeleteTeamPermission = async (team_id: string) => {
+    const resDelTeam = await requestDeleteTeamPermission(team_id);
+    if (resDelTeam.success === true) {
+      message.success('Xoá thành công');
+      getListTeam.refresh();
+    }
+  };
+
+  const handleClickDeleteTeam = (e: any, id: string) => {
+    e.stopPropagation();
+    e.preventDefault();
+    handleDeleteTeamPermission(id);
+    fetchTeamPermissionData();
+  };
+
+  const handleSubmitNewTeam = (values: any) => {
+    handleCreateNewTeamPermission(values);
+    form.resetFields();
+    fetchTeamPermissionData();
+  };
 
   return (
-    <Card className={styles.detailCardLayout}>
-      <div style={{ marginLeft: '10px' }}>
+    <>
+      <div style={{ marginTop: '20px' }}>
         <Segmented
           size="middle"
           value={external}
@@ -315,48 +433,81 @@ const PhoneBook: React.FC = () => {
           className={styles.antSegmented}
         />
       </div>
-      <Form layout="vertical">
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10 }}>
-          <Space size="middle" style={{ marginLeft: 10 }}>
-            <Form.Item label="Họ và tên" name="full_name">
+      <Form layout="vertical" form={form}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginTop: 10,
+            marginRight: '1rem',
+          }}
+        >
+          <Space size="middle">
+            <Form.Item label={external === 'Khách hàng' ? 'Đơn vị' : 'Team'} name="unit">
               <Select
-                style={{ width: 300 }}
+                style={{ width: 200 }}
                 placeholder="Tất cả"
                 mode="multiple"
-                options={[
-                  {
-                    label: 1,
-                    value: 1,
+                loading={getListTeam?.loading}
+                onChange={debounce(
+                  () => {
+                    getUserContact.run({
+                      keyword: form.getFieldValue('search'),
+                      unit: form.getFieldValue('unit'),
+                    });
                   },
+                  500,
                   {
-                    label: 1,
-                    value: 2,
+                    trailing: true,
+                    leading: false,
                   },
-                ]}
+                )}
+                options={
+                  external === 'Khách hàng'
+                    ? listUnitExternal
+                    : getListTeam?.data?.map((option: { name: string; id: string }) => ({
+                        label: option.name,
+                        value: option.name,
+                      }))
+                }
               />
             </Form.Item>
-            <Form.Item label="Đơn vị" name="possition">
-              <Select style={{ width: 150 }}>
-                <Select.Option value="Gọi ra">Gọi ra</Select.Option>
-                <Select.Option value="Gọi vào">Gọi vào</Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item label="Email" name="email">
-              <Select style={{ width: 150 }}>
-                <Select.Option value="Gọi ra">Gọi ra</Select.Option>
-                <Select.Option value="Gọi vào">Gọi vào</Select.Option>
-              </Select>
-            </Form.Item>
+
             <Form.Item style={{ marginBottom: 0 }}>
-              <Button type="link">Reset</Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  if (form.getFieldValue('unit' || form.getFieldValue('search'))) {
+                    getUserContact.refresh();
+                  }
+                  form.resetFields();
+                }}
+              >
+                Reset
+              </Button>
             </Form.Item>
           </Space>
           <Space>
-            {/* <div style={{ marginRight: '10px', cursor: 'pointer' }}>
-              <FilterOutlined /> Bộ lọc
-            </div> */}
-
-            <Input style={{ width: '200px' }} prefix={<SearchOutlined />} placeholder="Tìm kiếm" />
+            <Form.Item name="search" style={{ marginBottom: 0 }}>
+              <Input
+                style={{ width: '200px' }}
+                prefix={<SearchOutlined />}
+                placeholder="Nhập từ khoá"
+                onChange={debounce(
+                  () => {
+                    getUserContact.run({
+                      keyword: form.getFieldValue('search'),
+                      unit: form.getFieldValue('unit'),
+                    });
+                  },
+                  500,
+                  {
+                    trailing: true,
+                    leading: false,
+                  },
+                )}
+              />
+            </Form.Item>
             <PlusSquareFilled
               style={{ fontSize: 32, color: '#478D46' }}
               onClick={() => {
@@ -368,168 +519,246 @@ const PhoneBook: React.FC = () => {
           </Space>
         </div>
       </Form>
+      <Card className={styles.detailCardLayoutPhone}>
+        <Table
+          dataSource={external === 'Khách hàng' ? dataExternalContacts : dataInternalContacts}
+          columns={columnsDanhba}
+          style={{ paddingLeft: '10px', paddingTop: '10px' }}
+          className={styles.tableStyle}
+          pagination={{
+            pageSize: 5,
+            showQuickJumper: true,
+            showSizeChanger: true,
+            locale: {
+              jump_to: 'Go to',
+              page: '',
+            },
+          }}
+          scroll={{ x: 300 }}
+          loading={{
+            indicator: (
+              <div>
+                <Spin />
+              </div>
+            ),
+            spinning: getUserContact.loading,
+          }}
+        />
 
-      <Table
-        dataSource={external === 'Khách hàng' ? dataExternalContacts : dataInternalContacts}
-        columns={columnsDanhba}
-        style={{ paddingLeft: '10px', paddingTop: '10px' }}
-        className={styles.tableStyle}
-        pagination={{
-          pageSize: 5,
-          showQuickJumper: true,
-          showSizeChanger: true,
-          locale: {
-            jump_to: 'Go to',
-            page: '',
-          },
-        }}
-        scroll={{ x: 300 }}
-        loading={{
-          indicator: (
+        <Modal
+          open={openModal}
+          className={styles.modal}
+          onCancel={handleCancleModal}
+          title={
+            !isEdit && external === 'Khách hàng'
+              ? 'Thêm khách hàng'
+              : external === 'Khách hàng'
+              ? 'Thông tin khách hàng'
+              : !isEdit && external === 'Nội bộ'
+              ? 'Thêm người dùng'
+              : 'Thông tin người dùng'
+          }
+          footer={false}
+          width={620}
+          centered
+        >
+          <Form {...formItemLayout} form={form} onFinish={handleOnFinish} layout="vertical">
             <div>
-              <Spin />
+              <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
+                Họ và tên <span style={{ color: 'red' }}>(*)</span>
+              </Typography.Text>
+              <Form.Item
+                name="full_name"
+                style={{ marginTop: 8 }}
+                rules={[
+                  { required: true, message: 'Vui lòng không để trống thông tin' },
+                  {
+                    max: 255,
+                    message: 'Vui lòng không nhập quá 255 kí tự',
+                  },
+                ]}
+              >
+                <Input placeholder="Nhập họ và tên" />
+              </Form.Item>
             </div>
-          ),
-          spinning: getUserContact.loading,
-        }}
-      />
+            <div>
+              <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
+                Số điện thoại <span style={{ color: 'red' }}>(*)</span>
+              </Typography.Text>
+              <Form.Item
+                name="phone_number"
+                style={{ marginTop: 8 }}
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng không để trống thông tin',
+                  },
+                  {
+                    pattern: new RegExp('([3|5|7|8|9]{1})+([0-9]{8})'),
+                    message: 'Số điện thoại không hợp lệ',
+                  },
+                  {
+                    max: 10,
+                    message: 'Số điện thoại không hợp lệ',
+                  },
+                ]}
+              >
+                <Input
+                  placeholder="Nhập số điện thoại"
+                  className={styles.inputNumber}
+                  type="number"
+                />
+              </Form.Item>
+            </div>
 
-      <Modal
-        open={openModal}
-        className={styles.modal}
-        onCancel={handleCancleModal}
-        title={
-          isEdit
-            ? 'Thêm khách hàng'
-            : external === 'Khách hàng'
-            ? 'Thông tin khách hàng'
-            : 'Thông tin người dùng'
-        }
-        footer={false}
-        width={620}
-        centered
-      >
-        <Form {...formItemLayout} form={form} onFinish={handleOnFinish} layout="vertical">
-          <div>
-            <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Họ và tên <span style={{ color: 'red' }}>(*)</span>
-            </Typography.Text>
-            <Form.Item
-              name="full_name"
-              style={{ marginTop: 8 }}
-              rules={[
-                { required: true, message: 'Vui lòng không để trống thông tin' },
-                {
-                  max: 255,
-                  message: 'Vui lòng không nhập quá 255 kí tự',
-                },
-              ]}
-            >
-              <Input placeholder="Nhập họ và tên" />
-            </Form.Item>
-          </div>
-          <div>
-            <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Số điện thoại <span style={{ color: 'red' }}>(*)</span>
-            </Typography.Text>
-            <Form.Item
-              name="phone_number"
-              style={{ marginTop: 8 }}
-              rules={[
-                {
-                  required: true,
-                  message: 'Vui lòng không để trống thông tin',
-                },
-                {
-                  pattern: new RegExp('([3|5|7|8|9]{1})+([0-9]{8})'),
-                  message: 'Số điện thoại không hợp lệ',
-                },
-                {
-                  max: 10,
-                  message: 'Số điện thoại không hợp lệ',
-                },
-              ]}
-            >
-              <Input
-                placeholder="Nhập số điện thoại"
-                className={styles.inputNumber}
-                type="number"
-              />
-            </Form.Item>
-          </div>
+            <div>
+              <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
+                IP phone <span style={{ color: 'red' }}>(*)</span>
+              </Typography.Text>
+              <Form.Item
+                name="ip_phone"
+                style={{ marginTop: 8 }}
+                rules={[
+                  { required: true, message: 'Vui lòng không để trống thông tin' },
+                  {
+                    max: 6,
+                    message: 'Vui lòng không nhập quá 6 số',
+                  },
+                ]}
+              >
+                <Input
+                  className={styles.inputNumber}
+                  type="number"
+                  placeholder="Nhập số máy nhánh"
+                />
+              </Form.Item>
+            </div>
+            <div>
+              <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
+                Email <span style={{ color: 'red' }}>(*)</span>
+              </Typography.Text>
+              <Form.Item
+                name="email"
+                style={{ marginTop: 8 }}
+                rules={[
+                  { required: true, message: 'Vui lòng không để trống thông tin' },
+                  { type: 'email', message: 'Vui lòng nhập email hợp lệ' },
+                  {
+                    max: 255,
+                    message: 'Vui lòng không nhập quá 255 kí tự',
+                  },
+                ]}
+              >
+                <Input placeholder="Nhập email đơn vị" />
+              </Form.Item>
+            </div>
+            <div>
+              <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
+                {external === 'Khách hàng' ? 'Đơn vị công tác' : 'Team'}
+                <span style={{ color: 'red' }}>(*)</span>
+              </Typography.Text>
+              <Form.Item
+                name={external === 'Khách hàng' ? 'unit' : 'team'}
+                style={{ marginTop: 8 }}
+                rules={[{ required: true, message: 'Vui lòng không để trống thông tin' }]}
+              >
+                {external === 'Khách hàng' ? (
+                  <Select options={listUnitExternal} />
+                ) : (
+                  <Select
+                    onChange={handleSelectTeam}
+                    loading={getListTeam.loading}
+                    placeholder={external === 'Khách hàng' ? 'Chọn đơn vị công tác' : 'Chọn nhóm'}
+                    menuItemSelectedIcon={<CheckOutlined style={{ marginLeft: 10 }} />}
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <div
+                          style={{
+                            paddingLeft: '14px',
+                            paddingRight: '14px',
+                            paddingBottom: '10px',
+                          }}
+                        >
+                          <hr></hr>
+                          {clickAddNewTeam === false ? (
+                            <Button
+                              style={{
+                                padding: 'unset',
+                                color: 'rgba(0,0,0,0.5)',
+                                fontStyle: 'italic',
+                              }}
+                              type="text"
+                              onClick={() => setClickAddNewTeam(true)}
+                            >
+                              Chỉnh sửa / Thêm team mới
+                            </Button>
+                          ) : (
+                            <Form form={form}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <div style={{ flex: 1 }}>
+                                  <Form.Item name="newTeamValue">
+                                    <Input
+                                      placeholder="Nhập team mới tại đây"
+                                      className={styles.addNewTeamPlaceholder}
+                                      onChange={(e) => setNewTeamValue(e.target.value)}
+                                    />
+                                  </Form.Item>
+                                </div>
+                                <div>
+                                  <Form.Item>
+                                    <Space>
+                                      <SaveOutlined
+                                        style={{ marginLeft: 10, fontSize: 14 }}
+                                        onClick={() => handleSubmitNewTeam(newTeamValue)}
+                                      />
+                                      <CloseOutlined
+                                        style={{ fontSize: 14 }}
+                                        onClick={() => setClickAddNewTeam(false)}
+                                      />
+                                    </Space>
+                                  </Form.Item>
+                                </div>
+                              </div>
+                            </Form>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  >
+                    {listTeamPermission.map((item: TeamPermission) => (
+                      <Select.Option value={item.id}>
+                        <div className={styles.flexLayout}>
+                          <div>{item.name}</div>
+                          {clickAddNewTeam === true ? (
+                            <DeleteOutlined onClick={(e) => handleClickDeleteTeam(e, item.id)} />
+                          ) : (
+                            ''
+                          )}
+                        </div>
+                      </Select.Option>
+                    ))}
+                  </Select>
+                )}
+              </Form.Item>
+            </div>
 
-          <div>
-            <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              IP phone <span style={{ color: 'red' }}>(*)</span>
-            </Typography.Text>
-            <Form.Item
-              name="ip_phone"
-              style={{ marginTop: 8 }}
-              rules={[
-                { required: true, message: 'Vui lòng không để trống thông tin' },
-                {
-                  max: 6,
-                  message: 'Vui lòng không nhập quá 6 số',
-                },
-              ]}
-            >
-              <Input className={styles.inputNumber} type="number" placeholder="Nhập số máy nhánh" />
-            </Form.Item>
-          </div>
-          <div>
-            <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Email <span style={{ color: 'red' }}>(*)</span>
-            </Typography.Text>
-            <Form.Item
-              name="email"
-              style={{ marginTop: 8 }}
-              rules={[
-                { required: true, message: 'Vui lòng không để trống thông tin' },
-                { type: 'email', message: 'Vui lòng nhập email hợp lệ' },
-                {
-                  max: 255,
-                  message: 'Vui lòng không nhập quá 255 kí tự',
-                },
-              ]}
-            >
-              <Input placeholder="Nhập email đơn vị" />
-            </Form.Item>
-          </div>
-          <div>
-            <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              {external === 'Khách hàng' ? 'Đơn vị công tác' : 'Team'}
-              <span style={{ color: 'red' }}>(*)</span>
-            </Typography.Text>
-            <Form.Item
-              name={external === 'Khách hàng' ? 'work_unit' : 'team'}
-              style={{ marginTop: 8 }}
-              rules={[
-                { required: true, message: 'Vui lòng không để trống thông tin' },
-                {
-                  max: 255,
-                  message: 'Vui lòng không nhập quá 255 kí tự',
-                },
-              ]}
-            >
-              <Input placeholder="Nhập đơn vị" />
-            </Form.Item>
-          </div>
-
-          <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' }}>
-            <Button style={{ marginRight: '10px' }} onClick={handleCancleModal}>
-              Hủy
-            </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={updateUserContact.loading || addUserContact.loading}
-            >
-              {isEdit ? 'Cập nhập' : 'Tạo mới'}
-            </Button>
-          </div>
-        </Form>
-      </Modal>
-    </Card>
+            <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' }}>
+              <Button style={{ marginRight: '10px' }} onClick={handleCancleModal}>
+                Hủy
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={updateUserContact.loading || addUserContact.loading}
+              >
+                {isEdit ? 'Cập nhập' : 'Tạo mới'}
+              </Button>
+            </div>
+          </Form>
+        </Modal>
+      </Card>
+    </>
   );
 };
 

@@ -37,6 +37,21 @@
     }
   }
 }
+
+.detailCardLayoutPhone {
+  margin-right: 1rem;
+  background-color: white;
+  border: 1px solid #7fb77e;
+  border-radius: 8px;
+  :global {
+    .ant-card-head {
+      border-bottom: unset;
+    }
+    .ant-card-body {
+      padding-left: unset;
+    }
+  }
+}
 .selectTwoArrow {
   padding: 2px 20px 2px 8px;
   padding-right: 20px;
@@ -110,4 +125,10 @@
   &[type='number'] {
     -moz-appearance: textfield;
   }
+}
+
+.flexLayout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
