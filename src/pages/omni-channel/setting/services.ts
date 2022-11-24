@@ -218,7 +218,14 @@ export async function requestDeleteRoleAndPermission(role_id: string) {
 
 /// API FINAL USER PERMISSION
 
-export async function requestAllUserInfoFinal(limit?: number, offset?: number, keyword?: string) {
+export async function requestAllUserInfoFinal(
+  limit?: number,
+  offset?: number,
+  keyword?: string,
+  team_name?: any,
+  role_code?: any,
+  work_address?: any,
+) {
   return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_user_and_role`, {
     method: 'POST',
     headers: {
@@ -228,6 +235,9 @@ export async function requestAllUserInfoFinal(limit?: number, offset?: number, k
       limit,
       offset,
       keyword,
+      team_name,
+      role_code,
+      work_address,
     },
   });
 }

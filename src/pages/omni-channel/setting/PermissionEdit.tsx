@@ -130,10 +130,9 @@ const PermissionEdit: React.FC = () => {
 
     const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
 
-    // const [listValueTND, setListValueTND] = useState<string | any>('');
-    // const [listValueTeam, setListValueTeam] = useState<string | any>('');
-    // const [listValueNLV, setListValueNLV] = useState<string | any>('');
-    // const [listValueNQ, setListValueNQ] = useState<string | any>('');
+    const [listValueTeam, setListValueTeam] = useState<string[] | any>();
+    const [listValueNLV, setListValueNLV] = useState<string[] | any>();
+    const [listValueNQ, setListValueNQ] = useState<string[] | any>();
 
     const [form] = Form.useForm();
 
@@ -147,7 +146,14 @@ const PermissionEdit: React.FC = () => {
 
     const fetchListAllUserInfoFinal = useRequest(
         async (keyword?: string) => {
-            const res: { success: boolean, length: number } = await requestAllUserInfoFinal(pagination.pageSize, pagination.current, keyword);
+            const res: { success: boolean, length: number } = await requestAllUserInfoFinal(
+                pagination.pageSize,
+                pagination.current,
+                keyword,
+                listValueTeam,
+                listValueNLV,
+                listValueNQ
+            );
             if (!res.success) {
                 message.error('Lỗi không thể lấy data');
                 return;
@@ -200,25 +206,41 @@ const PermissionEdit: React.FC = () => {
     const handleDeleteTeamPermission = async (team_id: string) => {
         const resDelTeam = await requestDeleteTeamPermission(team_id);
         if (resDelTeam.success === true) {
-            return resDelTeam.data
+            message.success('Xóa team thành công!');
+        }
+        else {
+            message.error('Xóa team thất bại!');
         }
     }
 
     const handleCreateNewTeamPermission = async (newTeamValue: string) => {
         const resNewTeam = await requestCreateNewTeam(newTeamValue);
         if (resNewTeam.success === true) {
-            return resNewTeam.data
+            message.success('Cập nhật team mới thành công!');
+        }
+        else {
+            message.success('Cập nhật team thất bai!');
         }
     }
 
-    const handleSubmitNewTeam = (values: any) => {
-        handleCreateNewTeamPermission(values);
-        form.resetFields();
-        fetchTeamPermissionData();
+    const handleSubmitNewTeam = async (values: any) => {
+        await handleCreateNewTeamPermission(values);
+        await fetchTeamPermissionData();
+        form.setFieldsValue({ newTeamValue: undefined })
     }
 
     const handleCallApiUpdateUserInfo = useRequest(async (values: any) => {
-        const resSubmitUpdate = await requestUpdateUserInfoFinal(userKey, teamKey, roleKey, values.department, values.position, values.phone_number, values.ip_phone, values.level, values.work_address);
+        const resSubmitUpdate = await requestUpdateUserInfoFinal(
+            userKey,
+            teamKey,
+            roleKey,
+            values.department,
+            values.position,
+            values.phone_number,
+            values.ip_phone,
+            values.level,
+            values.work_address
+        );
         if (resSubmitUpdate.success !== true) {
             message.error('Cập nhật thất bại!');
         }
@@ -233,11 +255,11 @@ const PermissionEdit: React.FC = () => {
         handleCallApiUpdateUserInfo.run(values);
     }
 
-    const handleClickDeleteTeam = (e: any, id: string) => {
+    const handleClickDeleteTeam = async (e: any, id: string) => {
         e.stopPropagation();
         e.preventDefault();
-        handleDeleteTeamPermission(id);
-        fetchTeamPermissionData();
+        await handleDeleteTeamPermission(id);
+        await fetchTeamPermissionData();
     }
 
     const handleSelectTeam = (values: any) => {
@@ -389,6 +411,12 @@ const PermissionEdit: React.FC = () => {
             align: 'center'
         },
         {
+            title: 'Trạng thái IIP',
+            dataIndex: '',
+            key: '',
+            align: 'center'
+        },
+        {
             title: '',
             align: 'center',
             render: (record) => (
@@ -416,18 +444,37 @@ const PermissionEdit: React.FC = () => {
     ];
     const onReset = () => {
         form.resetFields();
+        setListValueTeam(undefined);
+        setListValueNLV(undefined);
+        setListValueNQ(undefined);
+        setPagination({
+            ...pagination,
+            current: 1,
+        });
     };
 
     const handleSelectValueTeam = (values: any) => {
-        console.log(values)
+        setListValueTeam(values);
+        setPagination({
+            ...pagination,
+            current: 1,
+        });
     }
 
     const handleSelectValueNLV = (values: any) => {
-        console.log(values)
+        setListValueNLV(values);
+        setPagination({
+            ...pagination,
+            current: 1,
+        });
     }
 
     const handleSelectValueNQ = (values: any) => {
-        console.log(values);
+        setListValueNQ(values);
+        setPagination({
+            ...pagination,
+            current: 1,
+        });
     }
 
     return (
@@ -487,7 +534,7 @@ const PermissionEdit: React.FC = () => {
                     <Input
                         style={{ width: '300px' }}
                         prefix={<SearchOutlined />}
-                        placeholder="Tìm kiếm"
+                        placeholder="Tìm kiếm tên người dùng"
                         onChange={debounce(
                             (e) => {
                                 const { value } = e.target;
@@ -564,7 +611,6 @@ const PermissionEdit: React.FC = () => {
                                 >
                                     <Select
                                         onChange={handleSelectTeam}
-                                        menuItemSelectedIcon={<CheckOutlined />}
                                         dropdownRender={(menu) => (
                                             <>
                                                 {menu}
@@ -582,7 +628,7 @@ const PermissionEdit: React.FC = () => {
                                                         <Form form={form}>
                                                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                                 <div style={{ flex: 1 }}>
-                                                                    <Form.Item name="newTeamValue">
+                                                                    <Form.Item name="newTeamValue" style={{ marginBottom: 'unset' }}>
                                                                         <Input
                                                                             placeholder="Nhập team mới tại đây"
                                                                             className={styles.addNewTeamPlaceholder}
@@ -590,8 +636,8 @@ const PermissionEdit: React.FC = () => {
                                                                         />
                                                                     </Form.Item>
                                                                 </div>
-                                                                <div >
-                                                                    <Form.Item>
+                                                                <div>
+                                                                    <Form.Item style={{ marginBottom: 'unset' }}>
                                                                         <Space>
                                                                             <SaveOutlined
                                                                                 style={{ marginLeft: 10, fontSize: 14 }}
@@ -683,7 +729,6 @@ const PermissionEdit: React.FC = () => {
                                 >
                                     <Select
                                         onChange={handleSelectRole}
-                                        menuItemSelectedIcon={<CheckOutlined />}
                                     >
                                         {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
                                             <Select.Option
