@@ -133,6 +133,7 @@ const PermissionEdit: React.FC = () => {
     const [listValueTeam, setListValueTeam] = useState<string[] | any>();
     const [listValueNLV, setListValueNLV] = useState<string[] | any>();
     const [listValueNQ, setListValueNQ] = useState<string[] | any>();
+    const [valueKeyWord, setValueKeyWord] = useState<string | any>();
 
     const [form] = Form.useForm();
 
@@ -145,11 +146,11 @@ const PermissionEdit: React.FC = () => {
     })
 
     const fetchListAllUserInfoFinal = useRequest(
-        async (keyword?: string) => {
+        async () => {
             const res: { success: boolean, length: number } = await requestAllUserInfoFinal(
                 pagination.pageSize,
                 pagination.current,
-                keyword,
+                valueKeyWord,
                 listValueTeam,
                 listValueNLV,
                 listValueNQ
@@ -448,6 +449,7 @@ const PermissionEdit: React.FC = () => {
         setListValueTeam(undefined);
         setListValueNLV(undefined);
         setListValueNQ(undefined);
+        setValueKeyWord(undefined)
         setPagination({
             ...pagination,
             current: 1,
@@ -536,10 +538,12 @@ const PermissionEdit: React.FC = () => {
                         style={{ width: '300px' }}
                         prefix={<SearchOutlined />}
                         placeholder="Tìm kiếm tên người dùng"
+                        value={valueKeyWord}
                         onChange={debounce(
                             (e) => {
                                 const { value } = e.target;
-                                fetchListAllUserInfoFinal.run(value);
+                                setValueKeyWord(value);
+                                fetchListAllUserInfoFinal.run();
                             },
                             500,
                             {
