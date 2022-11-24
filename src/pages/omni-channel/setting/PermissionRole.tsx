@@ -185,7 +185,7 @@ const PermissionRole: React.FC = () => {
         role_desc,
       );
       if (res.success) {
-        message.success('Tạo thành công');
+        message.success('Thêm mới thành công');
         handleCancleAddNewPermission();
         fetchReadRoleAndPerm.refresh();
       } else if (res.error_code === 4000104) {
@@ -195,7 +195,7 @@ const PermissionRole: React.FC = () => {
           okText: 'Xác nhận',
         });
       } else {
-        message.error('Tạo thất bại');
+        message.error('Thêm mới thất bại');
       }
 
       return res;
@@ -210,14 +210,23 @@ const PermissionRole: React.FC = () => {
 
   const fetchUpdateRoleAndPermission = useRequest(
     async (permissionList: string[], role_code: string, role_desc: string, id: string) => {
-      const res: { success: string } = await requestUpdateRole(
+      const res: { success: string; error_code: number } = await requestUpdateRole(
         permissionList,
         role_code,
         role_desc,
         id,
       );
       if (!res.success) {
-        message.error('Cập nhập Thất bại');
+        if (res.error_code === 4010104) {
+          form.setFields([
+            {
+              name: 'role_code',
+              errors: ['Tên nhóm quyền đã tồn tại'],
+            },
+          ]);
+        } else {
+          message.error('Cập nhập Thất bại');
+        }
         return;
       } else {
         handleCancleAddNewPermission();
@@ -685,8 +694,8 @@ const PermissionRole: React.FC = () => {
     },
     {
       title: 'Người tạo',
-      dataIndex: 'team',
-      key: 'team',
+      dataIndex: 'create_by',
+      key: 'create_by',
       render: (text) => {
         return text ? text : '-';
       },
@@ -1059,6 +1068,10 @@ const PermissionRole: React.FC = () => {
                   {
                     max: 30,
                     message: 'Tên nhóm tối đa 30 ký tự',
+                  },
+                  {
+                    pattern: new RegExp('^[a-zA-Z0-9+]*$'),
+                    message: 'Vui lòng không nhập ký tự đặt biệt',
                   },
                 ]}
                 labelCol={{
