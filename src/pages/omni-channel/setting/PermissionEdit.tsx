@@ -459,14 +459,18 @@ const PermissionEdit: React.FC = () => {
     }
 
     const handleSelectValueNQ = (values: any) => {
-        if (values !== undefined || values !== '') {
-            setListValueNQ(values);
-            setActiveFilterBtn(true);
-        }
-        else {
-            setActiveFilterBtn(false);
-        }
+        // if (values !== undefined || values !== '') {
+        //     setListValueNQ(values);
+        //     setActiveFilterBtn(true);
+        // }
+        // else {
+        //     setActiveFilterBtn(false);
+        // }
+        console.log(values);
     }
+
+    const fillRole = listGroupPermission.map((item: GroupPermission) => ({ label: item.code, value: item.id }))
+    console.log(fillRole)
 
     return (
         <>
@@ -506,7 +510,7 @@ const PermissionEdit: React.FC = () => {
                         </div>
                         <div style={{ flex: 1 }}>
                             <Form.Item label="Nhóm quyền" name="Nhóm quyền">
-                                <Select onChange={handleSelectValueNQ}>
+                                <Select onChange={handleSelectValueNQ} mode="multiple">
                                     {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
                                         <Select.Option
                                             value={item.id}
