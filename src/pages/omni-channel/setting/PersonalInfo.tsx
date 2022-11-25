@@ -272,7 +272,7 @@ const PersonalInfo: React.FC = () => {
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.position === 'mb' ? 'Miền Bắc' : 'Miền Nam'}
+                      {initialState?.currentUser?.work_address === 'mb' ? 'Miền Bắc' : 'Miền Nam'}
                     </Typography.Text>
                   )}
                 </div>
