@@ -543,12 +543,18 @@ const PermissionEdit: React.FC = () => {
                         style={{ width: '300px' }}
                         prefix={<SearchOutlined />}
                         placeholder="Tìm kiếm tên người dùng"
-                        value={valueKeyWord}
+                        allowClear
                         onChange={debounce(
                             (e) => {
                                 const { value } = e.target;
-                                setValueKeyWord(value);
-                                fetchListAllUserInfoFinal.run();
+                                if (value === "") {
+                                    setValueKeyWord(undefined)
+                                    fetchListAllUserInfoFinal.run();
+                                }
+                                else {
+                                    setValueKeyWord(value);
+                                    fetchListAllUserInfoFinal.run();
+                                }
                             },
                             500,
                             {
