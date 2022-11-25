@@ -108,16 +108,16 @@ export const dataPermissionTable: DataTypePermissionTable[] = [
     key: '5',
     module: 'Request Fulfillment',
   },
-  {
-    key: '6',
-    module: 'Thiết kế',
-  },
+  // {
+  //   key: '6',
+  //   module: 'Thiết kế',
+  // },
   {
     key: '7',
-    module: 'Báo cáo',
+    module: 'Report',
   },
   {
     key: '8',
-    module: 'Cài đặt',
+    module: 'Profile',
   },
 ];

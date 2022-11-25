@@ -52,11 +52,11 @@ export async function verifySSO(data: any): Promise<requestVerifySSO> {
   });
 }
 
-export async function requestGetInfoUser(token: any): Promise<requeGetUrlSSOProps> {
-  return request(`${endpoint}/auth-service/api/get_info_user`, {
+export async function requestGetInfoUser(token: string): Promise<requeGetUrlSSOProps> {
+  return request(`${endpoint}/user-service/api/settings/user/get_user_info`, {
     method: 'POST',
-    data: {
-      token,
+    headers: {
+      Authorization: 'Bearer ' + token,
     },
   });
 }

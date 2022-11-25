@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
@@ -12,23 +12,42 @@ import {
   Form,
   message,
   Upload,
+  Select,
 } from 'antd';
-import { AppleFilled, CameraFilled, EditOutlined, WindowsFilled } from '@ant-design/icons';
+import {
+  AppleFilled,
+  CameraFilled,
+  EditOutlined,
+  UserOutlined,
+  WindowsFilled,
+} from '@ant-design/icons';
 import styles from '../setting/style.less';
 import { requeGetUserInfoProps } from '@/services/user_info';
 import { requestEditUserInfo } from './services';
-import { useModel } from 'umi';
+import { useModel, useRequest } from 'umi';
 import type { RcFile, UploadProps } from 'antd/es/upload/interface';
-import { endpoint } from '@/services/auth';
+import { endpoint, requestGetInfoUser } from '@/services/auth';
 
 const PersonalInfo: React.FC = () => {
   const [isEditUser, setEditUser] = useState(false);
   const { initialState, setInitialState } = useModel('@@initialState');
   const token = window.localStorage.getItem('access_token');
+  const [form] = Form.useForm();
+
+  useRequest(async () => {
+    const res: { success: boolean; data: any } = await requestGetInfoUser(token ? token : '');
+    if (res.success) {
+      await setInitialState((s) => ({
+        ...s,
+        currentUser: res.data[0],
+      }));
+    }
+    return res;
+  });
 
   const requestEditUserInfoSubmit = async (
     name: string,
-    role: string,
+    position: string,
     department: string,
     level: string,
     organization: string,
@@ -39,7 +58,7 @@ const PersonalInfo: React.FC = () => {
   ) => {
     const res = await requestEditUserInfo(
       name,
-      role,
+      position,
       department,
       level,
       organization,
@@ -51,27 +70,14 @@ const PersonalInfo: React.FC = () => {
     return res;
   };
 
-  // const requestUserInfo = async () => {
-  //   const res = await requestGetInfoUser(token);
-
-  //   if (res.success) {
-  //     setInfoUser(res.data[0]);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   requestUserInfo();
-  // }, []);
-
   const handleEditUser = () => {
     setEditUser(!isEditUser);
   };
 
   const handleOnFinishEditUser = (values: any) => {
-    setEditUser(false);
     const res = requestEditUserInfoSubmit(
       values.name ? values.name : initialState?.currentUser?.name,
-      values.role ? values.role : initialState?.currentUser?.role,
+      values.position ? values.position : initialState?.currentUser?.position,
       values.department ? values.department : initialState?.currentUser?.department,
       values.level ? values.level : initialState?.currentUser?.level,
       values.organization ? values.organization : initialState?.currentUser?.organization,
@@ -88,6 +94,7 @@ const PersonalInfo: React.FC = () => {
           currentUser: result.data[0],
         }));
         message.success('Cập nhập thành công');
+        setEditUser(false);
       } else {
         message.error('Lưu không thành công, vui lòng thử lại');
         return;
@@ -97,6 +104,7 @@ const PersonalInfo: React.FC = () => {
 
   const handleOnCancleEditUser = () => {
     setEditUser(false);
+    form.resetFields();
   };
 
   const props: UploadProps = {
@@ -123,6 +131,26 @@ const PersonalInfo: React.FC = () => {
 
   const dataImage = initialState?.currentUser?.image;
 
+  const labelPosition = (key: string): string => {
+    switch (key) {
+      case 'cbgs':
+        return 'Cán bộ Giám sát';
+      case 'cbhtkt':
+        return 'Cán bộ HTKT';
+      case 'l2':
+        return 'L2';
+      case 'tc':
+        return 'Trường ca';
+      case 'cbqlp':
+        return 'CBQLP';
+      case 'da':
+        return 'Dự án';
+
+      default:
+        return '';
+    }
+  };
+
   return (
     <>
       <Card
@@ -130,15 +158,15 @@ const PersonalInfo: React.FC = () => {
           <div>
             <div className={styles.antAvatarImg}>
               <Avatar
-                src={`data:image/jpeg;base64,${dataImage}`}
+                src={dataImage && `data:image/jpeg;base64,${dataImage}`}
                 className={styles.antImg}
-              ></Avatar>
+                icon={!dataImage && <UserOutlined style={{ fontSize: 100 }} />}
+              />
               <Upload
                 {...props}
                 beforeUpload={beforeUpload}
                 onChange={async ({ file }) => {
                   if (file?.response?.success) {
-                    // console.log(file?.response?.data[0]);
                     await setInitialState((s) => ({
                       ...s,
                       currentUser: file?.response?.data[0],
@@ -159,7 +187,7 @@ const PersonalInfo: React.FC = () => {
         className={styles.detailCardLayout}
       >
         <div style={{ paddingTop: '10px' }}>
-          <Form onFinish={handleOnFinishEditUser}>
+          <Form form={form} onFinish={handleOnFinishEditUser}>
             <Row>
               <Col md={3}></Col>
               <Col md={9}>
@@ -220,13 +248,13 @@ const PersonalInfo: React.FC = () => {
                 </div>
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>
-                    Chức danh {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
+                    Nơi làm việc {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
                   </Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
-                      name="role"
+                      name="work_address"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.role}
+                      initialValue={initialState?.currentUser?.work_address}
                       rules={[
                         {
                           required: true,
@@ -234,11 +262,52 @@ const PersonalInfo: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} />
+                      <Select
+                        style={{ width: '300px' }}
+                        options={[
+                          { value: 'mb', label: 'Miền Bắc' },
+                          { value: 'mn', label: 'Miền Nam' },
+                        ]}
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.role}
+                      {initialState?.currentUser?.work_address === 'mb' ? 'Miền Bắc' : 'Miền Nam'}
+                    </Typography.Text>
+                  )}
+                </div>
+                <div className={styles.antDataDisplay}>
+                  <Typography.Text className={styles.antTextStyle}>
+                    Chức danh {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
+                  </Typography.Text>
+                  {isEditUser === true ? (
+                    <Form.Item
+                      name="position"
+                      className={styles.antFormItemMargin}
+                      initialValue={initialState?.currentUser?.position}
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng không để trống thông tin',
+                        },
+                      ]}
+                    >
+                      <Select
+                        style={{ width: '300px' }}
+                        options={[
+                          { value: 'cbgs', label: 'Cán bộ Giám sát' },
+                          { value: 'cbhtkt', label: 'Cán bộ HTKT' },
+                          { value: 'l2', label: 'L2' },
+                          { value: 'tc', label: 'Trưởng ca' },
+                          { value: 'cbqlp', label: 'CBQLP' },
+                          { value: 'da', label: 'Dự án' },
+                        ]}
+                      />
+                    </Form.Item>
+                  ) : (
+                    <Typography.Text className={styles.antBold}>
+                      {initialState?.currentUser?.position &&
+                        labelPosition(initialState?.currentUser?.position)}
                     </Typography.Text>
                   )}
                 </div>
@@ -257,29 +326,9 @@ const PersonalInfo: React.FC = () => {
                           required: true,
                           message: 'Vui lòng không để trống thông tin',
                         },
-                      ]}
-                    >
-                      <Input style={{ width: '300px' }} />
-                    </Form.Item>
-                  ) : (
-                    <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.level}
-                    </Typography.Text>
-                  )}
-                </div>
-                <div className={styles.antDataDisplay}>
-                  <Typography.Text className={styles.antTextStyle}>
-                    Tổ chức {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
-                  </Typography.Text>
-                  {isEditUser === true ? (
-                    <Form.Item
-                      name="organization"
-                      className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.organization}
-                      rules={[
                         {
-                          required: true,
-                          message: 'Vui lòng không để trống thông tin',
+                          max: 255,
+                          message: 'Vui lòng không nhập quá 255 kí tự',
                         },
                       ]}
                     >
@@ -287,7 +336,7 @@ const PersonalInfo: React.FC = () => {
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.organization}
+                      {initialState?.currentUser?.level}
                     </Typography.Text>
                   )}
                 </div>
@@ -305,6 +354,10 @@ const PersonalInfo: React.FC = () => {
                           required: true,
                           message: 'Vui lòng không để trống thông tin',
                         },
+                        {
+                          max: 255,
+                          message: 'Vui lòng không nhập quá 255 kí tự',
+                        },
                       ]}
                     >
                       <Input style={{ width: '300px' }} />
@@ -315,30 +368,6 @@ const PersonalInfo: React.FC = () => {
                     </Typography.Text>
                   )}
                 </div>
-                <div className={styles.antDataDisplay}>
-                  <Typography.Text className={styles.antTextStyle}>
-                    Công tác {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
-                  </Typography.Text>
-                  {isEditUser === true ? (
-                    <Form.Item
-                      name="work_address"
-                      className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.work_address}
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Vui lòng không để trống thông tin',
-                        },
-                      ]}
-                    >
-                      <Input style={{ width: '300px' }} />
-                    </Form.Item>
-                  ) : (
-                    <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.organization}
-                    </Typography.Text>
-                  )}
-                </div>
               </Col>
               <Col md={2}></Col>
               <Col md={9}>
@@ -346,7 +375,7 @@ const PersonalInfo: React.FC = () => {
                 <hr></hr>
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>
-                    Số điện thoại cá nhân{' '}
+                    Số điện thoại cá nhân
                     {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
                   </Typography.Text>
                   {isEditUser === true ? (
@@ -360,12 +389,20 @@ const PersonalInfo: React.FC = () => {
                           message: 'Vui lòng không để trống thông tin',
                         },
                         {
-                          pattern: new RegExp('(0[3|5|7|8|9])+([0-9]{8})'),
+                          pattern: new RegExp('([3|5|7|8|9]{1})+([0-9]{8})'),
+                          message: 'Số điện thoại không hợp lệ',
+                        },
+                        {
+                          max: 10,
                           message: 'Số điện thoại không hợp lệ',
                         },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} />
+                      <Input
+                        style={{ width: '300px' }}
+                        className={styles.inputNumber}
+                        type="number"
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -387,9 +424,17 @@ const PersonalInfo: React.FC = () => {
                           required: true,
                           message: 'Vui lòng không để trống thông tin',
                         },
+                        {
+                          max: 6,
+                          message: 'Vui lòng không nhập quá 6 số',
+                        },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} />
+                      <Input
+                        style={{ width: '300px' }}
+                        className={styles.inputNumber}
+                        type="number"
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -432,8 +477,8 @@ const PersonalInfo: React.FC = () => {
                                   initialState.currentUser?.equipment[0]?.status
                                     ? '#689B4F'
                                     : initialState.currentUser?.screen_mode?.dark_mode
-                                    ? '#9B9B9B'
-                                    : '#4A4A4A'
+                                      ? '#9B9B9B'
+                                      : '#4A4A4A'
                                 }
                                 style={{ borderRadius: '4px' }}
                               >
@@ -483,8 +528,8 @@ const PersonalInfo: React.FC = () => {
                                 initialState.currentUser?.equipment[1]?.status
                                   ? '#689B4F'
                                   : initialState.currentUser?.screen_mode?.dark_mode
-                                  ? '#9B9B9B'
-                                  : '#4A4A4A'
+                                    ? '#9B9B9B'
+                                    : '#4A4A4A'
                               }
                               style={{ borderRadius: '4px' }}
                             >

@@ -42,7 +42,6 @@ const submitFormLayout = {
     },
 };
 
-
 const GeneralStatistic: React.FC = () => {
     return (
         <>

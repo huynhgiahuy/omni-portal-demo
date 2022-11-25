@@ -27,9 +27,7 @@
     > span {
       vertical-align: middle;
     }
-    &:hover {
-      background: @pro-header-hover-bg;
-    }
+
     &:global(.opened) {
       background: @pro-header-hover-bg;
     }
@@ -42,15 +40,17 @@
   }
   .account {
     .avatar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 34px;
       height: 34px;
-      margin-right: 8px;
       color: @primary-color;
       vertical-align: top;
       background: rgba(255, 255, 255, 0.85);
 
       img {
-        object-fit: revert;
+        object-fit: contain;
       }
     }
   }

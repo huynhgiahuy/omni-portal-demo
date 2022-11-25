@@ -44,7 +44,7 @@ declare namespace API {
     };
     organization?: string;
     phone_number?: string;
-    role?: string;
+    position?: string;
     screen_mode?: {
       dark_mode?: boolean;
       simple_mode?: boolean;

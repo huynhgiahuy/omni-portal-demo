@@ -1,3 +1,4 @@
+/* stylelint-disable selector-pseudo-element-colon-notation */
 @import (reference) '~antd/es/style/themes/index';
 
 .antSegmented {
@@ -64,7 +65,7 @@
   background-color: white;
   // background-color: #fff;
   border-radius: 100%;
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
 
   &:hover {
     opacity: 0.9;
@@ -83,11 +84,14 @@
 }
 
 .antImg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
 
   img {
-    object-fit: revert;
+    object-fit: contain;
   }
 }
 .antFieldDisplay {
@@ -153,7 +157,22 @@
     .ant-table-thead {
       font-size: 14px;
     }
+    .ant-pagination-item-active {
+      background: #87c686;
+      border-color: #87c686;
+    }
+    .ant-pagination-item-active a {
+      color: #fff;
+    }
+    .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+      color: #fff;
+      background-color: #87c686;
+    }
   }
+}
+.emailPermissionTable {
+  color: #595959;
+  font-size: 10px;
 }
 .inputPhonePrefix {
   :global {
@@ -175,7 +194,7 @@
     .ant-table-thead > tr > th {
       color: rgba(0, 0, 0, 1);
       font-weight: bold;
-      background-color: #c5e3ff;
+      background-color: #87c686;
     }
     .ant-table-thead {
       font-size: 14px;
@@ -188,20 +207,34 @@
 .addPermissionInputPlaceholder {
   :global {
     .ant-input:placeholder-shown {
-      text-align: center;
+      font-style: italic;
     }
     .ant-form-item-explain-error {
-      text-align: center;
+      font-style: italic;
     }
   }
 }
 .addPermissionInput {
-  text-align: center;
+  font-style: italic;
 }
 .antCheckboxGroup {
   :global {
     .ant-checkbox-group-item {
-      margin-right: 30px;
+      margin-right: 20px;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #87c686;
+      border-color: #87c686;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner:after {
+      left: 50%;
+      transform: rotate(45deg) scale(1) translate(-100%, -20%);
     }
   }
 }
@@ -211,15 +244,91 @@
   }
   ::-webkit-scrollbar-thumb {
     height: 98px;
-    background: #c5e3ff;
+    background: #87c686;
     border-radius: 99px;
+  }
+  .ant-input {
+    border-radius: 4px;
+  }
+  .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    border-radius: 4px;
+  }
+  .ant-input-affix-wrapper {
+    border-radius: 4px;
   }
 }
 .antFormItemMargin {
   margin-bottom: unset;
+}
+.treeDataCheckbox {
   :global {
-    .ant-form-item-explain-error {
-      text-align: end;
+    .ant-tree-checkbox-checked .ant-tree-checkbox-inner,
+    .ant-tree-checkbox-indeterminate .ant-tree-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #87c686;
+      border-color: #87c686;
     }
+    .ant-tree-checkbox-indeterminate .ant-tree-checkbox-inner:after {
+      background-color: #fff;
+    }
+  }
+}
+.checkboxStyle {
+  :global {
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #87c686;
+      border-color: #87c686;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner:after {
+      left: 50%;
+      transform: rotate(45deg) scale(1) translate(-100%, -20%);
+    }
+  }
+}
+.addNewTeamPlaceholder {
+  font-style: italic;
+  :global {
+    .ant-input:placeholder-shown {
+      font-style: italic;
+    }
+  }
+}
+.flexLayout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inputNumber {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
+  /* stylelint-disable-next-line selector-attribute-quotes */
+  &[type='number'] {
+    -moz-appearance: textfield;
+  }
+}
+.activeBtnFilter {
+  border: 2px solid red;
+}
+.notActiveBtnFilter {
+}
+.activeIconFilter {
+  color: red;
+}
+.notActiveIconFilter {
+}
+.avatarImg {
+  img {
+    object-fit: contain;
   }
 }

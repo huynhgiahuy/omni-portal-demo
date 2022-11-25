@@ -1,6 +1,6 @@
 import { CheckCircleFilled, ClockCircleFilled, MinusCircleFilled } from '@ant-design/icons';
 import { message, Select, Space } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './index.less';
 import Ellipse from '../../assets/Ellipse.svg';
 import { useModel } from 'umi';
@@ -8,15 +8,17 @@ import { requeGetUserInfoProps, requestUpdateStatusUser } from '@/services/user_
 
 const WorkingStatus = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
-
-  const [option, setOption] = useState(initialState?.currentUser?.status);
+  const token = window.localStorage.getItem('access_token');
+  const [option, setOption] = useState(
+    initialState?.currentUser?.status ? initialState?.currentUser?.status : '1',
+  );
 
   useEffect(() => {
     if (
       option !== initialState?.currentUser?.status &&
       initialState?.currentUser?.status !== undefined
     ) {
-      const res = requestUpdateStatusUser(option ? option : '1');
+      const res = requestUpdateStatusUser(option ? option : '1', token ? token : '');
       res.then(async (result: requeGetUserInfoProps) => {
         if (result.success) {
           await setInitialState((s) => ({

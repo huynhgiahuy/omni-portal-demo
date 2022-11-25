@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { Card, Table, Select, Button, Typography, Input, Tag } from 'antd';
+import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlayCircleFilled, SearchOutlined, FilterOutlined, StarOutlined } from '@ant-design/icons';
+import { PlayCircleFilled, SearchOutlined, DownOutlined, UpOutlined, EditOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
-//import FilterIcon from '../../../components/FilterIcon/filter_icon.png'
-import TwoArrowIcon from '../../../components/TwoArrowIcon/two_arrow_icon_final.png'
 import PhoneCallOut from '../../../components/PhoneCall/phone_call_out_final.png'
 import PhoneCallIn from '../../../components/PhoneCall/phone_call_in_final.png'
-import { data, dataDanhba } from './FakeData';
+import { data } from './FakeData';
 import styles from '../report/style.less'
 
+const { RangePicker } = DatePicker;
 interface DataType {
-    key: string;
+    key?: string;
     huongcuocgoi: string;
     somaygoi: string;
     tennguoigoi: string;
@@ -24,28 +23,13 @@ interface DataType {
     ghiam: string;
     ghichu: string;
 }
-interface DataTypeDanhBa {
-    key: string;
-    stt: string;
-    hovaten: string;
-    sodidong: string;
-    somaynhanh: string;
-    email: string;
-    loai: string;
-}
 
 const HistoryCall: React.FC = () => {
-    const [isChangeViewHistory, setChangeViewHistory] = useState(true);
+    const [listValueHCG, setListValueHCG] = useState<string | any>('');
+    const [listValueKQ, setListValueKQ] = useState<string | any>('');
 
-    const handleSelectHistory = (value: any) => {
-        if (value === 'Lịch sử') {
-            setChangeViewHistory(true);
-            console.log('aa')
-        }
-        else if (value === 'Danh bạ') {
-            setChangeViewHistory(false);
-        }
-    }
+    const [form] = Form.useForm();
+
     const handleViewResult = (result: any) => {
         let color;
         if (result === 'Thành công') {
@@ -69,14 +53,16 @@ const HistoryCall: React.FC = () => {
             render: (text, record) => {
                 if (record.huongcuocgoi === 'gọi vào') {
                     return (
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
-                            <img src={PhoneCallIn} style={{ width: '20px', height: '20px' }} /><Typography.Text>{record.huongcuocgoi}</Typography.Text>
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                            <img src={PhoneCallIn} style={{ width: '15px', height: '15px', flex: 0.2 }} />
+                            <Typography.Text style={{ flex: 0.5 }}>{record.huongcuocgoi}</Typography.Text>
                         </div>
                     )
                 }
                 return (
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
-                        <img src={PhoneCallOut} style={{ width: '20px', height: '20px' }} /><Typography.Text>{record.huongcuocgoi}</Typography.Text>
+                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                        <img src={PhoneCallOut} style={{ width: '15px', height: '15px', flex: 0.2 }} />
+                        <Typography.Text style={{ flex: 0.5 }}>{record.huongcuocgoi}</Typography.Text>
                     </div>
                 )
             }
@@ -142,7 +128,7 @@ const HistoryCall: React.FC = () => {
             dataIndex: 'ghiam',
             key: 'ghiam',
             align: 'center',
-            width: '80px',
+            width: '100px',
             render: (text, record) => {
                 return (
                     <>
@@ -159,138 +145,158 @@ const HistoryCall: React.FC = () => {
             align: 'center',
             width: '250px'
         },
+        Table.EXPAND_COLUMN,
     ];
 
-    const columnsDanhba: ColumnsType<DataTypeDanhBa> = [
-        {
-            title: '',
-            dataIndex: 'stt',
-            key: 'stt',
-            align: 'center',
-            width: '10px',
-            render: (text, record) => <StarOutlined />
-        },
-        {
-            title: 'Họ và tên',
-            dataIndex: 'hovaten',
-            key: 'hovaten',
-            align: 'center',
-            width: '10px'
-        },
-        {
-            title: 'Số di động',
-            dataIndex: 'sodidong',
-            key: 'sodidong',
-            align: 'center',
-            width: '100px'
-        },
-        {
-            title: 'Số máy nhánh',
-            dataIndex: 'somaynhanh',
-            key: 'somaynhanh',
-            align: 'center',
-            width: '100px'
-        },
-        {
-            title: 'Email',
-            dataIndex: 'email',
-            key: 'email',
-            align: 'center',
-            width: '100px'
-        },
-        {
-            title: 'Loại',
-            dataIndex: 'loai',
-            key: 'loai',
-            align: 'center',
-            width: '100px'
-        },
+    const handleSelectValueHCG = (values: any) => {
+        if (values !== undefined || values !== '') {
+            setListValueHCG(values);
+        }
+    }
 
-    ]
+    const handleSelectValueKQ = (values: any) => {
+        if (values !== undefined || values !== '') {
+            setListValueKQ(values);
+        }
+    }
+
+    const onReset = () => {
+        form.resetFields();
+    };
+
+    const handleSubmitNoteForm = (values: any) => {
+        console.log(values);
+    }
+
+    const handleChangeValueRangePicker = (value: any, dateString: any) => {
+        console.log(value, dateString);
+    }
 
     return (
         <>
+            <div
+                style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    paddingTop: '30px',
+                    flexWrap: 'wrap'
+                }}
+            >
+                <div>
+                    <Form layout='vertical' form={form}>
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                gap: 10,
+                                flexWrap: 'wrap'
+                            }}
+                        >
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Hướng cuộc gọi" name="Hướng cuộc gọi" style={{ marginBottom: 'unset' }}>
+                                    <Select onChange={handleSelectValueHCG} value={listValueHCG} >
+                                        <Select.Option value="Gọi ra">Gọi ra</Select.Option>
+                                        <Select.Option value="Gọi vào">Gọi vào</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
+                                    <Select onChange={handleSelectValueKQ} value={listValueKQ}>
+                                        <Select.Option value="Tất cả">Tất cả</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Thời gian" name="Thời gian" style={{ marginBottom: 'unset' }}>
+                                    <RangePicker onChange={handleChangeValueRangePicker} placeholder={['Từ ngày', 'Đến ngày']} />
+                                </Form.Item>
+                            </div>
+                            <div style={{ paddingTop: '29px' }}>
+                                <Form.Item style={{ marginBottom: 'unset' }}>
+                                    <Button type='text' style={{ color: 'blue' }} onClick={onReset}>Reset</Button>
+                                </Form.Item>
+                            </div>
+                        </div>
+                    </Form>
+                </div>
+                <div
+                    style={{
+                        paddingTop: '29px',
+                        paddingRight: '20px'
+                    }}
+                >
+                    <Input
+                        style={{ width: '300px', marginRight: '10px' }}
+                        prefix={<SearchOutlined />}
+                        placeholder="Tìm kiếm"
+                    />
+                    <Button
+                        style={{ backgroundColor: '#7fb77e', color: '#fff' }}
+                    >
+                        <ExportIcon /> Export
+                    </Button>
+                </div>
+            </div>
             <Card
                 className={styles.detailCardLayout}
             >
-                {isChangeViewHistory === true ? (
-                    <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ paddingLeft: '10px', width: '100px' }}>
-                                <Select defaultValue="Lịch sử" onChange={handleSelectHistory} suffixIcon={<img src={TwoArrowIcon} style={{ width: '15px', height: '15px' }} />} style={{ border: 'unset' }}>
-                                    <Select.Option value="Lịch sử" style={{ fontSize: '14px' }}>Lịch sử</Select.Option>
-                                    <Select.Option value="Danh bạ" style={{ fontSize: '14px' }}>Danh bạ</Select.Option>
-                                </Select>
-                            </div>
-                            <div>
-                                <Button style={{ marginRight: '10px' }}>
-                                    <FilterOutlined /> Bộ lọc
-                                </Button>
-                                <Input
-                                    style={{ width: '300px', marginRight: '10px' }}
-                                    addonBefore={<SearchOutlined />}
-                                    placeholder="Tìm kiếm"
-                                />
-                                <Button style={{ marginRight: '10px' }}>Voice Analytics</Button>
-                                <Button style={{ backgroundColor: '#7fb77e', color: '#fff' }}><ExportIcon /> Export</Button>
-                            </div>
-                        </div>
-                        <Table
-                            dataSource={data}
-                            columns={columns}
-                            style={{ paddingLeft: '10px', paddingTop: '10px' }}
-                            className={styles.tableStyle}
-                            pagination={{
-                                pageSize: 5,
-                                showQuickJumper: true,
-                                showSizeChanger: true,
-                                locale: {
-                                    jump_to: 'Go to',
-                                    page: ''
-                                }
-                            }}
-                            scroll={{ x: 300 }}
-                        />
-                    </>
-
-                ) : (
-                    <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div style={{ paddingLeft: '10px', width: '100px' }}>
-                                <Select defaultValue="Lịch sử" onChange={handleSelectHistory} suffixIcon={<img src={TwoArrowIcon} style={{ width: '15px', height: '15px' }} />} style={{ border: 'unset' }}>
-                                    <Select.Option value="Lịch sử" style={{ fontSize: '14px' }}>Lịch sử</Select.Option>
-                                    <Select.Option value="Danh bạ" style={{ fontSize: '14px' }}>Danh bạ</Select.Option>
-                                </Select>
-                            </div>
-                            <div>
-                                <Button style={{ marginRight: '10px' }}>
-                                    <FilterOutlined /> Bộ lọc
-                                </Button>
-                                <Input
-                                    style={{ width: '300px' }}
-                                    addonBefore={<SearchOutlined />}
-                                    placeholder="Tìm kiếm"
-                                />
-                            </div>
-                        </div>
-                        <Table
-                            dataSource={dataDanhba}
-                            columns={columnsDanhba}
-                            style={{ paddingLeft: '10px', paddingTop: '10px' }}
-                            className={styles.tableStyle}
-                            pagination={{
-                                pageSize: 5,
-                                showQuickJumper: true,
-                                showSizeChanger: true,
-                                locale: {
-                                    jump_to: 'Go to',
-                                    page: ''
-                                }
-                            }}
-                            scroll={{ x: 300 }}
-                        />
-                    </>
-                )}
+                <Table
+                    dataSource={data}
+                    columns={columns}
+                    style={{ paddingLeft: '10px', paddingTop: '10px' }}
+                    className={styles.tableStyle}
+                    pagination={{
+                        pageSize: 5,
+                        showQuickJumper: true,
+                        showSizeChanger: true,
+                        locale: {
+                            jump_to: 'Go to',
+                            page: ''
+                        }
+                    }}
+                    scroll={{ x: 300 }}
+                    expandable={{
+                        expandedRowRender: (record) => (
+                            <>
+                                <div style={{ textAlign: 'center', paddingTop: '5%' }}>
+                                    <Typography.Text>Chưa có ghi chú</Typography.Text>
+                                </div>
+                                <div style={{ paddingTop: '5%' }}>
+                                    <Divider orientation='left'>NhuVTT33 <EditOutlined /></Divider>
+                                    <Form layout='vertical' onFinish={handleSubmitNoteForm}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                            <div style={{ flex: 1 }}>
+                                                <Form.Item
+                                                    name="note"
+                                                    rules={[
+                                                        {
+                                                            required: true,
+                                                            message: 'Vui lòng nhập ghi chú'
+                                                        }
+                                                    ]}
+                                                >
+                                                    <Input />
+                                                </Form.Item>
+                                            </div>
+                                            <div style={{ marginLeft: '10px' }}>
+                                                <Form.Item>
+                                                    <Button style={{ backgroundColor: '#1890ff', color: '#fff' }} htmlType="submit">Lưu</Button>
+                                                </Form.Item>
+                                            </div>
+                                        </div>
+                                    </Form>
+                                </div>
+                            </>
+                        ),
+                        expandIcon: ({ expanded, onExpand, record }) =>
+                            expanded ? (
+                                <UpOutlined onClick={e => onExpand(record, e)} />
+                            ) : (
+                                <DownOutlined onClick={e => onExpand(record, e)} />
+                            )
+                    }}
+                />
             </Card>
         </>
     )
