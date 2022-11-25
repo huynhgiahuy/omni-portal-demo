@@ -496,13 +496,13 @@ const PermissionEdit: React.FC = () => {
                                     <Select
                                         onChange={handleSelectValueTeam}
                                         mode="multiple"
-                                        filterOption={(input: any, option: any) =>
-                                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                            || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                        }
+                                    // filterOption={(input: any, option: any) =>
+                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    // }
                                     >
                                         {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
-                                            <Select.Option value={item.id}>
+                                            <Select.Option value={item.name}>
                                                 {item.name}
                                             </Select.Option>
                                         ))}
@@ -514,10 +514,10 @@ const PermissionEdit: React.FC = () => {
                                     <Select
                                         onChange={handleSelectValueNLV}
                                         mode="multiple"
-                                        filterOption={(input: any, option: any) =>
-                                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                            || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                        }
+                                    // filterOption={(input: any, option: any) =>
+                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    // }
                                     >
                                         <Select.Option value="mb">Miền Bắc</Select.Option>
                                         <Select.Option value="mn">Miền Nam</Select.Option>
@@ -529,14 +529,14 @@ const PermissionEdit: React.FC = () => {
                                     <Select
                                         onChange={handleSelectValueNQ}
                                         mode="multiple"
-                                        filterOption={(input: any, option: any) =>
-                                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                            || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                        }
+                                    // filterOption={(input: any, option: any) =>
+                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    // }
                                     >
                                         {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
                                             <Select.Option
-                                                value={item.id}
+                                                value={item.code}
                                             >
                                                 {item.code}
                                             </Select.Option>
