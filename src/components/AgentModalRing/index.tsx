@@ -40,6 +40,8 @@ type AgentModalRingProps = {
   isVisibleNoteCall: boolean;
   isActiveIconHistory: boolean;
   isActiveIconNote: boolean;
+  isCallerName: any;
+  isCallerPhone: any;
 };
 
 const { Panel } = Collapse;
@@ -59,10 +61,11 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   isVisibleNoteCall,
   isActiveIconHistory,
   isActiveIconNote,
+  isCallerName,
+  isCallerPhone,
 }) => {
   const [isPopoverForward, setPopoverForward] = useState(false);
   const { confirm } = Modal;
-
   const showConfirm = () => {
     confirm({
       title: 'Kết thúc cuộc gọi',
@@ -148,11 +151,11 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 </div>
                 <div className={isFullScreenModal ? styles.infoPhoneFullScreen : styles.infoPhone}>
                   <Typography.Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
-                    Chưa có trong danh bạ
+                    {isCallerName}
                   </Typography.Text>
                   <br />
                   <Typography.Text style={{ fontSize: 13, fontWeight: 400, color: 'white' }}>
-                    0921 197 398
+                     {isCallerPhone}
                   </Typography.Text>
                 </div>
               </Space>
