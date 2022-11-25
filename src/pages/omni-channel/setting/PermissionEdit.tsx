@@ -493,9 +493,16 @@ const PermissionEdit: React.FC = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
                             <div style={{ width: '300px' }}>
                                 <Form.Item label="Team" name="Team" style={{ marginBottom: 'unset' }}>
-                                    <Select onChange={handleSelectValueTeam} mode="multiple">
+                                    <Select
+                                        onChange={handleSelectValueTeam}
+                                        mode="multiple"
+                                        filterOption={(input: any, option: any) =>
+                                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                            || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        }
+                                    >
                                         {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
-                                            <Select.Option value={item.name}>
+                                            <Select.Option value={item.id}>
                                                 {item.name}
                                             </Select.Option>
                                         ))}
@@ -504,18 +511,32 @@ const PermissionEdit: React.FC = () => {
                             </div>
                             <div style={{ width: '300px' }}>
                                 <Form.Item label="Nơi làm việc" name="Nơi làm việc" style={{ marginBottom: 'unset' }}>
-                                    <Select onChange={handleSelectValueNLV} mode="multiple">
-                                        <Select.Option value="Miền Bắc">Miền Bắc</Select.Option>
-                                        <Select.Option value="Miền Nam">Miền Nam</Select.Option>
+                                    <Select
+                                        onChange={handleSelectValueNLV}
+                                        mode="multiple"
+                                        filterOption={(input: any, option: any) =>
+                                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                            || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        }
+                                    >
+                                        <Select.Option value="mb">Miền Bắc</Select.Option>
+                                        <Select.Option value="mn">Miền Nam</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </div>
                             <div style={{ width: '300px' }}>
                                 <Form.Item label="Nhóm quyền" name="Nhóm quyền" style={{ marginBottom: 'unset' }}>
-                                    <Select onChange={handleSelectValueNQ} mode="multiple">
+                                    <Select
+                                        onChange={handleSelectValueNQ}
+                                        mode="multiple"
+                                        filterOption={(input: any, option: any) =>
+                                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                            || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        }
+                                    >
                                         {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
                                             <Select.Option
-                                                value={item.code}
+                                                value={item.id}
                                             >
                                                 {item.code}
                                             </Select.Option>
