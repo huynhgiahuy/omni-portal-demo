@@ -225,10 +225,15 @@ const PermissionEdit: React.FC = () => {
     }
 
     const handleSubmitNewTeam = async (values: any) => {
-        await handleCreateNewTeamPermission(values);
-        await fetchTeamPermissionData();
-        form.setFieldsValue({ newTeamValue: undefined })
-        setClickAddNewTeam(false);
+        if (arrListTeam.includes(values)) {
+            message.error('Team đã tồn tại!')
+        }
+        else {
+            await handleCreateNewTeamPermission(values);
+            await fetchTeamPermissionData();
+            form.setFieldsValue({ newTeamValue: undefined })
+            setClickAddNewTeam(false);
+        }
     }
 
     const handleCallApiUpdateUserInfo = useRequest(async (values: any) => {
@@ -258,8 +263,8 @@ const PermissionEdit: React.FC = () => {
     }
 
     const handleClickDeleteTeam = async (e: any, id: string) => {
-        e.stopPropagation();
-        e.preventDefault();
+        await e.stopPropagation();
+        await e.preventDefault();
         await handleDeleteTeamPermission(id);
         await fetchTeamPermissionData();
     }
@@ -281,6 +286,8 @@ const PermissionEdit: React.FC = () => {
         fetchTeamPermissionData();
         fetchGroupPermissionData();
     }, [])
+
+    const arrListTeam = listTeamPermission?.map(item => item.name);
 
     const handleClickUpdatePermission = () => {
         setClickUpdatePermission(true);
@@ -430,8 +437,6 @@ const PermissionEdit: React.FC = () => {
                                 form.setFieldsValue(record)
                                 handleClickUpdatePermission();
                                 fetchDetaiUserInfoFinal(record.id);
-                                fetchGroupPermissionData();
-                                fetchTeamPermissionData();
                                 setUserKey(record.id);
                             }
                         }
@@ -635,6 +640,7 @@ const PermissionEdit: React.FC = () => {
                                                                 <div style={{ flex: 1 }}>
                                                                     <Form.Item name="newTeamValue" style={{ marginBottom: 'unset' }}>
                                                                         <Input
+                                                                            allowClear
                                                                             placeholder="Nhập team mới tại đây"
                                                                             className={styles.addNewTeamPlaceholder}
                                                                             onChange={(e) => setNewTeamValue(e.target.value)}
