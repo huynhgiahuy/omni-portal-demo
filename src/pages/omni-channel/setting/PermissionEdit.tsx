@@ -225,10 +225,15 @@ const PermissionEdit: React.FC = () => {
     }
 
     const handleSubmitNewTeam = async (values: any) => {
-        await handleCreateNewTeamPermission(values);
-        await fetchTeamPermissionData();
-        form.setFieldsValue({ newTeamValue: undefined })
-        setClickAddNewTeam(false);
+        if (arrListTeam.includes(values)) {
+            message.error('Team đã tồn tại!')
+        }
+        else {
+            await handleCreateNewTeamPermission(values);
+            await fetchTeamPermissionData();
+            form.setFieldsValue({ newTeamValue: undefined })
+            setClickAddNewTeam(false);
+        }
     }
 
     const handleCallApiUpdateUserInfo = useRequest(async (values: any) => {
@@ -258,8 +263,8 @@ const PermissionEdit: React.FC = () => {
     }
 
     const handleClickDeleteTeam = async (e: any, id: string) => {
-        e.stopPropagation();
-        e.preventDefault();
+        await e.stopPropagation();
+        await e.preventDefault();
         await handleDeleteTeamPermission(id);
         await fetchTeamPermissionData();
     }
@@ -281,6 +286,8 @@ const PermissionEdit: React.FC = () => {
         fetchTeamPermissionData();
         fetchGroupPermissionData();
     }, [])
+
+    const arrListTeam = listTeamPermission?.map(item => item.name);
 
     const handleClickUpdatePermission = () => {
         setClickUpdatePermission(true);
@@ -384,14 +391,7 @@ const PermissionEdit: React.FC = () => {
             key: 'work_address',
             align: 'center',
             render: (text, record) => {
-                let workAddressName;
-                if (record.work_address === 'mn') {
-                    workAddressName = 'Miền Nam';
-                }
-                else {
-                    workAddressName = 'Miền Bắc';
-                }
-                return workAddressName;
+                return text === "mn" ? "Miền Nam" : text === "mb" ? "Miền Bắc" : ''
             }
         },
         {
@@ -430,8 +430,6 @@ const PermissionEdit: React.FC = () => {
                                 form.setFieldsValue(record)
                                 handleClickUpdatePermission();
                                 fetchDetaiUserInfoFinal(record.id);
-                                fetchGroupPermissionData();
-                                fetchTeamPermissionData();
                                 setUserKey(record.id);
                             }
                         }
@@ -495,7 +493,14 @@ const PermissionEdit: React.FC = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
                             <div style={{ width: '300px' }}>
                                 <Form.Item label="Team" name="Team" style={{ marginBottom: 'unset' }}>
-                                    <Select onChange={handleSelectValueTeam} mode="multiple">
+                                    <Select
+                                        onChange={handleSelectValueTeam}
+                                        mode="multiple"
+                                    // filterOption={(input: any, option: any) =>
+                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    // }
+                                    >
                                         {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
                                             <Select.Option value={item.name}>
                                                 {item.name}
@@ -506,15 +511,29 @@ const PermissionEdit: React.FC = () => {
                             </div>
                             <div style={{ width: '300px' }}>
                                 <Form.Item label="Nơi làm việc" name="Nơi làm việc" style={{ marginBottom: 'unset' }}>
-                                    <Select onChange={handleSelectValueNLV} mode="multiple">
-                                        <Select.Option value="Miền Bắc">Miền Bắc</Select.Option>
-                                        <Select.Option value="Miền Nam">Miền Nam</Select.Option>
+                                    <Select
+                                        onChange={handleSelectValueNLV}
+                                        mode="multiple"
+                                    // filterOption={(input: any, option: any) =>
+                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    // }
+                                    >
+                                        <Select.Option value="mb">Miền Bắc</Select.Option>
+                                        <Select.Option value="mn">Miền Nam</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </div>
                             <div style={{ width: '300px' }}>
                                 <Form.Item label="Nhóm quyền" name="Nhóm quyền" style={{ marginBottom: 'unset' }}>
-                                    <Select onChange={handleSelectValueNQ} mode="multiple">
+                                    <Select
+                                        onChange={handleSelectValueNQ}
+                                        mode="multiple"
+                                    // filterOption={(input: any, option: any) =>
+                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    // }
+                                    >
                                         {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
                                             <Select.Option
                                                 value={item.code}
@@ -538,12 +557,18 @@ const PermissionEdit: React.FC = () => {
                         style={{ width: '300px' }}
                         prefix={<SearchOutlined />}
                         placeholder="Tìm kiếm tên người dùng"
-                        value={valueKeyWord}
+                        allowClear
                         onChange={debounce(
                             (e) => {
                                 const { value } = e.target;
-                                setValueKeyWord(value);
-                                fetchListAllUserInfoFinal.run();
+                                if (value === "") {
+                                    setValueKeyWord(undefined)
+                                    fetchListAllUserInfoFinal.run();
+                                }
+                                else {
+                                    setValueKeyWord(value);
+                                    fetchListAllUserInfoFinal.run();
+                                }
                             },
                             500,
                             {
@@ -635,6 +660,7 @@ const PermissionEdit: React.FC = () => {
                                                                 <div style={{ flex: 1 }}>
                                                                     <Form.Item name="newTeamValue" style={{ marginBottom: 'unset' }}>
                                                                         <Input
+                                                                            allowClear
                                                                             placeholder="Nhập team mới tại đây"
                                                                             className={styles.addNewTeamPlaceholder}
                                                                             onChange={(e) => setNewTeamValue(e.target.value)}

@@ -61,6 +61,7 @@ import {
   TREE_DATA_TTCT,
   TREE_DATA_TTND,
 } from '@/constants';
+import moment from 'moment';
 
 interface DataAllRolePermission {
   key: React.Key;
@@ -709,7 +710,7 @@ const PermissionRole: React.FC = () => {
       dataIndex: 'created_at',
       key: 'created_at',
       render: (text) => {
-        return text ? text.slice(0, 10) : '-';
+        return text ? moment.unix(text).format('DD-MM-YYYY') : '-';
       },
     },
     {
@@ -717,7 +718,7 @@ const PermissionRole: React.FC = () => {
       dataIndex: 'updated_at',
       key: 'updated_at',
       render: (text) => {
-        return text ? text.slice(0, 10) : '-';
+        return text ? moment.unix(text).format('DD-MM-YYYY') : '-';
       },
     },
 
