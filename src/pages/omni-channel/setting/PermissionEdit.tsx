@@ -391,14 +391,7 @@ const PermissionEdit: React.FC = () => {
             key: 'work_address',
             align: 'center',
             render: (text, record) => {
-                let workAddressName;
-                if (record.work_address === 'mn') {
-                    workAddressName = 'Miền Nam';
-                }
-                else {
-                    workAddressName = 'Miền Bắc';
-                }
-                return workAddressName;
+                return text === "mn" ? "Miền Nam" : text === "mb" ? "Miền Bắc" : ''
             }
         },
         {
