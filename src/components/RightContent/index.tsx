@@ -25,13 +25,22 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconHistory, setActiveIconHistory] = useState(false);
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
-  const [isRingingCall, setRingingCall] = useState();
-
+  const [isCallerName, setCallerName] = useState('');
+  const [isCallePhone, setCallerPhone] = useState('');
+  
   useEffect(()=> {
   socket.on('message', (data) => {
     const statusCall = data.event_name;
-    setRingingCall(data.event_name);
-    console.log({ statusCall });
+    if (!data.caller_name) {
+      setCallerName('Chưa có trong danh bạn');
+    } else {
+      setCallerName(data.caller_name);
+    }
+     if (!data.caller_phone) {
+       setCallerPhone('0921 197 398');
+     } else {
+       setCallerPhone(data.caller_phone);
+     }
     switch (statusCall) {
       case 'ringing_call':
         setIsModalOpenRing(true);
@@ -41,9 +50,7 @@ const GlobalHeaderRight: React.FC = () => {
       default:
         break;
     }
-    console.log({ data });
   })}, [])
-
   if (!initialState || !initialState.settings) {
     return null;
   }
@@ -140,12 +147,12 @@ const GlobalHeaderRight: React.FC = () => {
           position: 'absolute',
           left: 0,
           background: 'white',
-          color: 'red',
+          color: 'white',
           borderColor: 'white',
           bottom: 0,
         }}
       >
-        Button Call
+        Button
       </a>
 
       <AgentModalRing
@@ -163,6 +170,8 @@ const GlobalHeaderRight: React.FC = () => {
         isVisibleNoteCall={isVisibleNoteCall}
         isActiveIconHistory={isActiveIconHistory}
         isActiveIconNote={isActiveIconNote}
+        isCallerName={isCallerName}
+        isCallerPhone={isCallePhone}
       />
 
       <AgentModalAnswer
