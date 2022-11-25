@@ -57,6 +57,6 @@ deploy-stg:
   script:
     - chmod og= $STG_ID_RSA
     - apk update && apk add openssh-client
-    - ssh  -i $STG_ID_RSA -o StrictHostKeyChecking=no $STG_SERVER_USER@$STG_SERVER_IP "docker service update --with-registry-auth --image $CI_REGISTRY_URL/$STG___REGISTRY_NAME omni_portal"
+    - ssh  -i $STG_ID_RSA -o StrictHostKeyChecking=no $STG_SERVER_USER@$STG_SERVER_IP "docker service update --with-registry-auth --image $CI_REGISTRY_URL/$STG_REGISTRY_NAME omni_portal"
   only:
     - stg
