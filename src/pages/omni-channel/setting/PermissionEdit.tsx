@@ -519,8 +519,8 @@ const PermissionEdit: React.FC = () => {
                                     //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                     // }
                                     >
-                                        <Select.Option value="mb">Miền Bắc</Select.Option>
-                                        <Select.Option value="mn">Miền Nam</Select.Option>
+                                        <Select.Option value="Miền Bắc">Miền Bắc</Select.Option>
+                                        <Select.Option value="Miền Nam">Miền Nam</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </div>
