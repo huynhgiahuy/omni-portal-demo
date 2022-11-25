@@ -2,12 +2,12 @@ import api from '@/api';
 import request from '@/utils/request';
 
 const token = window.localStorage.getItem('access_token');
-export async function requestListUserRole(
+export async function requestCreateRoleAndPerm(
   permission_code_list?: string[],
   role_code?: string,
   role_desc?: string,
 ) {
-  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/role_and_perm/create`, {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/authorization/create_role_and_perm`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -20,13 +20,24 @@ export async function requestListUserRole(
   });
 }
 
-export async function requestListUserInfo() {
+export async function requestUpdateRole(
+  permission_code_list?: string[],
+  role_code?: string,
+  role_desc?: string,
+  role_id?: string,
+) {
   return request(
-    `${api.UMI_API_BASE_URL}/user-service/api/settings/user/get_user_info?current_user=nghiahm4%40fpt.com.vn`,
+    `${api.UMI_API_BASE_URL}/user-service/api/authorization/update_role_and_permission`,
     {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
+      },
+      data: {
+        permission_code_list,
+        role_code,
+        role_desc,
+        role_id,
       },
     },
   );
@@ -141,6 +152,7 @@ export async function requestDeleteUserPermission(user_id: string) {
 }
 
 export async function requestReadRoleAndPerm(data?: {
+  keyword?: string;
   role_code?: string;
   permission_code?: string;
   limit?: number;
@@ -155,6 +167,40 @@ export async function requestReadRoleAndPerm(data?: {
   });
 }
 
+export async function requestTeamPermissionData() {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_team`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {},
+  });
+}
+
+export async function requestDeleteTeamPermission(team_id: string) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/delete_team`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      team_id,
+    },
+  });
+}
+
+export async function requestAllUserInfo(limit: number, offset: number) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_user_and_role`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      limit,
+      offset,
+    },
+  });
+}
 export async function requestDeleteRoleAndPermission(role_id: string) {
   return request(
     `${api.UMI_API_BASE_URL}/user-service/api/authorization/delete_role_and_permission`,
@@ -168,4 +214,84 @@ export async function requestDeleteRoleAndPermission(role_id: string) {
       },
     },
   );
+}
+
+/// API FINAL USER PERMISSION
+
+export async function requestAllUserInfoFinal(
+  limit?: number,
+  offset?: number,
+  keyword?: string,
+  team_name?: any,
+  work_address?: any,
+  role_code?: any,
+) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_user_and_role`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      limit,
+      offset,
+      keyword,
+      team_name,
+      work_address,
+      role_code,
+    },
+  });
+}
+
+export async function requestDetailUserInfoFinal(user_id?: string) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_user_and_role`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      user_id,
+    },
+  });
+}
+
+export async function requestCreateNewTeam(name?: string) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/create_team`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      name,
+    },
+  });
+}
+
+export async function requestUpdateUserInfoFinal(
+  user_id?: string,
+  team_id?: string,
+  role_id?: string,
+  department?: string,
+  position?: string,
+  phone_number?: string,
+  ip_phone?: string,
+  level?: string,
+  work_address?: string,
+) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/update_user_and_role`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      user_id,
+      team_id,
+      role_id,
+      department,
+      position,
+      phone_number,
+      ip_phone,
+      level,
+      work_address,
+    },
+  });
 }

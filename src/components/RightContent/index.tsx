@@ -1,6 +1,6 @@
 import { Space } from 'antd';
 // import { QuestionCircleOutlined } from '@ant-design/icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
@@ -10,6 +10,7 @@ import NoticeIconView from '../NoticeIcon';
 import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
+import { socket } from '../../socket';
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -24,7 +25,32 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconHistory, setActiveIconHistory] = useState(false);
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
-
+  const [isCallerName, setCallerName] = useState('');
+  const [isCallePhone, setCallerPhone] = useState('');
+  
+  useEffect(()=> {
+  socket.on('message', (data) => {
+    const statusCall = data.event_name;
+    if (!data.caller_name) {
+      setCallerName('Chưa có trong danh bạn');
+    } else {
+      setCallerName(data.caller_name);
+    }
+     if (!data.caller_phone) {
+       setCallerPhone('0921 197 398');
+     } else {
+       setCallerPhone(data.caller_phone);
+     }
+    switch (statusCall) {
+      case 'ringing_call':
+        setIsModalOpenRing(true);
+        break;
+      case 'hangup_call': 
+        setIsModalOpenRing(false);
+      default:
+        break;
+    }
+  })}, [])
   if (!initialState || !initialState.settings) {
     return null;
   }
@@ -144,6 +170,8 @@ const GlobalHeaderRight: React.FC = () => {
         isVisibleNoteCall={isVisibleNoteCall}
         isActiveIconHistory={isActiveIconHistory}
         isActiveIconNote={isActiveIconNote}
+        isCallerName={isCallerName}
+        isCallerPhone={isCallePhone}
       />
 
       <AgentModalAnswer

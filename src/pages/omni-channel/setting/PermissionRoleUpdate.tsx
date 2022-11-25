@@ -4,7 +4,7 @@ import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import {
   requestGroupPermissionData,
-  requestListUserRole,
+  requestCreateRoleAndPerm,
   requestDetailUserPermission,
 } from './services';
 import { dataPermissionTable } from './FakeData';
@@ -157,7 +157,7 @@ const PermissionRoleUpdate: React.FC<PermissionRole_Update> = ({
   const [listEditUserPermission, setListEditUserPermission] = useState<EditDetailUser>();
 
   const fetchListUserRole = async (role_code: any, role_desc: any) => {
-    const res = await requestListUserRole(
+    const res = await requestCreateRoleAndPerm(
       valueCheckboxGeneralStatistic.concat(
         valueCheckboxTransferShift,
         valueCheckboxNightShift,

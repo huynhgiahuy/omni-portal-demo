@@ -17,7 +17,7 @@ import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import {
   requestGroupPermissionData,
-  requestListUserRole,
+  requestCreateRoleAndPerm,
   requestDetailUserPermission,
   requestEditUser,
 } from './services';
@@ -171,7 +171,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
   const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
 
   const fetchListUserRole = async (role_code: any, role_desc: any) => {
-    const res = await requestListUserRole(
+    const res = await requestCreateRoleAndPerm(
       valueCheckboxGeneralStatistic.concat(
         valueCheckboxTransferShift,
         valueCheckboxNightShift,
@@ -193,7 +193,7 @@ const PermissionEdit_Add: React.FC<PermissionEdit_Update> = ({
       setListRoleCode(resPer.data?.map((item: GroupPermission) => item.code));
 
       const fetchListUserRole = async (role_code: any, role_desc: any) => {
-        const res = await requestListUserRole(
+        const res = await requestCreateRoleAndPerm(
           valueCheckboxGeneralStatistic.concat(
             valueCheckboxTransferShift,
             valueCheckboxNightShift,

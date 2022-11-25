@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   Table,
@@ -16,7 +16,7 @@ import {
   Tree,
 } from 'antd';
 import styles from '../setting/style.less';
-import type { ColumnsType } from 'antd/es/table';
+import type { ColumnsType, TableProps } from 'antd/es/table';
 import {
   EditOutlined,
   DeleteOutlined,
@@ -26,9 +26,9 @@ import {
 } from '@ant-design/icons';
 import {
   requestDeleteRoleAndPermission,
-  requestGroupPermissionData,
-  requestListUserRole,
+  requestCreateRoleAndPerm,
   requestReadRoleAndPerm,
+  requestUpdateRole,
 } from './services';
 import { useRequest } from 'umi';
 import { debounce } from 'lodash';
@@ -38,14 +38,20 @@ import {
   OPTIONS_PERMISSION_CM_VALUE,
   OPTIONS_PERMISSION_DB,
   OPTIONS_PERMISSION_DB_VALUE,
-  OPTIONS_PERMISSION_DESIGN,
-  OPTIONS_PERMISSION_DESIGN_VALUE,
   OPTIONS_PERMISSION_EM,
   OPTIONS_PERMISSION_EM_VALUE,
   OPTIONS_PERMISSION_IM,
   OPTIONS_PERMISSION_IM_VALUE,
   OPTIONS_PERMISSION_RF,
   OPTIONS_PERMISSION_RF_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE,
   TREE_DATA_BGCT,
   TREE_DATA_KHD,
   TREE_DATA_LSCG,
@@ -53,12 +59,18 @@ import {
   TREE_DATA_TKC,
   TREE_DATA_TTCN,
   TREE_DATA_TTCT,
+  TREE_DATA_TTND,
 } from '@/constants';
+import moment from 'moment';
 
 interface DataAllRolePermission {
+  key: React.Key;
   code: string;
   desc: string;
   id: string;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
   permission_list: {
     code: string;
     desc: string;
@@ -95,38 +107,31 @@ interface DataTypePermissionTable {
   module: string;
 }
 
-interface TreeData {
-  title: string;
-  key: string;
-}
-
 const PermissionRole: React.FC = () => {
+  const [form] = Form.useForm();
   const [listAllRolePermission, setListAllRolePermission] = useState<DataAllRolePermission[]>([]);
   const [isAddNewPermission, setAddNetPermission] = useState(false);
   const [isEditRole, setIsEditRole] = useState(false);
-
-  const [valueCheckboxGeneralStatistic, setValueCheckboxGeneralStatistic] = useState<string | any>(
-    [],
-  );
-  const [checkAllDB, setCheckAllDB] = useState(false);
-  const [selectListDB, setSelectListDB] = useState<string | any>([]);
-  const [indeterminateDB, setIndeterminateDB] = useState(false);
-  const [listRoleCode, setListRoleCode] = useState<string | any>([]);
-  const [listGroupPermission, setListGroupPermission] = useState<GroupPermission[]>([]);
   const [dataRoleId, setDataRoleId] = useState<RoleIdProps>();
 
-  const [valueCheckboxTransferShift, setValueCheckboxTransferShift] = useState<string | any>([]);
-  const [valueCheckboxNightShift, setValueCheckboxNightShift] = useState<string | any>([]);
-  const [valueCheckboxHistoryCall, setValueCheckboxHistoryCall] = useState<string | any>([]);
-  const [valueCheckboxTTCN, setValueCheckboxTTCN] = useState<string | any>([]);
-  const [valueCheckboxTTCT, setValueCheckboxTTCT] = useState<string | any>([]);
-  const [valueCheckboxGroupsPer, setValueCheckboxGroupsPer] = useState<string | any>([]);
+  const [valueCheckboxGeneralStatistic, setValueCheckboxGeneralStatistic] = useState<string[]>([]);
+  const [valueCheckboxTransferShift, setValueCheckboxTransferShift] = useState<string[]>([]);
+  const [valueCheckboxNightShift, setValueCheckboxNightShift] = useState<string[]>([]);
+  const [valueCheckboxHistoryCall, setValueCheckboxHistoryCall] = useState<string[]>([]);
+  const [valueCheckboxTTCN, setValueCheckboxTTCN] = useState<string[]>([]);
+  const [valueCheckboxTTCT, setValueCheckboxTTCT] = useState<string[]>([]);
+  const [valueCheckboxTTND, setValueCheckboxTTND] = useState<string[]>([]);
+  const [valueCheckboxGroupsPer, setValueCheckboxGroupsPer] = useState<string[]>([]);
 
-  const [selectListEM, setSelectListEM] = useState<string | any>([]);
+  const [checkAllDB, setCheckAllDB] = useState(false);
+  const [selectListDB, setSelectListDB] = useState<string[]>([]);
+  const [indeterminateDB, setIndeterminateDB] = useState(false);
+
+  const [selectListEM, setSelectListEM] = useState<string[]>([]);
   const [indeterminateEM, setIndeterminateEM] = useState(false);
   const [checkAllEM, setCheckAllEM] = useState(false);
 
-  const [selectListCM, setSelectListCM] = useState<string | any>([]);
+  const [selectListCM, setSelectListCM] = useState<string[]>([]);
   const [indeterminateCM, setIndeterminateCM] = useState(false);
   const [checkAllCM, setCheckAllCM] = useState(false);
 
@@ -134,38 +139,131 @@ const PermissionRole: React.FC = () => {
   const [indeterminateRF, setIndeterminateRF] = useState(false);
   const [checkAllRF, setCheckAllRF] = useState(false);
 
-  const [selectListDesign, setSelectListDesign] = useState<string | any>([]);
-  const [indeterminateDesign, setIndeterminateDesign] = useState(false);
-  const [checkAllDesign, setCheckAllDesign] = useState(false);
+  const [indeterminateReport, setIndeterminateReport] = useState(false);
+  const [indeterminateProfile, setIndeterminateProfile] = useState(false);
+  const [checkAllReport, setCheckAllReport] = useState(false);
+  const [checkAllProfile, setCheckAllProfile] = useState(false);
 
   const [selectListIM, setSelectListIM] = useState<string | any>([]);
   const [indeterminateIM, setIndeterminateIM] = useState(false);
   const [checkAllIM, setCheckAllIM] = useState(false);
 
-  const { data: dataReadRoleAndPerm, refresh: refreshReadRoleAndPerm } = useRequest(
-    () => {
-      return requestReadRoleAndPerm({});
+  const permissionList = valueCheckboxGeneralStatistic.concat(
+    valueCheckboxTransferShift,
+    valueCheckboxNightShift,
+    valueCheckboxHistoryCall,
+    valueCheckboxTTCN,
+    valueCheckboxTTCT,
+    valueCheckboxTTND,
+    valueCheckboxGroupsPer,
+    selectListDB,
+    selectListIM,
+    selectListEM,
+    selectListCM,
+    selectListRF,
+  );
+
+  const fetchReadRoleAndPerm = useRequest(
+    async (keyword?: string) => {
+      const res: { success: boolean } = await requestReadRoleAndPerm({ keyword });
+      if (!res.success) {
+        message.error('Lỗi không thể lấy data');
+        return;
+      }
+      return res;
     },
     {
       onSuccess: (res) => {
-        setListAllRolePermission(dataReadRoleAndPerm);
-      },
-      onError: (error) => {
-        message.error('Error');
-        console.log(error);
+        if (res) {
+          setListAllRolePermission(res);
+        }
       },
     },
   );
 
-  const { run: runDeleteRoleAndPermission } = useRequest(
-    (id: string) => requestDeleteRoleAndPermission(id),
+  const fetchCreateRoleAndPermission = useRequest(
+    async (permissionList: string[], role_code: string, role_desc: string) => {
+      const res: { success: string; error_code: number } = await requestCreateRoleAndPerm(
+        permissionList,
+        role_code,
+        role_desc,
+      );
+      if (res.success) {
+        message.success('Thêm mới thành công');
+        handleCancleAddNewPermission();
+        fetchReadRoleAndPerm.refresh();
+      } else if (res.error_code === 4000104) {
+        form.setFields([
+          {
+            name: 'role_code',
+            errors: ['Tên nhóm quyền đã tồn tại'],
+          },
+        ]);
+      } else {
+        message.error('Thêm mới thất bại');
+      }
+
+      return res;
+    },
     {
-      onSuccess: () => {
-        message.success('Xoá thành công');
-        refreshReadRoleAndPerm();
-      },
       onError: (error) => {
-        console.log(error);
+        message.error('Bạn không có quyền tạo');
+      },
+      manual: true,
+    },
+  );
+
+  const fetchUpdateRoleAndPermission = useRequest(
+    async (permissionList: string[], role_code: string, role_desc: string, id: string) => {
+      const res: { success: string; error_code: number } = await requestUpdateRole(
+        permissionList,
+        role_code,
+        role_desc,
+        id,
+      );
+      if (!res.success) {
+        if (res.error_code === 4010104) {
+          form.setFields([
+            {
+              name: 'role_code',
+              errors: ['Tên nhóm quyền đã tồn tại'],
+            },
+          ]);
+        } else {
+          message.error('Cập nhập Thất bại');
+        }
+        return;
+      } else {
+        handleCancleAddNewPermission();
+        message.success('Cập nhập thành công');
+        fetchReadRoleAndPerm.refresh();
+      }
+      return res;
+    },
+    {
+      onError: (error) => {
+        message.error('Bạn không có quyền cập nhập');
+      },
+      manual: true,
+    },
+  );
+
+  const fetchDeleteRoleAndPermission = useRequest(
+    async (id: string) => {
+      const res: { success: string } = await requestDeleteRoleAndPermission(id);
+      if (!res.success) {
+        message.error('Xoá Thất bại');
+        return;
+      } else {
+        handleCancleAddNewPermission();
+        message.success('Xoá thành công');
+        fetchReadRoleAndPerm.refresh();
+      }
+      return res;
+    },
+    {
+      onError: (error) => {
+        message.error('Bạn không có quyền xoá');
       },
       manual: true,
     },
@@ -176,7 +274,7 @@ const PermissionRole: React.FC = () => {
     pageSize: 10,
     showSizeChanger: true,
     showQuickJumper: true,
-    pageSizeOptions: ['10', '20', '30', '50'],
+    pageSizeOptions: ['5', '10', '20', '30', '50'],
   });
 
   const handleClickDeleteRole = (role_id: string) => {
@@ -191,168 +289,388 @@ const PermissionRole: React.FC = () => {
       icon: <CloseCircleFilled style={{ color: 'red', fontSize: 22 }} />,
       onOk() {
         {
-          runDeleteRoleAndPermission(role_id);
+          fetchDeleteRoleAndPermission.run(role_id);
         }
       },
 
       cancelText: 'Hủy',
     });
   };
-  const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
-    setPagination({
-      ...pagination,
-      current: newPagination.current,
-      pageSize: newPagination.pageSize,
-    });
-  };
 
-  const handleAddNewPermission = () => {
+  const handleAddNewPermission = async () => {
+    form.resetFields();
+    setSelectListDB([]);
+    setSelectListIM([]);
+    setSelectListCM([]);
+    setSelectListEM([]);
+    setSelectListRF([]);
+    setValueCheckboxGeneralStatistic([]);
+    setValueCheckboxTransferShift([]);
+    setValueCheckboxNightShift([]);
+    setValueCheckboxHistoryCall([]);
+    setValueCheckboxTTCT([]);
+    setValueCheckboxTTCN([]);
+    setValueCheckboxTTND([]);
+    setValueCheckboxGroupsPer([]);
     setAddNetPermission(true);
     setIsEditRole(false);
   };
 
   const handleEditRole = (data: RoleIdProps) => {
+    setSelectListDB([]);
+    setSelectListIM([]);
+    setSelectListCM([]);
+    setSelectListEM([]);
+    setSelectListRF([]);
+    setValueCheckboxGeneralStatistic([]);
+    setValueCheckboxTransferShift([]);
+    setValueCheckboxNightShift([]);
+    setValueCheckboxHistoryCall([]);
+    setValueCheckboxTTCT([]);
+    setValueCheckboxTTCN([]);
+    setValueCheckboxTTND([]);
+    setValueCheckboxGroupsPer([]);
+
+    setDataRoleId(data);
+    form.setFieldValue('role_code', data.code);
+    form.setFieldValue('role_desc', data.desc);
     setAddNetPermission(true);
     setIsEditRole(true);
   };
 
   const handleCancleAddNewPermission = () => {
+    setIsEditRole(false);
     setAddNetPermission(false);
   };
 
   const handleCheckAllFilterDB = (e: any) => {
     setSelectListDB(e.target.checked ? OPTIONS_PERMISSION_DB_VALUE : []);
-    setIndeterminateDB(false);
-    setCheckAllDB(e.target.checked);
   };
 
   const handleCheckAllFilterIM = (e: any) => {
     setSelectListIM(e.target.checked ? OPTIONS_PERMISSION_IM_VALUE : []);
-    setIndeterminateIM(false);
-    setCheckAllIM(e.target.checked);
   };
 
   const handleCheckFilterEM = (list: any) => {
-    setIndeterminateEM(!!list.length && list.length < OPTIONS_PERMISSION_EM.length);
-    setCheckAllEM(list.length === OPTIONS_PERMISSION_EM.length);
     setSelectListEM(list);
   };
 
+  useEffect(() => {
+    setIndeterminateEM(false);
+    setCheckAllEM(false);
+    if (!!selectListEM.length && selectListEM.length < OPTIONS_PERMISSION_EM.length) {
+      setIndeterminateEM(true);
+    } else if (selectListEM.length === OPTIONS_PERMISSION_EM.length) {
+      setCheckAllEM(true);
+    }
+  }, [selectListEM]);
+
   const handleCheckAllFilterEM = (e: any) => {
     setSelectListEM(e.target.checked ? OPTIONS_PERMISSION_EM_VALUE : []);
-    setIndeterminateEM(false);
-    setCheckAllEM(e.target.checked);
   };
 
   const handleCheckFilterCM = (list: any) => {
-    setIndeterminateCM(!!list.length && list.length < OPTIONS_PERMISSION_CM.length);
-    setCheckAllCM(list.length === OPTIONS_PERMISSION_CM.length);
     setSelectListCM(list);
   };
 
+  useEffect(() => {
+    setIndeterminateCM(false);
+    setCheckAllCM(false);
+    if (!!selectListCM.length && selectListCM.length < OPTIONS_PERMISSION_CM.length) {
+      setIndeterminateCM(true);
+    } else if (selectListCM.length === OPTIONS_PERMISSION_CM.length) {
+      setCheckAllCM(true);
+    }
+  }, [selectListCM]);
+
   const handleCheckAllFilterCM = (e: any) => {
     setSelectListCM(e.target.checked ? OPTIONS_PERMISSION_CM_VALUE : []);
-    setIndeterminateCM(false);
-    setCheckAllCM(e.target.checked);
   };
 
   const handleCheckFilterRF = (list: any) => {
-    setIndeterminateRF(!!list.length && list.length < OPTIONS_PERMISSION_RF.length);
-    setCheckAllRF(list.length === OPTIONS_PERMISSION_RF.length);
     setSelectListRF(list);
   };
 
+  useEffect(() => {
+    setIndeterminateRF(false);
+    setCheckAllRF(false);
+    if (!!selectListRF.length && selectListRF.length < OPTIONS_PERMISSION_RF.length) {
+      setIndeterminateRF(true);
+    } else if (selectListRF.length === OPTIONS_PERMISSION_RF.length) {
+      setCheckAllRF(true);
+    }
+  }, [selectListRF]);
+
   const handleCheckAllFilterRF = (e: any) => {
     setSelectListRF(e.target.checked ? OPTIONS_PERMISSION_RF_VALUE : []);
-    setIndeterminateRF(false);
-    setCheckAllRF(e.target.checked);
-  };
-
-  const handleCheckFilterDesign = (list: any) => {
-    setIndeterminateDesign(!!list.length && list.length < OPTIONS_PERMISSION_DESIGN.length);
-    setCheckAllDesign(list.length === OPTIONS_PERMISSION_DESIGN.length);
-    setSelectListDesign(list);
-  };
-
-  const handleCheckAllFilterDesign = (e: any) => {
-    setSelectListDesign(e.target.checked ? OPTIONS_PERMISSION_DESIGN_VALUE : []);
-    setIndeterminateDesign(false);
-    setCheckAllDesign(e.target.checked);
   };
 
   const handleCheckFilterDB = (list: any) => {
-    setIndeterminateDB(!!list.length && list.length < OPTIONS_PERMISSION_DB.length);
-    setCheckAllDB(list.length === OPTIONS_PERMISSION_DB.length);
     setSelectListDB(list);
   };
 
+  useEffect(() => {
+    setIndeterminateDB(false);
+    setCheckAllDB(false);
+    if (!!selectListDB.length && selectListDB.length < OPTIONS_PERMISSION_DB.length) {
+      setIndeterminateDB(true);
+    } else if (selectListDB.length === OPTIONS_PERMISSION_DB.length) {
+      setCheckAllDB(true);
+    }
+  }, [selectListDB]);
+
   const handleCheckFilterIM = (list: any) => {
-    setIndeterminateIM(!!list.length && list.length < OPTIONS_PERMISSION_IM.length);
-    setCheckAllIM(list.length === OPTIONS_PERMISSION_IM.length);
     setSelectListIM(list);
   };
 
+  useEffect(() => {
+    setIndeterminateIM(false);
+    setCheckAllIM(false);
+    if (!!selectListIM.length && selectListIM.length < OPTIONS_PERMISSION_IM.length) {
+      setIndeterminateIM(true);
+    } else if (selectListIM.length === OPTIONS_PERMISSION_IM.length) {
+      setCheckAllIM(true);
+    }
+  }, [selectListIM]);
+
   const onCheckDataTreeGeneralStatistic = (checkedKeys: any, info: any) => {
-    setValueCheckboxGeneralStatistic(info.node?.children?.map((item: TreeData) => item.key));
+    setValueCheckboxGeneralStatistic(
+      checkedKeys.filter((data: string) => data !== 'general_statistic'),
+    );
   };
+
   const onCheckDataTreeTransferShift = (checkedKeys: any, info: any) => {
-    setValueCheckboxTransferShift(checkedKeys);
+    setValueCheckboxTransferShift(checkedKeys.filter((data: string) => data !== 'transfer_shift'));
   };
   const onCheckDataTreeNightShift = (checkedKeys: any, info: any) => {
-    setValueCheckboxNightShift(checkedKeys);
+    setValueCheckboxNightShift(checkedKeys.filter((data: string) => data !== 'night_shift'));
   };
   const onCheckDataTreeHistoryCall = (checkedKeys: any, info: any) => {
-    setValueCheckboxHistoryCall(info.node?.children?.map((item: TreeData) => item.key));
+    setValueCheckboxHistoryCall(checkedKeys.filter((data: string) => data !== 'call_history'));
   };
   const onCheckDataTreeTTCN = (checkedKeys: any, info: any) => {
-    setValueCheckboxTTCN(info.node?.children?.map((item: TreeData) => item.key));
+    setValueCheckboxTTCN(checkedKeys.filter((data: string) => data !== 'personal_info'));
   };
   const onCheckDataTreeTTCT = (checkedKeys: any, info: any) => {
-    setValueCheckboxTTCT(info.node?.children?.map((item: TreeData) => item.key));
+    setValueCheckboxTTCT(checkedKeys.filter((data: string) => data !== 'shift_info'));
+  };
+  const onCheckDataTreeTTND = (checkedKeys: any, info: any) => {
+    setValueCheckboxTTND(checkedKeys.filter((data: string) => data !== 'user_profile'));
   };
   const onCheckDataTreeGroupsPer = (checkedKeys: any, info: any) => {
-    setValueCheckboxGroupsPer(info.node?.children?.map((item: TreeData) => item.key));
+    setValueCheckboxGroupsPer(checkedKeys.filter((data: string) => data !== 'permission_group'));
   };
 
-  const fetchListUserRole = async (role_code: any, role_desc: any) => {
-    const res = await requestListUserRole(
-      valueCheckboxGeneralStatistic.concat(
-        valueCheckboxTransferShift,
-        valueCheckboxNightShift,
-        valueCheckboxHistoryCall,
-        valueCheckboxTTCN,
-        valueCheckboxTTCT,
-        valueCheckboxGroupsPer,
-      ),
-      role_code,
-      role_desc,
-    );
-    return res;
-  };
-
-  const fetchGroupPermissionData = async () => {
-    const resPer = await requestGroupPermissionData();
-    if (resPer.success === true) {
-      setListGroupPermission(resPer.data);
-      setListRoleCode(resPer.data?.map((item: GroupPermission) => item.code));
-    }
-  };
-
-  const dataNameCodeRole = dataReadRoleAndPerm?.map((role: { code: string }) => role?.code);
-
-  const handleOnFinishPermissionAddNew = (values: any) => {
-    if (dataNameCodeRole.includes(values.role_code)) {
+  const fetchListUserRole = async (role_code: string, role_desc: string) => {
+    if (permissionList.length === 0) {
       Modal.warning({
         title: 'Thông báo',
-        content: 'Nhóm quyền vừa nhập đã có. Vui lòng nhập tên nhóm quyền khác!',
+        content: `Vui lòng chọn ít nhất một chức năng!`,
         okText: 'Xác nhận',
       });
+      return;
+    }
+    fetchCreateRoleAndPermission.run(permissionList, role_code, role_desc);
+  };
+
+  const fetchListUpdateRole = async (role_code: string, role_desc: string, id?: string) => {
+    if (permissionList.length === 0) {
+      Modal.warning({
+        title: 'Thông báo',
+        content: `Vui lòng chọn ít nhất một chức năng!`,
+        okText: 'Xác nhận',
+      });
+      return;
+    }
+    fetchUpdateRoleAndPermission.run(permissionList, role_code, role_desc, id ? id : '');
+  };
+
+  const handleOnFinishPermissionAddNew = (values: { role_code: string; role_desc: string }) => {
+    if (isEditRole) {
+      fetchListUpdateRole(values.role_code, values.role_desc, dataRoleId?.id);
     } else {
-      handleCancleAddNewPermission();
       fetchListUserRole(values.role_code, values.role_desc);
-      fetchGroupPermissionData();
     }
   };
+
+  const handleCheckAllReport = () => {
+    if (checkAllReport) {
+      setCheckAllReport(false);
+      setValueCheckboxGeneralStatistic([]);
+      setValueCheckboxTransferShift([]);
+      setValueCheckboxNightShift([]);
+      setValueCheckboxHistoryCall([]);
+      setValueCheckboxTTCT([]);
+    } else {
+      setCheckAllReport(true);
+      setValueCheckboxGeneralStatistic(OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE);
+      setValueCheckboxTransferShift(OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE);
+      setValueCheckboxNightShift(OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE);
+      setValueCheckboxHistoryCall(OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE);
+      setValueCheckboxTTCT(OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE);
+    }
+  };
+
+  useEffect(() => {
+    setIndeterminateReport(false);
+    setCheckAllReport(false);
+    if (
+      valueCheckboxGeneralStatistic.length > 0 ||
+      valueCheckboxTransferShift.length > 0 ||
+      valueCheckboxNightShift.length > 0 ||
+      valueCheckboxHistoryCall.length > 0 ||
+      valueCheckboxTTCT.length > 0
+    ) {
+      setIndeterminateReport(true);
+    }
+
+    if (
+      valueCheckboxGeneralStatistic.length == OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE.length &&
+      valueCheckboxTransferShift.length == OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE.length &&
+      valueCheckboxNightShift.length == OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE.length &&
+      valueCheckboxHistoryCall.length == OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE.length &&
+      valueCheckboxTTCT.length == OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE.length
+    ) {
+      setIndeterminateReport(false);
+      setCheckAllReport(true);
+    }
+  }, [
+    valueCheckboxGeneralStatistic,
+    valueCheckboxTransferShift,
+    valueCheckboxNightShift,
+    valueCheckboxHistoryCall,
+    valueCheckboxTTCT,
+  ]);
+
+  const handleCheckAllProfile = () => {
+    if (checkAllProfile) {
+      setCheckAllProfile(false);
+      setValueCheckboxGroupsPer([]);
+      setValueCheckboxTTCN([]);
+      setValueCheckboxTTND([]);
+    } else {
+      setCheckAllProfile(true);
+      setValueCheckboxGroupsPer(OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE);
+      setValueCheckboxTTCN(OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE);
+      setValueCheckboxTTND(OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE);
+    }
+  };
+
+  useEffect(() => {
+    setIndeterminateProfile(false);
+    setCheckAllProfile(false);
+    if (
+      valueCheckboxTTCN.length > 0 ||
+      valueCheckboxTTND.length > 0 ||
+      valueCheckboxGroupsPer.length > 0
+    ) {
+      setIndeterminateProfile(true);
+    }
+
+    if (
+      valueCheckboxTTCN.length == OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE.length &&
+      valueCheckboxTTND.length == OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE.length &&
+      valueCheckboxGroupsPer.length == OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE.length
+    ) {
+      setIndeterminateProfile(false);
+      setCheckAllProfile(true);
+    }
+  }, [valueCheckboxTTCN, valueCheckboxTTND, valueCheckboxGroupsPer]);
+
+  useEffect(() => {
+    if (isEditRole) {
+      const defaultDataDB = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'dashboard')
+        .map(({ code }) => code);
+      if (defaultDataDB?.length) {
+        setSelectListDB(defaultDataDB);
+      }
+
+      const defaultDataIM = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'incident_management')
+        .map(({ code }) => code);
+      if (defaultDataIM?.length) {
+        setSelectListIM(defaultDataIM);
+      }
+
+      const defaultDataEM = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'event_management')
+        .map(({ code }) => code);
+      if (defaultDataEM?.length) {
+        setSelectListEM(defaultDataEM);
+      }
+
+      const defaultDataCM = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'change_management')
+        .map(({ code }) => code);
+      if (defaultDataCM?.length) {
+        setSelectListCM(defaultDataCM);
+      }
+
+      const defaultDataRF = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'request_fufillment')
+        .map(({ code }) => code);
+      if (defaultDataRF?.length) {
+        setSelectListRF(defaultDataRF);
+      }
+
+      const defaultDataTTC = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'general_statistic')
+        .map(({ code }) => code);
+      if (defaultDataTTC?.length) {
+        setValueCheckboxGeneralStatistic(defaultDataTTC);
+      }
+
+      const defaultDataBGCT = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'transfer_shift')
+        .map(({ code }) => code);
+      if (defaultDataBGCT?.length) {
+        setValueCheckboxTransferShift(defaultDataBGCT);
+      }
+
+      const defaultDataKHD = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'night_shift')
+        .map(({ code }) => code);
+      if (defaultDataKHD?.length) {
+        setValueCheckboxNightShift(defaultDataKHD);
+      }
+
+      const defaultDataLSCG = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'call_history')
+        .map(({ code }) => code);
+      if (defaultDataLSCG?.length) {
+        setValueCheckboxHistoryCall(defaultDataLSCG);
+      }
+
+      const defaultDataTTCT = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'shift_info')
+        .map(({ code }) => code);
+      if (defaultDataTTCT?.length) {
+        setValueCheckboxTTCT(defaultDataTTCT);
+      }
+
+      const defaultDataTTCN = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'personal_info')
+        .map(({ code }) => code);
+      if (defaultDataTTCN?.length) {
+        setValueCheckboxTTCN(defaultDataTTCN);
+      }
+
+      const defaultDataTTND = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'user_profile')
+        .map(({ code }) => code);
+      if (defaultDataTTND?.length) {
+        setValueCheckboxTTND(defaultDataTTND);
+      }
+
+      const defaultDataGroupsPer = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'permission_group')
+        .map(({ code }) => code);
+      if (defaultDataGroupsPer?.length) {
+        setValueCheckboxGroupsPer(defaultDataGroupsPer);
+      }
+    }
+  }, [dataRoleId, isEditRole]);
 
   const columns: ColumnsType<DataAllRolePermission> = [
     {
@@ -370,18 +688,6 @@ const PermissionRole: React.FC = () => {
       dataIndex: 'code',
       key: 'code',
       width: '200px',
-      // render: (text, record) => (
-      //     <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-      //         <div>
-      //             <Avatar src={ImageAvatar} size="large" />
-      //         </div>
-      //         <div>
-      //             <Typography.Text>{record.thanhvien}</Typography.Text>
-      //             <br></br>
-      //             <Typography.Text style={{ paddingLeft: '10px', fontSize: '10px', color: 'rgba(0, 0, 0, 0.45)', fontWeight: 400 }}>HuyenLM2@fpt.com.vn</Typography.Text>
-      //         </div>
-      //     </div>
-      // )
     },
     {
       title: 'Mô tả vai trò',
@@ -393,26 +699,26 @@ const PermissionRole: React.FC = () => {
     },
     {
       title: 'Người tạo',
-      dataIndex: 'team',
-      key: 'team',
-      render: (text) => {
-        return text ? text : '-';
+      dataIndex: 'create_by',
+      key: 'create_by',
+      render: (text, recode) => {
+        return recode.created_by ? recode.created_by : '-';
       },
     },
     {
       title: 'Ngày tạo',
-      dataIndex: 'role',
-      key: 'role',
+      dataIndex: 'created_at',
+      key: 'created_at',
       render: (text) => {
-        return text ? text : '-';
+        return text ? moment.unix(text).format('DD-MM-YYYY') : '-';
       },
     },
     {
       title: 'Ngày sửa gần nhất',
-      dataIndex: 'active',
-      key: 'active',
+      dataIndex: 'updated_at',
+      key: 'updated_at',
       render: (text) => {
-        return text ? text : '-';
+        return text ? moment.unix(text).format('DD-MM-YYYY') : '-';
       },
     },
 
@@ -436,6 +742,19 @@ const PermissionRole: React.FC = () => {
       ),
     },
   ];
+
+  const handleTableChange: TableProps<DataAllRolePermission>['onChange'] = (
+    newPagination: any,
+    filters: any,
+    sorter: any,
+    extra,
+  ) => {
+    setPagination({
+      ...pagination,
+      current: newPagination.current,
+      pageSize: newPagination.pageSize,
+    });
+  };
 
   const columnsPermissionTable: ColumnsType<DataTypePermissionTable> = [
     {
@@ -488,12 +807,21 @@ const PermissionRole: React.FC = () => {
               className={styles.checkboxStyle}
             />
           );
-        } else if (record.module === 'Thiết kế') {
+        } else if (record.module === 'Report') {
           return (
             <Checkbox
-              indeterminate={indeterminateDesign}
-              onChange={handleCheckAllFilterDesign}
-              checked={checkAllDesign}
+              indeterminate={indeterminateReport}
+              onChange={handleCheckAllReport}
+              checked={checkAllReport}
+              className={styles.checkboxStyle}
+            />
+          );
+        } else if (record.module === 'Profile') {
+          return (
+            <Checkbox
+              indeterminate={indeterminateProfile}
+              onChange={handleCheckAllProfile}
+              checked={checkAllProfile}
               className={styles.checkboxStyle}
             />
           );
@@ -557,16 +885,18 @@ const PermissionRole: React.FC = () => {
               value={selectListRF}
             />
           );
-        } else if (record.module === 'Thiết kế') {
-          return (
-            <Checkbox.Group
-              options={OPTIONS_PERMISSION_DESIGN}
-              className={styles.antCheckboxGroup}
-              onChange={handleCheckFilterDesign}
-              value={selectListDesign}
-            />
-          );
-        } else if (record.module === 'Báo cáo') {
+        }
+        // else if (record.module === 'Thiết kế') {
+        //   return (
+        //     <Checkbox.Group
+        //       options={OPTIONS_PERMISSION_DESIGN}
+        //       className={styles.antCheckboxGroup}
+        //       onChange={handleCheckFilterDesign}
+        //       value={selectListDesign}
+        //     />
+        //   );
+        // }
+        else if (record.module === 'Report') {
           return (
             <>
               <Tree
@@ -574,24 +904,35 @@ const PermissionRole: React.FC = () => {
                 checkable
                 onCheck={onCheckDataTreeGeneralStatistic}
                 className={styles.treeDataCheckbox}
+                checkedKeys={valueCheckboxGeneralStatistic}
               />
               <Tree
                 treeData={TREE_DATA_BGCT}
                 checkable
                 onCheck={onCheckDataTreeTransferShift}
                 className={styles.treeDataCheckbox}
+                checkedKeys={valueCheckboxTransferShift}
               />
               <Tree
                 treeData={TREE_DATA_KHD}
                 checkable
                 onCheck={onCheckDataTreeNightShift}
                 className={styles.treeDataCheckbox}
+                checkedKeys={valueCheckboxNightShift}
               />
               <Tree
                 treeData={TREE_DATA_LSCG}
                 checkable
                 onCheck={onCheckDataTreeHistoryCall}
                 className={styles.treeDataCheckbox}
+                checkedKeys={valueCheckboxHistoryCall}
+              />
+              <Tree
+                treeData={TREE_DATA_TTCT}
+                checkable
+                onCheck={onCheckDataTreeTTCT}
+                className={styles.treeDataCheckbox}
+                checkedKeys={valueCheckboxTTCT}
               />
             </>
           );
@@ -603,18 +944,21 @@ const PermissionRole: React.FC = () => {
                 checkable
                 onCheck={onCheckDataTreeTTCN}
                 className={styles.treeDataCheckbox}
+                checkedKeys={valueCheckboxTTCN}
               />
               <Tree
-                treeData={TREE_DATA_TTCT}
+                treeData={TREE_DATA_TTND}
                 checkable
-                onCheck={onCheckDataTreeTTCT}
+                onCheck={onCheckDataTreeTTND}
                 className={styles.treeDataCheckbox}
+                checkedKeys={valueCheckboxTTND}
               />
               <Tree
                 treeData={TREE_DATA_NQ}
                 checkable
                 onCheck={onCheckDataTreeGroupsPer}
                 className={styles.treeDataCheckbox}
+                checkedKeys={valueCheckboxGroupsPer}
               />
             </>
           );
@@ -622,29 +966,33 @@ const PermissionRole: React.FC = () => {
       },
     },
   ];
+
   return (
     <>
       <Row style={{ marginTop: 15 }}>
         <Col span={16}></Col>
         <Col span={8} style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Space>
-            <Input
-              key="search"
-              prefix={<SearchOutlined />}
-              placeholder="Nhập từ khoá"
-              allowClear
-              onChange={debounce(
-                (e) => {
-                  const { value } = e.target;
-                  console.log(value);
-                },
-                500,
-                {
-                  trailing: true,
-                  leading: false,
-                },
-              )}
-            />
+            <Form.Item name="search" style={{ marginBottom: 0 }}>
+              <Input
+                key="search"
+                prefix={<SearchOutlined />}
+                placeholder="Nhập từ khoá"
+                allowClear
+                onChange={debounce(
+                  (e) => {
+                    const { value } = e.target;
+                    fetchReadRoleAndPerm.run(value);
+                  },
+                  500,
+                  {
+                    trailing: true,
+                    leading: false,
+                  },
+                )}
+              />
+            </Form.Item>
+
             <PlusSquareFilled
               style={{ fontSize: 32, color: '#478D46' }}
               onClick={handleAddNewPermission}
@@ -662,7 +1010,7 @@ const PermissionRole: React.FC = () => {
           onChange={handleTableChange}
           pagination={{
             ...pagination,
-            total: listAllRolePermission?.length,
+            // total: listAllRolePermission?.length,
             locale: {
               items_per_page: '/ Trang',
               jump_to: 'Đến trang',
@@ -681,10 +1029,11 @@ const PermissionRole: React.FC = () => {
                 <Spin />
               </div>
             ),
-            spinning: !listAllRolePermission,
+            spinning: fetchReadRoleAndPerm.loading,
           }}
         />
       </Card>
+
       <Modal
         open={isAddNewPermission}
         onCancel={handleCancleAddNewPermission}
@@ -698,7 +1047,12 @@ const PermissionRole: React.FC = () => {
         footer={false}
         centered
       >
-        <Form requiredMark={false} layout="vertical" onFinish={handleOnFinishPermissionAddNew}>
+        <Form
+          form={form}
+          requiredMark={false}
+          layout="vertical"
+          onFinish={handleOnFinishPermissionAddNew}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
               <Form.Item
@@ -708,6 +1062,7 @@ const PermissionRole: React.FC = () => {
                   </Typography.Text>
                 }
                 name="role_code"
+                initialValue=""
                 className={styles.addPermissionInputPlaceholder}
                 rules={[
                   {
@@ -717,6 +1072,12 @@ const PermissionRole: React.FC = () => {
                   {
                     max: 30,
                     message: 'Tên nhóm tối đa 30 ký tự',
+                  },
+                  {
+                    pattern: new RegExp(
+                      '^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ01234556789 ]+$',
+                    ),
+                    message: 'Vui lòng không nhập ký tự đặt biệt',
                   },
                 ]}
                 labelCol={{
@@ -745,6 +1106,7 @@ const PermissionRole: React.FC = () => {
                 <Input
                   placeholder="Nhập tên nhóm quyền mới"
                   className={styles.addPermissionInput}
+                  value={isEditRole ? dataRoleId?.code : ''}
                 />
               </Form.Item>
             </div>
@@ -753,6 +1115,7 @@ const PermissionRole: React.FC = () => {
                 label={<Typography.Text style={{ fontWeight: 'bold' }}>Mô tả</Typography.Text>}
                 name="role_desc"
                 className={styles.addPermissionInputPlaceholder}
+                initialValue=""
                 labelCol={{
                   xs: {
                     span: 24,
@@ -795,8 +1158,12 @@ const PermissionRole: React.FC = () => {
             <Button style={{ marginRight: '10px' }} onClick={handleCancleAddNewPermission}>
               Hủy
             </Button>
-            <Button type="primary" htmlType="submit">
-              Tạo mới
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={fetchCreateRoleAndPermission.loading || fetchUpdateRoleAndPermission.loading}
+            >
+              {isEditRole ? 'Cập nhập' : 'Tạo mới'}
             </Button>
           </Form.Item>
         </Form>
