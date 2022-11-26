@@ -398,11 +398,7 @@ const PersonalInfo: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input
-                        style={{ width: '300px' }}
-                        className={styles.inputNumber}
-                        type="number"
-                      />
+                      <Input style={{ width: '300px' }} className={styles.inputNumber} />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -428,13 +424,13 @@ const PersonalInfo: React.FC = () => {
                           max: 6,
                           message: 'Vui lòng không nhập quá 6 số',
                         },
+                        {
+                          pattern: new RegExp('^[0-9]+$'),
+                          message: 'Vui lòng chỉ nhập số',
+                        },
                       ]}
                     >
-                      <Input
-                        style={{ width: '300px' }}
-                        className={styles.inputNumber}
-                        type="number"
-                      />
+                      <Input style={{ width: '300px' }} className={styles.inputNumber} />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
