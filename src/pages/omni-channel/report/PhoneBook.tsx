@@ -670,7 +670,6 @@ const PhoneBook: React.FC = () => {
                   onBlur={() => {
                     checkPhoneContact.run(form.getFieldValue('phone_number'));
                   }}
-                  type="number"
                 />
               </Form.Item>
             </div>
@@ -684,16 +683,16 @@ const PhoneBook: React.FC = () => {
                 style={{ marginTop: 8 }}
                 rules={[
                   {
-                    max: 6,
-                    message: 'Vui lòng không nhập quá 6 số',
+                    required: true,
+                    message: 'Vui lòng không để trống thông tin',
+                  },
+                  {
+                    pattern: new RegExp('^[0-9]{1,6}$'),
+                    message: 'IP Phone không hợp lệ',
                   },
                 ]}
               >
-                <Input
-                  className={styles.inputNumber}
-                  type="number"
-                  placeholder="Nhập số máy nhánh"
-                />
+                <Input className={styles.inputNumber} placeholder="Nhập số máy nhánh" />
               </Form.Item>
             </div>
             <div>
@@ -726,12 +725,12 @@ const PhoneBook: React.FC = () => {
                 rules={[{ required: true, message: 'Vui lòng không để trống thông tin' }]}
               >
                 {external === 'Khách hàng' ? (
-                  <Select options={listUnitExternal} />
+                  <Select options={listUnitExternal} placeholder="Chọn đơn vị" />
                 ) : (
                   <Select
                     onChange={handleSelectTeam}
                     loading={getListTeam.loading}
-                    placeholder={external === 'Khách hàng' ? 'Chọn đơn vị công tác' : 'Chọn nhóm'}
+                    placeholder={'Chọn nhóm'}
                     menuItemSelectedIcon={<CheckOutlined style={{ marginLeft: 10 }} />}
                     dropdownRender={(menu) => (
                       <>
