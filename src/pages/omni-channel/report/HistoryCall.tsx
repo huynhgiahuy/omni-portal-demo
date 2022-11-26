@@ -11,7 +11,7 @@ import styles from '../report/style.less'
 
 const { RangePicker } = DatePicker;
 interface DataType {
-    key: string;
+    key?: string;
     huongcuocgoi: string;
     somaygoi: string;
     tennguoigoi: string;
