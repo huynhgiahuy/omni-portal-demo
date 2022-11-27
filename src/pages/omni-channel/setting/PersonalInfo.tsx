@@ -398,11 +398,7 @@ const PersonalInfo: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input
-                        style={{ width: '300px' }}
-                        className={styles.inputNumber}
-                        type="number"
-                      />
+                      <Input style={{ width: '300px' }} className={styles.inputNumber} />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -425,16 +421,12 @@ const PersonalInfo: React.FC = () => {
                           message: 'Vui lòng không để trống thông tin',
                         },
                         {
-                          max: 6,
-                          message: 'Vui lòng không nhập quá 6 số',
+                          pattern: new RegExp('^[0-9]{1,6}$'),
+                          message: 'IP Phone không hợp lệ',
                         },
                       ]}
                     >
-                      <Input
-                        style={{ width: '300px' }}
-                        className={styles.inputNumber}
-                        type="number"
-                      />
+                      <Input style={{ width: '300px' }} className={styles.inputNumber} />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -477,8 +469,8 @@ const PersonalInfo: React.FC = () => {
                                   initialState.currentUser?.equipment[0]?.status
                                     ? '#689B4F'
                                     : initialState.currentUser?.screen_mode?.dark_mode
-                                      ? '#9B9B9B'
-                                      : '#4A4A4A'
+                                    ? '#9B9B9B'
+                                    : '#4A4A4A'
                                 }
                                 style={{ borderRadius: '4px' }}
                               >
@@ -528,8 +520,8 @@ const PersonalInfo: React.FC = () => {
                                 initialState.currentUser?.equipment[1]?.status
                                   ? '#689B4F'
                                   : initialState.currentUser?.screen_mode?.dark_mode
-                                    ? '#9B9B9B'
-                                    : '#4A4A4A'
+                                  ? '#9B9B9B'
+                                  : '#4A4A4A'
                               }
                               style={{ borderRadius: '4px' }}
                             >

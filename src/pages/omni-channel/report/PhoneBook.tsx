@@ -37,7 +37,7 @@ import {
   requestGetUserContact,
   requestUpdateUserContact,
 } from './services';
-import { useRequest } from 'umi';
+import { useModel, useRequest } from 'umi';
 import {
   requestCreateNewTeam,
   requestDeleteTeamPermission,
@@ -151,6 +151,7 @@ const formItemLayout = {
 };
 
 const PhoneBook: React.FC = () => {
+  const { initialState, setInitialState } = useModel('@@initialState');
   const [form] = Form.useForm();
   const [external, setExternal] = useState('Khách hàng');
   const [openModal, setOpenModal] = useState(false);
@@ -184,7 +185,9 @@ const PhoneBook: React.FC = () => {
 
   const getUserContact = useRequest(
     async (data) => {
-      const res: { success: boolean } = await requestGetUserContact(data);
+      const res: { success: boolean } = await requestGetUserContact(
+        data ? data : { email_user: initialState?.currentUser?.email },
+      );
       if (!res.success) {
         message.error('Không lấy được danh bạ');
         return;
@@ -338,9 +341,29 @@ const PhoneBook: React.FC = () => {
       render: (text, record) => (
         <>
           {record.pin_user ? (
-            <StarFilled style={{ color: '#FFC700', fontSize: 20 }} onClick={() => {}} />
+            <StarFilled
+              style={{ color: '#FFC700', fontSize: 20 }}
+              onClick={() => {
+                const data = {
+                  contacts_id: record.id,
+                  pin_user: false,
+                  email_user: initialState?.currentUser?.email,
+                };
+                console.log(data);
+              }}
+            />
           ) : (
-            <StarOutlined style={{ fontSize: 20 }} onClick={() => {}} />
+            <StarOutlined
+              style={{ fontSize: 20 }}
+              onClick={() => {
+                const data = {
+                  contacts_id: record.id,
+                  pin_user: true,
+                  email_user: initialState?.currentUser?.email,
+                };
+                console.log(data);
+              }}
+            />
           )}
         </>
       ),
@@ -503,6 +526,7 @@ const PhoneBook: React.FC = () => {
                     getUserContact.run({
                       keyword: form.getFieldValue('search'),
                       unit: form.getFieldValue('unit'),
+                      email_user: initialState?.currentUser?.email,
                     });
                   },
                   500,
@@ -526,8 +550,10 @@ const PhoneBook: React.FC = () => {
               <Button
                 type="link"
                 onClick={() => {
-                  if (form.getFieldValue('unit' || form.getFieldValue('search'))) {
-                    getUserContact.refresh();
+                  if (form.getFieldValue('unit') || form.getFieldValue('search')) {
+                    getUserContact.run({
+                      email_user: initialState?.currentUser?.email,
+                    });
                   }
                   form.resetFields();
                 }}
@@ -547,6 +573,7 @@ const PhoneBook: React.FC = () => {
                     getUserContact.run({
                       keyword: form.getFieldValue('search'),
                       unit: form.getFieldValue('unit'),
+                      email_user: initialState?.currentUser?.email,
                     });
                   },
                   500,
@@ -670,7 +697,6 @@ const PhoneBook: React.FC = () => {
                   onBlur={() => {
                     checkPhoneContact.run(form.getFieldValue('phone_number'));
                   }}
-                  type="number"
                 />
               </Form.Item>
             </div>
@@ -684,16 +710,16 @@ const PhoneBook: React.FC = () => {
                 style={{ marginTop: 8 }}
                 rules={[
                   {
-                    max: 6,
-                    message: 'Vui lòng không nhập quá 6 số',
+                    required: true,
+                    message: 'Vui lòng không để trống thông tin',
+                  },
+                  {
+                    pattern: new RegExp('^[0-9]{1,6}$'),
+                    message: 'IP Phone không hợp lệ',
                   },
                 ]}
               >
-                <Input
-                  className={styles.inputNumber}
-                  type="number"
-                  placeholder="Nhập số máy nhánh"
-                />
+                <Input className={styles.inputNumber} placeholder="Nhập số máy nhánh" />
               </Form.Item>
             </div>
             <div>
@@ -726,12 +752,12 @@ const PhoneBook: React.FC = () => {
                 rules={[{ required: true, message: 'Vui lòng không để trống thông tin' }]}
               >
                 {external === 'Khách hàng' ? (
-                  <Select options={listUnitExternal} />
+                  <Select options={listUnitExternal} placeholder="Chọn đơn vị" />
                 ) : (
                   <Select
                     onChange={handleSelectTeam}
                     loading={getListTeam.loading}
-                    placeholder={external === 'Khách hàng' ? 'Chọn đơn vị công tác' : 'Chọn nhóm'}
+                    placeholder={'Chọn nhóm'}
                     menuItemSelectedIcon={<CheckOutlined style={{ marginLeft: 10 }} />}
                     dropdownRender={(menu) => (
                       <>
