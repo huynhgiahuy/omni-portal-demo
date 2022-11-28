@@ -1,17 +1,6 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styles from './index.less';
-import {
-  Modal,
-  Space,
-  Typography,
-  Popover,
-  Button,
-  Radio,
-  Collapse,
-  Form,
-  Input,
-  Timeline,
-} from 'antd';
+import { Modal, Space, Typography, Popover, Button, Form, Input, Timeline, List } from 'antd';
 import {
   AudioFilled,
   CaretRightOutlined,
@@ -27,6 +16,7 @@ import {
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
 import AvatarModal from '../../../public/avatar_modal_ring.png';
+import { dataUserContactProps } from '@/pages/omni-channel/report/services';
 
 type AgentModalAnswerProps = {
   isModalOpen: boolean;
@@ -37,14 +27,18 @@ type AgentModalAnswerProps = {
   handleSelectForwardUser: (e: any) => void;
   handleClickIconHistory: () => void;
   handleClickIconNote: () => void;
+  handelUserTransfer: (e: string) => void;
   valueCheckboxUser: any;
   isVisibleHistoryCall: boolean;
   isVisibleNoteCall: boolean;
   isActiveIconHistory: boolean;
   isActiveIconNote: boolean;
+  hours: React.ReactNode;
+  minutes: React.ReactNode;
+  seconds: React.ReactNode;
+  dataContacts: dataUserContactProps[];
+  refTimer: React.MutableRefObject<any>;
 };
-
-const { Panel } = Collapse;
 
 const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   isModalOpen,
@@ -55,17 +49,30 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   handleSelectForwardUser,
   handleClickIconHistory,
   handleClickIconNote,
+  handelUserTransfer,
   valueCheckboxUser,
   isVisibleHistoryCall,
   isVisibleNoteCall,
   isActiveIconHistory,
   isActiveIconNote,
+  dataContacts,
+  hours,
+  minutes,
+  seconds,
+  refTimer,
 }) => {
   const [isPlay, setIsPlay] = useState(true);
   const [isRecord, setIsRecord] = useState(false);
   const [isPopoverForward, setPopoverForward] = useState(false);
+  const [userSelect, setUserSelect] = useState('');
 
   const { confirm } = Modal;
+
+  const listTransfer = useMemo(
+    () =>
+      dataContacts?.map((user) => ({ id: user.id, label: user.full_name, value: user.ip_phone })),
+    [dataContacts],
+  );
 
   const showConfirm = () => {
     confirm({
@@ -77,6 +84,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
       bodyStyle: { padding: '24px 32px' },
       okText: 'Kết thúc',
       onOk() {
+        refTimer.current.reset();
         handleCancel();
       },
       cancelText: 'Huỷ',
@@ -118,11 +126,12 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                   <img style={{ position: 'absolute', left: 25, top: 8 }} src={Arrow} alt="arrow" />
                 </Space>
                 <Typography.Text style={{ color: 'white' }}>Cuộc gọi đi</Typography.Text>
-                <Typography.Text style={{ color: 'white' }}>0908 778 291</Typography.Text>
               </>
             )}
 
-            <Typography.Text style={{ color: 'white' }}>01:23:02</Typography.Text>
+            <Typography.Text style={{ color: 'white' }}>
+              {hours}:{minutes}:{seconds}
+            </Typography.Text>
           </Space>
           {isFullScreenModal ? (
             <FullscreenExitOutlined
@@ -157,11 +166,15 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                   style={{ position: 'relative', left: -8, zIndex: 2 }}
                 />
               </div>
-              <div className={isFullScreenModal ? styles.infoPhoneFullScreen : styles.infoPhone}>
+              <Space
+                className={isFullScreenModal ? styles.infoPhoneFullScreen : styles.infoPhone}
+                direction="vertical"
+              >
                 <Typography.Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
                   Chưa có trong danh bạ
                 </Typography.Text>
-              </div>
+                <Typography.Text style={{ color: 'white' }}>0908 778 291</Typography.Text>
+              </Space>
             </Space>
             <Space
               size={[18, 0]}
@@ -173,6 +186,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                   className={styles.phonePlay}
                   onClick={() => {
                     setIsPlay(!isPlay);
+                    setPopoverForward(false);
                   }}
                 />
               ) : (
@@ -180,6 +194,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                   className={styles.phonePause}
                   onClick={() => {
                     setIsPlay(!isPlay);
+                    setPopoverForward(false);
                   }}
                 />
               )}
@@ -188,6 +203,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                 className={isRecord ? styles.noRecord : styles.record}
                 onClick={() => {
                   setIsRecord(!isRecord);
+                  setPopoverForward(false);
                 }}
               />
 
@@ -195,45 +211,44 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                 open={isPopoverForward}
                 trigger="click"
                 placement="bottom"
-                title={
-                  <>
-                    <Typography.Text>Chuyển tiếp</Typography.Text>
-                    <Typography.Text className={styles.forwardPhoneModal}>
-                      {' '}
-                      (Danh sách nhân sự đang online trong hệ thống)
-                    </Typography.Text>
-                  </>
-                }
                 content={
                   <>
-                    <div style={{ paddingBottom: '10px' }}>
-                      <Typography.Text>
-                        Nhân sự đã chọn:{' '}
-                        <Typography.Text style={{ fontWeight: 'bold' }}>
-                          {valueCheckboxUser === '' ? 'Chưa lọc' : valueCheckboxUser}
-                        </Typography.Text>
+                    <div style={{ marginTop: 20 }}>
+                      <Typography.Text>Chuyển tiếp</Typography.Text>
+                      <Typography.Text className={styles.forwardPhoneModal}>
+                        {` {Danh sách nhân sự đang online trong hệ thống}`}
                       </Typography.Text>
                     </div>
-                    <Collapse>
-                      <Panel
-                        key="user"
-                        header={<Typography.Text strong>Danh sách nhân sự</Typography.Text>}
-                      >
-                        <Radio.Group onChange={handleSelectForwardUser}>
-                          <Space direction="vertical">
-                            <Radio value="Trần Phương Anh - 18942">
-                              <UserOutlined /> Trần Phương Anh - 18942
-                            </Radio>
-                            <Radio value="Trần Phương Anh - 18943">
-                              <UserOutlined /> Trần Phương Anh - 18943
-                            </Radio>
-                            <Radio value="Trần Phương Anh - 18944">
-                              <UserOutlined /> Trần Phương Anh - 18944
-                            </Radio>
-                          </Space>
-                        </Radio.Group>
-                      </Panel>
-                    </Collapse>
+                    <Input
+                      size="large"
+                      placeholder="Chọn nhân sự"
+                      style={{ margin: '10px 0' }}
+                      value={userSelect}
+                      onChange={(e) => {
+                        setUserSelect(e.target.value);
+                        handelUserTransfer(e.target.value);
+                      }}
+                    />
+                    <List
+                      bordered
+                      className={styles.listTransfer}
+                      size="small"
+                      dataSource={listTransfer}
+                      renderItem={(item: { label: string; value: string }, index) => (
+                        <List.Item
+                          key={`${item.label}-${index}`}
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => {
+                            setUserSelect(item.label);
+                          }}
+                        >
+                          <List.Item.Meta
+                            avatar={<UserOutlined />}
+                            title={`${item.label} - ${item.value}`}
+                          />
+                        </List.Item>
+                      )}
+                    />
                     <div className={styles.forwardSelectButton}>
                       <Button
                         style={{ marginRight: '10px' }}
@@ -243,6 +258,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       </Button>
                       <Button
                         type="primary"
+                        disabled
                         onClick={() => {
                           setPopoverForward(false);
                           setTimeout(() => {
@@ -263,7 +279,16 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                   onClick={() => setPopoverForward(!isPopoverForward)}
                 />
               </Popover>
-              <PhoneOutlined className={styles.phoneHandUp} onClick={showConfirm} />
+              <PhoneOutlined
+                className={styles.phoneHandUp}
+                onClick={() => {
+                  setPopoverForward(false);
+
+                  setTimeout(() => {
+                    showConfirm();
+                  });
+                }}
+              />
             </Space>
           </div>
           {isFullScreenModal && isVisibleHistoryCall ? (

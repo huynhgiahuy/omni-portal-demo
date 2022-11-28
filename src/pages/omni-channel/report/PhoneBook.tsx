@@ -419,16 +419,16 @@ const PhoneBook: React.FC = () => {
     },
     {
       title: '',
-      dataIndex: 'loai',
-      key: 'loai',
+      dataIndex: '',
+      key: '',
       align: 'center',
       width: '100px',
       render: (text, record) => {
         return (
           <Space size="middle">
-            <div style={{ cursor: 'pointer' }}>
+            {/* <div style={{ cursor: 'pointer' }}>
               <Image className={styles.call} width={30} src={Phone} preview={false} />
-            </div>
+            </div> */}
             <DeleteOutlined
               style={{ color: '#F5222D', fontSize: '20px' }}
               onClick={() => {
