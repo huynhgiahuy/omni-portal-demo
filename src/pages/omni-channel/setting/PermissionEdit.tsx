@@ -11,7 +11,8 @@ import {
     Input,
     Button,
     Select,
-    message
+    message,
+    Tooltip
 } from 'antd';
 import {
     EditOutlined,
@@ -37,7 +38,7 @@ import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
 import { useRequest } from 'umi';
-import { debounce, values } from 'lodash';
+import { debounce } from 'lodash';
 
 interface PaginationProps {
     current: number;
@@ -423,21 +424,25 @@ const PermissionEdit: React.FC = () => {
             align: 'center',
             render: (record) => (
                 <Space size="large">
-                    <EditOutlined
-                        style={{ color: '#1890FF', fontSize: '20px' }}
-                        onClick={
-                            () => {
-                                form.setFieldsValue(record)
-                                handleClickUpdatePermission();
-                                fetchDetaiUserInfoFinal(record.id);
-                                setUserKey(record.id);
+                    <Tooltip title="Cập nhật">
+                        <EditOutlined
+                            style={{ color: '#1890FF', fontSize: '20px' }}
+                            onClick={
+                                () => {
+                                    form.setFieldsValue(record)
+                                    handleClickUpdatePermission();
+                                    fetchDetaiUserInfoFinal(record.id);
+                                    setUserKey(record.id);
+                                }
                             }
-                        }
-                    />
-                    <DeleteOutlined
-                        style={{ color: '#F5222D', fontSize: '20px' }}
-                        onClick={() => { handleClickDeleteUser(record.id) }}
-                    />
+                        />
+                    </Tooltip>
+                    <Tooltip title="Xóa">
+                        <DeleteOutlined
+                            style={{ color: '#F5222D', fontSize: '20px' }}
+                            onClick={() => { handleClickDeleteUser(record.id) }}
+                        />
+                    </Tooltip>
                 </Space>
             )
         },
