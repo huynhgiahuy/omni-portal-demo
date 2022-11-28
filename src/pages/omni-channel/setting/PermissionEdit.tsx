@@ -321,7 +321,7 @@ const PermissionEdit: React.FC = () => {
         {
             title: '#',
             align: 'center',
-            width: '20px',
+            width: '60px',
             render: (text, record) => (
                 <>
                     {(pagination.current - 1) * pagination.pageSize + listAllUserInfoFinal.indexOf(record) + 1}
@@ -586,6 +586,7 @@ const PermissionEdit: React.FC = () => {
                     dataSource={listAllUserInfoFinal}
                     columns={columns}
                     style={{ paddingLeft: '20px' }}
+                    rowKey={item => item.id}
                     className={styles.permissionTable}
                     onChange={handleTableChange}
                     pagination={{
@@ -603,7 +604,11 @@ const PermissionEdit: React.FC = () => {
                             prev_5: '5 trang trước',
                         },
                     }}
-                    scroll={{ x: 300 }}
+                    scroll={{
+                        y: pagination.pageSize >= 10 ? 400 : undefined,
+                        x: window.innerWidth < 1900 ? 100 : undefined,
+                    }}
+
                     loading={{ indicator: <div><Spin /></div>, spinning: fetchListAllUserInfoFinal.loading }}
                 />
                 <Modal
