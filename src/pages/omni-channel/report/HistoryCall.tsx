@@ -176,6 +176,18 @@ const HistoryCall: React.FC = () => {
         return;
     }
 
+    const handleChangeBillSec = (val: any) => {
+        var sec_num: any = parseInt(val, 10); // don't forget the second param
+        var hours: any = Math.floor(sec_num / 3600);
+        var minutes: any = Math.floor((sec_num - (hours * 3600)) / 60);
+        var seconds: any = sec_num - (hours * 3600) - (minutes * 60);
+
+        if (hours < 10) { hours = "0" + hours; }
+        if (minutes < 10) { minutes = "0" + minutes; }
+        if (seconds < 10) { seconds = "0" + seconds; }
+        return hours + ':' + minutes + ':' + seconds;
+    }
+
     const columns: ColumnsType<DataLSCGType> = [
         {
             title: 'Hướng cuộc gọi',
@@ -220,14 +232,20 @@ const HistoryCall: React.FC = () => {
             dataIndex: 'start_epoch',
             key: 'start_epoch',
             align: 'center',
-            width: '150px'
+            width: '150px',
+            render: (text, record) => {
+                return moment(text).format('DD-MM-YYYY HH:mm:ss')
+            }
         },
         {
             title: 'Thời lượng',
             dataIndex: 'billsec',
             key: 'billsec',
             align: 'center',
-            width: '100px'
+            width: '100px',
+            render: (text, record) => {
+                return handleChangeBillSec(text.toString())
+            }
         },
         {
             title: 'Kết quả',
@@ -467,7 +485,7 @@ const HistoryCall: React.FC = () => {
                     <Input
                         style={{ width: '300px', marginRight: '10px' }}
                         prefix={<SearchOutlined />}
-                        placeholder="Tìm kiếm"
+                        placeholder="Tìm kiếm tên người gọi, người nhận"
                         allowClear
                         onChange={debounce(
                             (e) => {
