@@ -70,3 +70,42 @@ export async function requestCheckPhoneContact(phone_number: string) {
     },
   });
 }
+
+export async function requestHistoryCallData(
+  limit?: number,
+  offset?: number,
+  from_datetime?: string,
+  to_datetime?: string,
+  direction?: any,
+  result?: any,
+  search_name?: string,
+) {
+  return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/get_call_history`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      limit,
+      offset,
+      from_datetime,
+      to_datetime,
+      direction,
+      result,
+      search_name,
+    },
+  });
+}
+
+export async function requestUpdateNoteHistoryCall(call_id?: string, note?: string) {
+  return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/update_call_note`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      call_id,
+      note,
+    },
+  });
+}
