@@ -739,10 +739,10 @@ const PermissionEdit: React.FC = () => {
                                                     return Promise.reject('Vui lòng nhập số di động')
                                                 }
                                                 if (value.length !== 10) {
-                                                    return Promise.reject('Số điện thoại chỉ có 10 ký tự số')
+                                                    return Promise.reject('Số điện thoại không hợp lệ')
                                                 }
                                                 else if (!value.match('([3|5|7|8|9]{1})+([0-9]{8})')) {
-                                                    return Promise.reject('Số điện thoại chỉ có 10 ký tự số')
+                                                    return Promise.reject('Số điện thoại không hợp lệ')
                                                 }
                                                 else {
                                                     return Promise.resolve();
@@ -821,7 +821,7 @@ const PermissionEdit: React.FC = () => {
                                                     return Promise.reject('Vui lòng nhập IP Phone')
                                                 }
                                                 if (value.length > 6 || value.length < 6) {
-                                                    return Promise.reject('IP Phone tối đa 6 chữ số')
+                                                    return Promise.reject('IP Phone không hợp lệ')
                                                 }
                                                 else if (!value.match('[0-9]')) {
                                                     return Promise.reject('IP Phone không hợp lệ')
