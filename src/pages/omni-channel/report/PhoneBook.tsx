@@ -163,6 +163,8 @@ const PhoneBook: React.FC = () => {
   const [newTeamValue, setNewTeamValue] = useState<string | any>();
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
 
+  const token = window.localStorage?.getItem('access_token');
+
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -187,6 +189,7 @@ const PhoneBook: React.FC = () => {
   const getUserContact = useRequest(
     async (data) => {
       const res: { success: boolean } = await requestGetUserContact(
+        token ? token : '',
         data ? data : { email_user: initialState?.currentUser?.email },
       );
       if (!res.success) {
