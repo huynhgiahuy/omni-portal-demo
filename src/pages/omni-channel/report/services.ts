@@ -67,7 +67,7 @@ export async function requestHistoryCallData(
   result?: any,
   search_name?: string,
 ) {
-  return request('http://172.27.228.201:8009/voip-service/api/call/get_call_history', {
+  return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/get_call_history`, {
     method: 'POST',
     data: {
       limit,
@@ -82,7 +82,7 @@ export async function requestHistoryCallData(
 }
 
 export async function requestUpdateNoteHistoryCall(call_id?: string, note?: string) {
-  return request('http://172.27.228.201:8009/voip-service/api/call/update_call_note', {
+  return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/update_call_note`, {
     method: 'POST',
     data: {
       call_id,
