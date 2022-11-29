@@ -75,6 +75,7 @@ export async function requestCheckPhoneContact(phone_number: string) {
 }
 
 export async function requestHistoryCallData(
+  token?: any,
   limit?: number,
   offset?: number,
   from_datetime?: string,
@@ -100,7 +101,7 @@ export async function requestHistoryCallData(
   });
 }
 
-export async function requestUpdateNoteHistoryCall(call_id?: string, note?: string) {
+export async function requestUpdateNoteHistoryCall(token?: any, call_id?: string, note?: string) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/update_call_note`, {
     method: 'POST',
     headers: {
