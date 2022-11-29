@@ -203,7 +203,7 @@ const GlobalHeaderRight: React.FC = () => {
         Button
       </a>
 
-      <Timer
+      {/* <Timer
         initialTime={0}
         formatValue={(value) => `${value < 10 ? `0${value}` : value}`}
         ref={refTimer}
@@ -254,7 +254,7 @@ const GlobalHeaderRight: React.FC = () => {
             />
           </>
         )}
-      </Timer>
+      </Timer> */}
     </Space>
   );
 };

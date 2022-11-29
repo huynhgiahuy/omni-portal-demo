@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker, message, Spin } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlayCircleFilled, SearchOutlined, DownOutlined, UpOutlined, EditOutlined } from '@ant-design/icons';
-//import DownloadIcon from '../../../../public/cloud_download.svg';
+import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 import styles from '../report/style.less'
 import { requestHistoryCallData, requestUpdateNoteHistoryCall } from './services';
@@ -65,9 +65,12 @@ const HistoryCall: React.FC = () => {
 
     const [form] = Form.useForm();
 
+    const token = window.localStorage?.getItem('access_token');
+
     const fetchListLSCGData = useRequest(
         async (from_datetime: string | undefined, to_datetime: any | undefined) => {
             const res: { success: boolean, length: number } = await requestHistoryCallData(
+                token ? token : '',
                 pagination.pageSize,
                 pagination.current,
                 from_datetime,
@@ -94,7 +97,7 @@ const HistoryCall: React.FC = () => {
     )
 
     const handleUpdateNoteHistoryCall = async (call_id?: string, note?: string) => {
-        const respone_update_note = await requestUpdateNoteHistoryCall(call_id, note);
+        const respone_update_note = await requestUpdateNoteHistoryCall(token ? token : '', call_id, note);
         if (respone_update_note.success !== true) {
             message.error('Lưu ghi chú thất bại!');
         }
@@ -188,6 +191,44 @@ const HistoryCall: React.FC = () => {
         return hours + ':' + minutes + ':' + seconds;
     }
 
+    const playAudio = async (fileId: any, recordName: any) => {
+        try {
+            const response = await axios({
+                url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_file',
+                method: 'POST',
+                data: {
+                    call_id: fileId,
+                    record_name: recordName,
+                },
+                responseType: 'blob',
+            })
+            const mp3 = new Blob([response.data], { type: 'audio/wav' })
+            const url = window.URL.createObjectURL(mp3);
+            const audio = new Audio(url)
+            audio.load()
+            await audio.play()
+        } catch (e) {
+            console.log('play audio error: ', e)
+        }
+    }
+
+    const downloadAudio = async (fileId: any, recordName: any) => {
+        try {
+            const response = await axios({
+                url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_file',
+                method: 'POST',
+                data: {
+                    call_id: fileId,
+                    record_name: recordName,
+                },
+                responseType: 'blob',
+            })
+            fileDownload(response.data, recordName);
+        } catch (e) {
+            message.error('Không thể tải file!')
+        }
+    }
+
     const columns: ColumnsType<DataLSCGType> = [
         {
             title: 'Hướng cuộc gọi',
@@ -263,14 +304,14 @@ const HistoryCall: React.FC = () => {
             key: 'ghiam',
             width: '120px',
             align: 'center',
-            // render: (text, record) => {
-            //     return (
-            //         <>
-            //             <PlayCircleFilled style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }} />
-            //             <img src={DownloadIcon} style={{ background: '#1890ff', padding: '3px', borderRadius: '30px', verticalAlign: 'sub' }} />
-            //         </>
-            //     )
-            // }
+            render: (text, record) => {
+                return (
+                    <>
+                        <PlayCircleFilled style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }} onClick={() => playAudio(record._id, record.record_name)} />
+                        <img src={DownloadIcon} onClick={() => downloadAudio(record._id, record.record_name)} style={{ background: '#1890ff', padding: '3px', borderRadius: '30px', verticalAlign: 'sub' }} />
+                    </>
+                )
+            }
         },
         {
             title: 'Ghi chú',
@@ -419,7 +460,6 @@ const HistoryCall: React.FC = () => {
     //     fileDownload(res.data, 'history_call_list.xlsx');
     // };
 
-
     return (
         <>
             <div
@@ -557,7 +597,7 @@ const HistoryCall: React.FC = () => {
                                         ))}
                                     </div>
                                     <div style={{ paddingTop: '10px' }}>
-                                        <Divider orientation='left'>{initialState?.currentUser?.email} <EditOutlined /></Divider>
+                                        <Divider orientation='left'>{initialState?.currentUser?.name} <EditOutlined /></Divider>
                                         <Form form={form} layout='vertical' onFinish={handleSubmitNoteForm}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                 <div style={{ flex: 1 }}>
