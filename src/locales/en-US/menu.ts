@@ -50,7 +50,7 @@ export default {
   'menu.editor.mind': 'Mind Editor',
   'menu.editor.koni': 'Koni Editor',
   //Omni Channel Avatar dropdown
-  'menu.account.avatar.person': 'Xem thông tin cá nhân',
+  'menu.account.avatar.person': 'Thông tin cá nhân',
   'menu.account.avatar.notify': 'Cài đặt thông báo',
   'menu.account.avatar.displayAccessibility': 'Màn hình & trợ năng',
   'menu.account.avatar.logout': 'Đăng xuất',
