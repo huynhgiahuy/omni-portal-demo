@@ -295,6 +295,7 @@ const PermissionEdit: React.FC = () => {
     }
     const handleCancleUpdatePermission = () => {
         setClickUpdatePermission(false);
+        form.resetFields();
     }
     const handleClickDeleteUser = (user_id: string) => {
         Modal.confirm({
@@ -613,7 +614,6 @@ const PermissionEdit: React.FC = () => {
                         y: pagination.pageSize >= 10 ? 400 : undefined,
                         x: window.innerWidth < 1900 ? 100 : undefined,
                     }}
-
                     loading={{ indicator: <div><Spin /></div>, spinning: fetchListAllUserInfoFinal.loading }}
                 />
                 <Modal
@@ -735,18 +735,20 @@ const PermissionEdit: React.FC = () => {
                                     rules={[
                                         {
                                             validator: (_, value: any) => {
-                                                if (value === '' || value === undefined) {
-                                                    return Promise.reject('Vui lòng nhập sdt')
+                                                if (value === undefined || !value || value.length === 0) {
+                                                    return Promise.reject('Vui lòng nhập số di động')
                                                 }
-                                                else if (value.length !== 10) {
+                                                if (value.length !== 10) {
                                                     return Promise.reject('Số điện thoại chỉ có 10 ký tự số')
                                                 }
                                                 else if (!value.match('([3|5|7|8|9]{1})+([0-9]{8})')) {
                                                     return Promise.reject('Số điện thoại chỉ có 10 ký tự số')
                                                 }
-                                                return Promise.resolve();
+                                                else {
+                                                    return Promise.resolve();
+                                                }
                                             }
-                                        }
+                                        },
                                     ]}
                                 >
                                     <Input />
@@ -815,7 +817,7 @@ const PermissionEdit: React.FC = () => {
                                     rules={[
                                         {
                                             validator: (_, value: any) => {
-                                                if (value === '' || value === undefined) {
+                                                if (value === undefined || !value || value.length === 0) {
                                                     return Promise.reject('Vui lòng nhập IP Phone')
                                                 }
                                                 else if (value.length > 6) {
