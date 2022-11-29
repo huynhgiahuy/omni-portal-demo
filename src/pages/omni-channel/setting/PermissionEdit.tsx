@@ -820,7 +820,7 @@ const PermissionEdit: React.FC = () => {
                                                 if (value === undefined || !value || value.length === 0) {
                                                     return Promise.reject('Vui lòng nhập IP Phone')
                                                 }
-                                                else if (value.length > 6) {
+                                                if (value.length > 6 || value.length < 6) {
                                                     return Promise.reject('IP Phone tối đa 6 chữ số')
                                                 }
                                                 else if (!value.match('[0-9]')) {
