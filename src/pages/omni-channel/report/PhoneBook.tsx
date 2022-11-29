@@ -35,6 +35,7 @@ import {
   requestCheckPhoneContact,
   requestDeleteUserContact,
   requestGetUserContact,
+  requestSendPinUser,
   requestUpdateUserContact,
 } from './services';
 import { useModel, useRequest } from 'umi';
@@ -204,13 +205,13 @@ const PhoneBook: React.FC = () => {
     },
   );
 
-  const dataExternalContacts = dataContacts.filter(
-    (user: { external_customers: boolean }) => user.external_customers,
-  );
+  const dataExternalContacts = dataContacts
+    .filter((user: { external_customers: boolean }) => user.external_customers)
+    .sort((x, y) => (x.pin_user === y.pin_user ? 0 : x ? -1 : 1));
 
-  const dataInternalContacts = dataContacts.filter(
-    (user: { external_customers: boolean }) => !user.external_customers,
-  );
+  const dataInternalContacts = dataContacts
+    .filter((user: { external_customers: boolean }) => !user.external_customers)
+    .sort((x, y) => (x.pin_user === y.pin_user ? 0 : x ? -1 : 1));
 
   const addUserContact = useRequest(
     async (data) => {
@@ -257,6 +258,23 @@ const PhoneBook: React.FC = () => {
         message.success('Xoá thành công');
         getUserContact.refresh();
         handleCancleModal();
+      }
+      return res;
+    },
+    {
+      manual: true,
+    },
+  );
+
+  const sendPinStart = useRequest(
+    async (data) => {
+      const res: { success: boolean } = await requestSendPinUser(data);
+      if (!res.success) {
+        message.error('Lưu thất bại');
+        return;
+      } else {
+        message.success('Lưu thành công');
+        getUserContact.refresh();
       }
       return res;
     },
@@ -349,7 +367,7 @@ const PhoneBook: React.FC = () => {
                   pin_user: false,
                   email_user: initialState?.currentUser?.email,
                 };
-                console.log(data);
+                sendPinStart.run(data);
               }}
             />
           ) : (
@@ -361,7 +379,7 @@ const PhoneBook: React.FC = () => {
                   pin_user: true,
                   email_user: initialState?.currentUser?.email,
                 };
-                console.log(data);
+                sendPinStart.run(data);
               }}
             />
           )}
@@ -419,16 +437,16 @@ const PhoneBook: React.FC = () => {
     },
     {
       title: '',
-      dataIndex: 'loai',
-      key: 'loai',
+      dataIndex: '',
+      key: '',
       align: 'center',
       width: '100px',
       render: (text, record) => {
         return (
           <Space size="middle">
-            <div style={{ cursor: 'pointer' }}>
+            {/* <div style={{ cursor: 'pointer' }}>
               <Image className={styles.call} width={30} src={Phone} preview={false} />
-            </div>
+            </div> */}
             <DeleteOutlined
               style={{ color: '#F5222D', fontSize: '20px' }}
               onClick={() => {
@@ -623,7 +641,7 @@ const PhoneBook: React.FC = () => {
                 <Spin />
               </div>
             ),
-            spinning: getUserContact.loading,
+            spinning: getUserContact.loading || sendPinStart.loading,
           }}
         />
 
@@ -816,7 +834,7 @@ const PhoneBook: React.FC = () => {
                     )}
                   >
                     {listTeamPermission.map((item: TeamPermission) => (
-                      <Select.Option value={item.id}>
+                      <Select.Option value={item.name}>
                         <div className={styles.flexLayout}>
                           <div>{item.name}</div>
                           {clickAddNewTeam === true ? (
