@@ -590,12 +590,15 @@ const HistoryCall: React.FC = () => {
                                 </>
                             )
                         },
-                        expandIcon: ({ expanded, onExpand, record }) =>
-                            expanded ? (
-                                <UpOutlined onClick={e => onExpand(record, e)} />
-                            ) : (
-                                <DownOutlined onClick={e => onExpand(record, e)} />
+                        expandIcon: ({ expanded, onExpand, record }) => {
+                            return (
+                                expanded ? (
+                                    <UpOutlined onClick={e => onExpand(record, e)} />
+                                ) : (
+                                    <DownOutlined onClick={e => onExpand(record, e)} />
+                                )
                             )
+                        }
                     }}
                 />
             </Card>
