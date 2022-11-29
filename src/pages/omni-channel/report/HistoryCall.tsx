@@ -14,6 +14,7 @@ import CallOutboundIcon from '@/components/PhoneCallType/CallOutboundIcon';
 import moment from 'moment';
 import fileDownload from 'js-file-download';
 import axios from 'axios';
+import api from '@/api';
 
 
 const { RangePicker } = DatePicker;
@@ -194,11 +195,14 @@ const HistoryCall: React.FC = () => {
     const playAudio = async (fileId: any, recordName: any) => {
         try {
             const response = await axios({
-                url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_file',
+                url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file`,
                 method: 'POST',
                 data: {
                     call_id: fileId,
                     record_name: recordName,
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 },
                 responseType: 'blob',
             })
@@ -215,11 +219,14 @@ const HistoryCall: React.FC = () => {
     const downloadAudio = async (fileId: any, recordName: any) => {
         try {
             const response = await axios({
-                url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_file',
+                url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file`,
                 method: 'POST',
                 data: {
                     call_id: fileId,
                     record_name: recordName,
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 },
                 responseType: 'blob',
             })
