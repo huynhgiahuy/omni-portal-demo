@@ -458,6 +458,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     >
                       <Input
                         className={styles.inputHistoryFormStyle}
+                        disabled
                         placeholder="Nhập thông tin"
                       />
                     </Form.Item>
@@ -467,6 +468,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       }
                     >
                       <Input
+                        disabled
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
                       />
@@ -475,6 +477,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       label={<Typography.Text style={{ color: '#fff' }}>Email</Typography.Text>}
                     >
                       <Input
+                        disabled
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
                       />
@@ -485,6 +488,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       }
                     >
                       <Input
+                        disabled
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
                       />
@@ -493,6 +497,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       label={<Typography.Text style={{ color: '#fff' }}>Ghi chú</Typography.Text>}
                     >
                       <Input
+                        disabled
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
                       />

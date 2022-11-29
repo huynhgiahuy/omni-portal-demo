@@ -146,7 +146,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
           )}
         </div>
 
-        <div style={{ display: 'flex' }}>
+        <div style={{ display: 'flex', height: '90%' }}>
           <div style={{ flex: 1 }}>
             <Space
               style={{ width: '100%' }}
@@ -321,7 +321,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                             color: '#fff',
                           }}
                         >
-                          Ghi chú:{' '}
+                          Ghi chú:
                           <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
                             Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại
                           </Typography.Text>
@@ -331,7 +331,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                         <Typography.Paragraph
                           style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}
                         >
-                          Nhân sự:{' '}
+                          Nhân sự:
                           <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
                             HuyenLM2
                           </Typography.Text>
@@ -440,7 +440,11 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       <Typography.Text style={{ color: '#fff' }}>Số điện thoại</Typography.Text>
                     }
                   >
-                    <Input className={styles.inputHistoryFormStyle} placeholder="Nhập thông tin" />
+                    <Input
+                      className={styles.inputHistoryFormStyle}
+                      placeholder="Nhập thông tin"
+                      disabled
+                    />
                   </Form.Item>
                   <Form.Item
                     label={<Typography.Text style={{ color: '#fff' }}>Email</Typography.Text>}
@@ -458,6 +462,12 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                     label={<Typography.Text style={{ color: '#fff' }}>Ghi chú</Typography.Text>}
                   >
                     <Input className={styles.inputHistoryFormStyle} placeholder="Nhập thông tin" />
+                  </Form.Item>
+                  <Form.Item>
+                    <Space>
+                      <Button>Hủy</Button>
+                      <Button type="primary">Lưu</Button>
+                    </Space>
                   </Form.Item>
                 </Form>
               </div>

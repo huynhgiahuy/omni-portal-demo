@@ -816,7 +816,7 @@ const PhoneBook: React.FC = () => {
                     )}
                   >
                     {listTeamPermission.map((item: TeamPermission) => (
-                      <Select.Option value={item.id}>
+                      <Select.Option value={item.name}>
                         <div className={styles.flexLayout}>
                           <div>{item.name}</div>
                           {clickAddNewTeam === true ? (
