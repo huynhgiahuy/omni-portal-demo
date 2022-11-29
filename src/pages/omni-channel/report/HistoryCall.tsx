@@ -196,6 +196,7 @@ const HistoryCall: React.FC = () => {
         try {
             const response = await axios({
                 url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file`,
+                //url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_file',
                 method: 'POST',
                 data: {
                     call_id: fileId,
@@ -212,7 +213,7 @@ const HistoryCall: React.FC = () => {
             audio.load()
             await audio.play()
         } catch (e) {
-            console.log('play audio error: ', e)
+            message.error('Không thể nghe file!')
         }
     }
 
@@ -220,6 +221,7 @@ const HistoryCall: React.FC = () => {
         try {
             const response = await axios({
                 url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file`,
+                //url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_file',
                 method: 'POST',
                 data: {
                     call_id: fileId,
@@ -448,24 +450,18 @@ const HistoryCall: React.FC = () => {
         });
     };
 
-    // const handleExportFile = async () => {
-    //     const res = await axios({
-    //         //url: `${CXBOX_URL}/api/employee_report/export_employee_excel_file`,
-    //         method: 'POST',
-    //         data: {
-    //             filename: 'history_call_list',
-    //             limit: pagination.pageSize,
-    //             offset: pagination.current,
-    //             from_datetime: valueFromDateTime,
-    //             to_datetime: valueToDateTime,
-    //             call_direction: listValueHCG,
-    //             result: listValueKQ,
-    //             search_name: valueKeyWord,
-    //         },
-    //         responseType: 'blob',
-    //     });
-    //     fileDownload(res.data, 'history_call_list.xlsx');
-    // };
+    const handleExportFile = async () => {
+        const res = await axios({
+            //url: 'http://172.27.228.201:8007/voip-service/api/call/export_call_history_excel',
+            url: `${api.UMI_API_BASE_URL}/voip-service/api/call/export_call_history_excel`,
+            method: 'POST',
+            responseType: 'blob',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        fileDownload(res.data, 'history_call_report.xlsx');
+    };
 
     return (
         <>
@@ -555,7 +551,7 @@ const HistoryCall: React.FC = () => {
                     />
                     <Button
                         style={{ backgroundColor: '#7fb77e', color: '#fff' }}
-                    //onClick={() => handleExportFile()}
+                        onClick={handleExportFile}
                     >
                         <ExportIcon /> Export
                     </Button>
