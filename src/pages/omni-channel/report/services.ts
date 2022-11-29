@@ -69,6 +69,9 @@ export async function requestHistoryCallData(
 ) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/get_call_history`, {
     method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     data: {
       limit,
       offset,
@@ -84,6 +87,9 @@ export async function requestHistoryCallData(
 export async function requestUpdateNoteHistoryCall(call_id?: string, note?: string) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/update_call_note`, {
     method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
     data: {
       call_id,
       note,
