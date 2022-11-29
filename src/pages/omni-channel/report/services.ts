@@ -17,12 +17,13 @@ export type dataUserContactProps = {
   team: string;
 };
 
-export async function requestGetUserContact() {
+export async function requestGetUserContact(data?: { keyword?: string; unit?: string[] }) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/get_user_contacts`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    data,
   });
 }
 
@@ -54,6 +55,18 @@ export async function requestDeleteUserContact(contacts_id: string) {
     },
     data: {
       contacts_id,
+    },
+  });
+}
+
+export async function requestCheckPhoneContact(phone_number: string) {
+  return request(`${api.UMI_API_BASE_URL}/voip-service/api/check_user_phone_number`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      phone_number,
     },
   });
 }
