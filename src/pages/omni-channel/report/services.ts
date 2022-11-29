@@ -1,7 +1,7 @@
 import api from '@/api';
 import request from '@/utils/request';
 
-const token = window.localStorage.getItem('access_token');
+const token = window.localStorage?.getItem('access_token');
 
 export type dataUserContactProps = {
   id?: string;
@@ -17,7 +17,10 @@ export type dataUserContactProps = {
   team: string;
 };
 
-export async function requestGetUserContact(data?: { keyword?: string; unit?: string[] }) {
+export async function requestGetUserContact(
+  token: string,
+  data?: { keyword?: string; unit?: string[] },
+) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/get_user_contacts`, {
     method: 'POST',
     headers: {
