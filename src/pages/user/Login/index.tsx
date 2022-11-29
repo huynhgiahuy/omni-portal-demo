@@ -35,11 +35,11 @@ const Login: React.FC = () => {
           if (res.success) {
             setIsLogin(false);
             fetchUserInfo(res.data);
-            const defaultLoginSuccessMessage = intl.formatMessage({
-              id: 'pages.login.success',
-              defaultMessage: 'Đăng nhập thành công',
-            });
-            message.success(defaultLoginSuccessMessage);
+            // const defaultLoginSuccessMessage = intl.formatMessage({
+            //   id: 'pages.login.success',
+            //   defaultMessage: 'Đăng nhập thành công',
+            // });
+            // message.success(defaultLoginSuccessMessage);
             history.push(redirect || '/');
           } else {
             setIsLogin(true);
