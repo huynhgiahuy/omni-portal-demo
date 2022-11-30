@@ -42,7 +42,7 @@ interface DataLSCGType {
 }
 
 const HistoryCall: React.FC = () => {
-    const { initialState, setInitialState } = useModel('@@initialState');
+    //const { initialState, setInitialState } = useModel('@@initialState');
 
     const [listValueHCG, setListValueHCG] = useState<string[] | any>();
     const [listValueKQ, setListValueKQ] = useState<string[] | any>();
@@ -199,15 +199,15 @@ const HistoryCall: React.FC = () => {
         return hours + ':' + minutes + ':' + seconds;
     }
 
-    const playAudio = async () => {
+    const playAudio = async (fileId?: any, recordName?: any) => {
         try {
             const response = await axios({
                 url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file_url`,
                 //url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_url',
                 method: 'POST',
                 data: {
-                    call_id: "63846d63449f2cb5bbd0dc22",
-                    record_name: "b5dcad70-055c-49fb-af0d-2baee9d073dd.mp3"
+                    call_id: fileId,
+                    record_name: recordName
                 },
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -223,7 +223,7 @@ const HistoryCall: React.FC = () => {
             //await audio.play()
             //console.log(url);
         } catch (e) {
-            message.error('Không thể nghe file!')
+            console.log(e);
         }
     }
 
@@ -339,13 +339,13 @@ const HistoryCall: React.FC = () => {
                     <>
                         <PlayCircleFilled
                             style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }}
-                            onClick={() => { playAudio(); setVisibleModalAudio(true) }}
+                            onClick={() => { playAudio(record._id, record.record_name); setVisibleModalAudio(true) }}
                         //onClick={() => setVisibleModalAudio(true)}
                         />
                         <img
                             src={DownloadIcon}
                             style={{ background: '#1890ff', padding: '3px', borderRadius: '30px', verticalAlign: 'sub' }}
-                            onClick={() => downloadAudio('63846d63449f2cb5bbd0dc22', 'b5dcad70-055c-49fb-af0d-2baee9d073dd.mp3')}
+                            onClick={() => downloadAudio(record._id, record.record_name)}
                         />
                     </>
                 )
@@ -617,62 +617,62 @@ const HistoryCall: React.FC = () => {
                         x: window.innerWidth < 1900 ? 100 : undefined,
                     }}
                     loading={{ indicator: <div><Spin /></div>, spinning: fetchListLSCGData.loading }}
-                    expandable={{
-                        expandedRowRender: (record) => {
-                            return (
-                                <>
-                                    <div style={{ textAlign: 'center', paddingTop: '10px' }}>
-                                        {record.note?.map(item => (
-                                            <>
-                                                <Typography.Text>{item.content}</Typography.Text>
-                                                <br></br>
-                                            </>
-                                        ))}
-                                    </div>
-                                    <div style={{ paddingTop: '10px' }}>
-                                        <Divider orientation='left'>{initialState?.currentUser?.name} <EditOutlined /></Divider>
-                                        <Form form={form} layout='vertical' onFinish={handleSubmitNoteForm}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                <div style={{ flex: 1 }}>
-                                                    <Form.Item
-                                                        name="note"
-                                                        rules={[
-                                                            {
-                                                                required: true,
-                                                                message: 'Vui lòng nhập ghi chú'
-                                                            }
-                                                        ]}
-                                                    >
-                                                        <Input />
-                                                    </Form.Item>
-                                                </div>
-                                                <div style={{ marginLeft: '10px' }}>
-                                                    <Form.Item label="">
-                                                        <Button
-                                                            style={{ backgroundColor: '#1890ff', color: '#fff' }}
-                                                            htmlType="submit"
-                                                            onClick={() => handleClickUpdateNote(record._id)}
-                                                        >
-                                                            Lưu
-                                                        </Button>
-                                                    </Form.Item>
-                                                </div>
-                                            </div>
-                                        </Form>
-                                    </div>
-                                </>
-                            )
-                        },
-                        expandIcon: ({ expanded, onExpand, record }) => {
-                            return (
-                                expanded ? (
-                                    <UpOutlined onClick={e => onExpand(record, e)} />
-                                ) : (
-                                    <DownOutlined onClick={e => onExpand(record, e)} />
-                                )
-                            )
-                        }
-                    }}
+                // expandable={{
+                //     expandedRowRender: (record) => {
+                //         return (
+                //             <>
+                //                 <div style={{ textAlign: 'center', paddingTop: '10px' }}>
+                //                     {record.note?.map(item => (
+                //                         <>
+                //                             <Typography.Text>{item.content}</Typography.Text>
+                //                             <br></br>
+                //                         </>
+                //                     ))}
+                //                 </div>
+                //                 <div style={{ paddingTop: '10px' }}>
+                //                     <Divider orientation='left'>{initialState?.currentUser?.name} <EditOutlined /></Divider>
+                //                     <Form form={form} layout='vertical' onFinish={handleSubmitNoteForm}>
+                //                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                //                             <div style={{ flex: 1 }}>
+                //                                 <Form.Item
+                //                                     name="note"
+                //                                     rules={[
+                //                                         {
+                //                                             required: true,
+                //                                             message: 'Vui lòng nhập ghi chú'
+                //                                         }
+                //                                     ]}
+                //                                 >
+                //                                     <Input />
+                //                                 </Form.Item>
+                //                             </div>
+                //                             <div style={{ marginLeft: '10px' }}>
+                //                                 <Form.Item label="">
+                //                                     <Button
+                //                                         style={{ backgroundColor: '#1890ff', color: '#fff' }}
+                //                                         htmlType="submit"
+                //                                         onClick={() => handleClickUpdateNote(record._id)}
+                //                                     >
+                //                                         Lưu
+                //                                     </Button>
+                //                                 </Form.Item>
+                //                             </div>
+                //                         </div>
+                //                     </Form>
+                //                 </div>
+                //             </>
+                //         )
+                //     },
+                //     expandIcon: ({ expanded, onExpand, record }) => {
+                //         return (
+                //             expanded ? (
+                //                 <UpOutlined onClick={e => onExpand(record, e)} />
+                //             ) : (
+                //                 <DownOutlined onClick={e => onExpand(record, e)} />
+                //             )
+                //         )
+                //     }
+                // }}
                 />
                 <Modal
                     open={isVisibleModalAudio}
