@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker, message, Spin, Modal } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlayCircleFilled, SearchOutlined, DownOutlined, UpOutlined, EditOutlined } from '@ant-design/icons';
@@ -56,6 +56,8 @@ const HistoryCall: React.FC = () => {
     const [ellipsis, setEllipsis] = useState<any>(true);
 
     const [audioURI, setAudioURI] = useState<string>();
+
+    const audioRef = useRef<any>();
 
     const [isVisibleModalAudio, setVisibleModalAudio] = useState(false);
 
@@ -657,13 +659,14 @@ const HistoryCall: React.FC = () => {
                 />
                 <Modal
                     open={isVisibleModalAudio}
-                    onCancel={() => setVisibleModalAudio(false)}
+                    onCancel={() => { setVisibleModalAudio(false); audioRef.current.pause() }}
                     footer={false}
                     title="Nghe file ghi âm"
                 >
                     <div style={{ textAlign: 'center' }}>
                         <figure>
                             <audio
+                                ref={audioRef}
                                 controls
                                 src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
                             </audio>
