@@ -1,7 +1,7 @@
 import api from '@/api';
 import request from '@/utils/request';
 
-const token = window.localStorage.getItem('access_token');
+const token = window.localStorage?.getItem('access_token');
 
 export type dataUserContactProps = {
   id?: string;
@@ -17,7 +17,10 @@ export type dataUserContactProps = {
   team: string;
 };
 
-export async function requestGetUserContact(data?: { keyword?: string; unit?: string[] }) {
+export async function requestGetUserContact(
+  token: string,
+  data?: { keyword?: string; unit?: string[] },
+) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/get_user_contacts`, {
     method: 'POST',
     headers: {
@@ -68,5 +71,59 @@ export async function requestCheckPhoneContact(phone_number: string) {
     data: {
       phone_number,
     },
+  });
+}
+
+export async function requestHistoryCallData(
+  token?: any,
+  limit?: number,
+  offset?: number,
+  from_datetime?: string,
+  to_datetime?: string,
+  direction?: any,
+  result?: any,
+  search_name?: string,
+) {
+  return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/get_call_history`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      limit,
+      offset,
+      from_datetime,
+      to_datetime,
+      direction,
+      result,
+      search_name,
+    },
+  });
+}
+
+export async function requestUpdateNoteHistoryCall(token?: any, call_id?: string, note?: string) {
+  return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/update_call_note`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      call_id,
+      note,
+    },
+  });
+}
+
+export async function requestSendPinUser(data: {
+  email_user: string;
+  contacts_id: string;
+  pin_user: boolean;
+}) {
+  return request(`${api.UMI_API_BASE_URL}/voip-service/api/pin_contact_user`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data,
   });
 }

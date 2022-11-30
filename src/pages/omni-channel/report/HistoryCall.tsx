@@ -1,176 +1,471 @@
-import React, { useState } from 'react';
-import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker, message, Spin } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlayCircleFilled, SearchOutlined, DownOutlined, UpOutlined, EditOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
-import PhoneCallOut from '../../../components/PhoneCall/phone_call_out_final.png'
-import PhoneCallIn from '../../../components/PhoneCall/phone_call_in_final.png'
-import { data } from './FakeData';
 import styles from '../report/style.less'
+import { requestHistoryCallData, requestUpdateNoteHistoryCall } from './services';
+import { useRequest, useModel } from 'umi';
+import { debounce } from 'lodash';
+import CallInboundIcon from '@/components/PhoneCallType/CallInboundIcon';
+import CallInterval from '@/components/PhoneCallType/CallInterval';
+import CallOutboundIcon from '@/components/PhoneCallType/CallOutboundIcon';
+import moment from 'moment';
+import fileDownload from 'js-file-download';
+import axios from 'axios';
+import api from '@/api';
+
 
 const { RangePicker } = DatePicker;
-interface DataType {
-    key?: string;
-    huongcuocgoi: string;
-    somaygoi: string;
-    tennguoigoi: string;
-    somaynhan: string;
-    tennguoinhan: string;
-    thoigianbatdau: string;
-    thoiluong: string;
-    ketqua: string;
-    ghiam: string;
-    ghichu: string;
+
+interface PaginationProps {
+    current: number;
+    pageSize: number;
+    showSizeChanger: boolean;
+    showQuickJumper: boolean;
+    pageSizeOptions: string[];
+}
+interface DataLSCGType {
+    _id: string;
+    call_direction?: string;
+    sip_from_user?: string;
+    caller_destination?: string;
+    start_epoch?: string;
+    billsec?: string;
+    hangup_cause?: string;
+    record_path?: string;
+    record_name?: string;
+    note?: any[];
+    caller_name?: string;
+    receiver_name?: string;
+    result?: string;
 }
 
 const HistoryCall: React.FC = () => {
-    const [listValueHCG, setListValueHCG] = useState<string | any>('');
-    const [listValueKQ, setListValueKQ] = useState<string | any>('');
+    const { initialState, setInitialState } = useModel('@@initialState');
+
+    const [listValueHCG, setListValueHCG] = useState<string[] | any>();
+    const [listValueKQ, setListValueKQ] = useState<string[] | any>();
+    const [valueFromDateTime, setValueFromDateTime] = useState<string | any>();
+    const [valueToDateTime, setValueToDateTime] = useState<string | any>();
+    const [valueKeyWord, setValueKeyWord] = useState<string | any>();
+
+    const [listDataLSCG, setListDataLSCG] = useState<DataLSCGType[] | any>();
+    const [listDataLSCGLength, setListDataLSCGLength] = useState<string | any>();
+    const [getCallId, setGetCallId] = useState<string>();
+    const [ellipsis, setEllipsis] = useState<any>(true);
+
+    const [pagination, setPagination] = useState<PaginationProps>({
+        current: 1,
+        pageSize: 3,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        pageSizeOptions: ['3', '10', '30', '50']
+    })
 
     const [form] = Form.useForm();
 
-    const handleViewResult = (result: any) => {
-        let color;
-        if (result === 'Thành công') {
-            color = 'blue'
+    const token = window.localStorage?.getItem('access_token');
+
+    const fetchListLSCGData = useRequest(
+        async (from_datetime: string | undefined, to_datetime: any | undefined) => {
+            const res: { success: boolean, length: number } = await requestHistoryCallData(
+                token ? token : '',
+                pagination.pageSize,
+                pagination.current,
+                from_datetime,
+                to_datetime,
+                listValueHCG,
+                listValueKQ,
+                valueKeyWord
+            );
+            if (res.success === false) {
+                message.error('Lấy dữ liệu thất bại!');
+            } else {
+                setListDataLSCGLength(res.length)
+            }
+            return res;
+        },
+        {
+            manual: true,
+            onSuccess: (res: any) => {
+                if (res) {
+                    setListDataLSCG(res);
+                }
+            },
+        },
+    )
+
+    const handleUpdateNoteHistoryCall = async (call_id?: string, note?: string) => {
+        const respone_update_note = await requestUpdateNoteHistoryCall(token ? token : '', call_id, note);
+        if (respone_update_note.success !== true) {
+            message.error('Lưu ghi chú thất bại!');
         }
-        else if (result === 'Nhỡ trong hàng chờ') {
-            color = 'red'
+        else {
+            message.success('Lưu ghi chú thành công!');
+            fetchListLSCGData.refresh();
+        }
+    }
+
+    useEffect(() => {
+        fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
+    }, [pagination])
+
+    const handleViewResult = (result: any) => {
+        let color, newResult;
+        if (result === 'success') {
+            color = '#7CFC00';
+            newResult = 'Thành công';
+        }
+        else if (result === 'fail') {
+            color = '#b20000';
+            newResult = 'Thất bại';
+        }
+        else if (result === 'busy') {
+            color = '#660000';
+            newResult = 'Bận';
+        }
+        else if (result === 'cancel') {
+            color = '#e50000';
+            newResult = 'Hủy bỏ';
+        }
+        else if (result === 'no_answer') {
+            color = '#b1b1b1';
+            newResult = 'Không trả lời';
+        }
+        else if (result === 'rejected') {
+            color = '#ff0000';
+            newResult = 'Từ chối';
+        }
+        else if (result === 'missed') {
+            color = '#9B26B6';
+            newResult = 'Nhỡ trong hàng chờ';
+        }
+        else if (result === 'other_failure') {
+            color = '#FFAC1C';
+            newResult = 'Lý do fail khác';
         }
         return (
-            <Tag color={color}>{result}</Tag>
+            <Tag color={color}>{newResult}</Tag>
         )
     }
 
-    const columns: ColumnsType<DataType> = [
+    const handleViewCallDirection = (call_direction: any) => {
+        let newCallDirection;
+        if (call_direction === 'inbound') {
+            newCallDirection = 'Gọi vào';
+            return (
+                <>
+                    <CallInboundIcon /> {newCallDirection}
+                </>
+            )
+        }
+        else if (call_direction === 'outbound') {
+            newCallDirection = 'Gọi ra';
+            return (
+                <>
+                    <CallOutboundIcon /> {newCallDirection}
+                </>
+            )
+        }
+        else if (call_direction === 'local') {
+            newCallDirection = 'Gọi nội bộ';
+            return (
+                <>
+                    <CallInterval /> {newCallDirection}
+                </>
+            )
+        }
+        return;
+    }
+
+    const handleChangeBillSec = (val: any) => {
+        var sec_num: any = parseInt(val, 10); // don't forget the second param
+        var hours: any = Math.floor(sec_num / 3600);
+        var minutes: any = Math.floor((sec_num - (hours * 3600)) / 60);
+        var seconds: any = sec_num - (hours * 3600) - (minutes * 60);
+
+        if (hours < 10) { hours = "0" + hours; }
+        if (minutes < 10) { minutes = "0" + minutes; }
+        if (seconds < 10) { seconds = "0" + seconds; }
+        return hours + ':' + minutes + ':' + seconds;
+    }
+
+    const playAudio = async (fileId: any, recordName: any) => {
+        try {
+            const response = await axios({
+                url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file`,
+                method: 'POST',
+                data: {
+                    call_id: fileId,
+                    record_name: recordName,
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                responseType: 'blob',
+            })
+            const mp3 = new Blob([response.data], { type: 'audio/wav' })
+            const url = window.URL.createObjectURL(mp3);
+            const audio = new Audio(url)
+            audio.load()
+            await audio.play()
+        } catch (e) {
+            console.log('play audio error: ', e)
+        }
+    }
+
+    const downloadAudio = async (fileId: any, recordName: any) => {
+        try {
+            const response = await axios({
+                url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file`,
+                method: 'POST',
+                data: {
+                    call_id: fileId,
+                    record_name: recordName,
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                responseType: 'blob',
+            })
+            fileDownload(response.data, recordName);
+        } catch (e) {
+            message.error('Không thể tải file!')
+        }
+    }
+
+    const columns: ColumnsType<DataLSCGType> = [
         {
             title: 'Hướng cuộc gọi',
-            dataIndex: 'huongcuocgoi',
-            key: 'huongcuocgoi',
+            dataIndex: 'call_direction',
+            key: 'call_direction',
             align: 'center',
             width: '130px',
             render: (text, record) => {
-                if (record.huongcuocgoi === 'gọi vào') {
-                    return (
-                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                            <img src={PhoneCallIn} style={{ width: '15px', height: '15px', flex: 0.2 }} />
-                            <Typography.Text style={{ flex: 0.5 }}>{record.huongcuocgoi}</Typography.Text>
-                        </div>
-                    )
-                }
-                return (
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                        <img src={PhoneCallOut} style={{ width: '15px', height: '15px', flex: 0.2 }} />
-                        <Typography.Text style={{ flex: 0.5 }}>{record.huongcuocgoi}</Typography.Text>
-                    </div>
-                )
+                return handleViewCallDirection(record.call_direction);
             }
         },
         {
             title: 'Số máy gọi',
-            dataIndex: 'somaygoi',
-            key: 'somaygoi',
+            dataIndex: 'sip_from_user',
+            key: 'sip_from_user',
             align: 'center',
-            width: '10px'
+            width: '110px'
         },
         {
             title: 'Tên người gọi',
-            dataIndex: 'tennguoigoi',
-            key: 'tennguoigoi',
+            dataIndex: 'caller_name',
+            key: 'caller_name',
             align: 'center',
             width: '150px'
         },
         {
             title: 'Số máy nhận',
-            dataIndex: 'somaynhan',
-            key: 'somaynhan',
+            dataIndex: 'caller_destination',
+            key: 'caller_destination',
             align: 'center',
             width: '110px'
         },
         {
             title: 'Tên người nhận',
-            dataIndex: 'tennguoinhan',
-            key: 'tennguoinhan',
-            align: 'center',
-            width: '140px'
-        },
-        {
-            title: 'Thời gian bắt đầu',
-            dataIndex: 'thoigianbatdau',
-            key: 'thoigianbatdau',
+            dataIndex: 'receiver_name',
+            key: 'receiver_name',
             align: 'center',
             width: '150px'
         },
         {
-            title: 'Thời lượng',
-            dataIndex: 'thoiluong',
-            key: 'thoiluong',
-            align: 'center',
-            width: '100px'
-        },
-        {
-            title: 'Kết quả',
-            dataIndex: 'ketqua',
-            key: 'ketqua',
+            title: 'Thời gian bắt đầu',
+            dataIndex: 'start_epoch',
+            key: 'start_epoch',
             align: 'center',
             width: '150px',
             render: (text, record) => {
-                return (
-                    <>
-                        {handleViewResult(record.ketqua)}
-                    </>
-                )
+                return moment(text).format('DD-MM-YYYY HH:mm:ss')
+            }
+        },
+        {
+            title: 'Thời lượng',
+            dataIndex: 'billsec',
+            key: 'billsec',
+            align: 'center',
+            width: '100px',
+            render: (text, record) => {
+                return handleChangeBillSec(text.toString())
+            }
+        },
+        {
+            title: 'Kết quả',
+            dataIndex: 'result',
+            key: 'result',
+            align: 'center',
+            width: '150px',
+            render: (text, record) => {
+                return handleViewResult(record.result);
             }
         },
         {
             title: 'Ghi âm',
             dataIndex: 'ghiam',
             key: 'ghiam',
+            width: '120px',
             align: 'center',
-            width: '100px',
             render: (text, record) => {
                 return (
                     <>
-                        <PlayCircleFilled style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }} />
-                        <img src={DownloadIcon} style={{ background: '#1890ff', padding: '3px', borderRadius: '30px', verticalAlign: 'sub' }} />
+                        <PlayCircleFilled style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }} onClick={() => playAudio(record._id, record.record_name)} />
+                        <img src={DownloadIcon} onClick={() => downloadAudio(record._id, record.record_name)} style={{ background: '#1890ff', padding: '3px', borderRadius: '30px', verticalAlign: 'sub' }} />
                     </>
                 )
             }
         },
         {
             title: 'Ghi chú',
-            dataIndex: 'ghichu',
-            key: 'ghichu',
+            dataIndex: 'note',
+            key: 'note',
             align: 'center',
-            width: '250px'
+            width: '250px',
+            render: (note: any[]) => {
+                if (note.length > 2) {
+                    return (
+                        <>
+                            <Typography.Text>
+                                {note[0].content}
+                            </Typography.Text>
+                            <br></br>
+                            <br></br>
+                            <Typography.Text>
+                                {note[1].content}
+                            </Typography.Text>
+                            <br></br>
+                            <br></br>
+                            <Typography.Text
+                                style={
+                                    ellipsis
+                                        ? {
+                                            width: 200,
+                                        }
+                                        : undefined
+                                }
+                                ellipsis={
+                                    true
+                                }
+                            >
+                                {note[2].content}...
+                            </Typography.Text>
+                        </>
+                    )
+                }
+                else {
+                    return note.map(item => (
+                        <>
+                            <Typography.Text>{item.content}</Typography.Text>
+                            <br></br>
+                        </>
+                    ))
+                }
+            }
         },
         Table.EXPAND_COLUMN,
     ];
 
+    const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
+        setPagination({
+            ...pagination,
+            current: newPagination.current,
+            pageSize: newPagination.pageSize,
+        });
+
+    };
+
     const handleSelectValueHCG = (values: any) => {
-        if (values !== undefined || values !== '') {
+        console.log(values.length === 0)
+        if (values.length === 0) {
+            setListValueHCG(undefined)
+            setPagination({
+                ...pagination,
+                current: 1,
+            });
+        }
+        else {
             setListValueHCG(values);
+            setPagination({
+                ...pagination,
+                current: 1,
+            });
         }
     }
 
     const handleSelectValueKQ = (values: any) => {
-        if (values !== undefined || values !== '') {
+        if (values.length === 0) {
+            setListValueKQ(undefined);
+            setPagination({
+                ...pagination,
+                current: 1,
+            });
+        }
+        else {
             setListValueKQ(values);
+            setPagination({
+                ...pagination,
+                current: 1,
+            });
         }
     }
 
-    const onReset = () => {
-        form.resetFields();
-    };
-
-    const handleSubmitNoteForm = (values: any) => {
-        console.log(values);
+    const handleSubmitNoteForm = async (values: any) => {
+        await handleUpdateNoteHistoryCall(getCallId, values.note);
+        form.setFieldsValue({ note: undefined });
     }
 
     const handleChangeValueRangePicker = (value: any, dateString: any) => {
-        console.log(value, dateString);
+        if (dateString[0] === '' && dateString[1] === '') {
+            setValueFromDateTime(undefined);
+            setValueToDateTime(undefined);
+            fetchListLSCGData.run(undefined, undefined);
+        }
+        else (dateString[0] !== '' && dateString[1] !== '')
+        {
+            setValueFromDateTime(moment(dateString[0]).toISOString());
+            setValueToDateTime(moment(dateString[1]).toISOString());
+            fetchListLSCGData.run(moment(dateString[0]).toISOString(), moment(dateString[1]).toISOString());
+        }
     }
+
+    const handleClickUpdateNote = (call_id: any) => {
+        setGetCallId(call_id);
+    }
+
+    const onResetFilter = () => {
+        form.resetFields();
+        setListValueHCG(undefined);
+        setListValueKQ(undefined);
+        setValueKeyWord(undefined)
+        setPagination({
+            ...pagination,
+            current: 1,
+        });
+    };
+
+    // const handleExportFile = async () => {
+    //     const res = await axios({
+    //         //url: `${CXBOX_URL}/api/employee_report/export_employee_excel_file`,
+    //         method: 'POST',
+    //         data: {
+    //             filename: 'history_call_list',
+    //             limit: pagination.pageSize,
+    //             offset: pagination.current,
+    //             from_datetime: valueFromDateTime,
+    //             to_datetime: valueToDateTime,
+    //             call_direction: listValueHCG,
+    //             result: listValueKQ,
+    //             search_name: valueKeyWord,
+    //         },
+    //         responseType: 'blob',
+    //     });
+    //     fileDownload(res.data, 'history_call_list.xlsx');
+    // };
 
     return (
         <>
@@ -194,16 +489,24 @@ const HistoryCall: React.FC = () => {
                         >
                             <div style={{ width: '300px' }}>
                                 <Form.Item label="Hướng cuộc gọi" name="Hướng cuộc gọi" style={{ marginBottom: 'unset' }}>
-                                    <Select onChange={handleSelectValueHCG} value={listValueHCG} >
-                                        <Select.Option value="Gọi ra">Gọi ra</Select.Option>
-                                        <Select.Option value="Gọi vào">Gọi vào</Select.Option>
+                                    <Select onChange={handleSelectValueHCG} mode="multiple" >
+                                        <Select.Option value="inbound">Gọi vào</Select.Option>
+                                        <Select.Option value="outbound">Gọi ra</Select.Option>
+                                        <Select.Option value="local">Gọi nội bộ</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </div>
                             <div style={{ width: '300px' }}>
                                 <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
-                                    <Select onChange={handleSelectValueKQ} value={listValueKQ}>
-                                        <Select.Option value="Tất cả">Tất cả</Select.Option>
+                                    <Select onChange={handleSelectValueKQ} mode="multiple">
+                                        <Select.Option value="success">Thành công</Select.Option>
+                                        <Select.Option value="fail">Thất bại</Select.Option>
+                                        <Select.Option value="busy">Bận</Select.Option>
+                                        <Select.Option value="cancel">Hủy bỏ</Select.Option>
+                                        <Select.Option value="no_answer">Không trả lời</Select.Option>
+                                        <Select.Option value="rejected">Từ chối</Select.Option>
+                                        <Select.Option value="missed">Nhỡ trong hàng chờ</Select.Option>
+                                        <Select.Option value="other_failure">Lý do fail khác</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </div>
@@ -214,7 +517,7 @@ const HistoryCall: React.FC = () => {
                             </div>
                             <div style={{ paddingTop: '29px' }}>
                                 <Form.Item style={{ marginBottom: 'unset' }}>
-                                    <Button type='text' style={{ color: 'blue' }} onClick={onReset}>Reset</Button>
+                                    <Button type='text' style={{ color: 'blue' }} onClick={onResetFilter}>Reset</Button>
                                 </Form.Item>
                             </div>
                         </div>
@@ -229,10 +532,30 @@ const HistoryCall: React.FC = () => {
                     <Input
                         style={{ width: '300px', marginRight: '10px' }}
                         prefix={<SearchOutlined />}
-                        placeholder="Tìm kiếm"
+                        placeholder="Tìm kiếm tên người gọi, người nhận"
+                        allowClear
+                        onChange={debounce(
+                            (e) => {
+                                const { value } = e.target;
+                                if (value === "" || value === undefined) {
+                                    setValueKeyWord(undefined)
+                                    fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
+                                }
+                                else {
+                                    setValueKeyWord(value);
+                                    fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
+                                }
+                            },
+                            500,
+                            {
+                                trailing: true,
+                                leading: false,
+                            },
+                        )}
                     />
                     <Button
                         style={{ backgroundColor: '#7fb77e', color: '#fff' }}
+                    //onClick={() => handleExportFile()}
                     >
                         <ExportIcon /> Export
                     </Button>
@@ -242,59 +565,87 @@ const HistoryCall: React.FC = () => {
                 className={styles.detailCardLayout}
             >
                 <Table
-                    dataSource={data}
+                    dataSource={listDataLSCG}
+                    rowKey={item => item._id}
                     columns={columns}
                     style={{ paddingLeft: '10px', paddingTop: '10px' }}
                     className={styles.tableStyle}
+                    onChange={handleTableChange}
                     pagination={{
-                        pageSize: 5,
-                        showQuickJumper: true,
-                        showSizeChanger: true,
+                        ...pagination,
+                        total: listDataLSCGLength,
                         locale: {
-                            jump_to: 'Go to',
-                            page: ''
-                        }
+                            items_per_page: '/ Trang',
+                            jump_to: 'Đến trang',
+                            page: '',
+                            next_page: 'Trang sau',
+                            prev_page: 'Trang trước',
+                            next_3: '3 trang sau',
+                            next_5: '5 trang sau',
+                            prev_3: '3 trang trước',
+                            prev_5: '5 trang trước',
+                        },
                     }}
-                    scroll={{ x: 300 }}
+                    scroll={{
+                        y: pagination.pageSize >= 10 ? 400 : undefined,
+                        x: window.innerWidth < 1900 ? 100 : undefined,
+                    }}
+                    loading={{ indicator: <div><Spin /></div>, spinning: fetchListLSCGData.loading }}
                     expandable={{
-                        expandedRowRender: (record) => (
-                            <>
-                                <div style={{ textAlign: 'center', paddingTop: '5%' }}>
-                                    <Typography.Text>Chưa có ghi chú</Typography.Text>
-                                </div>
-                                <div style={{ paddingTop: '5%' }}>
-                                    <Divider orientation='left'>NhuVTT33 <EditOutlined /></Divider>
-                                    <Form layout='vertical' onFinish={handleSubmitNoteForm}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                            <div style={{ flex: 1 }}>
-                                                <Form.Item
-                                                    name="note"
-                                                    rules={[
-                                                        {
-                                                            required: true,
-                                                            message: 'Vui lòng nhập ghi chú'
-                                                        }
-                                                    ]}
-                                                >
-                                                    <Input />
-                                                </Form.Item>
+                        expandedRowRender: (record) => {
+                            return (
+                                <>
+                                    <div style={{ textAlign: 'center', paddingTop: '10px' }}>
+                                        {record.note?.map(item => (
+                                            <>
+                                                <Typography.Text>{item.content}</Typography.Text>
+                                                <br></br>
+                                            </>
+                                        ))}
+                                    </div>
+                                    <div style={{ paddingTop: '10px' }}>
+                                        <Divider orientation='left'>{initialState?.currentUser?.name} <EditOutlined /></Divider>
+                                        <Form form={form} layout='vertical' onFinish={handleSubmitNoteForm}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                <div style={{ flex: 1 }}>
+                                                    <Form.Item
+                                                        name="note"
+                                                        rules={[
+                                                            {
+                                                                required: true,
+                                                                message: 'Vui lòng nhập ghi chú'
+                                                            }
+                                                        ]}
+                                                    >
+                                                        <Input />
+                                                    </Form.Item>
+                                                </div>
+                                                <div style={{ marginLeft: '10px' }}>
+                                                    <Form.Item label="">
+                                                        <Button
+                                                            style={{ backgroundColor: '#1890ff', color: '#fff' }}
+                                                            htmlType="submit"
+                                                            onClick={() => handleClickUpdateNote(record._id)}
+                                                        >
+                                                            Lưu
+                                                        </Button>
+                                                    </Form.Item>
+                                                </div>
                                             </div>
-                                            <div style={{ marginLeft: '10px' }}>
-                                                <Form.Item>
-                                                    <Button style={{ backgroundColor: '#1890ff', color: '#fff' }} htmlType="submit">Lưu</Button>
-                                                </Form.Item>
-                                            </div>
-                                        </div>
-                                    </Form>
-                                </div>
-                            </>
-                        ),
-                        expandIcon: ({ expanded, onExpand, record }) =>
-                            expanded ? (
-                                <UpOutlined onClick={e => onExpand(record, e)} />
-                            ) : (
-                                <DownOutlined onClick={e => onExpand(record, e)} />
+                                        </Form>
+                                    </div>
+                                </>
                             )
+                        },
+                        expandIcon: ({ expanded, onExpand, record }) => {
+                            return (
+                                expanded ? (
+                                    <UpOutlined onClick={e => onExpand(record, e)} />
+                                ) : (
+                                    <DownOutlined onClick={e => onExpand(record, e)} />
+                                )
+                            )
+                        }
                     }}
                 />
             </Card>
@@ -302,4 +653,4 @@ const HistoryCall: React.FC = () => {
     )
 }
 
-export default HistoryCall;
+export default React.memo(HistoryCall);

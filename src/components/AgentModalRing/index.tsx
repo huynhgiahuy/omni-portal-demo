@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styles from './index.less';
 import {
   Modal,
@@ -6,11 +6,13 @@ import {
   Typography,
   Popover,
   Button,
-  Collapse,
-  Radio,
   Form,
   Input,
   Timeline,
+  Row,
+  Col,
+  Divider,
+  List,
 } from 'antd';
 import {
   ExclamationCircleFilled,
@@ -20,10 +22,13 @@ import {
   UserOutlined,
   EditOutlined,
   HistoryOutlined,
+  UnorderedListOutlined,
 } from '@ant-design/icons';
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
 import AvatarModal from '../../../public/avatar_modal_ring.png';
+import { dataUserContactProps } from '@/pages/omni-channel/report/services';
+import { debounce } from 'lodash';
 
 type AgentModalRingProps = {
   isModalOpen: boolean;
@@ -35,6 +40,7 @@ type AgentModalRingProps = {
   handleSelectForwardUser: (e: any) => void;
   handleClickIconHistory: () => void;
   handleClickIconNote: () => void;
+  handelUserTransfer: (e: string) => void;
   valueCheckboxUser: any;
   isVisibleHistoryCall: boolean;
   isVisibleNoteCall: boolean;
@@ -42,9 +48,9 @@ type AgentModalRingProps = {
   isActiveIconNote: boolean;
   isCallerName: any;
   isCallerPhone: any;
+  dataContacts: dataUserContactProps[];
+  refTimer: React.MutableRefObject<any>;
 };
-
-const { Panel } = Collapse;
 
 const AgentModalRing: React.FC<AgentModalRingProps> = ({
   isModalOpen,
@@ -56,6 +62,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   handleSelectForwardUser,
   handleClickIconHistory,
   handleClickIconNote,
+  handelUserTransfer,
   valueCheckboxUser,
   isVisibleHistoryCall,
   isVisibleNoteCall,
@@ -63,9 +70,20 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   isActiveIconNote,
   isCallerName,
   isCallerPhone,
+  dataContacts,
+  refTimer,
 }) => {
   const [isPopoverForward, setPopoverForward] = useState(false);
+
+  const [userSelect, setUserSelect] = useState('');
   const { confirm } = Modal;
+
+  const listTransfer = useMemo(
+    () =>
+      dataContacts?.map((user) => ({ id: user.id, label: user.full_name, value: user.ip_phone })),
+    [dataContacts],
+  );
+
   const showConfirm = () => {
     confirm({
       title: 'Kết thúc cuộc gọi',
@@ -151,11 +169,11 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 </div>
                 <div className={isFullScreenModal ? styles.infoPhoneFullScreen : styles.infoPhone}>
                   <Typography.Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
-                    {isCallerName}
+                    {isCallerName ? isCallerName : 'Chưa có trong danh bạ'}
                   </Typography.Text>
                   <br />
                   <Typography.Text style={{ fontSize: 13, fontWeight: 400, color: 'white' }}>
-                     {isCallerPhone}
+                    {isCallerPhone ? isCallerPhone : '0000 000 000'}
                   </Typography.Text>
                 </div>
               </Space>
@@ -164,50 +182,58 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 align="start"
                 style={{ width: '100%', justifyContent: 'center', zIndex: 2 }}
               >
-                <PhoneOutlined className={styles.phonePickUp} onClick={handleOpenAnswer} />
+                <PhoneOutlined
+                  className={styles.phonePickUp}
+                  onClick={() => {
+                    setPopoverForward(false);
+                    refTimer.current.reset();
+                    setTimeout(() => {
+                      handleOpenAnswer();
+                    }, 0);
+                  }}
+                />
                 <Popover
                   open={isPopoverForward}
                   trigger="click"
                   placement="bottom"
-                  title={
-                    <>
-                      <Typography.Text>Chuyển tiếp</Typography.Text>
-                      <Typography.Text className={styles.forwardPhoneModal}>
-                        {' '}
-                        (Danh sách nhân sự đang online trong hệ thống)
-                      </Typography.Text>
-                    </>
-                  }
                   content={
                     <>
-                      <div style={{ paddingBottom: '10px' }}>
-                        <Typography.Text>
-                          Nhân sự đã chọn:{' '}
-                          <Typography.Text style={{ fontWeight: 'bold' }}>
-                            {valueCheckboxUser === '' ? 'Chưa lọc' : valueCheckboxUser}
-                          </Typography.Text>
+                      <div style={{ marginTop: 20 }}>
+                        <Typography.Text>Chuyển tiếp</Typography.Text>
+                        <Typography.Text className={styles.forwardPhoneModal}>
+                          {` {Danh sách nhân sự đang online trong hệ thống}`}
                         </Typography.Text>
                       </div>
-                      <Collapse>
-                        <Panel
-                          key="user"
-                          header={<Typography.Text strong>Danh sách nhân sự</Typography.Text>}
-                        >
-                          <Radio.Group onChange={handleSelectForwardUser}>
-                            <Space direction="vertical">
-                              <Radio value="Trần Phương Anh - 18942">
-                                <UserOutlined /> Trần Phương Anh - 18942
-                              </Radio>
-                              <Radio value="Trần Phương Anh - 18943">
-                                <UserOutlined /> Trần Phương Anh - 18943
-                              </Radio>
-                              <Radio value="Trần Phương Anh - 18944">
-                                <UserOutlined /> Trần Phương Anh - 18944
-                              </Radio>
-                            </Space>
-                          </Radio.Group>
-                        </Panel>
-                      </Collapse>
+                      <Input
+                        size="large"
+                        placeholder="Chọn nhân sự"
+                        style={{ margin: '10px 0' }}
+                        value={userSelect}
+                        onChange={(e) => {
+                          setUserSelect(e.target.value);
+                          handelUserTransfer(e.target.value);
+                        }}
+                      />
+                      <List
+                        bordered
+                        className={styles.listTransfer}
+                        size="small"
+                        dataSource={listTransfer}
+                        renderItem={(item: { label: string; value: string }, index) => (
+                          <List.Item
+                            key={`${item.label}-${index}`}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              setUserSelect(item.label);
+                            }}
+                          >
+                            <List.Item.Meta
+                              avatar={<UserOutlined />}
+                              title={`${item.label} - ${item.value}`}
+                            />
+                          </List.Item>
+                        )}
+                      />
                       <div className={styles.forwardSelectButton}>
                         <Button
                           style={{ marginRight: '10px' }}
@@ -217,6 +243,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                         </Button>
                         <Button
                           type="primary"
+                          disabled
                           onClick={() => {
                             setPopoverForward(false);
                             setTimeout(() => {
@@ -237,7 +264,52 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     onClick={() => setPopoverForward(!isPopoverForward)}
                   />
                 </Popover>
-                <PhoneOutlined className={styles.phoneHandUp} onClick={showConfirm} />
+                {!isFullScreenModal && (
+                  <Popover
+                    placement="bottom"
+                    trigger="click"
+                    title={
+                      <Typography.Text style={{ fontWeight: 'bold', fontSize: 18 }}>
+                        Ghi chú
+                      </Typography.Text>
+                    }
+                    content={
+                      <div style={{ width: 400 }}>
+                        <Row>
+                          <Col span={8}>08:30 18/11/2022</Col>
+                          <Col span={1}></Col>
+                          <Col span={15}>
+                            Sự cố phát sinh và ảnh hưởng nhiều KHG, HuyenLM2 đã check với các bên
+                            liên quan
+                          </Col>
+                        </Row>
+                        <Divider />
+                        <Row>
+                          <Col span={8}>08:30 18/11/2022</Col>
+                          <Col span={1}></Col>
+                          <Col span={15}>Chưa rõ yêu cầu hỗ trợ</Col>
+                        </Row>
+                      </div>
+                    }
+                  >
+                    <UnorderedListOutlined
+                      className={styles.historyNote}
+                      onClick={() => {
+                        setPopoverForward(false);
+                      }}
+                    />
+                  </Popover>
+                )}
+
+                <PhoneOutlined
+                  className={styles.phoneHandUp}
+                  onClick={() => {
+                    setPopoverForward(false);
+                    setTimeout(() => {
+                      showConfirm();
+                    }, 0);
+                  }}
+                />
               </Space>
             </div>
             {isFullScreenModal && isVisibleHistoryCall ? (
@@ -386,6 +458,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     >
                       <Input
                         className={styles.inputHistoryFormStyle}
+                        disabled
                         placeholder="Nhập thông tin"
                       />
                     </Form.Item>
@@ -395,6 +468,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       }
                     >
                       <Input
+                        disabled
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
                       />
@@ -403,6 +477,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       label={<Typography.Text style={{ color: '#fff' }}>Email</Typography.Text>}
                     >
                       <Input
+                        disabled
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
                       />
@@ -413,6 +488,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       }
                     >
                       <Input
+                        disabled
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
                       />
@@ -421,6 +497,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       label={<Typography.Text style={{ color: '#fff' }}>Ghi chú</Typography.Text>}
                     >
                       <Input
+                        disabled
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
                       />

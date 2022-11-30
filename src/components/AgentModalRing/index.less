@@ -187,6 +187,17 @@
   }
 }
 
+.historyNote {
+  cursor: pointer;
+  svg {
+    padding: 10px;
+    font-size: 40px;
+    background: #8c9ca9;
+    border-radius: 100%;
+    fill: white;
+  }
+}
+
 .infoPhoneFullScreen {
   margin-top: 30px;
   margin-bottom: 70px;
@@ -282,6 +293,10 @@
 .inputHistoryFormStyle {
   border-radius: 4px;
 }
+
+.popoverNoteHistory {
+  margin-top: 5px;
+}
 :global {
   ::-webkit-scrollbar {
     width: 4px;
@@ -291,4 +306,14 @@
     background: #d9d9d9;
     border-radius: 99px;
   }
+
+  .ant-popover-inner-content:has(.popoverNoteHistory) {
+    position: relative;
+    left: -28px;
+  }
+}
+
+.listTransfer {
+  height: 180px;
+  overflow: scroll;
 }

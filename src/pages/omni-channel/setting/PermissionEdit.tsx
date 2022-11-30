@@ -11,7 +11,8 @@ import {
     Input,
     Button,
     Select,
-    message
+    message,
+    Tooltip
 } from 'antd';
 import {
     EditOutlined,
@@ -37,7 +38,7 @@ import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
 import { useRequest } from 'umi';
-import { debounce, values } from 'lodash';
+import { debounce } from 'lodash';
 
 interface PaginationProps {
     current: number;
@@ -294,6 +295,7 @@ const PermissionEdit: React.FC = () => {
     }
     const handleCancleUpdatePermission = () => {
         setClickUpdatePermission(false);
+        form.resetFields();
     }
     const handleClickDeleteUser = (user_id: string) => {
         Modal.confirm({
@@ -321,7 +323,7 @@ const PermissionEdit: React.FC = () => {
         {
             title: '#',
             align: 'center',
-            width: '20px',
+            width: '60px',
             render: (text, record) => (
                 <>
                     {(pagination.current - 1) * pagination.pageSize + listAllUserInfoFinal.indexOf(record) + 1}
@@ -423,21 +425,25 @@ const PermissionEdit: React.FC = () => {
             align: 'center',
             render: (record) => (
                 <Space size="large">
-                    <EditOutlined
-                        style={{ color: '#1890FF', fontSize: '20px' }}
-                        onClick={
-                            () => {
-                                form.setFieldsValue(record)
-                                handleClickUpdatePermission();
-                                fetchDetaiUserInfoFinal(record.id);
-                                setUserKey(record.id);
+                    <Tooltip title="Cập nhật">
+                        <EditOutlined
+                            style={{ color: '#1890FF', fontSize: '20px' }}
+                            onClick={
+                                () => {
+                                    form.setFieldsValue(record)
+                                    handleClickUpdatePermission();
+                                    fetchDetaiUserInfoFinal(record.id);
+                                    setUserKey(record.id);
+                                }
                             }
-                        }
-                    />
-                    <DeleteOutlined
-                        style={{ color: '#F5222D', fontSize: '20px' }}
-                        onClick={() => { handleClickDeleteUser(record.id) }}
-                    />
+                        />
+                    </Tooltip>
+                    <Tooltip title="Xóa">
+                        <DeleteOutlined
+                            style={{ color: '#F5222D', fontSize: '20px' }}
+                            onClick={() => { handleClickDeleteUser(record.id) }}
+                        />
+                    </Tooltip>
                 </Space>
             )
         },
@@ -586,6 +592,7 @@ const PermissionEdit: React.FC = () => {
                     dataSource={listAllUserInfoFinal}
                     columns={columns}
                     style={{ paddingLeft: '20px' }}
+                    rowKey={item => item.id}
                     className={styles.permissionTable}
                     onChange={handleTableChange}
                     pagination={{
@@ -603,7 +610,10 @@ const PermissionEdit: React.FC = () => {
                             prev_5: '5 trang trước',
                         },
                     }}
-                    scroll={{ x: 300 }}
+                    scroll={{
+                        y: pagination.pageSize >= 10 ? 400 : undefined,
+                        x: window.innerWidth < 1900 ? 100 : undefined,
+                    }}
                     loading={{ indicator: <div><Spin /></div>, spinning: fetchListAllUserInfoFinal.loading }}
                 />
                 <Modal
@@ -725,18 +735,20 @@ const PermissionEdit: React.FC = () => {
                                     rules={[
                                         {
                                             validator: (_, value: any) => {
-                                                if (value === '' || value === undefined) {
-                                                    return Promise.reject('Vui lòng nhập sdt')
+                                                if (value === undefined || !value || value.length === 0) {
+                                                    return Promise.reject('Vui lòng nhập số di động')
                                                 }
-                                                else if (value.length !== 10) {
-                                                    return Promise.reject('Số điện thoại chỉ có 10 ký tự số')
+                                                if (value.length !== 10) {
+                                                    return Promise.reject('Số điện thoại không hợp lệ')
                                                 }
                                                 else if (!value.match('([3|5|7|8|9]{1})+([0-9]{8})')) {
-                                                    return Promise.reject('Số điện thoại chỉ có 10 ký tự số')
+                                                    return Promise.reject('Số điện thoại không hợp lệ')
                                                 }
-                                                return Promise.resolve();
+                                                else {
+                                                    return Promise.resolve();
+                                                }
                                             }
-                                        }
+                                        },
                                     ]}
                                 >
                                     <Input />
@@ -805,11 +817,11 @@ const PermissionEdit: React.FC = () => {
                                     rules={[
                                         {
                                             validator: (_, value: any) => {
-                                                if (value === '' || value === undefined) {
+                                                if (value === undefined || !value || value.length === 0) {
                                                     return Promise.reject('Vui lòng nhập IP Phone')
                                                 }
-                                                else if (value.length > 6) {
-                                                    return Promise.reject('IP Phone tối đa 6 chữ số')
+                                                if (value.length > 6 || value.length < 6) {
+                                                    return Promise.reject('IP Phone không hợp lệ')
                                                 }
                                                 else if (!value.match('[0-9]')) {
                                                     return Promise.reject('IP Phone không hợp lệ')

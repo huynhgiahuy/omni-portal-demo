@@ -94,7 +94,7 @@ export function setUp(dispatch: any) {
   const { cancel } = request.CancelToken.source();
   request.interceptors.response.use(async (res: any, options: any) => {
     const response = await res.clone().json();
-    const accessTokenExpired = response?.error_code === 1001; //check token
+    const accessTokenExpired = response?.error_code === 401; //check token
 
     if (accessTokenExpired) {
       try {
@@ -104,12 +104,14 @@ export function setUp(dispatch: any) {
           return res;
         }
         const tokens = await getTokenGatewayByRefreshToken(rid);
-        if (tokens) {
+        if (tokens?.success === true) {
+          window.localStorage.setItem('access_token', tokens?.data[0]?.access_token);
+          window.localStorage.setItem('rid', tokens?.data[0]?.refresh_token);
           dispatch({
             type: 'user/save',
             payload: {
-              tokenGateway: `Bearer ${tokens.id_token}`,
-              accessToken: tokens.id_token,
+              tokenGateway: `Bearer ${tokens?.data[0]?.access_token}`,
+              accessToken: tokens?.data[0]?.access_token,
             },
           });
           // retry with new access token
@@ -118,7 +120,7 @@ export function setUp(dispatch: any) {
             ...options,
             headers: {
               ...options.headers,
-              Authorization: `Bearer ${tokens.id_token}`,
+              Authorization: `Bearer ${tokens?.data[0]?.access_token}`,
             },
           });
         }

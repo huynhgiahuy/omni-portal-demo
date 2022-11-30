@@ -1,7 +1,8 @@
-import { Space } from 'antd';
+import { message, Space } from 'antd';
 // import { QuestionCircleOutlined } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
-import { useModel } from 'umi';
+import Timer from 'react-compound-timer';
+import React, { useEffect, useRef, useState } from 'react';
+import { useModel, useRequest } from 'umi';
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
@@ -11,46 +12,93 @@ import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
 import { socket } from '../../socket';
+import { dataUserContactProps, requestGetUserContact } from '@/pages/omni-channel/report/services';
+import { debounce } from 'lodash';
 
 export type SiderTheme = 'light' | 'dark';
 
 const GlobalHeaderRight: React.FC = () => {
+  const refTimer = useRef<any>(null);
   const { initialState } = useModel('@@initialState');
   const [isModalOpenRing, setIsModalOpenRing] = useState(false);
   const [isModalOpenAnswer, setIsModalOpenAnswer] = useState(false);
   const [isFullScreenModal, setIsFullScreenModal] = useState(false);
+  const [dataContacts, setDataContacts] = useState<dataUserContactProps[]>([]);
 
-  const [valueCheckboxUser, setValueCheckboxUser] = useState<any>([]);
+  const [valueCheckboxUser, setValueCheckboxUser] = useState<string>('');
   const [isVisibleHistoryCall, setVisibleHistoryCall] = useState(false);
   const [isActiveIconHistory, setActiveIconHistory] = useState(false);
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
   const [isCallerName, setCallerName] = useState('');
   const [isCallePhone, setCallerPhone] = useState('');
-  
-  useEffect(()=> {
-  socket.on('message', (data) => {
-    const statusCall = data.event_name;
-    if (!data.caller_name) {
-      setCallerName('Chưa có trong danh bạn');
-    } else {
-      setCallerName(data.caller_name);
+
+  const token = window.localStorage?.getItem('access_token');
+
+  const getUserContact = useRequest(
+    async (data) => {
+      const res: { success: boolean } = await requestGetUserContact(
+        token ? token : '',
+        data ? data : { email_user: initialState?.currentUser?.email },
+      );
+      if (!res.success) {
+        message.error('Không lấy được danh bạ');
+        return;
+      } else {
+      }
+      return res;
+    },
+    {
+      manual: true,
+      onSuccess: (res) => {
+        if (res) {
+          setDataContacts(res);
+        }
+      },
+    },
+  );
+
+  useEffect(() => {
+    if (isModalOpenRing || isModalOpenAnswer) {
+      getUserContact.run({ email_user: initialState?.currentUser?.email });
     }
-     if (!data.caller_phone) {
-       setCallerPhone('0921 197 398');
-     } else {
-       setCallerPhone(data.caller_phone);
-     }
-    switch (statusCall) {
-      case 'ringing_call':
-        setIsModalOpenRing(true);
-        break;
-      case 'hangup_call': 
-        setIsModalOpenRing(false);
-      default:
-        break;
-    }
-  })}, [])
+  }, [isModalOpenRing, isModalOpenAnswer]);
+
+  const handelUserTransfer = debounce(
+    (keyword?: string) => {
+      getUserContact.run({ email_user: initialState?.currentUser?.email, keyword });
+    },
+    500,
+    {
+      trailing: true,
+      leading: false,
+    },
+  );
+
+  useEffect(() => {
+    socket.on('message', (data) => {
+      const statusCall = data.event_name;
+      if (!data.caller_name) {
+        setCallerName('Chưa có trong danh bạn');
+      } else {
+        setCallerName(data.caller_name);
+      }
+      if (!data.caller_phone) {
+        setCallerPhone('0921 197 398');
+      } else {
+        setCallerPhone(data.caller_phone);
+      }
+      switch (statusCall) {
+        case 'ringing_call':
+          setIsModalOpenRing(true);
+          break;
+        case 'hangup_call':
+          setIsModalOpenRing(false);
+        default:
+          break;
+      }
+    });
+  }, []);
   if (!initialState || !initialState.settings) {
     return null;
   }
@@ -155,40 +203,58 @@ const GlobalHeaderRight: React.FC = () => {
         Button
       </a>
 
-      <AgentModalRing
-        isModalOpen={isModalOpenRing}
-        handleOk={handleOkRing}
-        handleCancel={handleCancelRing}
-        handleOpenAnswer={showModalAnswer}
-        isFullScreenModal={isFullScreenModal}
-        handleFullScreenModal={handleFullScreenModal}
-        handleSelectForwardUser={handleSelectForwardUser}
-        handleClickIconHistory={handleClickIconHistory}
-        handleClickIconNote={handleClickIconNote}
-        valueCheckboxUser={valueCheckboxUser}
-        isVisibleHistoryCall={isVisibleHistoryCall}
-        isVisibleNoteCall={isVisibleNoteCall}
-        isActiveIconHistory={isActiveIconHistory}
-        isActiveIconNote={isActiveIconNote}
-        isCallerName={isCallerName}
-        isCallerPhone={isCallePhone}
-      />
-
-      <AgentModalAnswer
-        isModalOpen={isModalOpenAnswer}
-        handleOk={handleOkAnswer}
-        handleCancel={handleCancelAnswer}
-        isFullScreenModal={isFullScreenModal}
-        handleFullScreenModal={handleFullScreenModal}
-        handleSelectForwardUser={handleSelectForwardUser}
-        handleClickIconHistory={handleClickIconHistory}
-        handleClickIconNote={handleClickIconNote}
-        valueCheckboxUser={valueCheckboxUser}
-        isVisibleHistoryCall={isVisibleHistoryCall}
-        isVisibleNoteCall={isVisibleNoteCall}
-        isActiveIconHistory={isActiveIconHistory}
-        isActiveIconNote={isActiveIconNote}
-      />
+      <Timer
+        initialTime={0}
+        formatValue={(value) => `${value < 10 ? `0${value}` : value}`}
+        ref={refTimer}
+      >
+        {() => (
+          <>
+            <AgentModalRing
+              refTimer={refTimer}
+              isModalOpen={isModalOpenRing}
+              handleOk={handleOkRing}
+              handleCancel={handleCancelRing}
+              handleOpenAnswer={showModalAnswer}
+              isFullScreenModal={isFullScreenModal}
+              handleFullScreenModal={handleFullScreenModal}
+              handleSelectForwardUser={handleSelectForwardUser}
+              handleClickIconHistory={handleClickIconHistory}
+              handleClickIconNote={handleClickIconNote}
+              valueCheckboxUser={valueCheckboxUser}
+              isVisibleHistoryCall={isVisibleHistoryCall}
+              isVisibleNoteCall={isVisibleNoteCall}
+              isActiveIconHistory={isActiveIconHistory}
+              isActiveIconNote={isActiveIconNote}
+              isCallerName={isCallerName}
+              isCallerPhone={isCallePhone}
+              dataContacts={dataContacts}
+              handelUserTransfer={handelUserTransfer}
+            />
+            <AgentModalAnswer
+              hours={<Timer.Hours />}
+              minutes={<Timer.Minutes />}
+              seconds={<Timer.Seconds />}
+              refTimer={refTimer}
+              isModalOpen={isModalOpenAnswer}
+              handleOk={handleOkAnswer}
+              handleCancel={handleCancelAnswer}
+              isFullScreenModal={isFullScreenModal}
+              handleFullScreenModal={handleFullScreenModal}
+              handleSelectForwardUser={handleSelectForwardUser}
+              handleClickIconHistory={handleClickIconHistory}
+              handleClickIconNote={handleClickIconNote}
+              valueCheckboxUser={valueCheckboxUser}
+              isVisibleHistoryCall={isVisibleHistoryCall}
+              isVisibleNoteCall={isVisibleNoteCall}
+              isActiveIconHistory={isActiveIconHistory}
+              isActiveIconNote={isActiveIconNote}
+              dataContacts={dataContacts}
+              handelUserTransfer={handelUserTransfer}
+            />
+          </>
+        )}
+      </Timer>
     </Space>
   );
 };
