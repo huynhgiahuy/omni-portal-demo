@@ -14,8 +14,21 @@ import AgentModalAnswer from '../AgentModalAnswer';
 import { socket } from '../../socket';
 import { dataUserContactProps, requestGetUserContact } from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
+import { data } from '../../pages/omni-channel/report/FakeData';
 
 export type SiderTheme = 'light' | 'dark';
+
+export type dataProps = {
+  phone: string;
+  direction: string;
+  event: string;
+  call_history: string;
+  name: string;
+  contact: {
+    name:string;
+    phone:string;
+  };
+};
 
 const GlobalHeaderRight: React.FC = () => {
   const refTimer = useRef<any>(null);
@@ -32,6 +45,7 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconNote, setActiveIconNote] = useState(false);
   const [isCallerName, setCallerName] = useState('');
   const [isCallePhone, setCallerPhone] = useState('');
+const [dataCall, setDataCall] = useState<dataProps>();
 
   const getUserContact = useRequest(
     async (data) => {
@@ -71,12 +85,12 @@ const GlobalHeaderRight: React.FC = () => {
       leading: false,
     },
   );
-
   useEffect(() => {
-    socket.on('message', (data) => {
+    socket.on('emit_call_event', (data) => {
+      setDataCall(data);
       const statusCall = data.event_name;
       if (!data.caller_name) {
-        setCallerName('Chưa có trong danh bạn');
+        setCallerName('Chưa có trong danh bạ');
       } else {
         setCallerName(data.caller_name);
       }
@@ -96,6 +110,7 @@ const GlobalHeaderRight: React.FC = () => {
       }
     });
   }, []);
+
   if (!initialState || !initialState.settings) {
     return null;
   }
@@ -248,6 +263,7 @@ const GlobalHeaderRight: React.FC = () => {
               isActiveIconNote={isActiveIconNote}
               dataContacts={dataContacts}
               handelUserTransfer={handelUserTransfer}
+              dataCall={dataCall}
             />
           </>
         )}
