@@ -28,6 +28,7 @@ import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
 import AvatarModal from '../../../public/avatar_modal_ring.png';
 import { dataUserContactProps } from '@/pages/omni-channel/report/services';
+import { dataProps } from '../RightContent';
 
 type AgentModalAnswerProps = {
   isModalOpen: boolean;
@@ -49,6 +50,7 @@ type AgentModalAnswerProps = {
   seconds: React.ReactNode;
   dataContacts: dataUserContactProps[];
   refTimer: React.MutableRefObject<any>;
+  dataCall?: dataProps;
 };
 
 const listUnitExternal = [
@@ -138,6 +140,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   minutes,
   seconds,
   refTimer,
+  dataCall,
 }) => {
   const [form] = Form.useForm();
   const [isPlay, setIsPlay] = useState(true);
