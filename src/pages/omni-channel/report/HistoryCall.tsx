@@ -6,7 +6,7 @@ import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 import styles from '../report/style.less'
 import { requestHistoryCallData, requestUpdateNoteHistoryCall } from './services';
-import { useRequest, useModel } from 'umi';
+import { useRequest, useModel, Link } from 'umi';
 import { debounce } from 'lodash';
 import CallInboundIcon from '@/components/PhoneCallType/CallInboundIcon';
 import CallInterval from '@/components/PhoneCallType/CallInterval';
@@ -60,6 +60,8 @@ const HistoryCall: React.FC = () => {
     const audioRef = useRef<any>();
 
     const [isVisibleModalAudio, setVisibleModalAudio] = useState(false);
+
+    const [testAudioURL, setTestAudioURL] = useState<any>();
 
     const [pagination, setPagination] = useState<PaginationProps>({
         current: 1,
@@ -197,32 +199,35 @@ const HistoryCall: React.FC = () => {
         return hours + ':' + minutes + ':' + seconds;
     }
 
-    const playAudio = async (fileId: any, recordName: any) => {
+    const playAudio = async () => {
         try {
             const response = await axios({
-                url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file`,
-                //url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_file',
+                url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file_url`,
+                //url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_url',
                 method: 'POST',
                 data: {
-                    call_id: fileId,
-                    record_name: recordName,
+                    call_id: "63846d63449f2cb5bbd0dc22",
+                    record_name: "b5dcad70-055c-49fb-af0d-2baee9d073dd.mp3"
                 },
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-                responseType: 'blob',
             })
-            const mp3 = new Blob([response.data], { type: 'audio/wav' })
-            const url = window.URL.createObjectURL(mp3);
-            const audio = new Audio(url)
-            audio.load()
-            await audio.play()
+            //const data = `data:audio/mp3;base64,${response.data}`;
+            // const mp3 = new Blob([response.data], { type: 'audio/mpeg' })
+            // const url = URL.createObjectURL(mp3);
+            // console.log(typeof url)
+            setTestAudioURL(response.data.data[0]);
+            //const audio = new Audio(url)
+            //audio.load()
+            //await audio.play()
+            //console.log(url);
         } catch (e) {
             message.error('Không thể nghe file!')
         }
     }
 
-    const downloadAudio = async (fileId: any, recordName: any) => {
+    const downloadAudio = async (fileId?: any, recordName?: any) => {
         try {
             const response = await axios({
                 url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file`,
@@ -232,16 +237,27 @@ const HistoryCall: React.FC = () => {
                     call_id: fileId,
                     record_name: recordName,
                 },
+                responseType: 'blob',
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-                responseType: 'blob',
             })
-            fileDownload(response.data, recordName);
+            const audioFormatBlob = new Blob([response.data], { type: 'audio/*' })
+            fileDownload(audioFormatBlob, recordName);
         } catch (e) {
             message.error('Không thể tải file!')
         }
     };
+
+    // const handleDownload = async (url: any, filename: any) => {
+    //     await axios(url, {
+    //         responseType: 'blob',
+    //     })
+    //         .then((res) => {
+    //             console.log(res)
+    //             fileDownload(res.data, filename)
+    //         })
+    // }
 
     const columns: ColumnsType<DataLSCGType> = [
         {
@@ -323,13 +339,13 @@ const HistoryCall: React.FC = () => {
                     <>
                         <PlayCircleFilled
                             style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }}
-                            //onClick={() => playAudio(record._id, record.record_name)}
-                            onClick={() => setVisibleModalAudio(true)}
+                            onClick={() => { playAudio(); setVisibleModalAudio(true) }}
+                        //onClick={() => setVisibleModalAudio(true)}
                         />
                         <img
                             src={DownloadIcon}
                             style={{ background: '#1890ff', padding: '3px', borderRadius: '30px', verticalAlign: 'sub' }}
-                            onClick={() => downloadAudio(record._id, record.record_name)}
+                            onClick={() => downloadAudio('63846d63449f2cb5bbd0dc22', 'b5dcad70-055c-49fb-af0d-2baee9d073dd.mp3')}
                         />
                     </>
                 )
@@ -476,6 +492,7 @@ const HistoryCall: React.FC = () => {
         fileDownload(res.data, 'history_call_report.xlsx');
     };
 
+    console.log(testAudioURL);
     return (
         <>
             <div
@@ -668,9 +685,10 @@ const HistoryCall: React.FC = () => {
                             <audio
                                 ref={audioRef}
                                 controls
-                                src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+                                src={testAudioURL}>
                             </audio>
                         </figure>
+                        {/* <Button onClick={() => handleDownload('http://172.27.228.189:9000/omni-dev/recordings/172.27.228.221/archive/2022/Nov/29/5b85843e-7cf2-4746-afcf-9cbee1109791.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=wCLEkHRxIei9WZH2%2F20221130%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221130T035143Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=a429376d7bdc769344914e4f9373088213657bb8ffdf2f8dc6a5b59805cdb360', 'test.mp3')}>Test</Button> */}
                     </div>
                 </Modal>
             </Card>
