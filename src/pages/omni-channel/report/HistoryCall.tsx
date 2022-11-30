@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker, message, Spin } from 'antd';
+import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker, message, Spin, Modal } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlayCircleFilled, SearchOutlined, DownOutlined, UpOutlined, EditOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
@@ -15,7 +15,6 @@ import moment from 'moment';
 import fileDownload from 'js-file-download';
 import axios from 'axios';
 import api from '@/api';
-
 
 const { RangePicker } = DatePicker;
 
@@ -55,6 +54,10 @@ const HistoryCall: React.FC = () => {
     const [listDataLSCGLength, setListDataLSCGLength] = useState<string | any>();
     const [getCallId, setGetCallId] = useState<string>();
     const [ellipsis, setEllipsis] = useState<any>(true);
+
+    const [audioURI, setAudioURI] = useState<string>();
+
+    const [isVisibleModalAudio, setVisibleModalAudio] = useState(false);
 
     const [pagination, setPagination] = useState<PaginationProps>({
         current: 1,
@@ -181,7 +184,7 @@ const HistoryCall: React.FC = () => {
     }
 
     const handleChangeBillSec = (val: any) => {
-        var sec_num: any = parseInt(val, 10); // don't forget the second param
+        var sec_num: any = parseInt(val, 10);
         var hours: any = Math.floor(sec_num / 3600);
         var minutes: any = Math.floor((sec_num - (hours * 3600)) / 60);
         var seconds: any = sec_num - (hours * 3600) - (minutes * 60);
@@ -236,7 +239,7 @@ const HistoryCall: React.FC = () => {
         } catch (e) {
             message.error('Không thể tải file!')
         }
-    }
+    };
 
     const columns: ColumnsType<DataLSCGType> = [
         {
@@ -316,8 +319,16 @@ const HistoryCall: React.FC = () => {
             render: (text, record) => {
                 return (
                     <>
-                        <PlayCircleFilled style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }} onClick={() => playAudio(record._id, record.record_name)} />
-                        <img src={DownloadIcon} onClick={() => downloadAudio(record._id, record.record_name)} style={{ background: '#1890ff', padding: '3px', borderRadius: '30px', verticalAlign: 'sub' }} />
+                        <PlayCircleFilled
+                            style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }}
+                            //onClick={() => playAudio(record._id, record.record_name)}
+                            onClick={() => setVisibleModalAudio(true)}
+                        />
+                        <img
+                            src={DownloadIcon}
+                            style={{ background: '#1890ff', padding: '3px', borderRadius: '30px', verticalAlign: 'sub' }}
+                            onClick={() => downloadAudio(record._id, record.record_name)}
+                        />
                     </>
                 )
             }
@@ -644,6 +655,21 @@ const HistoryCall: React.FC = () => {
                         }
                     }}
                 />
+                <Modal
+                    open={isVisibleModalAudio}
+                    onCancel={() => setVisibleModalAudio(false)}
+                    footer={false}
+                    title="Nghe file ghi âm"
+                >
+                    <div style={{ textAlign: 'center' }}>
+                        <figure>
+                            <audio
+                                controls
+                                src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+                            </audio>
+                        </figure>
+                    </div>
+                </Modal>
             </Card>
         </>
     )
