@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 import {
   Modal,
@@ -29,6 +29,7 @@ import Share from '../../../public/share.svg';
 import AvatarModal from '../../../public/avatar_modal_ring.png';
 import { dataUserContactProps } from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
+import { dataProps } from '../RightContent';
 
 type AgentModalRingProps = {
   isModalOpen: boolean;
@@ -50,6 +51,7 @@ type AgentModalRingProps = {
   isCallerPhone: any;
   dataContacts: dataUserContactProps[];
   refTimer: React.MutableRefObject<any>;
+  dataCall?: dataProps;
 };
 
 const AgentModalRing: React.FC<AgentModalRingProps> = ({
@@ -72,10 +74,12 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   isCallerPhone,
   dataContacts,
   refTimer,
+  dataCall
 }) => {
   const [isPopoverForward, setPopoverForward] = useState(false);
 
   const [userSelect, setUserSelect] = useState('');
+  const [statusCall, setStateCall] = useState('Cuộc gọi');
   const { confirm } = Modal;
 
   const listTransfer = useMemo(
@@ -83,7 +87,15 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       dataContacts?.map((user) => ({ id: user.id, label: user.full_name, value: user.ip_phone })),
     [dataContacts],
   );
-
+  useEffect(() => {
+    if (dataCall) {
+      if (dataCall.direction === 'receive') {
+        setStateCall('Cuộc gọi đến');
+      } else {
+        setStateCall('Cuộc gọi đi');
+      }
+    }
+  })
   const showConfirm = () => {
     confirm({
       title: 'Kết thúc cuộc gọi',
@@ -131,7 +143,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 <PhoneOutlined className={styles.modalRingIcon} />
                 <img style={{ position: 'absolute', left: 25, top: 8 }} src={Arrow} alt="arrow" />
               </Space>
-              <p style={{ color: 'white' }}>Cuộc gọi đến</p>
+              <p style={{ color: 'white' }}>{statusCall}</p>
             </Space>
             {isFullScreenModal ? (
               <FullscreenExitOutlined
@@ -458,7 +470,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     >
                       <Input
                         className={styles.inputHistoryFormStyle}
-                        value={"qưerttyy"}
+                        value={'qưerttyy'}
                         disabled
                         placeholder="Nhập thông tin"
                       />

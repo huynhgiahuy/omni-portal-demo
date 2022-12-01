@@ -15,6 +15,7 @@ import { socket } from '../../socket';
 import { dataUserContactProps, requestGetUserContact } from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
 import { data } from '../../pages/omni-channel/report/FakeData';
+const access_token = localStorage.getItem('access_token');
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -45,7 +46,8 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconNote, setActiveIconNote] = useState(false);
   const [isCallerName, setCallerName] = useState('');
   const [isCallePhone, setCallerPhone] = useState('');
-const [dataCall, setDataCall] = useState<dataProps>();
+  const [dataCall, setDataCall] = useState<dataProps>();
+  const [directionCall, setDirection] = useState('')
 
   const token = window.localStorage?.getItem('access_token');
 
@@ -89,25 +91,33 @@ const [dataCall, setDataCall] = useState<dataProps>();
     },
   );
   useEffect(() => {
+    const newToken = {
+      token: access_token
+    };
+    socket.emit('authen_event', newToken);
     socket.on('emit_call_event', (data) => {
       setDataCall(data);
-      const statusCall = data.event_name;
-      if (!data.caller_name) {
+      if (!data.name) {
         setCallerName('Chưa có trong danh bạ');
       } else {
-        setCallerName(data.caller_name);
+        setCallerName(data.name);
       }
-      if (!data.caller_phone) {
+      if (!data.phone) {
         setCallerPhone('0921 197 398');
       } else {
-        setCallerPhone(data.caller_phone);
+        setCallerPhone(data.phone);
       }
-      switch (statusCall) {
+      const eventCall = data.event;
+      switch (eventCall) {
         case 'ringing_call':
           setIsModalOpenRing(true);
           break;
         case 'hangup_call':
           setIsModalOpenRing(false);
+          break;
+        case 'answered_call':
+          setIsModalOpenAnswer(true);
+          break;
         default:
           break;
       }
@@ -245,6 +255,7 @@ const [dataCall, setDataCall] = useState<dataProps>();
               isCallerPhone={isCallePhone}
               dataContacts={dataContacts}
               handelUserTransfer={handelUserTransfer}
+              dataCall={dataCall}
             />
             <AgentModalAnswer
               hours={<Timer.Hours />}
