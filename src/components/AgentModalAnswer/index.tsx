@@ -11,6 +11,7 @@ import {
   Timeline,
   List,
   Select,
+  message,
 } from 'antd';
 import {
   AudioFilled,
@@ -27,8 +28,9 @@ import {
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
 import AvatarModal from '../../../public/avatar_modal_ring.png';
-import { dataUserContactProps } from '@/pages/omni-channel/report/services';
+import { dataUserContactProps, requestAddUserContact } from '@/pages/omni-channel/report/services';
 import { dataProps } from '../RightContent';
+import { useRequest } from 'umi';
 
 type AgentModalAnswerProps = {
   isModalOpen: boolean;
@@ -147,6 +149,23 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   const [isRecord, setIsRecord] = useState(false);
   const [isPopoverForward, setPopoverForward] = useState(false);
   const [userSelect, setUserSelect] = useState('');
+  const [isSave, setIsSave] = useState(true);
+
+  const addUserContact = useRequest(
+    async (data) => {
+      const result: { success: boolean; error: string } = await requestAddUserContact(data);
+      if (!result.success) {
+        message.error('Lưu thất bại');
+        return;
+      } else {
+        message.success('Lưu thành công');
+        setIsSave(false);
+      }
+    },
+    {
+      manual: true,
+    },
+  );
 
   const { confirm } = Modal;
 
@@ -175,7 +194,8 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   };
 
   const handleOnFinish = (values: any) => {
-    console.log(values);
+    values.external_customers = true;
+    addUserContact.run(values);
   };
 
   return (
@@ -509,19 +529,22 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
               </div>
             </div>
           ) : isFullScreenModal && isVisibleNoteCall ? (
-            <div>
-              <div className={styles.infoCallNote} style={{ height: 280 }}>
-                <div className={styles.noteFormHeaderLayout}>
-                  <Typography.Text className={styles.noteFormHeaderStyle}>Danh bạ</Typography.Text>
-                </div>
-                <div className={styles.noteFormContentLayout}>
-                  <Form
-                    form={form}
-                    layout="vertical"
-                    requiredMark={false}
-                    onFinish={handleOnFinish}
-                    className={styles.noteFormPhoneCall}
-                  >
+            <Form
+              form={form}
+              layout="vertical"
+              requiredMark={false}
+              onFinish={handleOnFinish}
+              className={styles.noteFormPhoneCall}
+            >
+              {' '}
+              <div>
+                <div className={styles.infoCallNote} style={{ height: 280 }}>
+                  <div className={styles.noteFormHeaderLayout}>
+                    <Typography.Text className={styles.noteFormHeaderStyle}>
+                      Danh bạ
+                    </Typography.Text>
+                  </div>
+                  <div className={styles.noteFormContentLayout}>
                     <Form.Item
                       name="full_name"
                       label={
@@ -546,6 +569,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       <Input
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
+                        disabled={!isSave}
                       />
                     </Form.Item>
                     <Form.Item
@@ -573,6 +597,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       <Input
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
+                        disabled={!isSave}
                       />
                     </Form.Item>
                     <Form.Item
@@ -594,6 +619,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       <Input
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
+                        disabled={!isSave}
                       />
                     </Form.Item>
                     <Form.Item
@@ -607,28 +633,31 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                     >
                       <Select
                         style={{ textAlign: 'left' }}
+                        disabled={!isSave}
                         className={styles.inputHistoryFormStyle}
                         options={listUnitExternal}
                         placeholder="Chọn đơn vị"
                       />
                     </Form.Item>
-                    <Form.Item>
-                      <Space>
-                        <Button>Hủy</Button>
-                        <Button type="primary" htmlType="submit">
-                          Lưu
-                        </Button>
-                      </Space>
-                    </Form.Item>
-                  </Form>
+                    {isSave && (
+                      <Form.Item>
+                        <Space>
+                          <Button>Hủy</Button>
+                          <Button type="primary" htmlType="submit">
+                            Lưu
+                          </Button>
+                        </Space>
+                      </Form.Item>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className={styles.infoCallNote} style={{ marginTop: 10 }}>
-                <div className={styles.noteFormHeaderLayout}>
-                  <Typography.Text className={styles.noteFormHeaderStyle}>Ghi chú</Typography.Text>
-                </div>
-                <div className={styles.noteFormContentLayout}>
-                  <Form layout="vertical" form={form} className={styles.noteFormPhoneCall}>
+                <div className={styles.infoCallNote} style={{ marginTop: 10 }}>
+                  <div className={styles.noteFormHeaderLayout}>
+                    <Typography.Text className={styles.noteFormHeaderStyle}>
+                      Ghi chú
+                    </Typography.Text>
+                  </div>
+                  <div className={styles.noteFormContentLayout}>
                     <Form.Item
                       name="note"
                       label={<Typography.Text style={{ color: '#fff' }}>Ghi chú</Typography.Text>}
@@ -645,6 +674,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                         <Button
                           type="primary"
                           htmlType="button"
+                          disabled={!form.getFieldValue('note')}
                           onClick={() => {
                             console.log(form.getFieldValue('note'));
                           }}
@@ -653,10 +683,10 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                         </Button>
                       </Space>
                     </Form.Item>
-                  </Form>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Form>
           ) : (
             ''
           )}
