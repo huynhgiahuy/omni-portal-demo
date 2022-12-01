@@ -55,6 +55,20 @@ type AgentModalRingProps = {
   dataCall?: dataProps;
 };
 
+type notesProps = {
+  call_direction: string;
+  content: string;
+  create_at: number;
+  personnel: string;
+};
+
+type listNotesProps = {
+  call_id: string;
+  id: string;
+  note: notesProps[];
+  phone_number: string;
+};
+
 const AgentModalRing: React.FC<AgentModalRingProps> = ({
   isModalOpen,
   handleOk,
@@ -81,10 +95,17 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   const [statusCall, setStateCall] = useState('Cuộc gọi');
   const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
   const [phoneCall, setPhoneCall] = useState('000 000 0000');
-  const [listNote, setListNote] = useState<any>();
+  const [listNote, setListNote] = useState<listNotesProps[]>([]);
   const { confirm } = Modal;
 
   const token = window.localStorage?.getItem('access_token');
+
+  let notes: notesProps[] = [];
+  listNote?.map((notesItem) => {
+    return notesItem.note.map((item) => {
+      return (notes = [...notes, item]);
+    });
+  });
 
   const getTakeCallNote = useRequest(
     async (data) => {
@@ -96,7 +117,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
         message.error('Không lấy được lịch sử note');
         return;
       } else {
-        setListNote(res.data[0]);
+        setListNote(res.data);
       }
       return res;
     },
@@ -370,75 +391,62 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 </div>
                 <div className={styles.historyFormContentLayout}>
                   <Timeline>
-                    {listNote?.note?.length ? (
-                      listNote?.note?.map(
-                        (note: {
-                          call_date_and_time: string;
-                          call_direction: string;
-                          content: string;
-                          personnel: string;
-                        }) => {
-                          return (
-                            <Timeline.Item>
+                    {notes?.length ? (
+                      notes?.map((note) => {
+                        return (
+                          <Timeline.Item>
+                            <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                              {moment(note.create_at * 1000).format('DD/MM/YYYY HH:mm')}
+                            </Typography.Paragraph>
+                            <div className={styles.historyFormContentFlex1}>
                               <Typography.Paragraph
-                                style={{ marginBottom: 'unset', color: '#fff' }}
+                                style={{
+                                  marginBottom: 'unset',
+                                  color: note.call_direction === 'string' ? '#54FF00' : '#FFAA00',
+                                }}
                               >
-                                {moment(note.call_date_and_time).format('DD/MM/YYYY HH:MM')}
+                                {note.call_direction === 'string'
+                                  ? ' Cuộc gọi đến'
+                                  : ' Cuộc gọi đi'}
                               </Typography.Paragraph>
-                              <div className={styles.historyFormContentFlex1}>
+                              {/* <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                              00:12
+                            </Typography.Paragraph> */}
+                            </div>
+                            <ul style={{ listStyleType: 'disc', color: '#fff' }}>
+                              <li>
                                 <Typography.Paragraph
                                   style={{
                                     marginBottom: 'unset',
-                                    color: note.call_direction === 'string' ? '#54FF00' : '#FFAA00',
+                                    paddingRight: '50px',
+                                    fontWeight: 'bold',
+                                    color: '#fff',
                                   }}
                                 >
-                                  {note.call_direction === 'string'
-                                    ? ' Cuộc gọi đến'
-                                    : ' Cuộc gọi đi'}
+                                  Ghi chú:{' '}
+                                  <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                                    {note.content}
+                                  </Typography.Text>
                                 </Typography.Paragraph>
-                                {/* <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                              00:12
-                            </Typography.Paragraph> */}
-                              </div>
-                              <ul style={{ listStyleType: 'disc', color: '#fff' }}>
-                                <li>
-                                  <Typography.Paragraph
-                                    style={{
-                                      marginBottom: 'unset',
-                                      paddingRight: '50px',
-                                      fontWeight: 'bold',
-                                      color: '#fff',
-                                    }}
-                                  >
-                                    Ghi chú:{' '}
-                                    <Typography.Text
-                                      style={{ color: '#fff', fontWeight: 'normal' }}
-                                    >
-                                      {note.content}
-                                    </Typography.Text>
-                                  </Typography.Paragraph>
-                                </li>
-                                <li>
-                                  <Typography.Paragraph
-                                    style={{
-                                      marginBottom: 'unset',
-                                      fontWeight: 'bold',
-                                      color: '#fff',
-                                    }}
-                                  >
-                                    Nhân sự:{' '}
-                                    <Typography.Text
-                                      style={{ color: '#fff', fontWeight: 'normal' }}
-                                    >
-                                      {note.personnel}
-                                    </Typography.Text>
-                                  </Typography.Paragraph>
-                                </li>
-                              </ul>
-                            </Timeline.Item>
-                          );
-                        },
-                      )
+                              </li>
+                              <li>
+                                <Typography.Paragraph
+                                  style={{
+                                    marginBottom: 'unset',
+                                    fontWeight: 'bold',
+                                    color: '#fff',
+                                  }}
+                                >
+                                  Nhân sự:{' '}
+                                  <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                                    {note.personnel}
+                                  </Typography.Text>
+                                </Typography.Paragraph>
+                              </li>
+                            </ul>
+                          </Timeline.Item>
+                        );
+                      })
                     ) : (
                       <Timeline.Item>
                         <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
