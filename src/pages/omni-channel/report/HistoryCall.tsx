@@ -216,15 +216,11 @@ const HistoryCall: React.FC = () => {
             //const data = `data:audio/mp3;base64,${response.data}`;
             // const mp3 = new Blob([response.data], { type: 'audio/mpeg' })
             // const url = URL.createObjectURL(mp3);
-            // console.log(typeof url)
             setTestAudioURL(response.data.data[0]);
             //const audio = new Audio(url)
             //audio.load()
             //await audio.play()
-            //console.log(url);
-        } catch (e) {
-            console.log(e);
-        }
+        } catch (e) { }
     }
 
     const downloadAudio = async (fileId?: any, recordName?: any) => {
@@ -254,7 +250,6 @@ const HistoryCall: React.FC = () => {
     //         responseType: 'blob',
     //     })
     //         .then((res) => {
-    //             console.log(res)
     //             fileDownload(res.data, filename)
     //         })
     // }
@@ -411,7 +406,6 @@ const HistoryCall: React.FC = () => {
     };
 
     const handleSelectValueHCG = (values: any) => {
-        console.log(values.length === 0)
         if (values.length === 0) {
             setListValueHCG(undefined)
             setPagination({
@@ -492,7 +486,6 @@ const HistoryCall: React.FC = () => {
         fileDownload(res.data, 'history_call_report.xlsx');
     };
 
-    console.log(testAudioURL);
     return (
         <>
             <div
