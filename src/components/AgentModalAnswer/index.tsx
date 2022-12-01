@@ -156,6 +156,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   const [userSelect, setUserSelect] = useState('');
   const [isSave, setIsSave] = useState(true);
   const [listNote, setListNote] = useState<any>();
+  const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
+  const [phoneCall, setPhoneCall] = useState('0000 000 000');
+  const [statusCall, setStateCall] = useState('Cuộc gọi');
 
   const token = window.localStorage?.getItem('access_token');
 
@@ -196,13 +199,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
 
   useEffect(() => {
     if (isModalOpen) {
-      getTakeCallNote.run({ phone_number: dataCall?.contact?.phone_number });
+      getTakeCallNote.run({ phone_number: phoneCall });
     }
   }, [isModalOpen]);
-
-  const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
-  const [phoneCall, setPhoneCall] = useState('0000 000 000');
-  const [statusCall, setStateCall] = useState('Cuộc gọi');
 
   const { confirm } = Modal;
 
