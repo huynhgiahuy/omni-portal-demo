@@ -44,8 +44,6 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconHistory, setActiveIconHistory] = useState(false);
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
-  const [isCallerName, setCallerName] = useState('');
-  const [isCallePhone, setCallerPhone] = useState('');
   const [dataCall, setDataCall] = useState<dataProps>();
   const [directionCall, setDirection] = useState('');
 
@@ -97,16 +95,8 @@ const GlobalHeaderRight: React.FC = () => {
     socket.emit('authen_event', newToken);
     socket.on('emit_call_event', (data) => {
       setDataCall(data);
-      if (!data.name) {
-        setCallerName('Chưa có trong danh bạ');
-      } else {
-        setCallerName(data.name);
-      }
-      if (!data.phone) {
-        setCallerPhone('0921 197 398');
-      } else {
-        setCallerPhone(data.phone);
-      }
+      // fake data when agent answered_call
+      //data.event = 'answered_call';
       const eventCall = data.event;
       switch (eventCall) {
         case 'ringing_call':
@@ -253,8 +243,6 @@ const GlobalHeaderRight: React.FC = () => {
               isVisibleNoteCall={isVisibleNoteCall}
               isActiveIconHistory={isActiveIconHistory}
               isActiveIconNote={isActiveIconNote}
-              isCallerName={isCallerName}
-              isCallerPhone={isCallePhone}
               dataContacts={dataContacts}
               handelUserTransfer={handelUserTransfer}
               dataCall={dataCall}

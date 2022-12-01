@@ -47,8 +47,6 @@ type AgentModalRingProps = {
   isVisibleNoteCall: boolean;
   isActiveIconHistory: boolean;
   isActiveIconNote: boolean;
-  isCallerName: any;
-  isCallerPhone: any;
   dataContacts: dataUserContactProps[];
   refTimer: React.MutableRefObject<any>;
   dataCall?: dataProps;
@@ -70,8 +68,6 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   isVisibleNoteCall,
   isActiveIconHistory,
   isActiveIconNote,
-  isCallerName,
-  isCallerPhone,
   dataContacts,
   refTimer,
   dataCall
@@ -80,6 +76,8 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
 
   const [userSelect, setUserSelect] = useState('');
   const [statusCall, setStateCall] = useState('Cuộc gọi');
+  const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
+  const [phoneCall, setPhoneCall] = useState('000 000 0000')
   const { confirm } = Modal;
 
   const listTransfer = useMemo(
@@ -89,6 +87,8 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   );
   useEffect(() => {
     if (dataCall) {
+      setNameCall(dataCall.name);
+      setPhoneCall(dataCall.phone);
       if (dataCall.direction === 'receive') {
         setStateCall('Cuộc gọi đến');
       } else {
@@ -181,11 +181,11 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 </div>
                 <div className={isFullScreenModal ? styles.infoPhoneFullScreen : styles.infoPhone}>
                   <Typography.Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
-                    {isCallerName ? isCallerName : 'Chưa có trong danh bạ'}
+                    {nameCall ? nameCall : 'Chưa có trong danh bạ'}
                   </Typography.Text>
                   <br />
                   <Typography.Text style={{ fontSize: 13, fontWeight: 400, color: 'white' }}>
-                    {isCallerPhone ? isCallerPhone : '0000 000 000'}
+                    {phoneCall ? phoneCall : '0000 000 000'}
                   </Typography.Text>
                 </div>
               </Space>

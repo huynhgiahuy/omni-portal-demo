@@ -203,6 +203,10 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
     }
   }, [isModalOpen]);
 
+  const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
+  const [phoneCall, setPhoneCall] = useState('0000 000 000');
+  const [statusCall, setStateCall] = useState('Cuộc gọi');
+
   const { confirm } = Modal;
 
   const listTransfer = useMemo(
@@ -210,6 +214,18 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
       dataContacts?.map((user) => ({ id: user.id, label: user.full_name, value: user.ip_phone })),
     [dataContacts],
   );
+
+  useEffect(() => {
+    if (dataCall) {
+      setNameCall(dataCall.name)
+      setPhoneCall(dataCall.phone);
+      if (dataCall.direction === 'receive') {
+        setStateCall('Cuộc gọi đến');
+      } else {
+        setStateCall('Cuộc gọi đi');
+      }
+    }
+  })
 
   const showConfirm = () => {
     confirm({
@@ -267,7 +283,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                   <PhoneOutlined className={styles.modalAnswerIcon} />
                   <img style={{ position: 'absolute', left: 25, top: 8 }} src={Arrow} alt="arrow" />
                 </Space>
-                <Typography.Text style={{ color: 'white' }}>Cuộc gọi đi</Typography.Text>
+                <Typography.Text style={{ color: 'white' }}>{statusCall ? statusCall : 'Cuộc gọi'}</Typography.Text>
               </>
             )}
 
@@ -313,9 +329,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                 direction="vertical"
               >
                 <Typography.Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
-                  Chưa có trong danh bạ
+                  {nameCall ? nameCall : 'Chưa có trong danh bạ'}
                 </Typography.Text>
-                <Typography.Text style={{ color: 'white' }}>0908 778 291</Typography.Text>
+                <Typography.Text style={{ color: 'white' }}>{phoneCall ? phoneCall: '0000 000 000'}</Typography.Text>
               </Space>
             </Space>
             <Space
