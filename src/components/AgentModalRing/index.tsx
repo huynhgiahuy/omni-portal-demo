@@ -264,7 +264,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     onClick={() => setPopoverForward(!isPopoverForward)}
                   />
                 </Popover>
-                {!isFullScreenModal && (
+                {/* {!isFullScreenModal && (
                   <Popover
                     placement="bottom"
                     trigger="click"
@@ -299,7 +299,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       }}
                     />
                   </Popover>
-                )}
+                )} */}
 
                 <PhoneOutlined
                   className={styles.phoneHandUp}
@@ -458,6 +458,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     >
                       <Input
                         className={styles.inputHistoryFormStyle}
+                        value={"qưerttyy"}
                         disabled
                         placeholder="Nhập thông tin"
                       />
@@ -486,15 +487,6 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       label={
                         <Typography.Text style={{ color: '#fff' }}>Đơn vị công tác</Typography.Text>
                       }
-                    >
-                      <Input
-                        disabled
-                        className={styles.inputHistoryFormStyle}
-                        placeholder="Nhập thông tin"
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      label={<Typography.Text style={{ color: '#fff' }}>Ghi chú</Typography.Text>}
                     >
                       <Input
                         disabled
