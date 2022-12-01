@@ -329,9 +329,15 @@ const PermissionEdit: React.FC = () => {
     const handleRenderStatusActivity = (status: any) => {
         if (status === '1') {
             return (
-                <div style={{ padding: 10, border: '1px solid #1eaf61', borderRadius: 4, width: '60%', marginLeft: '20%' }}>
+                <div style={{ border: '1px solid #1eaf61', borderRadius: 4, }}>
                     <CheckCircleFilled style={{ color: ' #1eaf61' }} />
-                    <span style={{ color: '#1eaf61', marginLeft: 9, fontWeight: 400, fontSize: '13px' }}>
+                    <span
+                        style={{
+                            color: '#1eaf61',
+                            marginLeft: 9,
+                            fontWeight: 400,
+                            fontSize: '13px'
+                        }}>
                         Sẵn sàng
                     </span>
                 </div>
@@ -339,9 +345,15 @@ const PermissionEdit: React.FC = () => {
         }
         else if (status === '2') {
             return (
-                <div style={{ padding: 10, border: '1px solid #FAAD14', borderRadius: 4, width: '60%', marginLeft: '20%' }}>
+                <div style={{ border: '1px solid #FAAD14', borderRadius: 4, }}>
                     <ClockCircleFilled style={{ color: ' #FAAD14' }} />
-                    <span style={{ color: '#FAAD14', marginLeft: 9, fontWeight: 400, fontSize: '13px' }}>
+                    <span
+                        style={{
+                            color: '#FAAD14',
+                            marginLeft: 9,
+                            fontWeight: 400,
+                            fontSize: '13px'
+                        }}>
                         Vắng mặt
                     </span>
                 </div>
@@ -349,9 +361,15 @@ const PermissionEdit: React.FC = () => {
         }
         else if (status === '3') {
             return (
-                <div style={{ padding: 10, border: '1px solid #F5222D', borderRadius: 4, width: '60%', marginLeft: '20%' }}>
+                <div style={{ border: '1px solid #F5222D', borderRadius: 4, }}>
                     <MinusCircleFilled style={{ color: '#F5222D' }} />
-                    <span style={{ color: '#F5222D', marginLeft: 9, fontWeight: 400, fontSize: '13px' }}>
+                    <span
+                        style={{
+                            color: '#F5222D',
+                            marginLeft: 9,
+                            fontWeight: 400,
+                            fontSize: '13px'
+                        }}>
                         Không làm phiền
                     </span>
                 </div>
@@ -359,9 +377,23 @@ const PermissionEdit: React.FC = () => {
         }
         else if (status === '4') {
             return (
-                <div style={{ display: 'flex', alignItems: 'center', padding: 10, border: '1px solid #818181', borderRadius: 4, width: '60%', marginLeft: '20%' }}>
+                <div
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        border: '1px solid #818181',
+                        borderRadius: 4,
+                        paddingLeft: '10%'
+                    }}>
                     <img src={Ellipse} alt="..." width={14} height={14} />
-                    <div style={{ color: '#818181', marginLeft: 5, fontWeight: 400, fontSize: '13px' }} >
+                    <div
+                        style={{
+                            color: '#818181',
+                            marginLeft: 5,
+                            fontWeight: 400,
+                            fontSize: '13px'
+                        }}>
                         Không hoạt động
                     </div>
                 </div>
@@ -386,7 +418,7 @@ const PermissionEdit: React.FC = () => {
             dataIndex: 'name',
             key: 'name',
             align: 'center',
-            width: '300px',
+            width: '250px',
             render: (text, record) => {
                 if (record.image !== null) {
                     return (
@@ -430,12 +462,14 @@ const PermissionEdit: React.FC = () => {
             title: 'Số IPP',
             dataIndex: 'ip_phone',
             key: 'ip_phone',
+            width: '70px',
             align: 'center'
         },
         {
             title: 'Team',
             dataIndex: 'team_name',
             key: 'team_name',
+            width: '100px',
             align: 'center'
         },
         {
@@ -443,6 +477,7 @@ const PermissionEdit: React.FC = () => {
             dataIndex: 'work_address',
             key: 'work_address',
             align: 'center',
+            width: '100px',
             render: (text, record) => {
                 return text === "mn" ? "Miền Nam" : text === "mb" ? "Miền Bắc" : ''
             }
@@ -451,13 +486,15 @@ const PermissionEdit: React.FC = () => {
             title: 'Nhóm quyền',
             dataIndex: 'role_code',
             key: 'role_code',
-            align: 'center'
+            align: 'center',
+            width: '100px',
         },
         {
             title: 'Cập nhật lần cuối',
             dataIndex: 'last_update',
             key: 'last_update',
             align: 'center',
+            width: '100px',
             render: (text, record) => {
                 return text === null ? '-' : moment(text).format('DD/MM/YYYY');
             }
@@ -467,6 +504,7 @@ const PermissionEdit: React.FC = () => {
             dataIndex: 'status',
             key: 'status',
             align: 'center',
+            width: '110px',
             render: (text, record) => {
                 return handleRenderStatusActivity(record.status)
             }
@@ -480,6 +518,7 @@ const PermissionEdit: React.FC = () => {
         {
             title: '',
             align: 'center',
+            width: '100px',
             render: (record) => (
                 <Space size="large">
                     <Tooltip title="Cập nhật">
@@ -908,8 +947,20 @@ const PermissionEdit: React.FC = () => {
                             </div>
                         </div>
                         <Form.Item {...submitFormLayout} style={{ marginBottom: 'unset' }}>
-                            <Button style={{ marginRight: '10px' }} onClick={handleCancleUpdatePermission} disabled={handleCallApiUpdateUserInfo.loading}>Hủy</Button>
-                            <Button type='primary' htmlType='submit' loading={handleCallApiUpdateUserInfo.loading}>Cập nhật</Button>
+                            <Button
+                                style={{ marginRight: '10px' }}
+                                onClick={handleCancleUpdatePermission}
+                                disabled={handleCallApiUpdateUserInfo.loading}
+                            >
+                                Hủy
+                            </Button>
+                            <Button
+                                type='primary'
+                                htmlType='submit'
+                                loading={handleCallApiUpdateUserInfo.loading}
+                            >
+                                Cập nhật
+                            </Button>
                         </Form.Item>
                     </Form>
                 </Modal>
