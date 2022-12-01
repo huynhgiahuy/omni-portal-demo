@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 import {
   Modal,
@@ -11,6 +11,7 @@ import {
   Timeline,
   List,
   Select,
+  message,
 } from 'antd';
 import {
   AudioFilled,
@@ -27,8 +28,14 @@ import {
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
 import AvatarModal from '../../../public/avatar_modal_ring.png';
-import { dataUserContactProps } from '@/pages/omni-channel/report/services';
+import {
+  dataUserContactProps,
+  requestAddUserContact,
+  requestGetTakeCallNote,
+} from '@/pages/omni-channel/report/services';
 import { dataProps } from '../RightContent';
+import { useRequest } from 'umi';
+import moment from 'moment';
 
 type AgentModalAnswerProps = {
   isModalOpen: boolean;
@@ -147,6 +154,58 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   const [isRecord, setIsRecord] = useState(false);
   const [isPopoverForward, setPopoverForward] = useState(false);
   const [userSelect, setUserSelect] = useState('');
+  const [isSave, setIsSave] = useState(true);
+
+  console.log(dataCall);
+
+  const token = window.localStorage?.getItem('access_token');
+
+  const getTakeCallNote = useRequest(
+    async (data) => {
+      const res: { success: boolean } = await requestGetTakeCallNote(
+        token ? token : '',
+        data ? data : { phone_number: dataCall?.phone },
+      );
+      if (!res.success) {
+        message.error('Không lấy được lịch sử note');
+        return;
+      }
+      return res;
+    },
+    {
+      manual: true,
+    },
+  );
+
+  // console.log(dataCall);
+
+  // console.log(getTakeCallNote?.data);
+
+  const addUserContact = useRequest(
+    async (data) => {
+      const result: { success: boolean; error: string } = await requestAddUserContact(data);
+      if (!result.success) {
+        message.error('Lưu thất bại');
+        return;
+      } else {
+        message.success('Lưu thành công');
+        setIsSave(false);
+      }
+    },
+    {
+      manual: true,
+    },
+  );
+
+  useEffect(() => {
+    if (isModalOpen) {
+      getTakeCallNote.run({ phone_number: '12369' });
+    }
+  }, [isModalOpen]);
+
+  const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
+  const [phoneCall, setPhoneCall] = useState('0000 000 000');
+  const [statusCall, setStateCall] = useState('Cuộc gọi');
 
   const { confirm } = Modal;
 
@@ -155,6 +214,18 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
       dataContacts?.map((user) => ({ id: user.id, label: user.full_name, value: user.ip_phone })),
     [dataContacts],
   );
+
+  useEffect(() => {
+    if (dataCall) {
+      setNameCall(dataCall.name)
+      setPhoneCall(dataCall.phone);
+      if (dataCall.direction === 'receive') {
+        setStateCall('Cuộc gọi đến');
+      } else {
+        setStateCall('Cuộc gọi đi');
+      }
+    }
+  })
 
   const showConfirm = () => {
     confirm({
@@ -175,7 +246,8 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   };
 
   const handleOnFinish = (values: any) => {
-    console.log(values);
+    values.external_customers = true;
+    addUserContact.run(values);
   };
 
   return (
@@ -211,7 +283,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                   <PhoneOutlined className={styles.modalAnswerIcon} />
                   <img style={{ position: 'absolute', left: 25, top: 8 }} src={Arrow} alt="arrow" />
                 </Space>
-                <Typography.Text style={{ color: 'white' }}>Cuộc gọi đi</Typography.Text>
+                <Typography.Text style={{ color: 'white' }}>{statusCall ? statusCall : 'Cuộc gọi'}</Typography.Text>
               </>
             )}
 
@@ -257,9 +329,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                 direction="vertical"
               >
                 <Typography.Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
-                  Chưa có trong danh bạ
+                  {nameCall ? nameCall : 'Chưa có trong danh bạ'}
                 </Typography.Text>
-                <Typography.Text style={{ color: 'white' }}>0908 778 291</Typography.Text>
+                <Typography.Text style={{ color: 'white' }}>{phoneCall ? phoneCall: '0000 000 000'}</Typography.Text>
               </Space>
             </Space>
             <Space
@@ -385,143 +457,96 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
               </div>
               <div className={styles.historyFormContentLayout}>
                 <Timeline>
-                  <Timeline.Item>
-                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                      22/09/2022 14:20
-                    </Typography.Paragraph>
-                    <div className={styles.historyFormContentFlex1}>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>
-                        Cuộc gọi đến
-                      </Typography.Paragraph>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                        00:12
-                      </Typography.Paragraph>
-                    </div>
-                    <ul style={{ listStyleType: 'disc', color: '#fff' }}>
-                      <li>
-                        <Typography.Paragraph
-                          style={{
-                            marginBottom: 'unset',
-                            paddingRight: '50px',
-                            fontWeight: 'bold',
-                            color: '#fff',
-                          }}
-                        >
-                          Ghi chú:
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                      <li>
-                        <Typography.Paragraph
-                          style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}
-                        >
-                          Nhân sự:
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            HuyenLM2
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                    </ul>
-                  </Timeline.Item>
-                  <Timeline.Item>
-                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                      22/09/2022 14:20
-                    </Typography.Paragraph>
-                    <div className={styles.historyFormContentFlex1}>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>
-                        Cuộc gọi đến
-                      </Typography.Paragraph>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                        00:12
-                      </Typography.Paragraph>
-                    </div>
-                    <ul style={{ listStyleType: 'disc', color: '#fff' }}>
-                      <li>
-                        <Typography.Paragraph
-                          style={{
-                            marginBottom: 'unset',
-                            paddingRight: '50px',
-                            fontWeight: 'bold',
-                            color: '#fff',
-                          }}
-                        >
-                          Ghi chú:{' '}
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                      <li>
-                        <Typography.Paragraph
-                          style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}
-                        >
-                          Nhân sự:{' '}
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            HuyenLM2
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                    </ul>
-                  </Timeline.Item>
-                  <Timeline.Item>
-                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                      22/09/2022 14:20
-                    </Typography.Paragraph>
-                    <div className={styles.historyFormContentFlex1}>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>
-                        Cuộc gọi đến
-                      </Typography.Paragraph>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                        00:12
-                      </Typography.Paragraph>
-                    </div>
-                    <ul style={{ listStyleType: 'disc', color: '#fff' }}>
-                      <li>
-                        <Typography.Paragraph
-                          style={{
-                            marginBottom: 'unset',
-                            paddingRight: '50px',
-                            fontWeight: 'bold',
-                            color: '#fff',
-                          }}
-                        >
-                          Ghi chú:{' '}
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                      <li>
-                        <Typography.Paragraph
-                          style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}
-                        >
-                          Nhân sự:{' '}
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            HuyenLM2
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                    </ul>
-                  </Timeline.Item>
+                  {getTakeCallNote?.data[0]?.note ? (
+                    getTakeCallNote?.data[0]?.note.map(
+                      (note: {
+                        call_date_and_time: string;
+                        call_direction: string;
+                        content: string;
+                        personnel: string;
+                      }) => {
+                        return (
+                          <Timeline.Item>
+                            <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                              {moment(note.call_date_and_time).utc().format('DD/MM/YYYY HH:MM')}
+                            </Typography.Paragraph>
+                            <div className={styles.historyFormContentFlex1}>
+                              <Typography.Paragraph
+                                style={{
+                                  marginBottom: 'unset',
+                                  color: note.call_direction === 'string' ? '#54FF00' : '#FFAA00',
+                                }}
+                              >
+                                {note.call_direction === 'string'
+                                  ? ' Cuộc gọi đến'
+                                  : ' Cuộc gọi đi'}
+                              </Typography.Paragraph>
+                              {/* <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                              00:12
+                            </Typography.Paragraph> */}
+                            </div>
+                            <ul style={{ listStyleType: 'disc', color: '#fff' }}>
+                              <li>
+                                <Typography.Paragraph
+                                  style={{
+                                    marginBottom: 'unset',
+                                    paddingRight: '50px',
+                                    fontWeight: 'bold',
+                                    color: '#fff',
+                                  }}
+                                >
+                                  Ghi chú:{' '}
+                                  <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                                    {note.content}
+                                  </Typography.Text>
+                                </Typography.Paragraph>
+                              </li>
+                              <li>
+                                <Typography.Paragraph
+                                  style={{
+                                    marginBottom: 'unset',
+                                    fontWeight: 'bold',
+                                    color: '#fff',
+                                  }}
+                                >
+                                  Nhân sự:{' '}
+                                  <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                                    {note.personnel}
+                                  </Typography.Text>
+                                </Typography.Paragraph>
+                              </li>
+                            </ul>
+                          </Timeline.Item>
+                        );
+                      },
+                    )
+                  ) : (
+                    <Timeline.Item>
+                      <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                        Không có ghi chú
+                      </Typography.Text>
+                    </Timeline.Item>
+                  )}
                 </Timeline>
               </div>
             </div>
           ) : isFullScreenModal && isVisibleNoteCall ? (
-            <div>
-              <div className={styles.infoCallNote} style={{ height: 280 }}>
-                <div className={styles.noteFormHeaderLayout}>
-                  <Typography.Text className={styles.noteFormHeaderStyle}>Danh bạ</Typography.Text>
-                </div>
-                <div className={styles.noteFormContentLayout}>
-                  <Form
-                    form={form}
-                    layout="vertical"
-                    requiredMark={false}
-                    onFinish={handleOnFinish}
-                    className={styles.noteFormPhoneCall}
-                  >
+            <Form
+              form={form}
+              layout="vertical"
+              requiredMark={false}
+              onFinish={handleOnFinish}
+              className={styles.noteFormPhoneCall}
+            >
+              {' '}
+              <div>
+                <div className={styles.infoCallNote} style={{ height: 280 }}>
+                  <div className={styles.noteFormHeaderLayout}>
+                    <Typography.Text className={styles.noteFormHeaderStyle}>
+                      Danh bạ
+                    </Typography.Text>
+                  </div>
+                  <div className={styles.noteFormContentLayout}>
                     <Form.Item
                       name="full_name"
                       label={
@@ -546,6 +571,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       <Input
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
+                        disabled={!isSave}
                       />
                     </Form.Item>
                     <Form.Item
@@ -573,6 +599,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       <Input
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
+                        disabled={!isSave}
                       />
                     </Form.Item>
                     <Form.Item
@@ -594,6 +621,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       <Input
                         className={styles.inputHistoryFormStyle}
                         placeholder="Nhập thông tin"
+                        disabled={!isSave}
                       />
                     </Form.Item>
                     <Form.Item
@@ -607,28 +635,31 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                     >
                       <Select
                         style={{ textAlign: 'left' }}
+                        disabled={!isSave}
                         className={styles.inputHistoryFormStyle}
                         options={listUnitExternal}
                         placeholder="Chọn đơn vị"
                       />
                     </Form.Item>
-                    <Form.Item>
-                      <Space>
-                        <Button>Hủy</Button>
-                        <Button type="primary" htmlType="submit">
-                          Lưu
-                        </Button>
-                      </Space>
-                    </Form.Item>
-                  </Form>
+                    {isSave && (
+                      <Form.Item>
+                        <Space>
+                          <Button>Hủy</Button>
+                          <Button type="primary" htmlType="submit">
+                            Lưu
+                          </Button>
+                        </Space>
+                      </Form.Item>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className={styles.infoCallNote} style={{ marginTop: 10 }}>
-                <div className={styles.noteFormHeaderLayout}>
-                  <Typography.Text className={styles.noteFormHeaderStyle}>Ghi chú</Typography.Text>
-                </div>
-                <div className={styles.noteFormContentLayout}>
-                  <Form layout="vertical" form={form} className={styles.noteFormPhoneCall}>
+                <div className={styles.infoCallNote} style={{ marginTop: 10 }}>
+                  <div className={styles.noteFormHeaderLayout}>
+                    <Typography.Text className={styles.noteFormHeaderStyle}>
+                      Ghi chú
+                    </Typography.Text>
+                  </div>
+                  <div className={styles.noteFormContentLayout}>
                     <Form.Item
                       name="note"
                       label={<Typography.Text style={{ color: '#fff' }}>Ghi chú</Typography.Text>}
@@ -645,6 +676,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                         <Button
                           type="primary"
                           htmlType="button"
+                          disabled={!form.getFieldValue('note')}
                           onClick={() => {
                             console.log(form.getFieldValue('note'));
                           }}
@@ -653,10 +685,10 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                         </Button>
                       </Space>
                     </Form.Item>
-                  </Form>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Form>
           ) : (
             ''
           )}
