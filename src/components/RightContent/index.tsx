@@ -20,6 +20,7 @@ const access_token = localStorage.getItem('access_token');
 export type SiderTheme = 'light' | 'dark';
 
 export type dataProps = {
+  call_id: string;
   phone: string;
   direction: string;
   event: string;
@@ -28,6 +29,7 @@ export type dataProps = {
   contact: {
     full_name: string;
     phone_number: string;
+    work_unit: string;
   };
 };
 
@@ -49,8 +51,6 @@ const GlobalHeaderRight: React.FC = () => {
   const [dataCall, setDataCall] = useState<dataProps>();
 
   const token = window.localStorage?.getItem('access_token');
-
-  console.log(dataCall);
 
   const getUserContact = useRequest(
     async (data) => {
@@ -218,7 +218,7 @@ const GlobalHeaderRight: React.FC = () => {
       <NoticeIconView />
       <Avatar />
       {/* <SelectLang className={styles.action} /> */}
-      <a
+      {/* <a
         onClick={showModalRing}
         style={{
           position: 'absolute',
@@ -230,7 +230,7 @@ const GlobalHeaderRight: React.FC = () => {
         }}
       >
         Button
-      </a>
+      </a> */}
 
       <Timer
         initialTime={0}
