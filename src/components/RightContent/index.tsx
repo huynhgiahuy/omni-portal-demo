@@ -25,8 +25,8 @@ export type dataProps = {
   call_history: string;
   name: string;
   contact: {
-    name:string;
-    phone:string;
+    name: string;
+    phone: string;
   };
 };
 
@@ -45,7 +45,7 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconNote, setActiveIconNote] = useState(false);
   const [isCallerName, setCallerName] = useState('');
   const [isCallePhone, setCallerPhone] = useState('');
-const [dataCall, setDataCall] = useState<dataProps>();
+  const [dataCall, setDataCall] = useState<dataProps>();
 
   const token = window.localStorage?.getItem('access_token');
 
