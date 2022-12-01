@@ -35,6 +35,7 @@ import {
   requestCheckPhoneContact,
   requestDeleteUserContact,
   requestGetUserContact,
+  requestSendPinUser,
   requestUpdateUserContact,
 } from './services';
 import { useModel, useRequest } from 'umi';
@@ -162,6 +163,8 @@ const PhoneBook: React.FC = () => {
   const [newTeamValue, setNewTeamValue] = useState<string | any>();
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
 
+  const token = window.localStorage?.getItem('access_token');
+
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -186,6 +189,7 @@ const PhoneBook: React.FC = () => {
   const getUserContact = useRequest(
     async (data) => {
       const res: { success: boolean } = await requestGetUserContact(
+        token ? token : '',
         data ? data : { email_user: initialState?.currentUser?.email },
       );
       if (!res.success) {
@@ -204,13 +208,13 @@ const PhoneBook: React.FC = () => {
     },
   );
 
-  const dataExternalContacts = dataContacts.filter(
-    (user: { external_customers: boolean }) => user.external_customers,
-  );
+  const dataExternalContacts = dataContacts
+    .filter((user: { external_customers: boolean }) => user.external_customers)
+    .sort((x, y) => (x.pin_user === y.pin_user ? 0 : x ? -1 : 1));
 
-  const dataInternalContacts = dataContacts.filter(
-    (user: { external_customers: boolean }) => !user.external_customers,
-  );
+  const dataInternalContacts = dataContacts
+    .filter((user: { external_customers: boolean }) => !user.external_customers)
+    .sort((x, y) => (x.pin_user === y.pin_user ? 0 : x ? -1 : 1));
 
   const addUserContact = useRequest(
     async (data) => {
@@ -257,6 +261,23 @@ const PhoneBook: React.FC = () => {
         message.success('Xoá thành công');
         getUserContact.refresh();
         handleCancleModal();
+      }
+      return res;
+    },
+    {
+      manual: true,
+    },
+  );
+
+  const sendPinStart = useRequest(
+    async (data) => {
+      const res: { success: boolean } = await requestSendPinUser(data);
+      if (!res.success) {
+        message.error('Lưu thất bại');
+        return;
+      } else {
+        message.success('Lưu thành công');
+        getUserContact.refresh();
       }
       return res;
     },
@@ -349,7 +370,7 @@ const PhoneBook: React.FC = () => {
                   pin_user: false,
                   email_user: initialState?.currentUser?.email,
                 };
-                console.log(data);
+                sendPinStart.run(data);
               }}
             />
           ) : (
@@ -361,7 +382,7 @@ const PhoneBook: React.FC = () => {
                   pin_user: true,
                   email_user: initialState?.currentUser?.email,
                 };
-                console.log(data);
+                sendPinStart.run(data);
               }}
             />
           )}
@@ -623,7 +644,7 @@ const PhoneBook: React.FC = () => {
                 <Spin />
               </div>
             ),
-            spinning: getUserContact.loading,
+            spinning: getUserContact.loading || sendPinStart.loading,
           }}
         />
 
@@ -709,10 +730,6 @@ const PhoneBook: React.FC = () => {
                 name="ip_phone"
                 style={{ marginTop: 8 }}
                 rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng không để trống thông tin',
-                  },
                   {
                     pattern: new RegExp('^[0-9]{1,6}$'),
                     message: 'IP Phone không hợp lệ',

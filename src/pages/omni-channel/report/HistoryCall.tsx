@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker, message, Spin } from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker, message, Spin, Modal } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlayCircleFilled, SearchOutlined, DownOutlined, UpOutlined, EditOutlined } from '@ant-design/icons';
-//import DownloadIcon from '../../../../public/cloud_download.svg';
+import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 import styles from '../report/style.less'
 import { requestHistoryCallData, requestUpdateNoteHistoryCall } from './services';
-import { useRequest, useModel } from 'umi';
+import { useRequest, useModel, Link } from 'umi';
 import { debounce } from 'lodash';
 import CallInboundIcon from '@/components/PhoneCallType/CallInboundIcon';
 import CallInterval from '@/components/PhoneCallType/CallInterval';
@@ -14,7 +14,7 @@ import CallOutboundIcon from '@/components/PhoneCallType/CallOutboundIcon';
 import moment from 'moment';
 import fileDownload from 'js-file-download';
 import axios from 'axios';
-
+import api from '@/api';
 
 const { RangePicker } = DatePicker;
 
@@ -42,7 +42,7 @@ interface DataLSCGType {
 }
 
 const HistoryCall: React.FC = () => {
-    const { initialState, setInitialState } = useModel('@@initialState');
+    //const { initialState, setInitialState } = useModel('@@initialState');
 
     const [listValueHCG, setListValueHCG] = useState<string[] | any>();
     const [listValueKQ, setListValueKQ] = useState<string[] | any>();
@@ -55,6 +55,14 @@ const HistoryCall: React.FC = () => {
     const [getCallId, setGetCallId] = useState<string>();
     const [ellipsis, setEllipsis] = useState<any>(true);
 
+    const [audioURI, setAudioURI] = useState<string>();
+
+    const audioRef = useRef<any>();
+
+    const [isVisibleModalAudio, setVisibleModalAudio] = useState(false);
+
+    const [testAudioURL, setTestAudioURL] = useState<any>();
+
     const [pagination, setPagination] = useState<PaginationProps>({
         current: 1,
         pageSize: 3,
@@ -65,9 +73,12 @@ const HistoryCall: React.FC = () => {
 
     const [form] = Form.useForm();
 
+    const token = window.localStorage?.getItem('access_token');
+
     const fetchListLSCGData = useRequest(
         async (from_datetime: string | undefined, to_datetime: any | undefined) => {
             const res: { success: boolean, length: number } = await requestHistoryCallData(
+                token ? token : '',
                 pagination.pageSize,
                 pagination.current,
                 from_datetime,
@@ -94,7 +105,7 @@ const HistoryCall: React.FC = () => {
     )
 
     const handleUpdateNoteHistoryCall = async (call_id?: string, note?: string) => {
-        const respone_update_note = await requestUpdateNoteHistoryCall(call_id, note);
+        const respone_update_note = await requestUpdateNoteHistoryCall(token ? token : '', call_id, note);
         if (respone_update_note.success !== true) {
             message.error('Lưu ghi chú thất bại!');
         }
@@ -176,6 +187,78 @@ const HistoryCall: React.FC = () => {
         return;
     }
 
+    const handleChangeBillSec = (val: any) => {
+        var sec_num: any = parseInt(val, 10);
+        var hours: any = Math.floor(sec_num / 3600);
+        var minutes: any = Math.floor((sec_num - (hours * 3600)) / 60);
+        var seconds: any = sec_num - (hours * 3600) - (minutes * 60);
+
+        if (hours < 10) { hours = "0" + hours; }
+        if (minutes < 10) { minutes = "0" + minutes; }
+        if (seconds < 10) { seconds = "0" + seconds; }
+        return hours + ':' + minutes + ':' + seconds;
+    }
+
+    const playAudio = async (fileId?: any, recordName?: any) => {
+        try {
+            const response = await axios({
+                url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file_url`,
+                //url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_url',
+                method: 'POST',
+                data: {
+                    call_id: fileId,
+                    record_name: recordName
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            //const data = `data:audio/mp3;base64,${response.data}`;
+            // const mp3 = new Blob([response.data], { type: 'audio/mpeg' })
+            // const url = URL.createObjectURL(mp3);
+            // console.log(typeof url)
+            setTestAudioURL(response.data.data[0]);
+            //const audio = new Audio(url)
+            //audio.load()
+            //await audio.play()
+            //console.log(url);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    const downloadAudio = async (fileId?: any, recordName?: any) => {
+        try {
+            const response = await axios({
+                url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file`,
+                //url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_file',
+                method: 'POST',
+                data: {
+                    call_id: fileId,
+                    record_name: recordName,
+                },
+                responseType: 'blob',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            const audioFormatBlob = new Blob([response.data], { type: 'audio/*' })
+            fileDownload(audioFormatBlob, recordName);
+        } catch (e) {
+            message.error('Không thể tải file!')
+        }
+    };
+
+    // const handleDownload = async (url: any, filename: any) => {
+    //     await axios(url, {
+    //         responseType: 'blob',
+    //     })
+    //         .then((res) => {
+    //             console.log(res)
+    //             fileDownload(res.data, filename)
+    //         })
+    // }
+
     const columns: ColumnsType<DataLSCGType> = [
         {
             title: 'Hướng cuộc gọi',
@@ -220,14 +303,20 @@ const HistoryCall: React.FC = () => {
             dataIndex: 'start_epoch',
             key: 'start_epoch',
             align: 'center',
-            width: '150px'
+            width: '150px',
+            render: (text, record) => {
+                return moment(text).format('DD-MM-YYYY HH:mm:ss')
+            }
         },
         {
             title: 'Thời lượng',
             dataIndex: 'billsec',
             key: 'billsec',
             align: 'center',
-            width: '100px'
+            width: '100px',
+            render: (text, record) => {
+                return handleChangeBillSec(text.toString())
+            }
         },
         {
             title: 'Kết quả',
@@ -245,14 +334,22 @@ const HistoryCall: React.FC = () => {
             key: 'ghiam',
             width: '120px',
             align: 'center',
-            // render: (text, record) => {
-            //     return (
-            //         <>
-            //             <PlayCircleFilled style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }} />
-            //             <img src={DownloadIcon} style={{ background: '#1890ff', padding: '3px', borderRadius: '30px', verticalAlign: 'sub' }} />
-            //         </>
-            //     )
-            // }
+            render: (text, record) => {
+                return (
+                    <>
+                        <PlayCircleFilled
+                            style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }}
+                            onClick={() => { playAudio(record._id, record.record_name); setVisibleModalAudio(true) }}
+                        //onClick={() => setVisibleModalAudio(true)}
+                        />
+                        <img
+                            src={DownloadIcon}
+                            style={{ background: '#1890ff', padding: '3px', borderRadius: '30px', verticalAlign: 'sub' }}
+                            onClick={() => downloadAudio(record._id, record.record_name)}
+                        />
+                    </>
+                )
+            }
         },
         {
             title: 'Ghi chú',
@@ -382,26 +479,20 @@ const HistoryCall: React.FC = () => {
         });
     };
 
-    // const handleExportFile = async () => {
-    //     const res = await axios({
-    //         //url: `${CXBOX_URL}/api/employee_report/export_employee_excel_file`,
-    //         method: 'POST',
-    //         data: {
-    //             filename: 'history_call_list',
-    //             limit: pagination.pageSize,
-    //             offset: pagination.current,
-    //             from_datetime: valueFromDateTime,
-    //             to_datetime: valueToDateTime,
-    //             call_direction: listValueHCG,
-    //             result: listValueKQ,
-    //             search_name: valueKeyWord,
-    //         },
-    //         responseType: 'blob',
-    //     });
-    //     fileDownload(res.data, 'history_call_list.xlsx');
-    // };
+    const handleExportFile = async () => {
+        const res = await axios({
+            //url: 'http://172.27.228.201:8007/voip-service/api/call/export_call_history_excel',
+            url: `${api.UMI_API_BASE_URL}/voip-service/api/call/export_call_history_excel`,
+            method: 'POST',
+            responseType: 'blob',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        fileDownload(res.data, 'history_call_report.xlsx');
+    };
 
-
+    console.log(testAudioURL);
     return (
         <>
             <div
@@ -467,7 +558,7 @@ const HistoryCall: React.FC = () => {
                     <Input
                         style={{ width: '300px', marginRight: '10px' }}
                         prefix={<SearchOutlined />}
-                        placeholder="Tìm kiếm"
+                        placeholder="Tìm kiếm tên người gọi, người nhận"
                         allowClear
                         onChange={debounce(
                             (e) => {
@@ -490,7 +581,7 @@ const HistoryCall: React.FC = () => {
                     />
                     <Button
                         style={{ backgroundColor: '#7fb77e', color: '#fff' }}
-                    //onClick={() => handleExportFile()}
+                        onClick={handleExportFile}
                     >
                         <ExportIcon /> Export
                     </Button>
@@ -526,60 +617,80 @@ const HistoryCall: React.FC = () => {
                         x: window.innerWidth < 1900 ? 100 : undefined,
                     }}
                     loading={{ indicator: <div><Spin /></div>, spinning: fetchListLSCGData.loading }}
-                    expandable={{
-                        expandedRowRender: (record) => {
-                            return (
-                                <>
-                                    <div style={{ textAlign: 'center', paddingTop: '10px' }}>
-                                        {record.note?.map(item => (
-                                            <>
-                                                <Typography.Text>{item.content}</Typography.Text>
-                                                <br></br>
-                                            </>
-                                        ))}
-                                    </div>
-                                    <div style={{ paddingTop: '10px' }}>
-                                        <Divider orientation='left'>{initialState?.currentUser?.email} <EditOutlined /></Divider>
-                                        <Form form={form} layout='vertical' onFinish={handleSubmitNoteForm}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                <div style={{ flex: 1 }}>
-                                                    <Form.Item
-                                                        name="note"
-                                                        rules={[
-                                                            {
-                                                                required: true,
-                                                                message: 'Vui lòng nhập ghi chú'
-                                                            }
-                                                        ]}
-                                                    >
-                                                        <Input />
-                                                    </Form.Item>
-                                                </div>
-                                                <div style={{ marginLeft: '10px' }}>
-                                                    <Form.Item label="">
-                                                        <Button
-                                                            style={{ backgroundColor: '#1890ff', color: '#fff' }}
-                                                            htmlType="submit"
-                                                            onClick={() => handleClickUpdateNote(record._id)}
-                                                        >
-                                                            Lưu
-                                                        </Button>
-                                                    </Form.Item>
-                                                </div>
-                                            </div>
-                                        </Form>
-                                    </div>
-                                </>
-                            )
-                        },
-                        expandIcon: ({ expanded, onExpand, record }) =>
-                            expanded ? (
-                                <UpOutlined onClick={e => onExpand(record, e)} />
-                            ) : (
-                                <DownOutlined onClick={e => onExpand(record, e)} />
-                            )
-                    }}
+                // expandable={{
+                //     expandedRowRender: (record) => {
+                //         return (
+                //             <>
+                //                 <div style={{ textAlign: 'center', paddingTop: '10px' }}>
+                //                     {record.note?.map(item => (
+                //                         <>
+                //                             <Typography.Text>{item.content}</Typography.Text>
+                //                             <br></br>
+                //                         </>
+                //                     ))}
+                //                 </div>
+                //                 <div style={{ paddingTop: '10px' }}>
+                //                     <Divider orientation='left'>{initialState?.currentUser?.name} <EditOutlined /></Divider>
+                //                     <Form form={form} layout='vertical' onFinish={handleSubmitNoteForm}>
+                //                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                //                             <div style={{ flex: 1 }}>
+                //                                 <Form.Item
+                //                                     name="note"
+                //                                     rules={[
+                //                                         {
+                //                                             required: true,
+                //                                             message: 'Vui lòng nhập ghi chú'
+                //                                         }
+                //                                     ]}
+                //                                 >
+                //                                     <Input />
+                //                                 </Form.Item>
+                //                             </div>
+                //                             <div style={{ marginLeft: '10px' }}>
+                //                                 <Form.Item label="">
+                //                                     <Button
+                //                                         style={{ backgroundColor: '#1890ff', color: '#fff' }}
+                //                                         htmlType="submit"
+                //                                         onClick={() => handleClickUpdateNote(record._id)}
+                //                                     >
+                //                                         Lưu
+                //                                     </Button>
+                //                                 </Form.Item>
+                //                             </div>
+                //                         </div>
+                //                     </Form>
+                //                 </div>
+                //             </>
+                //         )
+                //     },
+                //     expandIcon: ({ expanded, onExpand, record }) => {
+                //         return (
+                //             expanded ? (
+                //                 <UpOutlined onClick={e => onExpand(record, e)} />
+                //             ) : (
+                //                 <DownOutlined onClick={e => onExpand(record, e)} />
+                //             )
+                //         )
+                //     }
+                // }}
                 />
+                <Modal
+                    open={isVisibleModalAudio}
+                    onCancel={() => { setVisibleModalAudio(false); audioRef.current.pause() }}
+                    footer={false}
+                    title="Nghe file ghi âm"
+                >
+                    <div style={{ textAlign: 'center' }}>
+                        <figure>
+                            <audio
+                                ref={audioRef}
+                                controls
+                                src={testAudioURL}>
+                            </audio>
+                        </figure>
+                        {/* <Button onClick={() => handleDownload('http://172.27.228.189:9000/omni-dev/recordings/172.27.228.221/archive/2022/Nov/29/5b85843e-7cf2-4746-afcf-9cbee1109791.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=wCLEkHRxIei9WZH2%2F20221130%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221130T035143Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=a429376d7bdc769344914e4f9373088213657bb8ffdf2f8dc6a5b59805cdb360', 'test.mp3')}>Test</Button> */}
+                    </div>
+                </Modal>
             </Card>
         </>
     )

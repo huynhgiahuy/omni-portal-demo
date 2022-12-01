@@ -49,9 +49,12 @@ const GlobalHeaderRight: React.FC = () => {
   const [dataCall, setDataCall] = useState<dataProps>();
   const [directionCall, setDirection] = useState('')
 
+  const token = window.localStorage?.getItem('access_token');
+
   const getUserContact = useRequest(
     async (data) => {
       const res: { success: boolean } = await requestGetUserContact(
+        token ? token : '',
         data ? data : { email_user: initialState?.currentUser?.email },
       );
       if (!res.success) {
