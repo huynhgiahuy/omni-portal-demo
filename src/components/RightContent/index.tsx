@@ -44,8 +44,9 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconHistory, setActiveIconHistory] = useState(false);
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
+  const [isCallerName, setCallerName] = useState('');
+  const [isCallePhone, setCallerPhone] = useState('');
   const [dataCall, setDataCall] = useState<dataProps>();
-  const [directionCall, setDirection] = useState('');
 
   const token = window.localStorage?.getItem('access_token');
 
