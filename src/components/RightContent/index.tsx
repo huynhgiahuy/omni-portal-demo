@@ -26,8 +26,8 @@ export type dataProps = {
   call_history: string;
   name: string;
   contact: {
-    name:string;
-    phone:string;
+    name: string;
+    phone: string;
   };
 };
 
@@ -47,7 +47,7 @@ const GlobalHeaderRight: React.FC = () => {
   const [isCallerName, setCallerName] = useState('');
   const [isCallePhone, setCallerPhone] = useState('');
   const [dataCall, setDataCall] = useState<dataProps>();
-  const [directionCall, setDirection] = useState('')
+  const [directionCall, setDirection] = useState('');
 
   const token = window.localStorage?.getItem('access_token');
 
@@ -92,7 +92,7 @@ const GlobalHeaderRight: React.FC = () => {
   );
   useEffect(() => {
     const newToken = {
-      token: access_token
+      token: access_token,
     };
     socket.emit('authen_event', newToken);
     socket.on('emit_call_event', (data) => {
@@ -114,8 +114,10 @@ const GlobalHeaderRight: React.FC = () => {
           break;
         case 'hangup_call':
           setIsModalOpenRing(false);
+          setIsModalOpenAnswer(false);
           break;
         case 'answered_call':
+          setIsModalOpenRing(false);
           setIsModalOpenAnswer(true);
           break;
         default:

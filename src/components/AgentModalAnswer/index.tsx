@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styles from './index.less';
 import {
   Modal,
@@ -28,9 +28,14 @@ import {
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
 import AvatarModal from '../../../public/avatar_modal_ring.png';
-import { dataUserContactProps, requestAddUserContact } from '@/pages/omni-channel/report/services';
+import {
+  dataUserContactProps,
+  requestAddUserContact,
+  requestGetTakeCallNote,
+} from '@/pages/omni-channel/report/services';
 import { dataProps } from '../RightContent';
 import { useRequest } from 'umi';
+import moment from 'moment';
 
 type AgentModalAnswerProps = {
   isModalOpen: boolean;
@@ -151,6 +156,31 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   const [userSelect, setUserSelect] = useState('');
   const [isSave, setIsSave] = useState(true);
 
+  console.log(dataCall);
+
+  const token = window.localStorage?.getItem('access_token');
+
+  const getTakeCallNote = useRequest(
+    async (data) => {
+      const res: { success: boolean } = await requestGetTakeCallNote(
+        token ? token : '',
+        data ? data : { phone_number: dataCall?.phone },
+      );
+      if (!res.success) {
+        message.error('Không lấy được lịch sử note');
+        return;
+      }
+      return res;
+    },
+    {
+      manual: true,
+    },
+  );
+
+  // console.log(dataCall);
+
+  // console.log(getTakeCallNote?.data);
+
   const addUserContact = useRequest(
     async (data) => {
       const result: { success: boolean; error: string } = await requestAddUserContact(data);
@@ -166,6 +196,12 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
       manual: true,
     },
   );
+
+  useEffect(() => {
+    if (isModalOpen) {
+      getTakeCallNote.run({ phone_number: '12369' });
+    }
+  }, [isModalOpen]);
 
   const { confirm } = Modal;
 
@@ -405,126 +441,76 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
               </div>
               <div className={styles.historyFormContentLayout}>
                 <Timeline>
-                  <Timeline.Item>
-                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                      22/09/2022 14:20
-                    </Typography.Paragraph>
-                    <div className={styles.historyFormContentFlex1}>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>
-                        Cuộc gọi đến
-                      </Typography.Paragraph>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                        00:12
-                      </Typography.Paragraph>
-                    </div>
-                    <ul style={{ listStyleType: 'disc', color: '#fff' }}>
-                      <li>
-                        <Typography.Paragraph
-                          style={{
-                            marginBottom: 'unset',
-                            paddingRight: '50px',
-                            fontWeight: 'bold',
-                            color: '#fff',
-                          }}
-                        >
-                          Ghi chú:
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                      <li>
-                        <Typography.Paragraph
-                          style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}
-                        >
-                          Nhân sự:
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            HuyenLM2
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                    </ul>
-                  </Timeline.Item>
-                  <Timeline.Item>
-                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                      22/09/2022 14:20
-                    </Typography.Paragraph>
-                    <div className={styles.historyFormContentFlex1}>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>
-                        Cuộc gọi đến
-                      </Typography.Paragraph>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                        00:12
-                      </Typography.Paragraph>
-                    </div>
-                    <ul style={{ listStyleType: 'disc', color: '#fff' }}>
-                      <li>
-                        <Typography.Paragraph
-                          style={{
-                            marginBottom: 'unset',
-                            paddingRight: '50px',
-                            fontWeight: 'bold',
-                            color: '#fff',
-                          }}
-                        >
-                          Ghi chú:{' '}
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                      <li>
-                        <Typography.Paragraph
-                          style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}
-                        >
-                          Nhân sự:{' '}
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            HuyenLM2
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                    </ul>
-                  </Timeline.Item>
-                  <Timeline.Item>
-                    <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                      22/09/2022 14:20
-                    </Typography.Paragraph>
-                    <div className={styles.historyFormContentFlex1}>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#54FF00' }}>
-                        Cuộc gọi đến
-                      </Typography.Paragraph>
-                      <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                        00:12
-                      </Typography.Paragraph>
-                    </div>
-                    <ul style={{ listStyleType: 'disc', color: '#fff' }}>
-                      <li>
-                        <Typography.Paragraph
-                          style={{
-                            marginBottom: 'unset',
-                            paddingRight: '50px',
-                            fontWeight: 'bold',
-                            color: '#fff',
-                          }}
-                        >
-                          Ghi chú:{' '}
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            Sự cố phát sinh ảnh hưởng nhiều KHG yêu cầu kiểm tra lại
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                      <li>
-                        <Typography.Paragraph
-                          style={{ marginBottom: 'unset', fontWeight: 'bold', color: '#fff' }}
-                        >
-                          Nhân sự:{' '}
-                          <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                            HuyenLM2
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </li>
-                    </ul>
-                  </Timeline.Item>
+                  {getTakeCallNote?.data[0]?.note ? (
+                    getTakeCallNote?.data[0]?.note.map(
+                      (note: {
+                        call_date_and_time: string;
+                        call_direction: string;
+                        content: string;
+                        personnel: string;
+                      }) => {
+                        return (
+                          <Timeline.Item>
+                            <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                              {moment(note.call_date_and_time).utc().format('DD/MM/YYYY HH:MM')}
+                            </Typography.Paragraph>
+                            <div className={styles.historyFormContentFlex1}>
+                              <Typography.Paragraph
+                                style={{
+                                  marginBottom: 'unset',
+                                  color: note.call_direction === 'string' ? '#54FF00' : '#FFAA00',
+                                }}
+                              >
+                                {note.call_direction === 'string'
+                                  ? ' Cuộc gọi đến'
+                                  : ' Cuộc gọi đi'}
+                              </Typography.Paragraph>
+                              {/* <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                              00:12
+                            </Typography.Paragraph> */}
+                            </div>
+                            <ul style={{ listStyleType: 'disc', color: '#fff' }}>
+                              <li>
+                                <Typography.Paragraph
+                                  style={{
+                                    marginBottom: 'unset',
+                                    paddingRight: '50px',
+                                    fontWeight: 'bold',
+                                    color: '#fff',
+                                  }}
+                                >
+                                  Ghi chú:{' '}
+                                  <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                                    {note.content}
+                                  </Typography.Text>
+                                </Typography.Paragraph>
+                              </li>
+                              <li>
+                                <Typography.Paragraph
+                                  style={{
+                                    marginBottom: 'unset',
+                                    fontWeight: 'bold',
+                                    color: '#fff',
+                                  }}
+                                >
+                                  Nhân sự:{' '}
+                                  <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                                    {note.personnel}
+                                  </Typography.Text>
+                                </Typography.Paragraph>
+                              </li>
+                            </ul>
+                          </Timeline.Item>
+                        );
+                      },
+                    )
+                  ) : (
+                    <Timeline.Item>
+                      <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                        Không có ghi chú
+                      </Typography.Text>
+                    </Timeline.Item>
+                  )}
                 </Timeline>
               </div>
             </div>

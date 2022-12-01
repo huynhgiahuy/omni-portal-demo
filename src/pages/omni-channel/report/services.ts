@@ -127,3 +127,17 @@ export async function requestSendPinUser(data: {
     data,
   });
 }
+
+export async function requestGetTakeCallNote(token: string, data?: { phone_number: string }) {
+  return request(
+    `${api.UMI_API_BASE_URL}/voip-service/api/call/take_call_note`,
+
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    },
+  );
+}
