@@ -383,8 +383,20 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                 direction="vertical"
               >
                 <Typography.Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
-                  {nameCall ? nameCall : 'Chưa có trong danh bạ'}
+                  {nameCall ? nameCall : 'Chưa có trong danh bạ'}
+                  {!isFullScreenModal
+                    ? dataCall?.contact?.work_unit
+                      ? ` - ${dataCall?.contact?.work_unit}`
+                      : ''
+                    : ''}
                 </Typography.Text>
+                {isFullScreenModal && dataCall?.contact?.work_unit && (
+                  <>
+                    <Typography.Text style={{ fontSize: 13, fontWeight: 400, color: 'white' }}>
+                      {dataCall?.contact?.work_unit}
+                    </Typography.Text>
+                  </>
+                )}
                 <Typography.Text style={{ color: 'white' }}>
                   {phoneCall ? phoneCall : dataCall?.phone ? dataCall?.phone : '0000 000 000'}
                 </Typography.Text>
@@ -598,7 +610,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       name="full_name"
                       label={
                         <Typography.Text style={{ color: '#fff' }}>
-                          Họ và tên <span style={{ color: 'red' }}>(*)</span>
+                          Họ và tên {isSave && <span style={{ color: 'red' }}>(*)</span>}
                         </Typography.Text>
                       }
                       rules={[
@@ -653,7 +665,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       name="email"
                       label={
                         <Typography.Text style={{ color: '#fff' }}>
-                          Email <span style={{ color: 'red' }}>(*)</span>
+                          Email {isSave && <span style={{ color: 'red' }}>(*)</span>}
                         </Typography.Text>
                       }
                       rules={[
@@ -675,7 +687,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       name="work_unit"
                       label={
                         <Typography.Text style={{ color: '#fff' }}>
-                          Đơn vị công tác <span style={{ color: 'red' }}>(*)</span>
+                          Đơn vị công tác {isSave && <span style={{ color: 'red' }}>(*)</span>}
                         </Typography.Text>
                       }
                       rules={[{ required: true, message: 'Vui lòng không để trống thông tin' }]}
