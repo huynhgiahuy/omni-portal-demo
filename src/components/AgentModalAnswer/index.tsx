@@ -537,10 +537,10 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                             <Typography.Paragraph
                               style={{
                                 marginBottom: 'unset',
-                                color: note.call_direction === 'string' ? '#54FF00' : '#FFAA00',
+                                color: note.call_direction === 'receive' ? '#54FF00' : '#FFAA00',
                               }}
                             >
-                              {note.call_direction === 'string' ? ' Cuộc gọi đến' : ' Cuộc gọi đi'}
+                              {note.call_direction === 'receive' ? ' Cuộc gọi đến' : ' Cuộc gọi đi'}
                             </Typography.Paragraph>
                             {/* <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
                               00:12
