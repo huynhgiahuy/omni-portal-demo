@@ -218,7 +218,7 @@ const GlobalHeaderRight: React.FC = () => {
       <NoticeIconView />
       <Avatar />
       {/* <SelectLang className={styles.action} /> */}
-      <a
+      {/* <a
         onClick={showModalRing}
         style={{
           position: 'absolute',
@@ -230,7 +230,7 @@ const GlobalHeaderRight: React.FC = () => {
         }}
       >
         Button
-      </a>
+      </a> */}
 
       <Timer
         initialTime={0}
