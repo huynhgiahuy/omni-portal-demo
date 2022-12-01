@@ -107,7 +107,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
 
   useEffect(() => {
     if (isModalOpen) {
-      getTakeCallNote.run({ phone_number: '12369' });
+      getTakeCallNote.run({ phone_number: dataCall?.contact?.phone_number });
     }
   }, [isModalOpen]);
 

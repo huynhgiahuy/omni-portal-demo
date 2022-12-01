@@ -178,12 +178,6 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
     },
   );
 
-  console.log(listNote);
-
-  // console.log(dataCall);
-
-  // console.log(getTakeCallNote?.data);
-
   const addUserContact = useRequest(
     async (data) => {
       const result: { success: boolean; error: string } = await requestAddUserContact(data);
@@ -202,7 +196,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
 
   useEffect(() => {
     if (isModalOpen) {
-      getTakeCallNote.run({ phone_number: '12369' });
+      getTakeCallNote.run({ phone_number: dataCall?.contact?.phone_number });
     }
   }, [isModalOpen]);
 
