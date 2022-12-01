@@ -138,7 +138,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
     [dataContacts],
   );
   useEffect(() => {
-    if (dataCall) {
+    if (dataCall?.contact) {
       setNameCall(dataCall.contact?.full_name);
       setPhoneCall(dataCall.contact?.phone_number);
       form.setFieldsValue(dataCall?.contact);
@@ -147,6 +147,9 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       } else {
         setStateCall('Cuộc gọi đi');
       }
+    } else {
+      form.setFieldValue('phone_number', dataCall?.phone);
+      setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
     }
   });
   const showConfirm = () => {

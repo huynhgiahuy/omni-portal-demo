@@ -263,7 +263,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   }, [dataCall]);
 
   useEffect(() => {
-    if (dataCall) {
+    if (dataCall?.contact) {
       setNameCall(dataCall.contact?.full_name);
       setPhoneCall(dataCall.contact?.phone_number);
       form.setFieldsValue(dataCall?.contact);
@@ -273,6 +273,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
       } else {
         setStateCall('Cuộc gọi đi');
       }
+    } else {
+      form.setFieldValue('phone_number', dataCall?.phone);
+      setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
     }
   });
 
@@ -383,7 +386,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                   {nameCall ? nameCall : 'Chưa có trong danh bạ'}
                 </Typography.Text>
                 <Typography.Text style={{ color: 'white' }}>
-                  {phoneCall ? phoneCall : '0000 000 000'}
+                  {phoneCall ? phoneCall : dataCall?.phone ? dataCall?.phone : '0000 000 000'}
                 </Typography.Text>
               </Space>
             </Space>
