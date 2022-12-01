@@ -23,6 +23,9 @@ import {
     CheckOutlined,
     UserOutlined,
     SearchOutlined,
+    CheckCircleFilled,
+    ClockCircleFilled,
+    MinusCircleFilled
 } from '@ant-design/icons';
 import {
     requestDeleteUserPermission,
@@ -37,8 +40,10 @@ import {
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
-import { useRequest } from 'umi';
+import { useRequest, useModel } from 'umi';
 import { debounce } from 'lodash';
+import Ellipse from '../../../assets/Ellipse.svg';
+import moment from 'moment';
 
 interface PaginationProps {
     current: number;
@@ -74,6 +79,7 @@ interface DataAllUserInfoFinal {
     position: string;
     phone_number: string;
     image: string;
+    status?: string;
 }
 
 const formItemLayout = {
@@ -117,6 +123,7 @@ const submitFormLayout = {
 };
 
 const PermissionEdit: React.FC = () => {
+    //const { initialState, setInitialState } = useModel('@@initialState');
     const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
     const [userKey, setUserKey] = useState<string | any>();
     const [teamKey, setTeamKey] = useState<string | any>();
@@ -319,6 +326,50 @@ const PermissionEdit: React.FC = () => {
 
     };
 
+    const handleRenderStatusActivity = (status: any) => {
+        if (status === '1') {
+            return (
+                <div style={{ padding: 10, border: '1px solid #1eaf61', borderRadius: 4, width: '60%', marginLeft: '20%' }}>
+                    <CheckCircleFilled style={{ color: ' #1eaf61' }} />
+                    <span style={{ color: '#1eaf61', marginLeft: 9, fontWeight: 400, fontSize: '13px' }}>
+                        Sẵn sàng
+                    </span>
+                </div>
+            )
+        }
+        else if (status === '2') {
+            return (
+                <div style={{ padding: 10, border: '1px solid #FAAD14', borderRadius: 4, width: '60%', marginLeft: '20%' }}>
+                    <ClockCircleFilled style={{ color: ' #FAAD14' }} />
+                    <span style={{ color: '#FAAD14', marginLeft: 9, fontWeight: 400, fontSize: '13px' }}>
+                        Vắng mặt
+                    </span>
+                </div>
+            )
+        }
+        else if (status === '3') {
+            return (
+                <div style={{ padding: 10, border: '1px solid #F5222D', borderRadius: 4, width: '60%', marginLeft: '20%' }}>
+                    <MinusCircleFilled style={{ color: '#F5222D' }} />
+                    <span style={{ color: '#F5222D', marginLeft: 9, fontWeight: 400, fontSize: '13px' }}>
+                        Không làm phiền
+                    </span>
+                </div>
+            )
+        }
+        else if (status === '4') {
+            return (
+                <div style={{ display: 'flex', alignItems: 'center', padding: 10, border: '1px solid #818181', borderRadius: 4, width: '60%', marginLeft: '20%' }}>
+                    <img src={Ellipse} alt="..." width={14} height={14} />
+                    <div style={{ color: '#818181', marginLeft: 5, fontWeight: 400, fontSize: '13px' }} >
+                        Không hoạt động
+                    </div>
+                </div>
+            )
+        }
+        return;
+    }
+
     const columns: ColumnsType<DataAllUserInfoFinal> = [
         {
             title: '#',
@@ -406,20 +457,26 @@ const PermissionEdit: React.FC = () => {
             title: 'Cập nhật lần cuối',
             dataIndex: 'last_update',
             key: 'last_update',
-            align: 'center'
+            align: 'center',
+            render: (text, record) => {
+                return text === null ? '-' : moment(text).format('DD/MM/YYYY');
+            }
         },
         {
             title: 'Trạng thái hoạt động',
-            dataIndex: '',
-            key: '',
-            align: 'center'
+            dataIndex: 'status',
+            key: 'status',
+            align: 'center',
+            render: (text, record) => {
+                return handleRenderStatusActivity(record.status)
+            }
         },
-        {
-            title: 'Trạng thái IIP',
-            dataIndex: '',
-            key: '',
-            align: 'center'
-        },
+        // {
+        //     title: 'Trạng thái IIP',
+        //     dataIndex: '',
+        //     key: '',
+        //     align: 'center'
+        // },
         {
             title: '',
             align: 'center',
