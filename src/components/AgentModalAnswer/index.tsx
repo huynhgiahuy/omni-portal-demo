@@ -731,7 +731,13 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                     </Form.Item>
                     <Form.Item>
                       <Space>
-                        <Button>Hủy</Button>
+                        <Button
+                          onClick={() => {
+                            form.setFieldValue('note', '');
+                          }}
+                        >
+                          Hủy
+                        </Button>
                         <Button
                           type="primary"
                           htmlType="button"
