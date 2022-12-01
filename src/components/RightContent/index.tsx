@@ -26,8 +26,8 @@ export type dataProps = {
   call_history: string;
   name: string;
   contact: {
-    name: string;
-    phone: string;
+    full_name: string;
+    phone_number: string;
   };
 };
 
@@ -49,6 +49,8 @@ const GlobalHeaderRight: React.FC = () => {
   const [dataCall, setDataCall] = useState<dataProps>();
 
   const token = window.localStorage?.getItem('access_token');
+
+  console.log(dataCall);
 
   const getUserContact = useRequest(
     async (data) => {
@@ -101,15 +103,24 @@ const GlobalHeaderRight: React.FC = () => {
       const eventCall = data.event;
       switch (eventCall) {
         case 'ringing_call':
-          setIsModalOpenRing(true);
+          setTimeout(() => {
+            setIsModalOpenRing(true);
+          }, 0);
+
           break;
         case 'hangup_call':
-          setIsModalOpenRing(false);
-          setIsModalOpenAnswer(false);
+          setTimeout(() => {
+            setIsModalOpenRing(false);
+            setIsModalOpenAnswer(false);
+          }, 0);
+
           break;
         case 'answered_call':
-          setIsModalOpenRing(false);
-          setIsModalOpenAnswer(true);
+          setTimeout(() => {
+            setIsModalOpenRing(false);
+            setIsModalOpenAnswer(true);
+          }, 0);
+
           break;
         default:
           break;
