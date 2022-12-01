@@ -20,6 +20,7 @@ const access_token = localStorage.getItem('access_token');
 export type SiderTheme = 'light' | 'dark';
 
 export type dataProps = {
+  call_id: string;
   phone: string;
   direction: string;
   event: string;
@@ -49,8 +50,6 @@ const GlobalHeaderRight: React.FC = () => {
   const [dataCall, setDataCall] = useState<dataProps>();
 
   const token = window.localStorage?.getItem('access_token');
-
-  console.log(dataCall);
 
   const getUserContact = useRequest(
     async (data) => {

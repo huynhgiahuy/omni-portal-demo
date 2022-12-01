@@ -141,3 +141,26 @@ export async function requestGetTakeCallNote(token: string, data?: { phone_numbe
     },
   );
 }
+
+export async function requestSaveCallNote(
+  token: string,
+  data?: {
+    call_id: string;
+    phone_number: string;
+    call_direction: string;
+    personnel: string;
+    content: string;
+  },
+) {
+  return request(
+    `${api.UMI_API_BASE_URL}/voip-service/api/call/save_call_note`,
+
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data,
+    },
+  );
+}
