@@ -29,6 +29,7 @@ export type dataProps = {
   contact: {
     full_name: string;
     phone_number: string;
+    work_unit: string;
   };
 };
 
