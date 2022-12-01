@@ -155,20 +155,24 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   const [isPopoverForward, setPopoverForward] = useState(false);
   const [userSelect, setUserSelect] = useState('');
   const [isSave, setIsSave] = useState(true);
-
-  console.log(dataCall);
+  const [listNote, setListNote] = useState<any>();
+  const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
+  const [phoneCall, setPhoneCall] = useState('0000 000 000');
+  const [statusCall, setStateCall] = useState('Cuộc gọi');
 
   const token = window.localStorage?.getItem('access_token');
 
   const getTakeCallNote = useRequest(
     async (data) => {
-      const res: { success: boolean } = await requestGetTakeCallNote(
+      const res: { success: boolean; data: any } = await requestGetTakeCallNote(
         token ? token : '',
         data ? data : { phone_number: dataCall?.phone },
       );
       if (!res.success) {
         message.error('Không lấy được lịch sử note');
         return;
+      } else {
+        setListNote(res.data[0]);
       }
       return res;
     },
@@ -176,10 +180,6 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
       manual: true,
     },
   );
-
-  // console.log(dataCall);
-
-  // console.log(getTakeCallNote?.data);
 
   const addUserContact = useRequest(
     async (data) => {
@@ -199,13 +199,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
 
   useEffect(() => {
     if (isModalOpen) {
-      getTakeCallNote.run({ phone_number: '12369' });
+      getTakeCallNote.run({ phone_number: phoneCall });
     }
   }, [isModalOpen]);
-
-  const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
-  const [phoneCall, setPhoneCall] = useState('0000 000 000');
-  const [statusCall, setStateCall] = useState('Cuộc gọi');
 
   const { confirm } = Modal;
 
@@ -216,16 +212,26 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   );
 
   useEffect(() => {
+    refTimer.current.reset();
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    setPopoverForward(false);
+  }, [dataCall]);
+
+  useEffect(() => {
     if (dataCall) {
-      setNameCall(dataCall.name)
-      setPhoneCall(dataCall.phone);
+      setNameCall(dataCall.contact?.full_name);
+      setPhoneCall(dataCall.contact?.phone_number);
+      form.setFieldsValue(dataCall?.contact);
+      setIsSave(false);
       if (dataCall.direction === 'receive') {
         setStateCall('Cuộc gọi đến');
       } else {
         setStateCall('Cuộc gọi đi');
       }
     }
-  })
+  });
 
   const showConfirm = () => {
     confirm({
@@ -283,7 +289,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                   <PhoneOutlined className={styles.modalAnswerIcon} />
                   <img style={{ position: 'absolute', left: 25, top: 8 }} src={Arrow} alt="arrow" />
                 </Space>
-                <Typography.Text style={{ color: 'white' }}>{statusCall ? statusCall : 'Cuộc gọi'}</Typography.Text>
+                <Typography.Text style={{ color: 'white' }}>
+                  {statusCall ? statusCall : 'Cuộc gọi'}
+                </Typography.Text>
               </>
             )}
 
@@ -331,7 +339,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                 <Typography.Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
                   {nameCall ? nameCall : 'Chưa có trong danh bạ'}
                 </Typography.Text>
-                <Typography.Text style={{ color: 'white' }}>{phoneCall ? phoneCall: '0000 000 000'}</Typography.Text>
+                <Typography.Text style={{ color: 'white' }}>
+                  {phoneCall ? phoneCall : '0000 000 000'}
+                </Typography.Text>
               </Space>
             </Space>
             <Space
@@ -342,27 +352,27 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
               {isPlay ? (
                 <PauseOutlined
                   className={styles.phonePlay}
-                  onClick={() => {
-                    setIsPlay(!isPlay);
-                    setPopoverForward(false);
-                  }}
+                  // onClick={() => {
+                  //   setIsPlay(!isPlay);
+                  //   setPopoverForward(false);
+                  // }}
                 />
               ) : (
                 <CaretRightOutlined
                   className={styles.phonePause}
-                  onClick={() => {
-                    setIsPlay(!isPlay);
-                    setPopoverForward(false);
-                  }}
+                  // onClick={() => {
+                  //   setIsPlay(!isPlay);
+                  //   setPopoverForward(false);
+                  // }}
                 />
               )}
 
               <AudioFilled
                 className={isRecord ? styles.noRecord : styles.record}
-                onClick={() => {
-                  setIsRecord(!isRecord);
-                  setPopoverForward(false);
-                }}
+                // onClick={() => {
+                //   setIsRecord(!isRecord);
+                //   setPopoverForward(false);
+                // }}
               />
 
               <Popover
@@ -439,13 +449,13 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
               </Popover>
               <PhoneOutlined
                 className={styles.phoneHandUp}
-                onClick={() => {
-                  setPopoverForward(false);
+                // onClick={() => {
+                //   setPopoverForward(false);
 
-                  setTimeout(() => {
-                    showConfirm();
-                  });
-                }}
+                //   setTimeout(() => {
+                //     showConfirm();
+                //   });
+                // }}
               />
             </Space>
           </div>
@@ -457,8 +467,8 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
               </div>
               <div className={styles.historyFormContentLayout}>
                 <Timeline>
-                  {getTakeCallNote?.data[0]?.note ? (
-                    getTakeCallNote?.data[0]?.note.map(
+                  {listNote?.note?.length ? (
+                    listNote?.note?.map(
                       (note: {
                         call_date_and_time: string;
                         call_direction: string;
@@ -468,7 +478,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                         return (
                           <Timeline.Item>
                             <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                              {moment(note.call_date_and_time).utc().format('DD/MM/YYYY HH:MM')}
+                              {moment(note.call_date_and_time).format('DD/MM/YYYY HH:MM')}
                             </Typography.Paragraph>
                             <div className={styles.historyFormContentFlex1}>
                               <Typography.Paragraph
