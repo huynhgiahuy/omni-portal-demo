@@ -20,14 +20,16 @@ const access_token = localStorage.getItem('access_token');
 export type SiderTheme = 'light' | 'dark';
 
 export type dataProps = {
+  call_id: string;
   phone: string;
   direction: string;
   event: string;
   call_history: string;
   name: string;
   contact: {
-    name: string;
-    phone: string;
+    full_name: string;
+    phone_number: string;
+    work_unit: string;
   };
 };
 
@@ -101,15 +103,24 @@ const GlobalHeaderRight: React.FC = () => {
       const eventCall = data.event;
       switch (eventCall) {
         case 'ringing_call':
-          setIsModalOpenRing(true);
+          setTimeout(() => {
+            setIsModalOpenRing(true);
+          }, 0);
+
           break;
         case 'hangup_call':
-          setIsModalOpenRing(false);
-          setIsModalOpenAnswer(false);
+          setTimeout(() => {
+            setIsModalOpenRing(false);
+            setIsModalOpenAnswer(false);
+          }, 0);
+
           break;
         case 'answered_call':
-          setIsModalOpenRing(false);
-          setIsModalOpenAnswer(true);
+          setTimeout(() => {
+            setIsModalOpenRing(false);
+            setIsModalOpenAnswer(true);
+          }, 0);
+
           break;
         default:
           break;
@@ -207,7 +218,7 @@ const GlobalHeaderRight: React.FC = () => {
       <NoticeIconView />
       <Avatar />
       {/* <SelectLang className={styles.action} /> */}
-      <a
+      {/* <a
         onClick={showModalRing}
         style={{
           position: 'absolute',
@@ -219,7 +230,7 @@ const GlobalHeaderRight: React.FC = () => {
         }}
       >
         Button
-      </a>
+      </a> */}
 
       <Timer
         initialTime={0}

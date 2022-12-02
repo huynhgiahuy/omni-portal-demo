@@ -32,9 +32,10 @@ import {
   dataUserContactProps,
   requestAddUserContact,
   requestGetTakeCallNote,
+  requestSaveCallNote,
 } from '@/pages/omni-channel/report/services';
 import { dataProps } from '../RightContent';
-import { useRequest } from 'umi';
+import { useModel, useRequest } from 'umi';
 import moment from 'moment';
 
 type AgentModalAnswerProps = {
@@ -58,6 +59,20 @@ type AgentModalAnswerProps = {
   dataContacts: dataUserContactProps[];
   refTimer: React.MutableRefObject<any>;
   dataCall?: dataProps;
+};
+
+type notesProps = {
+  call_direction: string;
+  content: string;
+  create_at: number;
+  personnel: string;
+};
+
+type listNotesProps = {
+  call_id: string;
+  id: string;
+  note: notesProps[];
+  phone_number: string;
 };
 
 const listUnitExternal = [
@@ -150,25 +165,37 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   dataCall,
 }) => {
   const [form] = Form.useForm();
+  const { initialState } = useModel('@@initialState');
   const [isPlay, setIsPlay] = useState(true);
   const [isRecord, setIsRecord] = useState(false);
   const [isPopoverForward, setPopoverForward] = useState(false);
   const [userSelect, setUserSelect] = useState('');
   const [isSave, setIsSave] = useState(true);
-
-  console.log(dataCall);
+  const [listNote, setListNote] = useState<listNotesProps[]>([]);
+  const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
+  const [phoneCall, setPhoneCall] = useState('0000 000 000');
+  const [statusCall, setStateCall] = useState('Cuộc gọi');
 
   const token = window.localStorage?.getItem('access_token');
 
+  let notes: notesProps[] = [];
+  listNote?.map((notesItem) => {
+    return notesItem.note.map((item) => {
+      return (notes = [...notes, item]);
+    });
+  });
+
   const getTakeCallNote = useRequest(
     async (data) => {
-      const res: { success: boolean } = await requestGetTakeCallNote(
+      const res: { success: boolean; data: any } = await requestGetTakeCallNote(
         token ? token : '',
         data ? data : { phone_number: dataCall?.phone },
       );
       if (!res.success) {
         message.error('Không lấy được lịch sử note');
         return;
+      } else {
+        setListNote(res.data);
       }
       return res;
     },
@@ -177,9 +204,26 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
     },
   );
 
-  // console.log(dataCall);
-
-  // console.log(getTakeCallNote?.data);
+  const sendSaveCallNote = useRequest(
+    async (data) => {
+      const res: { success: boolean; data: any } = await requestSaveCallNote(
+        token ? token : '',
+        data,
+      );
+      if (!res.success) {
+        message.error('Lưu thất bại');
+        return;
+      } else {
+        message.success('Lưu thành công');
+        form.setFieldValue('note', '');
+        getTakeCallNote.run({ phone_number: phoneCall });
+      }
+      return res;
+    },
+    {
+      manual: true,
+    },
+  );
 
   const addUserContact = useRequest(
     async (data) => {
@@ -199,13 +243,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
 
   useEffect(() => {
     if (isModalOpen) {
-      getTakeCallNote.run({ phone_number: '12369' });
+      getTakeCallNote.run({ phone_number: phoneCall });
     }
   }, [isModalOpen]);
-
-  const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
-  const [phoneCall, setPhoneCall] = useState('0000 000 000');
-  const [statusCall, setStateCall] = useState('Cuộc gọi');
 
   const { confirm } = Modal;
 
@@ -216,16 +256,29 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   );
 
   useEffect(() => {
-    if (dataCall) {
-      setNameCall(dataCall.name)
-      setPhoneCall(dataCall.phone);
+    refTimer.current.reset();
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    setPopoverForward(false);
+  }, [dataCall]);
+
+  useEffect(() => {
+    if (dataCall?.contact) {
+      setNameCall(dataCall.contact?.full_name);
+      setPhoneCall(dataCall.contact?.phone_number);
+      form.setFieldsValue(dataCall?.contact);
+      setIsSave(false);
       if (dataCall.direction === 'receive') {
         setStateCall('Cuộc gọi đến');
       } else {
         setStateCall('Cuộc gọi đi');
       }
+    } else {
+      form.setFieldValue('phone_number', dataCall?.phone);
+      setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
     }
-  })
+  });
 
   const showConfirm = () => {
     confirm({
@@ -283,7 +336,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                   <PhoneOutlined className={styles.modalAnswerIcon} />
                   <img style={{ position: 'absolute', left: 25, top: 8 }} src={Arrow} alt="arrow" />
                 </Space>
-                <Typography.Text style={{ color: 'white' }}>{statusCall ? statusCall : 'Cuộc gọi'}</Typography.Text>
+                <Typography.Text style={{ color: 'white' }}>
+                  {statusCall ? statusCall : 'Cuộc gọi'}
+                </Typography.Text>
               </>
             )}
 
@@ -329,9 +384,23 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                 direction="vertical"
               >
                 <Typography.Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
-                  {nameCall ? nameCall : 'Chưa có trong danh bạ'}
+                  {nameCall ? nameCall : 'Chưa có trong danh bạ'}
+                  {!isFullScreenModal
+                    ? dataCall?.contact?.work_unit
+                      ? ` - ${dataCall?.contact?.work_unit}`
+                      : ''
+                    : ''}
                 </Typography.Text>
-                <Typography.Text style={{ color: 'white' }}>{phoneCall ? phoneCall: '0000 000 000'}</Typography.Text>
+                {isFullScreenModal && dataCall?.contact?.work_unit && (
+                  <>
+                    <Typography.Text style={{ fontSize: 13, fontWeight: 400, color: 'white' }}>
+                      {dataCall?.contact?.work_unit}
+                    </Typography.Text>
+                  </>
+                )}
+                <Typography.Text style={{ color: 'white' }}>
+                  {phoneCall ? phoneCall : dataCall?.phone ? dataCall?.phone : '0000 000 000'}
+                </Typography.Text>
               </Space>
             </Space>
             <Space
@@ -342,27 +411,27 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
               {isPlay ? (
                 <PauseOutlined
                   className={styles.phonePlay}
-                  onClick={() => {
-                    setIsPlay(!isPlay);
-                    setPopoverForward(false);
-                  }}
+                  // onClick={() => {
+                  //   setIsPlay(!isPlay);
+                  //   setPopoverForward(false);
+                  // }}
                 />
               ) : (
                 <CaretRightOutlined
                   className={styles.phonePause}
-                  onClick={() => {
-                    setIsPlay(!isPlay);
-                    setPopoverForward(false);
-                  }}
+                  // onClick={() => {
+                  //   setIsPlay(!isPlay);
+                  //   setPopoverForward(false);
+                  // }}
                 />
               )}
 
               <AudioFilled
                 className={isRecord ? styles.noRecord : styles.record}
-                onClick={() => {
-                  setIsRecord(!isRecord);
-                  setPopoverForward(false);
-                }}
+                // onClick={() => {
+                //   setIsRecord(!isRecord);
+                //   setPopoverForward(false);
+                // }}
               />
 
               <Popover
@@ -439,13 +508,13 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
               </Popover>
               <PhoneOutlined
                 className={styles.phoneHandUp}
-                onClick={() => {
-                  setPopoverForward(false);
+                // onClick={() => {
+                //   setPopoverForward(false);
 
-                  setTimeout(() => {
-                    showConfirm();
-                  });
-                }}
+                //   setTimeout(() => {
+                //     showConfirm();
+                //   });
+                // }}
               />
             </Space>
           </div>
@@ -457,69 +526,60 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
               </div>
               <div className={styles.historyFormContentLayout}>
                 <Timeline>
-                  {getTakeCallNote?.data[0]?.note ? (
-                    getTakeCallNote?.data[0]?.note.map(
-                      (note: {
-                        call_date_and_time: string;
-                        call_direction: string;
-                        content: string;
-                        personnel: string;
-                      }) => {
-                        return (
-                          <Timeline.Item>
-                            <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                              {moment(note.call_date_and_time).utc().format('DD/MM/YYYY HH:MM')}
+                  {notes.length ? (
+                    notes?.map((note) => {
+                      return (
+                        <Timeline.Item>
+                          <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                            {moment(note.create_at * 1000).format('DD/MM/YYYY HH:mm')}
+                          </Typography.Paragraph>
+                          <div className={styles.historyFormContentFlex1}>
+                            <Typography.Paragraph
+                              style={{
+                                marginBottom: 'unset',
+                                color: note.call_direction === 'receive' ? '#54FF00' : '#FFAA00',
+                              }}
+                            >
+                              {note.call_direction === 'receive' ? ' Cuộc gọi đến' : ' Cuộc gọi đi'}
                             </Typography.Paragraph>
-                            <div className={styles.historyFormContentFlex1}>
+                            {/* <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
+                              00:12
+                            </Typography.Paragraph> */}
+                          </div>
+                          <ul style={{ listStyleType: 'disc', color: '#fff' }}>
+                            <li>
                               <Typography.Paragraph
                                 style={{
                                   marginBottom: 'unset',
-                                  color: note.call_direction === 'string' ? '#54FF00' : '#FFAA00',
+                                  paddingRight: '50px',
+                                  fontWeight: 'bold',
+                                  color: '#fff',
                                 }}
                               >
-                                {note.call_direction === 'string'
-                                  ? ' Cuộc gọi đến'
-                                  : ' Cuộc gọi đi'}
+                                Ghi chú:{' '}
+                                <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                                  {note.content}
+                                </Typography.Text>
                               </Typography.Paragraph>
-                              {/* <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                              00:12
-                            </Typography.Paragraph> */}
-                            </div>
-                            <ul style={{ listStyleType: 'disc', color: '#fff' }}>
-                              <li>
-                                <Typography.Paragraph
-                                  style={{
-                                    marginBottom: 'unset',
-                                    paddingRight: '50px',
-                                    fontWeight: 'bold',
-                                    color: '#fff',
-                                  }}
-                                >
-                                  Ghi chú:{' '}
-                                  <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                                    {note.content}
-                                  </Typography.Text>
-                                </Typography.Paragraph>
-                              </li>
-                              <li>
-                                <Typography.Paragraph
-                                  style={{
-                                    marginBottom: 'unset',
-                                    fontWeight: 'bold',
-                                    color: '#fff',
-                                  }}
-                                >
-                                  Nhân sự:{' '}
-                                  <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
-                                    {note.personnel}
-                                  </Typography.Text>
-                                </Typography.Paragraph>
-                              </li>
-                            </ul>
-                          </Timeline.Item>
-                        );
-                      },
-                    )
+                            </li>
+                            <li>
+                              <Typography.Paragraph
+                                style={{
+                                  marginBottom: 'unset',
+                                  fontWeight: 'bold',
+                                  color: '#fff',
+                                }}
+                              >
+                                Nhân sự:{' '}
+                                <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
+                                  {note.personnel}
+                                </Typography.Text>
+                              </Typography.Paragraph>
+                            </li>
+                          </ul>
+                        </Timeline.Item>
+                      );
+                    })
                   ) : (
                     <Timeline.Item>
                       <Typography.Text style={{ color: '#fff', fontWeight: 'normal' }}>
@@ -551,7 +611,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       name="full_name"
                       label={
                         <Typography.Text style={{ color: '#fff' }}>
-                          Họ và tên <span style={{ color: 'red' }}>(*)</span>
+                          Họ và tên {isSave && <span style={{ color: 'red' }}>(*)</span>}
                         </Typography.Text>
                       }
                       rules={[
@@ -606,7 +666,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       name="email"
                       label={
                         <Typography.Text style={{ color: '#fff' }}>
-                          Email <span style={{ color: 'red' }}>(*)</span>
+                          Email {isSave && <span style={{ color: 'red' }}>(*)</span>}
                         </Typography.Text>
                       }
                       rules={[
@@ -628,7 +688,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       name="work_unit"
                       label={
                         <Typography.Text style={{ color: '#fff' }}>
-                          Đơn vị công tác <span style={{ color: 'red' }}>(*)</span>
+                          Đơn vị công tác {isSave && <span style={{ color: 'red' }}>(*)</span>}
                         </Typography.Text>
                       }
                       rules={[{ required: true, message: 'Vui lòng không để trống thông tin' }]}
@@ -672,13 +732,28 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                     </Form.Item>
                     <Form.Item>
                       <Space>
-                        <Button>Hủy</Button>
+                        <Button
+                          onClick={() => {
+                            form.setFieldValue('note', '');
+                          }}
+                        >
+                          Hủy
+                        </Button>
                         <Button
                           type="primary"
                           htmlType="button"
                           disabled={!form.getFieldValue('note')}
                           onClick={() => {
-                            console.log(form.getFieldValue('note'));
+                            const data = {
+                              call_id: dataCall?.call_id,
+                              phone_number: phoneCall,
+                              call_direction: dataCall?.direction,
+                              personnel: initialState?.currentUser?.name
+                                ? initialState?.currentUser?.name
+                                : 'Chưa có tên',
+                              content: form.getFieldValue('note'),
+                            };
+                            sendSaveCallNote.run(data);
                           }}
                         >
                           Lưu
