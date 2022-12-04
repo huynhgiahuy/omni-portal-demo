@@ -705,7 +705,7 @@ const PhoneBook: React.FC = () => {
                     message: 'Vui lòng không để trống thông tin',
                   },
                   {
-                    pattern: new RegExp('([3|5|7|8|9]{1})+([0-9]{8})'),
+                    pattern: new RegExp('([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})'),
                     message: 'Số điện thoại không hợp lệ',
                   },
                   {
