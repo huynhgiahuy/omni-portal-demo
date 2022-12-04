@@ -62,6 +62,7 @@ import {
   TREE_DATA_TTND,
 } from '@/constants';
 import moment from 'moment';
+import NoFoundPage from '@/pages/404';
 
 interface DataAllRolePermission {
   key: React.Key;
@@ -109,6 +110,8 @@ interface DataTypePermissionTable {
 
 const PermissionRole: React.FC = () => {
   const [form] = Form.useForm();
+  const [isView, setIsView] = useState('');
+
   const [listAllRolePermission, setListAllRolePermission] = useState<DataAllRolePermission[]>([]);
   const [isAddNewPermission, setAddNetPermission] = useState(false);
   const [isEditRole, setIsEditRole] = useState(false);
@@ -165,12 +168,20 @@ const PermissionRole: React.FC = () => {
 
   const fetchReadRoleAndPerm = useRequest(
     async (keyword?: string) => {
-      const res: { success: boolean } = await requestReadRoleAndPerm({ keyword });
+      const res: { success: boolean; error_code: number } = await requestReadRoleAndPerm({
+        keyword,
+      });
       if (!res.success) {
-        message.error('Lỗi không thể lấy data');
-        return;
+        if (res.error_code === 4030102) {
+          setIsView('403');
+          return;
+        } else {
+          message.error('Bạn không có quyền tạo mới');
+          return;
+        }
+      } else {
+        return res;
       }
-      return res;
     },
     {
       onSuccess: (res) => {
@@ -199,16 +210,17 @@ const PermissionRole: React.FC = () => {
             errors: ['Tên nhóm quyền đã tồn tại'],
           },
         ]);
+      } else if (res.error_code === 4030102) {
+        message.error('Bạn không có quyền tạo mới');
+        return;
       } else {
-        message.error('Thêm mới thất bại');
+        message.error('Tạo mới thất bại');
+        return;
       }
 
       return res;
     },
     {
-      onError: (error) => {
-        message.error('Bạn không có quyền tạo');
-      },
       manual: true,
     },
   );
@@ -229,10 +241,13 @@ const PermissionRole: React.FC = () => {
               errors: ['Tên nhóm quyền đã tồn tại'],
             },
           ]);
+        } else if (res.error_code === 4030102) {
+          message.error('Bạn không có quyền cập nhập');
+          return;
         } else {
-          message.error('Cập nhập Thất bại');
+          message.error('Cập nhập thất bại');
+          return;
         }
-        return;
       } else {
         handleCancleAddNewPermission();
         message.success('Cập nhập thành công');
@@ -241,19 +256,21 @@ const PermissionRole: React.FC = () => {
       return res;
     },
     {
-      onError: (error) => {
-        message.error('Bạn không có quyền cập nhập');
-      },
       manual: true,
     },
   );
 
   const fetchDeleteRoleAndPermission = useRequest(
     async (id: string) => {
-      const res: { success: string } = await requestDeleteRoleAndPermission(id);
+      const res: { success: string; error_code: number } = await requestDeleteRoleAndPermission(id);
       if (!res.success) {
-        message.error('Xoá Thất bại');
-        return;
+        if (res.error_code === 4030102) {
+          message.error('Bạn không có quyền cập nhập');
+          return;
+        } else {
+          message.error('Xoá Thất bại');
+          return;
+        }
       } else {
         handleCancleAddNewPermission();
         message.success('Xoá thành công');
@@ -262,9 +279,6 @@ const PermissionRole: React.FC = () => {
       return res;
     },
     {
-      onError: (error) => {
-        message.error('Bạn không có quyền xoá');
-      },
       manual: true,
     },
   );
@@ -967,7 +981,9 @@ const PermissionRole: React.FC = () => {
     },
   ];
 
-  return (
+  return isView === '403' ? (
+    <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+  ) : (
     <>
       <Row style={{ marginTop: 15 }}>
         <Col span={16}></Col>

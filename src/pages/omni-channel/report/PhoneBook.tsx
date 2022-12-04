@@ -512,6 +512,8 @@ const PhoneBook: React.FC = () => {
           value={external}
           onChange={(e) => {
             setExternal(e.toString());
+            form.resetFields();
+            getUserContact.run({});
           }}
           options={[
             {
