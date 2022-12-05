@@ -530,6 +530,13 @@ const HistoryCall: React.FC = () => {
             //url: 'http://172.27.228.201:8007/voip-service/api/call/export_call_history_excel',
             url: `${api.UMI_API_BASE_URL}/voip-service/api/call/export_call_history_excel`,
             method: 'POST',
+            data: {
+                direction: listValueHCG,
+                result: listValueKQ,
+                from_datetime: valueFromDateTime,
+                to_datetime: valueToDateTime,
+                search_name: valueKeyWord,
+            },
             responseType: 'blob',
             headers: {
                 Authorization: `Bearer ${token}`,
