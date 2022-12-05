@@ -425,7 +425,7 @@ const PhoneBook: React.FC = () => {
       width: '265px',
     },
     {
-      title: 'Số IIP',
+      title: 'Số IPP',
       dataIndex: 'ip_phone',
       key: 'ip_phone',
       align: 'center',
@@ -478,8 +478,12 @@ const PhoneBook: React.FC = () => {
   const handleCreateNewTeamPermission = async (newTeamValue: string) => {
     const resNewTeam = await requestCreateNewTeam(newTeamValue);
     if (resNewTeam.success === true) {
-      message.success('Tạo thành công');
+      message.success('Thêm thành công');
+      form.resetFields();
       getListTeam.refresh();
+    } else {
+      message.error('Thêm thất bại');
+      return;
     }
   };
 
@@ -500,7 +504,7 @@ const PhoneBook: React.FC = () => {
 
   const handleSubmitNewTeam = (values: any) => {
     handleCreateNewTeamPermission(values);
-    form.resetFields();
+
     fetchTeamPermissionData();
   };
 
