@@ -549,7 +549,10 @@ const PhoneBook: React.FC = () => {
           }}
         >
           <Space size="middle">
-            <Form.Item label={external === 'Khách hàng' ? 'Đơn vị' : 'Team'} name="unit">
+            <Form.Item
+              label={external === 'Khách hàng' ? 'Đơn vị' : 'Team'}
+              name={external === 'Khách hàng' ? 'unit' : 'team'}
+            >
               <Select
                 style={{ width: 200 }}
                 placeholder="Tất cả"
@@ -560,6 +563,7 @@ const PhoneBook: React.FC = () => {
                     getUserContact.run({
                       keyword: form.getFieldValue('search'),
                       unit: form.getFieldValue('unit'),
+                      team: form.getFieldValue('team'),
                       email_user: initialState?.currentUser?.email,
                     });
                   },
