@@ -79,7 +79,7 @@ const HistoryCall: React.FC = () => {
 
     const fetchListLSCGData = useRequest(
         async (from_datetime: string | undefined, to_datetime: any | undefined) => {
-            const res: { success: boolean, length: number, error_code: number } = await requestHistoryCallData(
+            const res: { success: boolean, length: number, length_data?: number, error_code: number } = await requestHistoryCallData(
                 token ? token : '',
                 pagination.pageSize,
                 pagination.current,
@@ -96,10 +96,14 @@ const HistoryCall: React.FC = () => {
                 }
                 else if (res.error_code === 4010106) {
                     message.error('Không tìm thấy dữ liệu');
+                    setListDataLSCG([]);
+                    setListDataLSCGLength(0)
                     return;
                 }
                 else {
                     message.error('Không tìm thấy dữ liệu');
+                    setListDataLSCG([]);
+                    setListDataLSCGLength(0)
                     return;
                 }
             }
@@ -132,6 +136,8 @@ const HistoryCall: React.FC = () => {
     useEffect(() => {
         fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
     }, [pagination])
+
+    console.log(listDataLSCGLength)
 
     const handleViewResult = (result: any) => {
         let color, newResult;
