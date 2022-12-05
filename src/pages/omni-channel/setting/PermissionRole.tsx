@@ -175,9 +175,6 @@ const PermissionRole: React.FC = () => {
         if (res.error_code === 4030102) {
           setIsView('403');
           return;
-        } else {
-          message.error('Bạn không có quyền tạo mới');
-          return;
         }
       } else {
         return res;
