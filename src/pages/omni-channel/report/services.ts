@@ -114,11 +114,14 @@ export async function requestUpdateNoteHistoryCall(token?: any, call_id?: string
   });
 }
 
-export async function requestSendPinUser(data: {
-  email_user: string;
-  contacts_id: string;
-  pin_user: boolean;
-}) {
+export async function requestSendPinUser(
+  token: string,
+  data: {
+    email_user: string;
+    contacts_id: string;
+    pin_user: boolean;
+  },
+) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/pin_contact_user`, {
     method: 'POST',
     headers: {
