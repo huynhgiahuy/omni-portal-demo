@@ -254,6 +254,11 @@ const HistoryCall: React.FC = () => {
     //         })
     // }
 
+    const handleOpenModalPlaying = async (fieldId?: any, recordName?: any) => {
+        setVisibleModalAudio(true);
+        await playAudio(fieldId, recordName);
+    }
+
     const columns: ColumnsType<DataLSCGType> = [
         {
             title: 'Hướng cuộc gọi',
@@ -300,7 +305,7 @@ const HistoryCall: React.FC = () => {
             align: 'center',
             width: '150px',
             render: (text, record) => {
-                return moment(text).format('DD-MM-YYYY HH:mm:ss')
+                return text === null ? '-' : moment.unix(text).format('DD-MM-YYYY');
             }
         },
         {
@@ -334,8 +339,7 @@ const HistoryCall: React.FC = () => {
                     <>
                         <PlayCircleFilled
                             style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }}
-                            onClick={() => { playAudio(record._id, record.record_name); setVisibleModalAudio(true) }}
-                        //onClick={() => setVisibleModalAudio(true)}
+                            onClick={() => handleOpenModalPlaying(record._id, record.record_name)}
                         />
                         <img
                             src={DownloadIcon}

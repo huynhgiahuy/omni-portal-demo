@@ -147,10 +147,10 @@ const PermissionEdit: React.FC = () => {
 
     const [pagination, setPagination] = useState<PaginationProps>({
         current: 1,
-        pageSize: 3,
+        pageSize: 5,
         showSizeChanger: true,
         showQuickJumper: true,
-        pageSizeOptions: ['3', '10', '30', '50']
+        pageSizeOptions: ['5', '10', '30', '50']
     })
 
     const fetchListAllUserInfoFinal = useRequest(
@@ -496,7 +496,7 @@ const PermissionEdit: React.FC = () => {
             align: 'center',
             width: '100px',
             render: (text, record) => {
-                return text === null ? '-' : moment(text).format('DD/MM/YYYY');
+                return text === null ? '-' : moment.unix(text).format('DD-MM-YYYY');
             }
         },
         {
@@ -814,12 +814,16 @@ const PermissionEdit: React.FC = () => {
                                     name="department"
                                     rules={[
                                         {
-                                            required: true,
-                                            message: 'Vui lòng nhập phòng ban'
-                                        },
-                                        {
-                                            pattern: new RegExp('[a-zA-Z]'),
-                                            message: 'Vui lòng nhập ký tự chữ'
+                                            validator: (_, value: any) => {
+                                                const departmentReg = /[a-zA-Z ]+$/;
+                                                if (value === undefined || !value || value.length === 0) {
+                                                    return Promise.reject('Vui lòng nhập phòng ban');
+                                                }
+                                                else if (!departmentReg.test(value)) {
+                                                    return Promise.reject('Phòng ban không hợp lệ');
+                                                }
+                                                return Promise.resolve();
+                                            }
                                         }
                                     ]}
                                 >
@@ -831,18 +835,17 @@ const PermissionEdit: React.FC = () => {
                                     rules={[
                                         {
                                             validator: (_, value: any) => {
+                                                const phoneReg = /([3|5|7|8|9]{1})+([0-9]{8})/;
                                                 if (value === undefined || !value || value.length === 0) {
                                                     return Promise.reject('Vui lòng nhập số di động')
                                                 }
-                                                if (value.length !== 10) {
+                                                else if (value.length !== 10) {
                                                     return Promise.reject('Số điện thoại không hợp lệ')
                                                 }
-                                                else if (!value.match('([3|5|7|8|9]{1})+([0-9]{8})')) {
+                                                else if (!phoneReg.test(value)) {
                                                     return Promise.reject('Số điện thoại không hợp lệ')
                                                 }
-                                                else {
-                                                    return Promise.resolve();
-                                                }
+                                                return Promise.resolve();
                                             }
                                         },
                                     ]}
@@ -854,8 +857,16 @@ const PermissionEdit: React.FC = () => {
                                     name="level"
                                     rules={[
                                         {
-                                            required: true,
-                                            message: 'Vui lòng nhập cấp độ'
+                                            validator: (_, value: any) => {
+                                                const levelReg = /^[a-zA-Z0-9 ]+$/;
+                                                if (value === undefined || !value || value.length === 0) {
+                                                    return Promise.reject('Vui lòng nhập cấp độ');
+                                                }
+                                                else if (!levelReg.test(value)) {
+                                                    return Promise.reject('Cấp độ không hợp lệ');
+                                                }
+                                                return Promise.resolve();
+                                            }
                                         }
                                     ]}
                                 >
@@ -913,13 +924,14 @@ const PermissionEdit: React.FC = () => {
                                     rules={[
                                         {
                                             validator: (_, value: any) => {
+                                                const numberReg = /^[1-9]{1,6}$/;
                                                 if (value === undefined || !value || value.length === 0) {
                                                     return Promise.reject('Vui lòng nhập IP Phone')
                                                 }
-                                                if (value.length > 6 || value.length < 6) {
+                                                else if (value.length < 5 && numberReg.test(value) === true) {
                                                     return Promise.reject('IP Phone không hợp lệ')
                                                 }
-                                                else if (!value.match('[0-9]')) {
+                                                else if (!numberReg.test(value)) {
                                                     return Promise.reject('IP Phone không hợp lệ')
                                                 }
                                                 return Promise.resolve();
