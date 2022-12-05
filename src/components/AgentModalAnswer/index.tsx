@@ -35,7 +35,7 @@ import {
   requestSaveCallNote,
 } from '@/pages/omni-channel/report/services';
 import { dataProps } from '../RightContent';
-import { useRequest } from 'umi';
+import { useModel, useRequest } from 'umi';
 import moment from 'moment';
 
 type AgentModalAnswerProps = {
@@ -165,6 +165,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   dataCall,
 }) => {
   const [form] = Form.useForm();
+  const { initialState } = useModel('@@initialState');
   const [isPlay, setIsPlay] = useState(true);
   const [isRecord, setIsRecord] = useState(false);
   const [isPopoverForward, setPopoverForward] = useState(false);
@@ -536,10 +537,10 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                             <Typography.Paragraph
                               style={{
                                 marginBottom: 'unset',
-                                color: note.call_direction === 'string' ? '#54FF00' : '#FFAA00',
+                                color: note.call_direction === 'receive' ? '#54FF00' : '#FFAA00',
                               }}
                             >
-                              {note.call_direction === 'string' ? ' Cuộc gọi đến' : ' Cuộc gọi đi'}
+                              {note.call_direction === 'receive' ? ' Cuộc gọi đến' : ' Cuộc gọi đi'}
                             </Typography.Paragraph>
                             {/* <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
                               00:12
@@ -747,7 +748,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                               call_id: dataCall?.call_id,
                               phone_number: phoneCall,
                               call_direction: dataCall?.direction,
-                              personnel: nameCall,
+                              personnel: initialState?.currentUser?.name
+                                ? initialState?.currentUser?.name
+                                : 'Chưa có tên',
                               content: form.getFieldValue('note'),
                             };
                             sendSaveCallNote.run(data);
