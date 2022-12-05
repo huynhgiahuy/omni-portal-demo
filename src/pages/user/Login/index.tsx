@@ -34,7 +34,6 @@ const Login: React.FC = () => {
           if (res.success) {
             setIsLogin(false);
             fetchUserInfo(res.data);
-
             history.goBack();
           } else {
             setIsLogin(true);
