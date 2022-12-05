@@ -60,10 +60,12 @@ const errorHandler = (error: any) => {
 
 const request = extend({
   errorHandler,
-  //timeout: 3 * 60000,
-  //retries: 2,
+  // timeout: 3 * 60000,
+  // retries: 2,
   // headers: {
-  //   Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+  //   Authorization: `Bearer ${
+  //     localStorage.getItem('access_token') ? localStorage.getItem('access_token') : ''
+  //   }`,
   // },
   // Default error handling
   // credentials: 'include', // Does the default request bring a cookie
