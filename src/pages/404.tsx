@@ -1,15 +1,22 @@
 import { Button, Result } from 'antd';
+import { ResultStatusType } from 'antd/lib/result';
 import React from 'react';
 import { history } from 'umi';
 
-const NoFoundPage: React.FC = () => (
+type NoFoundPageProps = {
+  status?: ResultStatusType;
+  title?: string;
+  subTitle?: string;
+};
+
+const NoFoundPage: React.FC<NoFoundPageProps> = ({ status, title, subTitle }) => (
   <Result
-    status="404"
-    title="404"
-    subTitle="Sorry, the page you visited does not exist."
+    status={status ? status : '500'}
+    title={title ? title : '500'}
+    subTitle={subTitle ? subTitle : 'Đã xảy ra lỗi.'}
     extra={
       <Button type="primary" onClick={() => history.push('/')}>
-        Back Home
+        Trang chủ
       </Button>
     }
   />

@@ -15,6 +15,7 @@ import moment from 'moment';
 import fileDownload from 'js-file-download';
 import axios from 'axios';
 import api from '@/api';
+import NoFoundPage from '@/pages/404';
 
 const { RangePicker } = DatePicker;
 
@@ -43,6 +44,7 @@ interface DataLSCGType {
 
 const HistoryCall: React.FC = () => {
     //const { initialState, setInitialState } = useModel('@@initialState');
+    const [isView, setIsView] = useState<string>();
 
     const [listValueHCG, setListValueHCG] = useState<string[] | any>();
     const [listValueKQ, setListValueKQ] = useState<string[] | any>();
@@ -65,10 +67,10 @@ const HistoryCall: React.FC = () => {
 
     const [pagination, setPagination] = useState<PaginationProps>({
         current: 1,
-        pageSize: 3,
+        pageSize: 5,
         showSizeChanger: true,
         showQuickJumper: true,
-        pageSizeOptions: ['3', '10', '30', '50']
+        pageSizeOptions: ['5', '10', '30', '50']
     })
 
     const [form] = Form.useForm();
@@ -77,7 +79,7 @@ const HistoryCall: React.FC = () => {
 
     const fetchListLSCGData = useRequest(
         async (from_datetime: string | undefined, to_datetime: any | undefined) => {
-            const res: { success: boolean, length: number } = await requestHistoryCallData(
+            const res: { success: boolean, length: number, length_data?: number, error_code: number } = await requestHistoryCallData(
                 token ? token : '',
                 pagination.pageSize,
                 pagination.current,
@@ -87,9 +89,25 @@ const HistoryCall: React.FC = () => {
                 listValueKQ,
                 valueKeyWord
             );
-            if (res.success === false) {
-                message.error('Lấy dữ liệu thất bại!');
-            } else {
+            if (!res.success) {
+                if (res.error_code === 4030102) {
+                    setIsView('403');
+                    return;
+                }
+                else if (res.error_code === 4010106) {
+                    message.error('Không tìm thấy dữ liệu');
+                    setListDataLSCG([]);
+                    setListDataLSCGLength(0)
+                    return;
+                }
+                else {
+                    message.error('Không tìm thấy dữ liệu');
+                    setListDataLSCG([]);
+                    setListDataLSCGLength(0)
+                    return;
+                }
+            }
+            else {
                 setListDataLSCGLength(res.length)
             }
             return res;
@@ -104,20 +122,22 @@ const HistoryCall: React.FC = () => {
         },
     )
 
-    const handleUpdateNoteHistoryCall = async (call_id?: string, note?: string) => {
-        const respone_update_note = await requestUpdateNoteHistoryCall(token ? token : '', call_id, note);
-        if (respone_update_note.success !== true) {
-            message.error('Lưu ghi chú thất bại!');
-        }
-        else {
-            message.success('Lưu ghi chú thành công!');
-            fetchListLSCGData.refresh();
-        }
-    }
+    // const handleUpdateNoteHistoryCall = async (call_id?: string, note?: string) => {
+    //     const respone_update_note = await requestUpdateNoteHistoryCall(token ? token : '', call_id, note);
+    //     if (respone_update_note.success !== true) {
+    //         message.error('Lưu ghi chú thất bại!');
+    //     }
+    //     else {
+    //         message.success('Lưu ghi chú thành công!');
+    //         fetchListLSCGData.refresh();
+    //     }
+    // }
 
     useEffect(() => {
         fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
     }, [pagination])
+
+    console.log(listDataLSCGLength)
 
     const handleViewResult = (result: any) => {
         let color, newResult;
@@ -254,6 +274,11 @@ const HistoryCall: React.FC = () => {
     //         })
     // }
 
+    const handleOpenModalPlaying = async (fieldId?: any, recordName?: any) => {
+        setVisibleModalAudio(true);
+        await playAudio(fieldId, recordName);
+    }
+
     const columns: ColumnsType<DataLSCGType> = [
         {
             title: 'Hướng cuộc gọi',
@@ -270,28 +295,40 @@ const HistoryCall: React.FC = () => {
             dataIndex: 'sip_from_user',
             key: 'sip_from_user',
             align: 'center',
-            width: '110px'
+            width: '110px',
+            render: (text, record) => {
+                return text === null || text === undefined ? '-' : text
+            }
         },
         {
             title: 'Tên người gọi',
             dataIndex: 'caller_name',
             key: 'caller_name',
             align: 'center',
-            width: '150px'
+            width: '150px',
+            render: (text, record) => {
+                return text === null || text === undefined ? '-' : text
+            }
         },
         {
             title: 'Số máy nhận',
             dataIndex: 'caller_destination',
             key: 'caller_destination',
             align: 'center',
-            width: '110px'
+            width: '110px',
+            render: (text, record) => {
+                return text === null || text === undefined ? '-' : text
+            }
         },
         {
             title: 'Tên người nhận',
             dataIndex: 'receiver_name',
             key: 'receiver_name',
             align: 'center',
-            width: '150px'
+            width: '150px',
+            render: (text, record) => {
+                return text === null || text === undefined ? '-' : text
+            }
         },
         {
             title: 'Thời gian bắt đầu',
@@ -300,7 +337,7 @@ const HistoryCall: React.FC = () => {
             align: 'center',
             width: '150px',
             render: (text, record) => {
-                return moment(text).format('DD-MM-YYYY HH:mm:ss')
+                return text === null || text === undefined ? '-' : moment.unix(text).format('DD-MM-YYYY');
             }
         },
         {
@@ -310,7 +347,7 @@ const HistoryCall: React.FC = () => {
             align: 'center',
             width: '100px',
             render: (text, record) => {
-                return handleChangeBillSec(text.toString())
+                return text === null || text === undefined ? '-' : handleChangeBillSec(text.toString())
             }
         },
         {
@@ -320,7 +357,7 @@ const HistoryCall: React.FC = () => {
             align: 'center',
             width: '150px',
             render: (text, record) => {
-                return handleViewResult(record.result);
+                return text === null || text === undefined ? '-' : handleViewResult(record.result);
             }
         },
         {
@@ -334,8 +371,7 @@ const HistoryCall: React.FC = () => {
                     <>
                         <PlayCircleFilled
                             style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }}
-                            onClick={() => { playAudio(record._id, record.record_name); setVisibleModalAudio(true) }}
-                        //onClick={() => setVisibleModalAudio(true)}
+                            onClick={() => handleOpenModalPlaying(record._id, record.record_name)}
                         />
                         <img
                             src={DownloadIcon}
@@ -439,10 +475,10 @@ const HistoryCall: React.FC = () => {
         }
     }
 
-    const handleSubmitNoteForm = async (values: any) => {
-        await handleUpdateNoteHistoryCall(getCallId, values.note);
-        form.setFieldsValue({ note: undefined });
-    }
+    // const handleSubmitNoteForm = async (values: any) => {
+    //     await handleUpdateNoteHistoryCall(getCallId, values.note);
+    //     form.setFieldsValue({ note: undefined });
+    // }
 
     const handleChangeValueRangePicker = (value: any, dateString: any) => {
         if (dateString[0] === '' && dateString[1] === '') {
@@ -458,15 +494,17 @@ const HistoryCall: React.FC = () => {
         }
     }
 
-    const handleClickUpdateNote = (call_id: any) => {
-        setGetCallId(call_id);
-    }
+    // const handleClickUpdateNote = (call_id: any) => {
+    //     setGetCallId(call_id);
+    // }
 
     const onResetFilter = () => {
         form.resetFields();
         setListValueHCG(undefined);
         setListValueKQ(undefined);
         setValueKeyWord(undefined)
+        setValueFromDateTime(undefined);
+        setValueToDateTime(undefined);
         setPagination({
             ...pagination,
             current: 1,
@@ -487,205 +525,210 @@ const HistoryCall: React.FC = () => {
     };
 
     return (
-        <>
-            <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    paddingTop: '30px',
-                    flexWrap: 'wrap'
-                }}
-            >
-                <div>
-                    <Form layout='vertical' form={form}>
-                        <div
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                gap: 10,
-                                flexWrap: 'wrap'
-                            }}
-                        >
-                            <div style={{ width: '300px' }}>
-                                <Form.Item label="Hướng cuộc gọi" name="Hướng cuộc gọi" style={{ marginBottom: 'unset' }}>
-                                    <Select onChange={handleSelectValueHCG} mode="multiple" >
-                                        <Select.Option value="inbound">Gọi vào</Select.Option>
-                                        <Select.Option value="outbound">Gọi ra</Select.Option>
-                                        <Select.Option value="local">Gọi nội bộ</Select.Option>
-                                    </Select>
-                                </Form.Item>
-                            </div>
-                            <div style={{ width: '300px' }}>
-                                <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
-                                    <Select onChange={handleSelectValueKQ} mode="multiple">
-                                        <Select.Option value="success">Thành công</Select.Option>
-                                        <Select.Option value="fail">Thất bại</Select.Option>
-                                        <Select.Option value="busy">Bận</Select.Option>
-                                        <Select.Option value="cancel">Hủy bỏ</Select.Option>
-                                        <Select.Option value="no_answer">Không trả lời</Select.Option>
-                                        <Select.Option value="rejected">Từ chối</Select.Option>
-                                        <Select.Option value="missed">Nhỡ trong hàng chờ</Select.Option>
-                                        <Select.Option value="other_failure">Lý do fail khác</Select.Option>
-                                    </Select>
-                                </Form.Item>
-                            </div>
-                            <div style={{ width: '300px' }}>
-                                <Form.Item label="Thời gian" name="Thời gian" style={{ marginBottom: 'unset' }}>
-                                    <RangePicker onChange={handleChangeValueRangePicker} placeholder={['Từ ngày', 'Đến ngày']} />
-                                </Form.Item>
-                            </div>
-                            <div style={{ paddingTop: '29px' }}>
-                                <Form.Item style={{ marginBottom: 'unset' }}>
-                                    <Button type='text' style={{ color: 'blue' }} onClick={onResetFilter}>Reset</Button>
-                                </Form.Item>
-                            </div>
-                        </div>
-                    </Form>
-                </div>
+        isView === '403' ? (
+            <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+        ) : (
+            <>
                 <div
                     style={{
-                        paddingTop: '29px',
-                        paddingRight: '20px'
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        paddingTop: '30px',
+                        flexWrap: 'wrap'
                     }}
                 >
-                    <Input
-                        style={{ width: '300px', marginRight: '10px' }}
-                        prefix={<SearchOutlined />}
-                        placeholder="Tìm kiếm tên người gọi, người nhận"
-                        allowClear
-                        onChange={debounce(
-                            (e) => {
-                                const { value } = e.target;
-                                if (value === "" || value === undefined) {
-                                    setValueKeyWord(undefined)
-                                    fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
-                                }
-                                else {
-                                    setValueKeyWord(value);
-                                    fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
-                                }
-                            },
-                            500,
-                            {
-                                trailing: true,
-                                leading: false,
-                            },
-                        )}
-                    />
-                    <Button
-                        style={{ backgroundColor: '#7fb77e', color: '#fff' }}
-                        onClick={handleExportFile}
-                    >
-                        <ExportIcon /> Export
-                    </Button>
-                </div>
-            </div>
-            <Card
-                className={styles.detailCardLayout}
-            >
-                <Table
-                    dataSource={listDataLSCG}
-                    rowKey={item => item._id}
-                    columns={columns}
-                    style={{ paddingLeft: '10px', paddingTop: '10px' }}
-                    className={styles.tableStyle}
-                    onChange={handleTableChange}
-                    pagination={{
-                        ...pagination,
-                        total: listDataLSCGLength,
-                        locale: {
-                            items_per_page: '/ Trang',
-                            jump_to: 'Đến trang',
-                            page: '',
-                            next_page: 'Trang sau',
-                            prev_page: 'Trang trước',
-                            next_3: '3 trang sau',
-                            next_5: '5 trang sau',
-                            prev_3: '3 trang trước',
-                            prev_5: '5 trang trước',
-                        },
-                    }}
-                    scroll={{
-                        y: pagination.pageSize >= 10 ? 400 : undefined,
-                        x: window.innerWidth < 1900 ? 100 : undefined,
-                    }}
-                    loading={{ indicator: <div><Spin /></div>, spinning: fetchListLSCGData.loading }}
-                // expandable={{
-                //     expandedRowRender: (record) => {
-                //         return (
-                //             <>
-                //                 <div style={{ textAlign: 'center', paddingTop: '10px' }}>
-                //                     {record.note?.map(item => (
-                //                         <>
-                //                             <Typography.Text>{item.content}</Typography.Text>
-                //                             <br></br>
-                //                         </>
-                //                     ))}
-                //                 </div>
-                //                 <div style={{ paddingTop: '10px' }}>
-                //                     <Divider orientation='left'>{initialState?.currentUser?.name} <EditOutlined /></Divider>
-                //                     <Form form={form} layout='vertical' onFinish={handleSubmitNoteForm}>
-                //                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                //                             <div style={{ flex: 1 }}>
-                //                                 <Form.Item
-                //                                     name="note"
-                //                                     rules={[
-                //                                         {
-                //                                             required: true,
-                //                                             message: 'Vui lòng nhập ghi chú'
-                //                                         }
-                //                                     ]}
-                //                                 >
-                //                                     <Input />
-                //                                 </Form.Item>
-                //                             </div>
-                //                             <div style={{ marginLeft: '10px' }}>
-                //                                 <Form.Item label="">
-                //                                     <Button
-                //                                         style={{ backgroundColor: '#1890ff', color: '#fff' }}
-                //                                         htmlType="submit"
-                //                                         onClick={() => handleClickUpdateNote(record._id)}
-                //                                     >
-                //                                         Lưu
-                //                                     </Button>
-                //                                 </Form.Item>
-                //                             </div>
-                //                         </div>
-                //                     </Form>
-                //                 </div>
-                //             </>
-                //         )
-                //     },
-                //     expandIcon: ({ expanded, onExpand, record }) => {
-                //         return (
-                //             expanded ? (
-                //                 <UpOutlined onClick={e => onExpand(record, e)} />
-                //             ) : (
-                //                 <DownOutlined onClick={e => onExpand(record, e)} />
-                //             )
-                //         )
-                //     }
-                // }}
-                />
-                <Modal
-                    open={isVisibleModalAudio}
-                    onCancel={() => { setVisibleModalAudio(false); audioRef.current.pause() }}
-                    footer={false}
-                    title="Nghe file ghi âm"
-                >
-                    <div style={{ textAlign: 'center' }}>
-                        <figure>
-                            <audio
-                                ref={audioRef}
-                                controls
-                                src={testAudioURL}>
-                            </audio>
-                        </figure>
-                        {/* <Button onClick={() => handleDownload('http://172.27.228.189:9000/omni-dev/recordings/172.27.228.221/archive/2022/Nov/29/5b85843e-7cf2-4746-afcf-9cbee1109791.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=wCLEkHRxIei9WZH2%2F20221130%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221130T035143Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=a429376d7bdc769344914e4f9373088213657bb8ffdf2f8dc6a5b59805cdb360', 'test.mp3')}>Test</Button> */}
+                    <div>
+                        <Form layout='vertical' form={form}>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    gap: 10,
+                                    flexWrap: 'wrap'
+                                }}
+                            >
+                                <div style={{ width: '300px' }}>
+                                    <Form.Item label="Hướng cuộc gọi" name="Hướng cuộc gọi" style={{ marginBottom: 'unset' }}>
+                                        <Select onChange={handleSelectValueHCG} mode="multiple" >
+                                            <Select.Option value="inbound">Gọi vào</Select.Option>
+                                            <Select.Option value="outbound">Gọi ra</Select.Option>
+                                            <Select.Option value="local">Gọi nội bộ</Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                </div>
+                                <div style={{ width: '300px' }}>
+                                    <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
+                                        <Select onChange={handleSelectValueKQ} mode="multiple">
+                                            <Select.Option value="success">Thành công</Select.Option>
+                                            <Select.Option value="fail">Thất bại</Select.Option>
+                                            <Select.Option value="busy">Bận</Select.Option>
+                                            <Select.Option value="cancel">Hủy bỏ</Select.Option>
+                                            <Select.Option value="no_answer">Không trả lời</Select.Option>
+                                            <Select.Option value="rejected">Từ chối</Select.Option>
+                                            <Select.Option value="missed">Nhỡ trong hàng chờ</Select.Option>
+                                            <Select.Option value="other_failure">Lý do fail khác</Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                </div>
+                                <div style={{ width: '300px' }}>
+                                    <Form.Item label="Thời gian" name="Thời gian" style={{ marginBottom: 'unset' }}>
+                                        <RangePicker onChange={handleChangeValueRangePicker} placeholder={['Từ ngày', 'Đến ngày']} />
+                                    </Form.Item>
+                                </div>
+                                <div style={{ paddingTop: '29px' }}>
+                                    <Form.Item style={{ marginBottom: 'unset' }}>
+                                        <Button type='text' style={{ color: 'blue' }} onClick={onResetFilter}>Reset</Button>
+                                    </Form.Item>
+                                </div>
+                            </div>
+                        </Form>
                     </div>
-                </Modal>
-            </Card>
-        </>
+                    <div
+                        style={{
+                            paddingTop: '29px',
+                            paddingRight: '20px'
+                        }}
+                    >
+                        <Input
+                            style={{ width: '300px', marginRight: '10px' }}
+                            prefix={<SearchOutlined />}
+                            placeholder="Tìm kiếm tên người gọi, người nhận"
+                            allowClear
+                            value={valueKeyWord}
+                            onChange={debounce(
+                                (e) => {
+                                    const { value } = e.target;
+                                    if (value === "" || value === undefined) {
+                                        setValueKeyWord(undefined)
+                                        fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
+                                    }
+                                    else {
+                                        setValueKeyWord(value);
+                                        fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
+                                    }
+                                },
+                                500,
+                                {
+                                    trailing: true,
+                                    leading: false,
+                                },
+                            )}
+                        />
+                        <Button
+                            style={{ backgroundColor: '#7fb77e', color: '#fff' }}
+                            onClick={handleExportFile}
+                        >
+                            <ExportIcon /> Export
+                        </Button>
+                    </div>
+                </div>
+                <Card
+                    className={styles.detailCardLayout}
+                >
+                    <Table
+                        dataSource={listDataLSCG}
+                        rowKey={item => item._id}
+                        columns={columns}
+                        style={{ paddingLeft: '10px', paddingTop: '10px' }}
+                        className={styles.tableStyle}
+                        onChange={handleTableChange}
+                        pagination={{
+                            ...pagination,
+                            total: listDataLSCGLength,
+                            locale: {
+                                items_per_page: '/ Trang',
+                                jump_to: 'Đến trang',
+                                page: '',
+                                next_page: 'Trang sau',
+                                prev_page: 'Trang trước',
+                                next_3: '3 trang sau',
+                                next_5: '5 trang sau',
+                                prev_3: '3 trang trước',
+                                prev_5: '5 trang trước',
+                            },
+                        }}
+                        scroll={{
+                            y: pagination.pageSize >= 10 ? 400 : undefined,
+                            x: window.innerWidth < 1900 ? 100 : undefined,
+                        }}
+                        loading={{ indicator: <div><Spin /></div>, spinning: fetchListLSCGData.loading }}
+                    // expandable={{
+                    //     expandedRowRender: (record) => {
+                    //         return (
+                    //             <>
+                    //                 <div style={{ textAlign: 'center', paddingTop: '10px' }}>
+                    //                     {record.note?.map(item => (
+                    //                         <>
+                    //                             <Typography.Text>{item.content}</Typography.Text>
+                    //                             <br></br>
+                    //                         </>
+                    //                     ))}
+                    //                 </div>
+                    //                 <div style={{ paddingTop: '10px' }}>
+                    //                     <Divider orientation='left'>{initialState?.currentUser?.name} <EditOutlined /></Divider>
+                    //                     <Form form={form} layout='vertical' onFinish={handleSubmitNoteForm}>
+                    //                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    //                             <div style={{ flex: 1 }}>
+                    //                                 <Form.Item
+                    //                                     name="note"
+                    //                                     rules={[
+                    //                                         {
+                    //                                             required: true,
+                    //                                             message: 'Vui lòng nhập ghi chú'
+                    //                                         }
+                    //                                     ]}
+                    //                                 >
+                    //                                     <Input />
+                    //                                 </Form.Item>
+                    //                             </div>
+                    //                             <div style={{ marginLeft: '10px' }}>
+                    //                                 <Form.Item label="">
+                    //                                     <Button
+                    //                                         style={{ backgroundColor: '#1890ff', color: '#fff' }}
+                    //                                         htmlType="submit"
+                    //                                         onClick={() => handleClickUpdateNote(record._id)}
+                    //                                     >
+                    //                                         Lưu
+                    //                                     </Button>
+                    //                                 </Form.Item>
+                    //                             </div>
+                    //                         </div>
+                    //                     </Form>
+                    //                 </div>
+                    //             </>
+                    //         )
+                    //     },
+                    //     expandIcon: ({ expanded, onExpand, record }) => {
+                    //         return (
+                    //             expanded ? (
+                    //                 <UpOutlined onClick={e => onExpand(record, e)} />
+                    //             ) : (
+                    //                 <DownOutlined onClick={e => onExpand(record, e)} />
+                    //             )
+                    //         )
+                    //     }
+                    // }}
+                    />
+                    <Modal
+                        open={isVisibleModalAudio}
+                        onCancel={() => { setVisibleModalAudio(false); audioRef.current.pause() }}
+                        footer={false}
+                        title="Nghe file ghi âm"
+                    >
+                        <div style={{ textAlign: 'center' }}>
+                            <figure>
+                                <audio
+                                    ref={audioRef}
+                                    controls
+                                    src={testAudioURL}>
+                                </audio>
+                            </figure>
+                            {/* <Button onClick={() => handleDownload('http://172.27.228.189:9000/omni-dev/recordings/172.27.228.221/archive/2022/Nov/29/5b85843e-7cf2-4746-afcf-9cbee1109791.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=wCLEkHRxIei9WZH2%2F20221130%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221130T035143Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=a429376d7bdc769344914e4f9373088213657bb8ffdf2f8dc6a5b59805cdb360', 'test.mp3')}>Test</Button> */}
+                        </div>
+                    </Modal>
+                </Card>
+            </>
+        )
     )
 }
 
