@@ -172,10 +172,14 @@ const PermissionEdit: React.FC = () => {
                 }
                 else if (res.error_code === 4010106) {
                     message.error('Không tìm thấy dữ liệu');
+                    setListAllUserInfoFinal([]);
+                    setListAllUserInfoLengthFinal(0);
                     return;
                 }
                 else {
                     message.error('Không tìm thấy dữ liệu');
+                    setListAllUserInfoFinal([]);
+                    setListAllUserInfoLengthFinal(0);
                     return;
                 }
             } else {
