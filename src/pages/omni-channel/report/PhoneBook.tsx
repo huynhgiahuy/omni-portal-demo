@@ -152,14 +152,14 @@ const formItemLayout = {
 };
 
 const PhoneBook: React.FC = () => {
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const { initialState } = useModel('@@initialState');
   const [form] = Form.useForm();
   const [external, setExternal] = useState('Khách hàng');
   const [openModal, setOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [dataContacts, setDataContacts] = useState<dataUserContactProps[]>([]);
   const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
-  const [teamKey, setTeamKey] = useState<string | any>();
+  const [setTeamKey] = useState<string | any>();
   const [newTeamValue, setNewTeamValue] = useState<string | any>();
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
 
