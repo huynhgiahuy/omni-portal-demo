@@ -93,8 +93,13 @@ const HistoryCall: React.FC = () => {
                 if (res.error_code === 4030102) {
                     setIsView('403');
                     return;
-                } else {
-                    message.error('Không có dữ liệu');
+                }
+                else if (res.error_code === 4010106) {
+                    message.error('Không tìm thấy dữ liệu');
+                    return;
+                }
+                else {
+                    message.error('Không tìm thấy dữ liệu');
                     return;
                 }
             }
@@ -284,28 +289,40 @@ const HistoryCall: React.FC = () => {
             dataIndex: 'sip_from_user',
             key: 'sip_from_user',
             align: 'center',
-            width: '110px'
+            width: '110px',
+            render: (text, record) => {
+                return text === null || text === undefined ? '-' : text
+            }
         },
         {
             title: 'Tên người gọi',
             dataIndex: 'caller_name',
             key: 'caller_name',
             align: 'center',
-            width: '150px'
+            width: '150px',
+            render: (text, record) => {
+                return text === null || text === undefined ? '-' : text
+            }
         },
         {
             title: 'Số máy nhận',
             dataIndex: 'caller_destination',
             key: 'caller_destination',
             align: 'center',
-            width: '110px'
+            width: '110px',
+            render: (text, record) => {
+                return text === null || text === undefined ? '-' : text
+            }
         },
         {
             title: 'Tên người nhận',
             dataIndex: 'receiver_name',
             key: 'receiver_name',
             align: 'center',
-            width: '150px'
+            width: '150px',
+            render: (text, record) => {
+                return text === null || text === undefined ? '-' : text
+            }
         },
         {
             title: 'Thời gian bắt đầu',
@@ -314,7 +331,7 @@ const HistoryCall: React.FC = () => {
             align: 'center',
             width: '150px',
             render: (text, record) => {
-                return text === null ? '-' : moment.unix(text).format('DD-MM-YYYY');
+                return text === null || text === undefined ? '-' : moment.unix(text).format('DD-MM-YYYY');
             }
         },
         {
@@ -324,7 +341,7 @@ const HistoryCall: React.FC = () => {
             align: 'center',
             width: '100px',
             render: (text, record) => {
-                return text === null ? handleChangeBillSec(text.toString()) : ''
+                return text === null || text === undefined ? '-' : handleChangeBillSec(text.toString())
             }
         },
         {
@@ -334,7 +351,7 @@ const HistoryCall: React.FC = () => {
             align: 'center',
             width: '150px',
             render: (text, record) => {
-                return handleViewResult(record.result);
+                return text === null || text === undefined ? '-' : handleViewResult(record.result);
             }
         },
         {

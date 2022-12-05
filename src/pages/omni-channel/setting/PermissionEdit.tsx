@@ -169,8 +169,13 @@ const PermissionEdit: React.FC = () => {
                 if (res.error_code === 4030102) {
                     setIsView('403');
                     return;
-                } else {
-                    message.error('Bạn không có quyền tạo mới');
+                }
+                else if (res.error_code === 4010106) {
+                    message.error('Không tìm thấy dữ liệu');
+                    return;
+                }
+                else {
+                    message.error('Không tìm thấy dữ liệu');
                     return;
                 }
             } else {
@@ -479,14 +484,20 @@ const PermissionEdit: React.FC = () => {
             dataIndex: 'ip_phone',
             key: 'ip_phone',
             width: '70px',
-            align: 'center'
+            align: 'center',
+            render: (text, record) => {
+                return text === null || text === undefined ? '-' : text
+            }
         },
         {
             title: 'Team',
             dataIndex: 'team_name',
             key: 'team_name',
             width: '100px',
-            align: 'center'
+            align: 'center',
+            render: (text, record) => {
+                return text === null || text === undefined ? '-' : text
+            }
         },
         {
             title: 'Nơi làm việc',
@@ -495,7 +506,7 @@ const PermissionEdit: React.FC = () => {
             align: 'center',
             width: '100px',
             render: (text, record) => {
-                return text === "mn" ? "Miền Nam" : text === "mb" ? "Miền Bắc" : ''
+                return text === "mn" ? "Miền Nam" : text === "mb" ? "Miền Bắc" : '-'
             }
         },
         {
@@ -504,6 +515,9 @@ const PermissionEdit: React.FC = () => {
             key: 'role_code',
             align: 'center',
             width: '100px',
+            render: (text, record) => {
+                return text === null || text === undefined ? '-' : text
+            }
         },
         {
             title: 'Cập nhật lần cuối',
@@ -512,7 +526,7 @@ const PermissionEdit: React.FC = () => {
             align: 'center',
             width: '100px',
             render: (text, record) => {
-                return text === null ? '-' : moment.unix(text).format('DD-MM-YYYY');
+                return text === null || text === undefined ? '-' : moment.unix(text).format('DD-MM-YYYY');
             }
         },
         {
@@ -522,7 +536,7 @@ const PermissionEdit: React.FC = () => {
             align: 'center',
             width: '110px',
             render: (text, record) => {
-                return handleRenderStatusActivity(record.status)
+                return text === null || text === undefined ? '-' : handleRenderStatusActivity(record.status)
             }
         },
         // {
