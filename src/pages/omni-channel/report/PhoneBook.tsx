@@ -152,14 +152,14 @@ const formItemLayout = {
 };
 
 const PhoneBook: React.FC = () => {
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const { initialState } = useModel('@@initialState');
   const [form] = Form.useForm();
   const [external, setExternal] = useState('Khách hàng');
   const [openModal, setOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [dataContacts, setDataContacts] = useState<dataUserContactProps[]>([]);
   const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
-  const [teamKey, setTeamKey] = useState<string | any>();
+  const [setTeamKey] = useState<string | any>();
   const [newTeamValue, setNewTeamValue] = useState<string | any>();
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
 
@@ -224,7 +224,7 @@ const PhoneBook: React.FC = () => {
         return;
       } else {
         message.success('Thêm thành công');
-        getUserContact.refresh();
+        getUserContact.run({ email_user: initialState?.currentUser?.email });
         handleCancleModal();
       }
     },
@@ -241,7 +241,7 @@ const PhoneBook: React.FC = () => {
         return;
       } else {
         message.success('Cập nhập thành công');
-        getUserContact.refresh();
+        getUserContact.run({ email_user: initialState?.currentUser?.email });
         handleCancleModal();
       }
       return res;
@@ -259,7 +259,7 @@ const PhoneBook: React.FC = () => {
         return;
       } else {
         message.success('Xoá thành công');
-        getUserContact.refresh();
+        getUserContact.run({ email_user: initialState?.currentUser?.email });
         handleCancleModal();
       }
       return res;
@@ -277,7 +277,7 @@ const PhoneBook: React.FC = () => {
         return;
       } else {
         message.success('Lưu thành công');
-        getUserContact.refresh();
+        getUserContact.run({ email_user: initialState?.currentUser?.email });
       }
       return res;
     },
@@ -549,7 +549,10 @@ const PhoneBook: React.FC = () => {
           }}
         >
           <Space size="middle">
-            <Form.Item label={external === 'Khách hàng' ? 'Đơn vị' : 'Team'} name="unit">
+            <Form.Item
+              label={external === 'Khách hàng' ? 'Đơn vị' : 'Team'}
+              name={external === 'Khách hàng' ? 'unit' : 'team'}
+            >
               <Select
                 style={{ width: 200 }}
                 placeholder="Tất cả"
@@ -560,6 +563,7 @@ const PhoneBook: React.FC = () => {
                     getUserContact.run({
                       keyword: form.getFieldValue('search'),
                       unit: form.getFieldValue('unit'),
+                      team: form.getFieldValue('team'),
                       email_user: initialState?.currentUser?.email,
                     });
                   },

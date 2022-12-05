@@ -498,24 +498,45 @@ const HistoryCall: React.FC = () => {
     //     setGetCallId(call_id);
     // }
 
-    const onResetFilter = () => {
-        form.resetFields();
-        setListValueHCG(undefined);
-        setListValueKQ(undefined);
-        setValueKeyWord(undefined)
-        setValueFromDateTime(undefined);
-        setValueToDateTime(undefined);
-        setPagination({
-            ...pagination,
-            current: 1,
-        });
+    const onResetFilter = (e: any) => {
+        if (
+            listValueHCG === undefined
+            && listValueKQ === undefined
+            && listValueKQ === undefined
+            && valueKeyWord === undefined
+            && valueFromDateTime === undefined
+            && valueToDateTime === undefined
+        ) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        else {
+            form.resetFields();
+            setListValueHCG(undefined);
+            setListValueKQ(undefined);
+            setValueKeyWord(undefined)
+            setValueFromDateTime(undefined);
+            setValueToDateTime(undefined);
+            setPagination({
+                ...pagination,
+                current: 1,
+            });
+        }
     };
+    console.log(listValueHCG, listValueKQ)
 
     const handleExportFile = async () => {
         const res = await axios({
             //url: 'http://172.27.228.201:8007/voip-service/api/call/export_call_history_excel',
             url: `${api.UMI_API_BASE_URL}/voip-service/api/call/export_call_history_excel`,
             method: 'POST',
+            data: {
+                direction: listValueHCG,
+                result: listValueKQ,
+                from_datetime: valueFromDateTime,
+                to_datetime: valueToDateTime,
+                search_name: valueKeyWord,
+            },
             responseType: 'blob',
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -577,7 +598,7 @@ const HistoryCall: React.FC = () => {
                                 </div>
                                 <div style={{ paddingTop: '29px' }}>
                                     <Form.Item style={{ marginBottom: 'unset' }}>
-                                        <Button type='text' style={{ color: 'blue' }} onClick={onResetFilter}>Reset</Button>
+                                        <Button type='text' style={{ color: 'blue' }} onClick={(e) => onResetFilter(e)}>Reset</Button>
                                     </Form.Item>
                                 </div>
                             </div>
@@ -598,7 +619,7 @@ const HistoryCall: React.FC = () => {
                             onChange={debounce(
                                 (e) => {
                                     const { value } = e.target;
-                                    if (value === "" || value === undefined) {
+                                    if (value === "") {
                                         setValueKeyWord(undefined)
                                         fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
                                     }
