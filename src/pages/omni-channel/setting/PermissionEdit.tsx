@@ -569,16 +569,28 @@ const PermissionEdit: React.FC = () => {
             )
         },
     ];
-    const onReset = () => {
-        form.resetFields();
-        setListValueTeam(undefined);
-        setListValueNLV(undefined);
-        setListValueNQ(undefined);
-        setValueKeyWord(undefined)
-        setPagination({
-            ...pagination,
-            current: 1,
-        });
+    const onReset = (e: any) => {
+        if (
+            listValueTeam === undefined
+            && listValueNLV === undefined
+            && listValueNQ === undefined
+            && valueKeyWord === undefined
+
+        ) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+        else {
+            form.resetFields();
+            setListValueTeam(undefined);
+            setListValueNLV(undefined);
+            setListValueNQ(undefined);
+            setValueKeyWord(undefined);
+            setPagination({
+                ...pagination,
+                current: 1,
+            });
+        }
     };
 
     const handleSelectValueTeam = (values: any) => {
@@ -676,7 +688,7 @@ const PermissionEdit: React.FC = () => {
                                 </div>
                                 <div style={{ paddingTop: '29px' }}>
                                     <Form.Item style={{ marginBottom: 'unset' }} label="">
-                                        <Button type='text' style={{ color: 'blue' }} onClick={onReset}>Reset</Button>
+                                        <Button type='text' style={{ color: 'blue' }} onClick={(e) => onReset(e)}>Reset</Button>
                                     </Form.Item>
                                 </div>
                             </div>
@@ -688,6 +700,7 @@ const PermissionEdit: React.FC = () => {
                             prefix={<SearchOutlined />}
                             placeholder="Tìm kiếm tên người dùng"
                             allowClear
+                            value={valueKeyWord}
                             onChange={debounce(
                                 (e) => {
                                     const { value } = e.target;
