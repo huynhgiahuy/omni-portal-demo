@@ -57,6 +57,10 @@ if (window.location.href.includes('code')) {
   }
 }
 
+if (window.location.href.includes('mainpage')) {
+  history.push('/');
+}
+
 const { pwa } = defaultSettings;
 const isHttps = document.location.protocol === 'https:';
 
