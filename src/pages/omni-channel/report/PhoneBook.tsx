@@ -208,13 +208,13 @@ const PhoneBook: React.FC = () => {
     },
   );
 
-  const dataExternalContacts = dataContacts
-    .filter((user: { external_customers: boolean }) => user.external_customers)
-    .sort((x, y) => (x.pin_user === y.pin_user ? 0 : x ? -1 : 1));
+  const dataExternalContacts = dataContacts.filter(
+    (user: { external_customers: boolean }) => user.external_customers,
+  );
 
-  const dataInternalContacts = dataContacts
-    .filter((user: { external_customers: boolean }) => !user.external_customers)
-    .sort((x, y) => (x.pin_user === y.pin_user ? 0 : x ? -1 : 1));
+  const dataInternalContacts = dataContacts.filter(
+    (user: { external_customers: boolean }) => !user.external_customers,
+  );
 
   const addUserContact = useRequest(
     async (data) => {
@@ -271,7 +271,7 @@ const PhoneBook: React.FC = () => {
 
   const sendPinStart = useRequest(
     async (data) => {
-      const res: { success: boolean } = await requestSendPinUser(data);
+      const res: { success: boolean } = await requestSendPinUser(token ? token : '', data);
       if (!res.success) {
         message.error('Lưu thất bại');
         return;
@@ -479,8 +479,8 @@ const PhoneBook: React.FC = () => {
     const resNewTeam = await requestCreateNewTeam(newTeamValue);
     if (resNewTeam.success === true) {
       message.success('Thêm thành công');
-      form.resetFields();
       getListTeam.refresh();
+      form.setFieldValue('newTeamValue', '');
     } else {
       message.error('Thêm thất bại');
       return;
@@ -491,7 +491,14 @@ const PhoneBook: React.FC = () => {
     const resDelTeam = await requestDeleteTeamPermission(team_id);
     if (resDelTeam.success === true) {
       message.success('Xoá thành công');
+      form.setFieldValue('newTeamValue', '');
+      setNewTeamValue('');
+      form.setFieldValue('team', '');
       getListTeam.refresh();
+    } else {
+      message.error('Xoá thất bại');
+
+      return;
     }
   };
 
