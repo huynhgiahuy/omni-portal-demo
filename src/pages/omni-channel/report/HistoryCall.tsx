@@ -94,7 +94,7 @@ const HistoryCall: React.FC = () => {
                     setIsView('403');
                     return;
                 } else {
-                    message.error('Bạn không có quyền tạo mới');
+                    message.error('Không có dữ liệu');
                     return;
                 }
             }
@@ -113,16 +113,16 @@ const HistoryCall: React.FC = () => {
         },
     )
 
-    const handleUpdateNoteHistoryCall = async (call_id?: string, note?: string) => {
-        const respone_update_note = await requestUpdateNoteHistoryCall(token ? token : '', call_id, note);
-        if (respone_update_note.success !== true) {
-            message.error('Lưu ghi chú thất bại!');
-        }
-        else {
-            message.success('Lưu ghi chú thành công!');
-            fetchListLSCGData.refresh();
-        }
-    }
+    // const handleUpdateNoteHistoryCall = async (call_id?: string, note?: string) => {
+    //     const respone_update_note = await requestUpdateNoteHistoryCall(token ? token : '', call_id, note);
+    //     if (respone_update_note.success !== true) {
+    //         message.error('Lưu ghi chú thất bại!');
+    //     }
+    //     else {
+    //         message.success('Lưu ghi chú thành công!');
+    //         fetchListLSCGData.refresh();
+    //     }
+    // }
 
     useEffect(() => {
         fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
@@ -324,7 +324,7 @@ const HistoryCall: React.FC = () => {
             align: 'center',
             width: '100px',
             render: (text, record) => {
-                return handleChangeBillSec(text.toString())
+                return text === null ? handleChangeBillSec(text.toString()) : ''
             }
         },
         {
@@ -480,6 +480,8 @@ const HistoryCall: React.FC = () => {
         setListValueHCG(undefined);
         setListValueKQ(undefined);
         setValueKeyWord(undefined)
+        setValueFromDateTime(undefined);
+        setValueToDateTime(undefined);
         setPagination({
             ...pagination,
             current: 1,
@@ -569,6 +571,7 @@ const HistoryCall: React.FC = () => {
                             prefix={<SearchOutlined />}
                             placeholder="Tìm kiếm tên người gọi, người nhận"
                             allowClear
+                            value={valueKeyWord}
                             onChange={debounce(
                                 (e) => {
                                     const { value } = e.target;
