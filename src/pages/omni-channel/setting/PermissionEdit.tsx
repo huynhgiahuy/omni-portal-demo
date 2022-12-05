@@ -222,15 +222,6 @@ const PermissionEdit: React.FC = () => {
         if (resTeam.success === true) {
             setListTeamPermission(resTeam.data)
         }
-        else {
-            if (resTeam.error_code === 4030102) {
-                setIsView('403');
-                return;
-            } else {
-                message.error('Bạn không có quyền tạo mới');
-                return;
-            }
-        }
     }
 
     const handleDeleteTeamPermission = async (team_id: string) => {
