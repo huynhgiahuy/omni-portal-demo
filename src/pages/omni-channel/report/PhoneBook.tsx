@@ -224,7 +224,7 @@ const PhoneBook: React.FC = () => {
         return;
       } else {
         message.success('Thêm thành công');
-        getUserContact.refresh();
+        getUserContact.run({ email_user: initialState?.currentUser?.email });
         handleCancleModal();
       }
     },
@@ -241,7 +241,7 @@ const PhoneBook: React.FC = () => {
         return;
       } else {
         message.success('Cập nhập thành công');
-        getUserContact.refresh();
+        getUserContact.run({ email_user: initialState?.currentUser?.email });
         handleCancleModal();
       }
       return res;
@@ -259,7 +259,7 @@ const PhoneBook: React.FC = () => {
         return;
       } else {
         message.success('Xoá thành công');
-        getUserContact.refresh();
+        getUserContact.run({ email_user: initialState?.currentUser?.email });
         handleCancleModal();
       }
       return res;
@@ -277,7 +277,7 @@ const PhoneBook: React.FC = () => {
         return;
       } else {
         message.success('Lưu thành công');
-        getUserContact.refresh();
+        getUserContact.run({ email_user: initialState?.currentUser?.email });
       }
       return res;
     },
