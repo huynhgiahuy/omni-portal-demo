@@ -208,13 +208,13 @@ const PhoneBook: React.FC = () => {
     },
   );
 
-  const dataExternalContacts = dataContacts
-    .filter((user: { external_customers: boolean }) => user.external_customers)
-    .sort((x, y) => (x.pin_user === y.pin_user ? 0 : x ? -1 : 1));
+  const dataExternalContacts = dataContacts.filter(
+    (user: { external_customers: boolean }) => user.external_customers,
+  );
 
-  const dataInternalContacts = dataContacts
-    .filter((user: { external_customers: boolean }) => !user.external_customers)
-    .sort((x, y) => (x.pin_user === y.pin_user ? 0 : x ? -1 : 1));
+  const dataInternalContacts = dataContacts.filter(
+    (user: { external_customers: boolean }) => !user.external_customers,
+  );
 
   const addUserContact = useRequest(
     async (data) => {
