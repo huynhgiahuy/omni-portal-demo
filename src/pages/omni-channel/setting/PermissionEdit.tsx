@@ -43,6 +43,7 @@ import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
 import { useRequest, useModel } from 'umi';
 import { debounce } from 'lodash';
 import Ellipse from '../../../assets/Ellipse.svg';
+import OfflineIcon from '../../../../public/offline.png';
 import moment from 'moment';
 import NoFoundPage from '@/pages/404';
 
@@ -81,6 +82,7 @@ interface DataAllUserInfoFinal {
     phone_number: string;
     image: string;
     status?: string;
+    is_online?: boolean;
 }
 
 const formItemLayout = {
@@ -248,9 +250,14 @@ const PermissionEdit: React.FC = () => {
         }
     }
 
-    const handleSubmitNewTeam = async (values: any) => {
+    const handleSubmitNewTeam = async (e: any, values: any) => {
         if (arrListTeam.includes(values)) {
             message.error('Team đã tồn tại!')
+        }
+        else if (values === undefined || values === "") {
+            e.stopPropagation();
+            e.preventDefault();
+            message.error('Vui lòng nhập team mới!')
         }
         else {
             await handleCreateNewTeamPermission(values);
@@ -347,13 +354,7 @@ const PermissionEdit: React.FC = () => {
             return (
                 <div style={{ border: '1px solid #1eaf61', borderRadius: 4, }}>
                     <CheckCircleFilled style={{ color: ' #1eaf61' }} />
-                    <span
-                        style={{
-                            color: '#1eaf61',
-                            marginLeft: 9,
-                            fontWeight: 400,
-                            fontSize: '13px'
-                        }}>
+                    <span className={styles.readyStatusText}>
                         Sẵn sàng
                     </span>
                 </div>
@@ -363,13 +364,7 @@ const PermissionEdit: React.FC = () => {
             return (
                 <div style={{ border: '1px solid #FAAD14', borderRadius: 4, }}>
                     <ClockCircleFilled style={{ color: ' #FAAD14' }} />
-                    <span
-                        style={{
-                            color: '#FAAD14',
-                            marginLeft: 9,
-                            fontWeight: 400,
-                            fontSize: '13px'
-                        }}>
+                    <span className={styles.abscentStatusText}>
                         Vắng mặt
                     </span>
                 </div>
@@ -379,13 +374,7 @@ const PermissionEdit: React.FC = () => {
             return (
                 <div style={{ border: '1px solid #F5222D', borderRadius: 4, }}>
                     <MinusCircleFilled style={{ color: '#F5222D' }} />
-                    <span
-                        style={{
-                            color: '#F5222D',
-                            marginLeft: 9,
-                            fontWeight: 400,
-                            fontSize: '13px'
-                        }}>
+                    <span className={styles.notDisturbStatusText}>
                         Không làm phiền
                     </span>
                 </div>
@@ -393,29 +382,31 @@ const PermissionEdit: React.FC = () => {
         }
         else if (status === '4') {
             return (
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        textAlign: 'center',
-                        border: '1px solid #818181',
-                        borderRadius: 4,
-                        paddingLeft: '10%'
-                    }}>
+                <div className={styles.noActivityStatusDisplay}>
                     <img src={Ellipse} alt="..." width={14} height={14} />
-                    <div
-                        style={{
-                            color: '#818181',
-                            marginLeft: 5,
-                            fontWeight: 400,
-                            fontSize: '13px'
-                        }}>
+                    <div className={styles.noActivityStatusText}>
                         Không hoạt động
                     </div>
                 </div>
             )
         }
         return;
+    }
+
+    const handleRenderOfflineStatus = () => {
+        return (
+            <div className={styles.offlineStatusDisplay}>
+                <img
+                    src={OfflineIcon}
+                    width={14}
+                    height={14}
+                    style={{ marginTop: 3 }}
+                />
+                <div className={styles.offlineStatusText}>
+                    Đang offline
+                </div>
+            </div>
+        )
     }
 
     const columns: ColumnsType<DataAllUserInfoFinal> = [
@@ -449,7 +440,12 @@ const PermissionEdit: React.FC = () => {
                             <div style={{ flex: 3, textAlign: 'left' }}>
                                 <Typography.Text >{record.name}</Typography.Text>
                                 <br></br>
-                                <Typography.Text className={styles.emailPermissionTable} style={{ textAlign: 'center', alignItems: 'center' }}>{record.email}</Typography.Text>
+                                <Typography.Text
+                                    className={styles.emailPermissionTable}
+                                    style={{ textAlign: 'center', alignItems: 'center' }}
+                                >
+                                    {record.email}
+                                </Typography.Text>
                             </div>
                         </div>
                     )
@@ -467,7 +463,12 @@ const PermissionEdit: React.FC = () => {
                             <div style={{ flex: 3, textAlign: 'left' }}>
                                 <Typography.Text >{record.name}</Typography.Text>
                                 <br></br>
-                                <Typography.Text className={styles.emailPermissionTable} style={{ textAlign: 'center', alignItems: 'center' }}>{record.email}</Typography.Text>
+                                <Typography.Text
+                                    className={styles.emailPermissionTable}
+                                    style={{ textAlign: 'center', alignItems: 'center' }}
+                                >
+                                    {record.email}
+                                </Typography.Text>
                             </div>
                         </div>
                     )
@@ -531,7 +532,12 @@ const PermissionEdit: React.FC = () => {
             align: 'center',
             width: '110px',
             render: (text, record) => {
-                return text === null || text === undefined ? '-' : handleRenderStatusActivity(record.status)
+                if (record.is_online === true) {
+                    return text === null || text === undefined ? '-' : handleRenderStatusActivity(record.status);
+                }
+                else {
+                    return handleRenderOfflineStatus();
+                }
             }
         },
         // {
@@ -622,106 +628,107 @@ const PermissionEdit: React.FC = () => {
             <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
         ) : (
             <>
-                <div
+                <Form
                     style={{
                         display: 'flex',
                         justifyContent: 'space-between',
                         paddingTop: '30px',
                         flexWrap: 'wrap'
                     }}
+                    layout='vertical'
+                    form={form}
                 >
                     <div>
-                        <Form layout='vertical' form={form}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                                <div style={{ width: '300px' }}>
-                                    <Form.Item label="Team" name="Team" style={{ marginBottom: 'unset' }}>
-                                        <Select
-                                            onChange={handleSelectValueTeam}
-                                            mode="multiple"
-                                        // filterOption={(input: any, option: any) =>
-                                        //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                        //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                        // }
-                                        >
-                                            {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
-                                                <Select.Option value={item.name}>
-                                                    {item.name}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </Form.Item>
-                                </div>
-                                <div style={{ width: '300px' }}>
-                                    <Form.Item label="Nơi làm việc" name="Nơi làm việc" style={{ marginBottom: 'unset' }}>
-                                        <Select
-                                            onChange={handleSelectValueNLV}
-                                            mode="multiple"
-                                        // filterOption={(input: any, option: any) =>
-                                        //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                        //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                        // }
-                                        >
-                                            <Select.Option value="Miền Bắc">Miền Bắc</Select.Option>
-                                            <Select.Option value="Miền Nam">Miền Nam</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </div>
-                                <div style={{ width: '300px' }}>
-                                    <Form.Item label="Nhóm quyền" name="Nhóm quyền" style={{ marginBottom: 'unset' }}>
-                                        <Select
-                                            onChange={handleSelectValueNQ}
-                                            mode="multiple"
-                                        // filterOption={(input: any, option: any) =>
-                                        //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                        //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                        // }
-                                        >
-                                            {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
-                                                <Select.Option
-                                                    value={item.code}
-                                                >
-                                                    {item.code}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </Form.Item>
-                                </div>
-                                <div style={{ paddingTop: '29px' }}>
-                                    <Form.Item style={{ marginBottom: 'unset' }} label="">
-                                        <Button type='text' style={{ color: 'blue' }} onClick={(e) => onReset(e)}>Reset</Button>
-                                    </Form.Item>
-                                </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Team" name="Team" style={{ marginBottom: 'unset' }}>
+                                    <Select
+                                        onChange={handleSelectValueTeam}
+                                        mode="multiple"
+                                    // filterOption={(input: any, option: any) =>
+                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    // }
+                                    >
+                                        {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
+                                            <Select.Option value={item.name}>
+                                                {item.name}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
                             </div>
-                        </Form>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Nơi làm việc" name="Nơi làm việc" style={{ marginBottom: 'unset' }}>
+                                    <Select
+                                        onChange={handleSelectValueNLV}
+                                        mode="multiple"
+                                    // filterOption={(input: any, option: any) =>
+                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    // }
+                                    >
+                                        <Select.Option value="Miền Bắc">Miền Bắc</Select.Option>
+                                        <Select.Option value="Miền Nam">Miền Nam</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Nhóm quyền" name="Nhóm quyền" style={{ marginBottom: 'unset' }}>
+                                    <Select
+                                        onChange={handleSelectValueNQ}
+                                        mode="multiple"
+                                    // filterOption={(input: any, option: any) =>
+                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    // }
+                                    >
+                                        {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
+                                            <Select.Option
+                                                value={item.code}
+                                            >
+                                                {item.code}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ paddingTop: '29px' }}>
+                                <Form.Item style={{ marginBottom: 'unset' }} label="">
+                                    <Button type='text' style={{ color: 'blue' }} onClick={(e) => onReset(e)}>Reset</Button>
+                                </Form.Item>
+                            </div>
+                        </div>
                     </div>
                     <div style={{ paddingTop: '29px' }}>
-                        <Input
-                            style={{ width: '300px' }}
-                            prefix={<SearchOutlined />}
-                            placeholder="Tìm kiếm tên người dùng"
-                            allowClear
-                            value={valueKeyWord}
-                            onChange={debounce(
-                                (e) => {
-                                    const { value } = e.target;
-                                    if (value === "") {
-                                        setValueKeyWord(undefined)
-                                        fetchListAllUserInfoFinal.run();
-                                    }
-                                    else {
-                                        setValueKeyWord(value);
-                                        fetchListAllUserInfoFinal.run();
-                                    }
-                                },
-                                500,
-                                {
-                                    trailing: true,
-                                    leading: false,
-                                },
-                            )}
-                        />
+                        <Form.Item name="search_name">
+                            <Input
+                                style={{ width: '300px' }}
+                                prefix={<SearchOutlined />}
+                                placeholder="Tìm kiếm tên người dùng"
+                                allowClear
+                                onChange={debounce(
+                                    (e) => {
+                                        const { value } = e.target;
+                                        if (value === "") {
+                                            setValueKeyWord(undefined)
+                                            fetchListAllUserInfoFinal.run();
+                                        }
+                                        else {
+                                            setValueKeyWord(value);
+                                            fetchListAllUserInfoFinal.run();
+                                        }
+                                    },
+                                    500,
+                                    {
+                                        trailing: true,
+                                        leading: false,
+                                    },
+                                )}
+                            />
+                        </Form.Item>
                     </div>
-                </div>
+                </Form>
                 <Card
                     className={styles.detailCardLayoutNoMar}
                 >
@@ -805,7 +812,10 @@ const PermissionEdit: React.FC = () => {
                                                             <Form form={form}>
                                                                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                                     <div style={{ flex: 1 }}>
-                                                                        <Form.Item name="newTeamValue" style={{ marginBottom: 'unset' }}>
+                                                                        <Form.Item
+                                                                            name="newTeamValue"
+                                                                            style={{ marginBottom: 'unset' }}
+                                                                        >
                                                                             <Input
                                                                                 allowClear
                                                                                 placeholder="Nhập team mới tại đây"
@@ -819,7 +829,7 @@ const PermissionEdit: React.FC = () => {
                                                                             <Space>
                                                                                 <SaveOutlined
                                                                                     style={{ marginLeft: 10, fontSize: 14 }}
-                                                                                    onClick={() => handleSubmitNewTeam(newTeamValue)}
+                                                                                    onClick={(e) => handleSubmitNewTeam(e, newTeamValue)}
 
                                                                                 />
                                                                                 <CloseOutlined

@@ -34,8 +34,11 @@ const Login: React.FC = () => {
           if (res.success) {
             setIsLogin(false);
             fetchUserInfo(res.data);
-
-            history.goBack();
+            if (history.length > 2) {
+              history.go(-1);
+            } else {
+              history.push('/');
+            }
           } else {
             setIsLogin(true);
           }
