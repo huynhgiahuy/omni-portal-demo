@@ -78,7 +78,7 @@ const HistoryCall: React.FC = () => {
     const token = window.localStorage?.getItem('access_token');
 
     const fetchListLSCGData = useRequest(
-        async (from_datetime: string | undefined, to_datetime: any | undefined) => {
+        async (from_datetime: any | undefined, to_datetime: any | undefined) => {
             const res: { success: boolean, length: number, length_data?: number, error_code: number } = await requestHistoryCallData(
                 token ? token : '',
                 pagination.pageSize,
@@ -486,9 +486,9 @@ const HistoryCall: React.FC = () => {
         }
         else (dateString[0] !== '' && dateString[1] !== '')
         {
-            setValueFromDateTime(moment(dateString[0]).toISOString());
-            setValueToDateTime(moment(dateString[1]).toISOString());
-            fetchListLSCGData.run(moment(dateString[0]).toISOString(), moment(dateString[1]).toISOString());
+            setValueFromDateTime(moment(dateString[0], 'YYYY-MM-DD').startOf('day'));
+            setValueToDateTime(moment(dateString[1], 'YYYY-MM-DD').endOf('day'));
+            fetchListLSCGData.run(moment(dateString[0], 'YYYY-MM-DD').startOf('day'), moment(dateString[1], 'YYYY-MM-DD').endOf('day'));
         }
     }
 
