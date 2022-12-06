@@ -78,7 +78,7 @@ const HistoryCall: React.FC = () => {
     const token = window.localStorage?.getItem('access_token');
 
     const fetchListLSCGData = useRequest(
-        async (from_datetime: string | undefined, to_datetime: any | undefined) => {
+        async (from_datetime: any | undefined, to_datetime: any | undefined) => {
             const res: { success: boolean, length: number, length_data?: number, error_code: number } = await requestHistoryCallData(
                 token ? token : '',
                 pagination.pageSize,
@@ -136,8 +136,6 @@ const HistoryCall: React.FC = () => {
     useEffect(() => {
         fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
     }, [pagination])
-
-    console.log(listDataLSCGLength)
 
     const handleViewResult = (result: any) => {
         let color, newResult;
@@ -488,9 +486,9 @@ const HistoryCall: React.FC = () => {
         }
         else (dateString[0] !== '' && dateString[1] !== '')
         {
-            setValueFromDateTime(moment(dateString[0]).toISOString());
-            setValueToDateTime(moment(dateString[1]).toISOString());
-            fetchListLSCGData.run(moment(dateString[0]).toISOString(), moment(dateString[1]).toISOString());
+            setValueFromDateTime(moment(dateString[0], 'YYYY-MM-DD').startOf('day'));
+            setValueToDateTime(moment(dateString[1], 'YYYY-MM-DD').endOf('day'));
+            fetchListLSCGData.run(moment(dateString[0], 'YYYY-MM-DD').startOf('day'), moment(dateString[1], 'YYYY-MM-DD').endOf('day'));
         }
     }
 
@@ -523,7 +521,6 @@ const HistoryCall: React.FC = () => {
             });
         }
     };
-    console.log(listValueHCG, listValueKQ)
 
     const handleExportFile = async () => {
         const res = await axios({
@@ -550,59 +547,58 @@ const HistoryCall: React.FC = () => {
             <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
         ) : (
             <>
-                <div
+                <Form
                     style={{
                         display: 'flex',
                         justifyContent: 'space-between',
                         paddingTop: '30px',
                         flexWrap: 'wrap'
                     }}
+                    layout='vertical'
+                    form={form}
                 >
                     <div>
-                        <Form layout='vertical' form={form}>
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    gap: 10,
-                                    flexWrap: 'wrap'
-                                }}
-                            >
-                                <div style={{ width: '300px' }}>
-                                    <Form.Item label="Hướng cuộc gọi" name="Hướng cuộc gọi" style={{ marginBottom: 'unset' }}>
-                                        <Select onChange={handleSelectValueHCG} mode="multiple" >
-                                            <Select.Option value="inbound">Gọi vào</Select.Option>
-                                            <Select.Option value="outbound">Gọi ra</Select.Option>
-                                            <Select.Option value="local">Gọi nội bộ</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </div>
-                                <div style={{ width: '300px' }}>
-                                    <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
-                                        <Select onChange={handleSelectValueKQ} mode="multiple">
-                                            <Select.Option value="success">Thành công</Select.Option>
-                                            <Select.Option value="fail">Thất bại</Select.Option>
-                                            <Select.Option value="busy">Bận</Select.Option>
-                                            <Select.Option value="cancel">Hủy bỏ</Select.Option>
-                                            <Select.Option value="no_answer">Không trả lời</Select.Option>
-                                            <Select.Option value="rejected">Từ chối</Select.Option>
-                                            <Select.Option value="missed">Nhỡ trong hàng chờ</Select.Option>
-                                            <Select.Option value="other_failure">Lý do fail khác</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </div>
-                                <div style={{ width: '300px' }}>
-                                    <Form.Item label="Thời gian" name="Thời gian" style={{ marginBottom: 'unset' }}>
-                                        <RangePicker onChange={handleChangeValueRangePicker} placeholder={['Từ ngày', 'Đến ngày']} />
-                                    </Form.Item>
-                                </div>
-                                <div style={{ paddingTop: '29px' }}>
-                                    <Form.Item style={{ marginBottom: 'unset' }}>
-                                        <Button type='text' style={{ color: 'blue' }} onClick={(e) => onResetFilter(e)}>Reset</Button>
-                                    </Form.Item>
-                                </div>
+                        <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                gap: 10,
+                            }}
+                        >
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Hướng cuộc gọi" name="Hướng cuộc gọi" style={{ marginBottom: 'unset' }}>
+                                    <Select onChange={handleSelectValueHCG} mode="multiple" >
+                                        <Select.Option value="inbound">Gọi vào</Select.Option>
+                                        <Select.Option value="outbound">Gọi ra</Select.Option>
+                                        <Select.Option value="local">Gọi nội bộ</Select.Option>
+                                    </Select>
+                                </Form.Item>
                             </div>
-                        </Form>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
+                                    <Select onChange={handleSelectValueKQ} mode="multiple">
+                                        <Select.Option value="success">Thành công</Select.Option>
+                                        <Select.Option value="fail">Thất bại</Select.Option>
+                                        <Select.Option value="busy">Bận</Select.Option>
+                                        <Select.Option value="cancel">Hủy bỏ</Select.Option>
+                                        <Select.Option value="no_answer">Không trả lời</Select.Option>
+                                        <Select.Option value="rejected">Từ chối</Select.Option>
+                                        <Select.Option value="missed">Nhỡ trong hàng chờ</Select.Option>
+                                        <Select.Option value="other_failure">Lý do fail khác</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Thời gian" name="Thời gian" style={{ marginBottom: 'unset' }}>
+                                    <RangePicker onChange={handleChangeValueRangePicker} placeholder={['Từ ngày', 'Đến ngày']} />
+                                </Form.Item>
+                            </div>
+                            <div style={{ paddingTop: '29px' }}>
+                                <Form.Item style={{ marginBottom: 'unset' }}>
+                                    <Button type='text' style={{ color: 'blue' }} onClick={(e) => onResetFilter(e)}>Reset</Button>
+                                </Form.Item>
+                            </div>
+                        </div>
                     </div>
                     <div
                         style={{
@@ -610,39 +606,40 @@ const HistoryCall: React.FC = () => {
                             paddingRight: '20px'
                         }}
                     >
-                        <Input
-                            style={{ width: '300px', marginRight: '10px' }}
-                            prefix={<SearchOutlined />}
-                            placeholder="Tìm kiếm tên người gọi, người nhận"
-                            allowClear
-                            value={valueKeyWord}
-                            onChange={debounce(
-                                (e) => {
-                                    const { value } = e.target;
-                                    if (value === "") {
-                                        setValueKeyWord(undefined)
-                                        fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
-                                    }
-                                    else {
-                                        setValueKeyWord(value);
-                                        fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
-                                    }
-                                },
-                                500,
-                                {
-                                    trailing: true,
-                                    leading: false,
-                                },
-                            )}
-                        />
-                        <Button
-                            style={{ backgroundColor: '#7fb77e', color: '#fff' }}
-                            onClick={handleExportFile}
-                        >
-                            <ExportIcon /> Export
-                        </Button>
+                        <Form.Item name="search_name">
+                            <Input
+                                style={{ width: '300px', marginRight: '10px' }}
+                                prefix={<SearchOutlined />}
+                                placeholder="Tìm kiếm tên người gọi, người nhận"
+                                allowClear
+                                onChange={debounce(
+                                    (e) => {
+                                        const { value } = e.target;
+                                        if (value === "") {
+                                            setValueKeyWord(undefined)
+                                            fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
+                                        }
+                                        else {
+                                            setValueKeyWord(value);
+                                            fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
+                                        }
+                                    },
+                                    500,
+                                    {
+                                        trailing: true,
+                                        leading: false,
+                                    },
+                                )}
+                            />
+                            <Button
+                                style={{ backgroundColor: '#7fb77e', color: '#fff' }}
+                                onClick={handleExportFile}
+                            >
+                                <ExportIcon /> Export
+                            </Button>
+                        </Form.Item>
                     </div>
-                </div>
+                </Form>
                 <Card
                     className={styles.detailCardLayout}
                 >
