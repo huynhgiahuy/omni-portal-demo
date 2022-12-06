@@ -600,12 +600,7 @@ const HistoryCall: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    <div
-                        style={{
-                            paddingTop: '29px',
-                            paddingRight: '20px'
-                        }}
-                    >
+                    <div style={{ paddingTop: '29px' }}>
                         <Form.Item name="search_name">
                             <Input
                                 style={{ width: '300px', marginRight: '10px' }}
