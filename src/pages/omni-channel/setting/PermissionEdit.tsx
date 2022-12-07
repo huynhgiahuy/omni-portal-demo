@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Card,
     Table,
     Space,
     Modal,
@@ -40,7 +39,7 @@ import {
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
-import { useRequest, useModel } from 'umi';
+import { useRequest } from 'umi';
 import { debounce } from 'lodash';
 import Ellipse from '../../../assets/Ellipse.svg';
 import OfflineIcon from '../../../../public/offline.png';
@@ -126,7 +125,6 @@ const submitFormLayout = {
 };
 
 const PermissionEdit: React.FC = () => {
-    //const { initialState, setInitialState } = useModel('@@initialState');
     const [isView, setIsView] = useState<string>();
     const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
     const [userKey, setUserKey] = useState<string | any>();
@@ -210,6 +208,9 @@ const PermissionEdit: React.FC = () => {
         if (response_delete.success !== true) {
             message.error('Xóa người dùng thất bại!')
         }
+        else if (response_delete.error_code === 4030102) {
+            message.error('Bạn không có quyền xóa thông tin này!')
+        }
         else {
             message.success('Xóa người dùng thành công!')
             fetchListAllUserInfoFinal.refresh();
@@ -235,6 +236,9 @@ const PermissionEdit: React.FC = () => {
         if (resDelTeam.success === true) {
             message.success('Xóa team thành công!');
         }
+        else if (resDelTeam.error_code === 4030102) {
+            message.error('Bạn không có quyền xóa thông tin này!')
+        }
         else {
             message.error('Xóa team thất bại!');
         }
@@ -244,6 +248,9 @@ const PermissionEdit: React.FC = () => {
         const resNewTeam = await requestCreateNewTeam(newTeamValue);
         if (resNewTeam.success === true) {
             message.success('Cập nhật team mới thành công!');
+        }
+        else if (resNewTeam.error_code === 4030102) {
+            message.error('Bạn không có quyền cập nhật thông tin!')
         }
         else {
             message.error('Cập nhật team thất bại!');
@@ -279,15 +286,19 @@ const PermissionEdit: React.FC = () => {
             values.level,
             values.work_address
         );
-        if (resSubmitUpdate.success !== true) {
-            message.error('Cập nhật thông tin thất bại!');
-        }
-        else {
+        if (resSubmitUpdate.success === true) {
             message.success('Cập nhật thông tin thành công!');
             fetchListAllUserInfoFinal.refresh();
             handleCancleUpdatePermission();
         }
-    })
+        else if (resSubmitUpdate.error_code === 4030102) {
+            message.error('Bạn không có quyền cập nhật thông tin!');
+        }
+        else {
+            message.error('Cập nhật thông tin thất bại!');
+        }
+    }
+    )
 
     const handleSubmitUpdateUserInfoFinal = (values: any) => {
         handleCallApiUpdateUserInfo.run(values);
@@ -340,7 +351,7 @@ const PermissionEdit: React.FC = () => {
             okButtonProps: { danger: true },
         });
     };
-    const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
+    const handleTableChange = (newPagination: any) => {
         setPagination({
             ...pagination,
             current: newPagination.current,
@@ -625,30 +636,25 @@ const PermissionEdit: React.FC = () => {
 
     return (
         isView === '403' ? (
-            <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+            <NoFoundPage
+                status="403"
+                title="403"
+                subTitle="Bạn không có quyền xem trang Thông tin người dùng"
+            />
         ) : (
             <>
                 <Form
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        paddingTop: '30px',
-                        flexWrap: 'wrap'
-                    }}
+                    className={styles.filterFormPermissionEdit}
                     layout='vertical'
                     form={form}
                 >
                     <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+                        <div className={styles.filterFormPermissionEditDisplay}>
                             <div style={{ width: '300px' }}>
                                 <Form.Item label="Team" name="Team" style={{ marginBottom: 'unset' }}>
                                     <Select
                                         onChange={handleSelectValueTeam}
                                         mode="multiple"
-                                    // filterOption={(input: any, option: any) =>
-                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    // }
                                     >
                                         {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
                                             <Select.Option value={item.name}>
@@ -663,10 +669,6 @@ const PermissionEdit: React.FC = () => {
                                     <Select
                                         onChange={handleSelectValueNLV}
                                         mode="multiple"
-                                    // filterOption={(input: any, option: any) =>
-                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    // }
                                     >
                                         <Select.Option value="Miền Bắc">Miền Bắc</Select.Option>
                                         <Select.Option value="Miền Nam">Miền Nam</Select.Option>
@@ -678,10 +680,6 @@ const PermissionEdit: React.FC = () => {
                                     <Select
                                         onChange={handleSelectValueNQ}
                                         mode="multiple"
-                                    // filterOption={(input: any, option: any) =>
-                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    // }
                                     >
                                         {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
                                             <Select.Option
@@ -729,308 +727,301 @@ const PermissionEdit: React.FC = () => {
                         </Form.Item>
                     </div>
                 </Form>
-                <Card
-                    className={styles.detailCardLayoutNoMar}
+                <Table
+                    dataSource={listAllUserInfoFinal}
+                    columns={columns}
+                    rowKey={item => item.id}
+                    className={styles.permissionTable}
+                    onChange={handleTableChange}
+                    pagination={{
+                        ...pagination,
+                        total: listAllUserInfoLengthFinal,
+                        locale: {
+                            items_per_page: '/ Trang',
+                            jump_to: 'Đến trang',
+                            page: '',
+                            next_page: 'Trang sau',
+                            prev_page: 'Trang trước',
+                            next_3: '3 trang sau',
+                            next_5: '5 trang sau',
+                            prev_3: '3 trang trước',
+                            prev_5: '5 trang trước',
+                        },
+                    }}
+                    scroll={{
+                        x: window.innerWidth < 1900 ? 100 : undefined,
+                    }}
+                    loading={{ indicator: <div><Spin /></div>, spinning: fetchListAllUserInfoFinal.loading }}
+                />
+                <Modal
+                    open={isClickUpdatePermission}
+                    onCancel={handleCancleUpdatePermission}
+                    title={listEditUserInfoFinal[0]?.name}
+                    footer={false}
+                    width={900}
+                    centered
                 >
-                    <Table
-                        dataSource={listAllUserInfoFinal}
-                        columns={columns}
-                        style={{ paddingLeft: '20px' }}
-                        rowKey={item => item.id}
-                        className={styles.permissionTable}
-                        onChange={handleTableChange}
-                        pagination={{
-                            ...pagination,
-                            total: listAllUserInfoLengthFinal,
-                            locale: {
-                                items_per_page: '/ Trang',
-                                jump_to: 'Đến trang',
-                                page: '',
-                                next_page: 'Trang sau',
-                                prev_page: 'Trang trước',
-                                next_3: '3 trang sau',
-                                next_5: '5 trang sau',
-                                prev_3: '3 trang trước',
-                                prev_5: '5 trang trước',
-                            },
-                        }}
-                        scroll={{
-                            y: pagination.pageSize >= 10 ? 400 : undefined,
-                            x: window.innerWidth < 1900 ? 100 : undefined,
-                        }}
-                        loading={{ indicator: <div><Spin /></div>, spinning: fetchListAllUserInfoFinal.loading }}
-                    />
-                    <Modal
-                        open={isClickUpdatePermission}
-                        onCancel={handleCancleUpdatePermission}
-                        title={listEditUserInfoFinal[0]?.name}
-                        footer={false}
-                        width={900}
-                        centered
+                    <Form
+                        {...formItemLayout}
+                        form={form}
+                        layout="vertical"
+                        onFinish={handleSubmitUpdateUserInfoFinal}
+                        requiredMark={false}
                     >
-                        <Form
-                            {...formItemLayout}
-                            form={form}
-                            layout="vertical"
-                            onFinish={handleSubmitUpdateUserInfoFinal}
-                            requiredMark={false}
-                        >
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{ flex: 1 }}>
-                                    <Form.Item
-                                        label="Tên người dùng"
-                                        name="name"
-                                    >
-                                        <Input disabled />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Team"
-                                        name="team_id"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Vui lòng nhập Team'
-                                            }
-                                        ]}
-                                    >
-                                        <Select
-                                            onChange={handleSelectTeam}
-                                            dropdownRender={(menu) => (
-                                                <>
-                                                    {menu}
-                                                    <div style={{ paddingLeft: '14px', paddingRight: '14px', paddingBottom: '10px' }}>
-                                                        <hr></hr>
-                                                        {clickAddNewTeam === false ? (
-                                                            <Button
-                                                                style={{ padding: 'unset', color: 'rgba(0,0,0,0.5)', fontStyle: 'italic' }}
-                                                                type='text'
-                                                                onClick={() => setClickAddNewTeam(true)}
-                                                            >
-                                                                Chỉnh sửa / Thêm team mới
-                                                            </Button>
-                                                        ) : (
-                                                            <Form form={form}>
-                                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                                    <div style={{ flex: 1 }}>
-                                                                        <Form.Item
-                                                                            name="newTeamValue"
-                                                                            style={{ marginBottom: 'unset' }}
-                                                                        >
-                                                                            <Input
-                                                                                allowClear
-                                                                                placeholder="Nhập team mới tại đây"
-                                                                                className={styles.addNewTeamPlaceholder}
-                                                                                onChange={(e) => setNewTeamValue(e.target.value)}
-                                                                            />
-                                                                        </Form.Item>
-                                                                    </div>
-                                                                    <div>
-                                                                        <Form.Item style={{ marginBottom: 'unset' }}>
-                                                                            <Space>
-                                                                                <SaveOutlined
-                                                                                    style={{ marginLeft: 10, fontSize: 14 }}
-                                                                                    onClick={(e) => handleSubmitNewTeam(e, newTeamValue)}
-
-                                                                                />
-                                                                                <CloseOutlined
-                                                                                    style={{ fontSize: 14 }}
-                                                                                    onClick={() => setClickAddNewTeam(false)}
-                                                                                />
-                                                                            </Space>
-                                                                        </Form.Item>
-                                                                    </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ flex: 1 }}>
+                                <Form.Item
+                                    label="Tên người dùng"
+                                    name="name"
+                                >
+                                    <Input disabled />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Team"
+                                    name="team_id"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập Team'
+                                        }
+                                    ]}
+                                >
+                                    <Select
+                                        onChange={handleSelectTeam}
+                                        dropdownRender={(menu) => (
+                                            <>
+                                                {menu}
+                                                <div className={styles.addNewTeamText}>
+                                                    <hr></hr>
+                                                    {clickAddNewTeam === false ? (
+                                                        <Button
+                                                            className={styles.addNewTeamBtn}
+                                                            type='text'
+                                                            onClick={() => setClickAddNewTeam(true)}
+                                                        >
+                                                            Chỉnh sửa / Thêm team mới
+                                                        </Button>
+                                                    ) : (
+                                                        <Form form={form}>
+                                                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                                                <div style={{ flex: 1 }}>
+                                                                    <Form.Item
+                                                                        name="newTeamValue"
+                                                                        style={{ marginBottom: 'unset' }}
+                                                                    >
+                                                                        <Input
+                                                                            allowClear
+                                                                            placeholder="Nhập team mới tại đây"
+                                                                            className={styles.addNewTeamPlaceholder}
+                                                                            onChange={(e) => setNewTeamValue(e.target.value)}
+                                                                        />
+                                                                    </Form.Item>
                                                                 </div>
-                                                            </Form>
-                                                        )}
-                                                    </div>
-                                                </>
-                                            )}
-                                        >
-                                            {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
-                                                <Select.Option value={item.id}>
-                                                    <div className={styles.flexLayout}>
-                                                        <div>
-                                                            {item.name}
-                                                        </div>
-                                                        {clickAddNewTeam === true ? (
-                                                            <DeleteOutlined onClick={(e) => handleClickDeleteTeam(e, item.id)} />
-                                                        ) : ('')}
-                                                    </div>
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Phòng ban"
-                                        name="department"
-                                        rules={[
-                                            {
-                                                validator: (_, value: any) => {
-                                                    const departmentReg = /[a-zA-Z ]+$/;
-                                                    if (value === undefined || !value || value.length === 0) {
-                                                        return Promise.reject('Vui lòng nhập phòng ban');
-                                                    }
-                                                    else if (!departmentReg.test(value)) {
-                                                        return Promise.reject('Phòng ban không hợp lệ');
-                                                    }
-                                                    return Promise.resolve();
-                                                }
-                                            }
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Số di động"
-                                        name="phone_number"
-                                        rules={[
-                                            {
-                                                validator: (_, value: any) => {
-                                                    const phoneReg = /([3|5|7|8|9]{1})+([0-9]{8})/;
-                                                    if (value === undefined || !value || value.length === 0) {
-                                                        return Promise.reject('Vui lòng nhập số di động')
-                                                    }
-                                                    else if (value.length !== 10) {
-                                                        return Promise.reject('Số điện thoại không hợp lệ')
-                                                    }
-                                                    else if (!phoneReg.test(value)) {
-                                                        return Promise.reject('Số điện thoại không hợp lệ')
-                                                    }
-                                                    return Promise.resolve();
-                                                }
-                                            },
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Cấp độ"
-                                        name="level"
-                                        rules={[
-                                            {
-                                                validator: (_, value: any) => {
-                                                    const levelReg = /^[a-zA-Z0-9 ]+$/;
-                                                    if (value === undefined || !value || value.length === 0) {
-                                                        return Promise.reject('Vui lòng nhập cấp độ');
-                                                    }
-                                                    else if (!levelReg.test(value)) {
-                                                        return Promise.reject('Cấp độ không hợp lệ');
-                                                    }
-                                                    return Promise.resolve();
-                                                }
-                                            }
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <Form.Item
-                                        label="Email"
-                                        name="email"
+                                                                <div>
+                                                                    <Form.Item style={{ marginBottom: 'unset' }}>
+                                                                        <Space>
+                                                                            <SaveOutlined
+                                                                                style={{ marginLeft: 10, fontSize: 14 }}
+                                                                                onClick={(e) => handleSubmitNewTeam(e, newTeamValue)}
 
+                                                                            />
+                                                                            <CloseOutlined
+                                                                                style={{ fontSize: 14 }}
+                                                                                onClick={() => setClickAddNewTeam(false)}
+                                                                            />
+                                                                        </Space>
+                                                                    </Form.Item>
+                                                                </div>
+                                                            </div>
+                                                        </Form>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
                                     >
-                                        <Input disabled />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Nhóm quyền"
-                                        name="role_id"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Vui lòng nhập nhóm quyền'
-                                            }
-                                        ]}
-                                    >
-                                        <Select
-                                            onChange={handleSelectRole}
-                                        >
-                                            {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
-                                                <Select.Option
-                                                    value={item.id}
-                                                >
-                                                    {item.code}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Chức danh"
-                                        name="position"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Vui lòng nhập chức danh'
-                                            }
-                                        ]}
-                                    >
-                                        <Select
-                                            options={OPTIONS_POSITION}
-                                            menuItemSelectedIcon={<CheckOutlined />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="IP Phone"
-                                        name="ip_phone"
-                                        rules={[
-                                            {
-                                                validator: (_, value: any) => {
-                                                    const numberReg = /^[1-9]{1,6}$/;
-                                                    if (value === undefined || !value || value.length === 0) {
-                                                        return Promise.reject('Vui lòng nhập IP Phone')
-                                                    }
-                                                    else if (value.length < 5 && numberReg.test(value) === true) {
-                                                        return Promise.reject('IP Phone không hợp lệ')
-                                                    }
-                                                    else if (!numberReg.test(value)) {
-                                                        return Promise.reject('IP Phone không hợp lệ')
-                                                    }
-                                                    return Promise.resolve();
+                                        {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
+                                            <Select.Option value={item.id}>
+                                                <div className={styles.flexLayout}>
+                                                    <div>
+                                                        {item.name}
+                                                    </div>
+                                                    {clickAddNewTeam === true ? (
+                                                        <DeleteOutlined onClick={(e) => handleClickDeleteTeam(e, item.id)} />
+                                                    ) : ('')}
+                                                </div>
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item
+                                    label="Phòng ban"
+                                    name="department"
+                                    rules={[
+                                        {
+                                            validator: (_, value: any) => {
+                                                const departmentReg = /[a-zA-Z]+$/;
+                                                if (value === undefined || !value || value.length === 0) {
+                                                    return Promise.reject('Vui lòng nhập phòng ban');
                                                 }
+                                                else if (!departmentReg.test(value)) {
+                                                    return Promise.reject('Phòng ban không hợp lệ');
+                                                }
+                                                return Promise.resolve();
                                             }
-                                        ]}
-                                    >
-                                        <Input />
-                                    </Form.Item>
-                                    <Form.Item
-                                        label="Nơi công tác"
-                                        name="work_address"
-                                        rules={[
-                                            {
-                                                required: true,
-                                                message: 'Vui lòng nhập nơi công tác'
+                                        }
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Số di động"
+                                    name="phone_number"
+                                    rules={[
+                                        {
+                                            validator: (_, value: any) => {
+                                                const phoneReg = /([3|5|7|8|9]{1})+([0-9]{8})/;
+                                                if (value === undefined || !value || value.length === 0) {
+                                                    return Promise.reject('Vui lòng nhập số di động')
+                                                }
+                                                else if (value.length !== 10) {
+                                                    return Promise.reject('Số điện thoại không hợp lệ')
+                                                }
+                                                else if (!phoneReg.test(value)) {
+                                                    return Promise.reject('Số điện thoại không hợp lệ')
+                                                }
+                                                return Promise.resolve();
                                             }
-                                        ]}
-                                    >
-                                        <Select
-                                            options={OPTIONS_WORK_ADDRESS}
-                                            menuItemSelectedIcon={<CheckOutlined />}
-                                        />
-                                    </Form.Item>
-                                </div>
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Cấp độ"
+                                    name="level"
+                                    rules={[
+                                        {
+                                            validator: (_, value: any) => {
+                                                const levelReg = /[a-zA-Z0-9]+$/;
+                                                if (value === undefined || !value || value.length === 0) {
+                                                    return Promise.reject('Vui lòng nhập cấp độ');
+                                                }
+                                                else if (!levelReg.test(value)) {
+                                                    return Promise.reject('Cấp độ không hợp lệ');
+                                                }
+                                                return Promise.resolve();
+                                            }
+                                        }
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
                             </div>
-                            <Form.Item {...submitFormLayout} style={{ marginBottom: 'unset' }}>
-                                <Button
-                                    style={{ marginRight: '10px' }}
-                                    onClick={handleCancleUpdatePermission}
-                                    disabled={handleCallApiUpdateUserInfo.loading}
+                            <div style={{ flex: 1 }}>
+                                <Form.Item
+                                    label="Email"
+                                    name="email"
+
                                 >
-                                    Hủy
-                                </Button>
-                                <Button
-                                    type='primary'
-                                    htmlType='submit'
-                                    loading={handleCallApiUpdateUserInfo.loading}
+                                    <Input disabled />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Nhóm quyền"
+                                    name="role_id"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập nhóm quyền'
+                                        }
+                                    ]}
                                 >
-                                    Cập nhật
-                                </Button>
-                            </Form.Item>
-                        </Form>
-                    </Modal>
-                </Card>
+                                    <Select
+                                        onChange={handleSelectRole}
+                                    >
+                                        {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
+                                            <Select.Option
+                                                value={item.id}
+                                            >
+                                                {item.code}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item
+                                    label="Chức danh"
+                                    name="position"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập chức danh'
+                                        }
+                                    ]}
+                                >
+                                    <Select
+                                        options={OPTIONS_POSITION}
+                                        menuItemSelectedIcon={<CheckOutlined />}
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    label="IP Phone"
+                                    name="ip_phone"
+                                    rules={[
+                                        {
+                                            validator: (_, value: any) => {
+                                                const numberReg = /^[1-9]{1,6}$/;
+                                                if (value === undefined || !value || value.length === 0) {
+                                                    return Promise.reject('Vui lòng nhập IP Phone')
+                                                }
+                                                else if (value.length < 4 && numberReg.test(value) === true) {
+                                                    return Promise.reject('IP Phone không hợp lệ')
+                                                }
+                                                else if (!numberReg.test(value)) {
+                                                    return Promise.reject('IP Phone không hợp lệ')
+                                                }
+                                                return Promise.resolve();
+                                            }
+                                        }
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Nơi công tác"
+                                    name="work_address"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng nhập nơi công tác'
+                                        }
+                                    ]}
+                                >
+                                    <Select
+                                        options={OPTIONS_WORK_ADDRESS}
+                                        menuItemSelectedIcon={<CheckOutlined />}
+                                    />
+                                </Form.Item>
+                            </div>
+                        </div>
+                        <Form.Item {...submitFormLayout} style={{ marginBottom: 'unset' }}>
+                            <Button
+                                style={{ marginRight: '10px' }}
+                                onClick={handleCancleUpdatePermission}
+                                disabled={handleCallApiUpdateUserInfo.loading}
+                            >
+                                Hủy
+                            </Button>
+                            <Button
+                                type='primary'
+                                htmlType='submit'
+                                loading={handleCallApiUpdateUserInfo.loading}
+                            >
+                                Cập nhật
+                            </Button>
+                        </Form.Item>
+                    </Form>
+                </Modal>
             </>
         )
-
     )
 }
 export default React.memo(PermissionEdit);
