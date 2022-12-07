@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Card,
     Table,
     Space,
     Modal,
@@ -640,7 +639,7 @@ const PermissionEdit: React.FC = () => {
             <NoFoundPage
                 status="403"
                 title="403"
-                subTitle="Bạn không có quyền xem trang này"
+                subTitle="Bạn không có quyền xem trang Thông tin người dùng"
             />
         ) : (
             <>
