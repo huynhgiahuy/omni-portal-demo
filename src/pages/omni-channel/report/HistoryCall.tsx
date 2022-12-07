@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, Table, Button, Typography, Input, Tag, Form, Select, DatePicker, message, Spin, Modal } from 'antd';
+import { Table, Button, Typography, Input, Tag, Form, Select, DatePicker, message, Spin, Modal } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlayCircleFilled, SearchOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
@@ -220,8 +220,18 @@ const HistoryCall: React.FC = () => {
                     Authorization: `Bearer ${token}`,
                 },
             })
-            setTestAudioURL(response.data.data[0]);
-        } catch (e) { }
+            if (response.data.success === true) {
+                setTestAudioURL(response.data.data[0]);
+            }
+            else if (response.data.error_code === 4030102) {
+                message.error('Bạn không có quyền nghe file ghi âm!')
+            }
+            else {
+                message.error('Không thể nghe file ghi âm!')
+            }
+        } catch (e) {
+            message.error('Không thể nghe file ghi âm!')
+        }
     }
 
     const downloadAudio = async (fileId?: any, recordName?: any) => {
@@ -238,10 +248,18 @@ const HistoryCall: React.FC = () => {
                     Authorization: `Bearer ${token}`,
                 },
             })
-            const audioFormatBlob = new Blob([response.data], { type: 'audio/*' })
-            fileDownload(audioFormatBlob, recordName);
+            if (response.data.success === true) {
+                const audioFormatBlob = new Blob([response.data], { type: 'audio/*' })
+                fileDownload(audioFormatBlob, recordName);
+            }
+            else if (response.data.error_code === 4030102) {
+                message.error('Bạn không có quyền tải file ghi âm!')
+            }
+            else {
+                message.error('Không thể tải file ghi âm!')
+            }
         } catch (e) {
-            message.error('Không thể tải file!')
+            message.error('Không thể tải file ghi âm!')
         }
     };
 
@@ -490,22 +508,31 @@ const HistoryCall: React.FC = () => {
     };
 
     const handleExportFile = async () => {
-        const res = await axios({
-            url: `${api.UMI_API_BASE_URL}/voip-service/api/call/export_call_history_excel`,
-            method: 'POST',
-            data: {
-                direction: listValueHCG,
-                result: listValueKQ,
-                from_datetime: valueFromDateTime,
-                to_datetime: valueToDateTime,
-                search_name: valueKeyWord,
-            },
-            responseType: 'blob',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        fileDownload(res.data, 'history_call_report.xlsx');
+        try {
+            const res = await axios({
+                url: `${api.UMI_API_BASE_URL}/voip-service/api/call/export_call_history_excel`,
+                method: 'POST',
+                data: {
+                    direction: listValueHCG,
+                    result: listValueKQ,
+                    from_datetime: valueFromDateTime,
+                    to_datetime: valueToDateTime,
+                    search_name: valueKeyWord,
+                },
+                responseType: 'blob',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (res.data.error_code === 4030102) {
+                message.error('Bạn không có quyền xuất báo cáo!');
+            }
+            else {
+                fileDownload(res.data, 'history_call_report.xlsx');
+            }
+        } catch (e) {
+            message.error('Không thể xuất báo cáo!')
+        }
     };
 
     return (
@@ -513,7 +540,7 @@ const HistoryCall: React.FC = () => {
             <NoFoundPage
                 status="403"
                 title="403"
-                subTitle="Bạn không có quyền xem trang này"
+                subTitle="Bạn không có quyền xem trang Lịch sử cuộc gọi"
             />
         ) : (
             <>
