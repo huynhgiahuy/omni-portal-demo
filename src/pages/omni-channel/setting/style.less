@@ -148,6 +148,10 @@
 }
 .permissionTable {
   :global {
+    .ant-table {
+      padding: 20px 20px 0px 20px;
+      border-radius: 8px;
+    }
     .ant-table-thead > tr > th {
       color: rgba(0, 0, 0, 1);
       font-weight: bold;
@@ -316,4 +320,71 @@
   img {
     object-fit: contain;
   }
+}
+.readyStatusText {
+  margin-left: 9px;
+  color: #1eaf61;
+  font-weight: 400;
+  font-size: 13px;
+}
+.abscentStatusText {
+  margin-left: 9px;
+  color: #faad14;
+  font-weight: 400;
+  font-size: 13px;
+}
+.notDisturbStatusText {
+  margin-left: 9px;
+  color: #f5222d;
+  font-weight: 400;
+  font-size: 13px;
+}
+.noActivityStatusDisplay {
+  display: flex;
+  align-items: center;
+  padding-left: 10%;
+  text-align: center;
+  border: 1px solid #818181;
+  border-radius: 4px;
+}
+.noActivityStatusText {
+  margin-left: 5px;
+  color: #818181;
+  font-weight: 400;
+  font-size: 13px;
+}
+.offlineStatusDisplay {
+  display: flex;
+  align-items: center;
+  padding-left: 18%;
+  text-align: center;
+  border: 1px solid #818181;
+  border-radius: 4px;
+}
+.offlineStatusText {
+  margin-left: 5px;
+  color: #818181;
+  font-weight: 400;
+  font-size: 13px;
+}
+.filterFormPermissionEdit {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-top: 30px;
+}
+.filterFormPermissionEditDisplay {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+.addNewTeamText {
+  padding-right: 14px;
+  padding-bottom: 10px;
+  padding-left: 14px;
+}
+.addNewTeamBtn {
+  padding: unset;
+  color: rgba(0, 0, 0, 0.5);
+  font-style: italic;
 }

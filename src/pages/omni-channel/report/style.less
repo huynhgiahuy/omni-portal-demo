@@ -24,7 +24,6 @@
 }
 .detailCardLayout {
   margin-top: 1rem;
-  margin-right: 1rem;
   background-color: white;
   border: 1px solid #7fb77e;
   border-radius: 8px;
@@ -76,6 +75,10 @@
 }
 .tableStyle {
   :global {
+    .ant-table {
+      padding: 20px 20px 0px 20px;
+      border-radius: 8px;
+    }
     .ant-table-thead > tr > th {
       color: rgba(0, 0, 0, 1);
       font-weight: bold;
@@ -130,5 +133,17 @@
 .flexLayout {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+
+.filterFormHistoryCall {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-top: 30px;
+}
+.filterFormHistoryCallDisplay {
+  display: flex;
+  gap: 10px;
   justify-content: space-between;
 }

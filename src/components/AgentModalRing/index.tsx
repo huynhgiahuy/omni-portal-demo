@@ -513,7 +513,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       name="ip_phone"
                       rules={[
                         {
-                          pattern: new RegExp('^[0-9]{1,6}$'),
+                          pattern: new RegExp('^[0-9]{4,6}$'),
                           message: 'IP Phone không hợp lệ',
                         },
                       ]}

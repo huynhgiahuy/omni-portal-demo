@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, Table, Button, Typography, Input, Tag, Form, Select, Divider, DatePicker, message, Spin, Modal } from 'antd';
+import { Table, Button, Typography, Input, Tag, Form, Select, DatePicker, message, Spin, Modal } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlayCircleFilled, SearchOutlined, DownOutlined, UpOutlined, EditOutlined } from '@ant-design/icons';
+import { PlayCircleFilled, SearchOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 import styles from '../report/style.less'
-import { requestHistoryCallData, requestUpdateNoteHistoryCall } from './services';
-import { useRequest, useModel, Link } from 'umi';
+import { requestHistoryCallData } from './services';
+import { useRequest } from 'umi';
 import { debounce } from 'lodash';
 import CallInboundIcon from '@/components/PhoneCallType/CallInboundIcon';
 import CallInterval from '@/components/PhoneCallType/CallInterval';
@@ -43,7 +43,6 @@ interface DataLSCGType {
 }
 
 const HistoryCall: React.FC = () => {
-    //const { initialState, setInitialState } = useModel('@@initialState');
     const [isView, setIsView] = useState<string>();
 
     const [listValueHCG, setListValueHCG] = useState<string[] | any>();
@@ -54,10 +53,7 @@ const HistoryCall: React.FC = () => {
 
     const [listDataLSCG, setListDataLSCG] = useState<DataLSCGType[] | any>();
     const [listDataLSCGLength, setListDataLSCGLength] = useState<string | any>();
-    const [getCallId, setGetCallId] = useState<string>();
     const [ellipsis, setEllipsis] = useState<any>(true);
-
-    const [audioURI, setAudioURI] = useState<string>();
 
     const audioRef = useRef<any>();
 
@@ -78,8 +74,13 @@ const HistoryCall: React.FC = () => {
     const token = window.localStorage?.getItem('access_token');
 
     const fetchListLSCGData = useRequest(
-        async (from_datetime: string | undefined, to_datetime: any | undefined) => {
-            const res: { success: boolean, length: number, length_data?: number, error_code: number } = await requestHistoryCallData(
+        async (from_datetime: any | undefined, to_datetime: any | undefined) => {
+            const res: {
+                success: boolean,
+                length: number,
+                length_data?: number,
+                error_code: number
+            } = await requestHistoryCallData(
                 token ? token : '',
                 pagination.pageSize,
                 pagination.current,
@@ -122,22 +123,9 @@ const HistoryCall: React.FC = () => {
         },
     )
 
-    // const handleUpdateNoteHistoryCall = async (call_id?: string, note?: string) => {
-    //     const respone_update_note = await requestUpdateNoteHistoryCall(token ? token : '', call_id, note);
-    //     if (respone_update_note.success !== true) {
-    //         message.error('Lưu ghi chú thất bại!');
-    //     }
-    //     else {
-    //         message.success('Lưu ghi chú thành công!');
-    //         fetchListLSCGData.refresh();
-    //     }
-    // }
-
     useEffect(() => {
         fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
     }, [pagination])
-
-    console.log(listDataLSCGLength)
 
     const handleViewResult = (result: any) => {
         let color, newResult;
@@ -223,7 +211,6 @@ const HistoryCall: React.FC = () => {
         try {
             const response = await axios({
                 url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file_url`,
-                //url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_url',
                 method: 'POST',
                 data: {
                     call_id: fileId,
@@ -233,21 +220,24 @@ const HistoryCall: React.FC = () => {
                     Authorization: `Bearer ${token}`,
                 },
             })
-            //const data = `data:audio/mp3;base64,${response.data}`;
-            // const mp3 = new Blob([response.data], { type: 'audio/mpeg' })
-            // const url = URL.createObjectURL(mp3);
-            setTestAudioURL(response.data.data[0]);
-            //const audio = new Audio(url)
-            //audio.load()
-            //await audio.play()
-        } catch (e) { }
+            if (response.data.success === true) {
+                setTestAudioURL(response.data.data[0]);
+            }
+            else if (response.data.error_code === 4030102) {
+                message.error('Bạn không có quyền nghe file ghi âm!')
+            }
+            else {
+                message.error('Không thể nghe file ghi âm!')
+            }
+        } catch (e) {
+            message.error('Không thể nghe file ghi âm!')
+        }
     }
 
     const downloadAudio = async (fileId?: any, recordName?: any) => {
         try {
             const response = await axios({
                 url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file`,
-                //url: 'http://172.27.228.201:8007/voip-service/api/call/get_record_file',
                 method: 'POST',
                 data: {
                     call_id: fileId,
@@ -258,21 +248,20 @@ const HistoryCall: React.FC = () => {
                     Authorization: `Bearer ${token}`,
                 },
             })
-            const audioFormatBlob = new Blob([response.data], { type: 'audio/*' })
-            fileDownload(audioFormatBlob, recordName);
+            if (response.data.success === true) {
+                const audioFormatBlob = new Blob([response.data], { type: 'audio/*' })
+                fileDownload(audioFormatBlob, recordName);
+            }
+            else if (response.data.error_code === 4030102) {
+                message.error('Bạn không có quyền tải file ghi âm!')
+            }
+            else {
+                message.error('Không thể tải file ghi âm!')
+            }
         } catch (e) {
-            message.error('Không thể tải file!')
+            message.error('Không thể tải file ghi âm!')
         }
     };
-
-    // const handleDownload = async (url: any, filename: any) => {
-    //     await axios(url, {
-    //         responseType: 'blob',
-    //     })
-    //         .then((res) => {
-    //             fileDownload(res.data, filename)
-    //         })
-    // }
 
     const handleOpenModalPlaying = async (fieldId?: any, recordName?: any) => {
         setVisibleModalAudio(true);
@@ -432,7 +421,7 @@ const HistoryCall: React.FC = () => {
         Table.EXPAND_COLUMN,
     ];
 
-    const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
+    const handleTableChange = (newPagination: any) => {
         setPagination({
             ...pagination,
             current: newPagination.current,
@@ -475,11 +464,6 @@ const HistoryCall: React.FC = () => {
         }
     }
 
-    // const handleSubmitNoteForm = async (values: any) => {
-    //     await handleUpdateNoteHistoryCall(getCallId, values.note);
-    //     form.setFieldsValue({ note: undefined });
-    // }
-
     const handleChangeValueRangePicker = (value: any, dateString: any) => {
         if (dateString[0] === '' && dateString[1] === '') {
             setValueFromDateTime(undefined);
@@ -488,15 +472,14 @@ const HistoryCall: React.FC = () => {
         }
         else (dateString[0] !== '' && dateString[1] !== '')
         {
-            setValueFromDateTime(moment(dateString[0]).toISOString());
-            setValueToDateTime(moment(dateString[1]).toISOString());
-            fetchListLSCGData.run(moment(dateString[0]).toISOString(), moment(dateString[1]).toISOString());
+            setValueFromDateTime(moment(dateString[0], 'DD-MM-YYYY').startOf('day'));
+            setValueToDateTime(moment(dateString[1], 'DD-MM-YYYY').endOf('day'));
+            fetchListLSCGData.run(
+                moment(dateString[0], 'DD-MM-YYYY').startOf('day'),
+                moment(dateString[1], 'DD-MM-YYYY').endOf('day')
+            );
         }
     }
-
-    // const handleClickUpdateNote = (call_id: any) => {
-    //     setGetCallId(call_id);
-    // }
 
     const onResetFilter = (e: any) => {
         if (
@@ -523,231 +506,173 @@ const HistoryCall: React.FC = () => {
             });
         }
     };
-    console.log(listValueHCG, listValueKQ)
 
     const handleExportFile = async () => {
-        const res = await axios({
-            //url: 'http://172.27.228.201:8007/voip-service/api/call/export_call_history_excel',
-            url: `${api.UMI_API_BASE_URL}/voip-service/api/call/export_call_history_excel`,
-            method: 'POST',
-            data: {
-                direction: listValueHCG,
-                result: listValueKQ,
-                from_datetime: valueFromDateTime,
-                to_datetime: valueToDateTime,
-                search_name: valueKeyWord,
-            },
-            responseType: 'blob',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        fileDownload(res.data, 'history_call_report.xlsx');
+        try {
+            const res = await axios({
+                url: `${api.UMI_API_BASE_URL}/voip-service/api/call/export_call_history_excel`,
+                method: 'POST',
+                data: {
+                    direction: listValueHCG,
+                    result: listValueKQ,
+                    from_datetime: valueFromDateTime,
+                    to_datetime: valueToDateTime,
+                    search_name: valueKeyWord,
+                },
+                responseType: 'blob',
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (res.data.error_code === 4030102) {
+                message.error('Bạn không có quyền xuất báo cáo!');
+            }
+            else {
+                fileDownload(res.data, 'history_call_report.xlsx');
+            }
+        } catch (e) {
+            message.error('Không thể xuất báo cáo!')
+        }
     };
 
     return (
         isView === '403' ? (
-            <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+            <NoFoundPage
+                status="403"
+                title="403"
+                subTitle="Bạn không có quyền xem trang Lịch sử cuộc gọi"
+            />
         ) : (
             <>
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        paddingTop: '30px',
-                        flexWrap: 'wrap'
-                    }}
+                <Form
+                    className={styles.filterFormHistoryCall}
+                    layout='vertical'
+                    form={form}
                 >
                     <div>
-                        <Form layout='vertical' form={form}>
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    gap: 10,
-                                    flexWrap: 'wrap'
-                                }}
-                            >
-                                <div style={{ width: '300px' }}>
-                                    <Form.Item label="Hướng cuộc gọi" name="Hướng cuộc gọi" style={{ marginBottom: 'unset' }}>
-                                        <Select onChange={handleSelectValueHCG} mode="multiple" >
-                                            <Select.Option value="inbound">Gọi vào</Select.Option>
-                                            <Select.Option value="outbound">Gọi ra</Select.Option>
-                                            <Select.Option value="local">Gọi nội bộ</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </div>
-                                <div style={{ width: '300px' }}>
-                                    <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
-                                        <Select onChange={handleSelectValueKQ} mode="multiple">
-                                            <Select.Option value="success">Thành công</Select.Option>
-                                            <Select.Option value="fail">Thất bại</Select.Option>
-                                            <Select.Option value="busy">Bận</Select.Option>
-                                            <Select.Option value="cancel">Hủy bỏ</Select.Option>
-                                            <Select.Option value="no_answer">Không trả lời</Select.Option>
-                                            <Select.Option value="rejected">Từ chối</Select.Option>
-                                            <Select.Option value="missed">Nhỡ trong hàng chờ</Select.Option>
-                                            <Select.Option value="other_failure">Lý do fail khác</Select.Option>
-                                        </Select>
-                                    </Form.Item>
-                                </div>
-                                <div style={{ width: '300px' }}>
-                                    <Form.Item label="Thời gian" name="Thời gian" style={{ marginBottom: 'unset' }}>
-                                        <RangePicker onChange={handleChangeValueRangePicker} placeholder={['Từ ngày', 'Đến ngày']} />
-                                    </Form.Item>
-                                </div>
-                                <div style={{ paddingTop: '29px' }}>
-                                    <Form.Item style={{ marginBottom: 'unset' }}>
-                                        <Button type='text' style={{ color: 'blue' }} onClick={(e) => onResetFilter(e)}>Reset</Button>
-                                    </Form.Item>
-                                </div>
+                        <div className={styles.filterFormHistoryCallDisplay}>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Hướng cuộc gọi" name="Hướng cuộc gọi" style={{ marginBottom: 'unset' }}>
+                                    <Select onChange={handleSelectValueHCG} mode="multiple" >
+                                        <Select.Option value="inbound">Gọi vào</Select.Option>
+                                        <Select.Option value="outbound">Gọi ra</Select.Option>
+                                        <Select.Option value="local">Gọi nội bộ</Select.Option>
+                                    </Select>
+                                </Form.Item>
                             </div>
-                        </Form>
-                    </div>
-                    <div
-                        style={{
-                            paddingTop: '29px',
-                            paddingRight: '20px'
-                        }}
-                    >
-                        <Input
-                            style={{ width: '300px', marginRight: '10px' }}
-                            prefix={<SearchOutlined />}
-                            placeholder="Tìm kiếm tên người gọi, người nhận"
-                            allowClear
-                            value={valueKeyWord}
-                            onChange={debounce(
-                                (e) => {
-                                    const { value } = e.target;
-                                    if (value === "") {
-                                        setValueKeyWord(undefined)
-                                        fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
-                                    }
-                                    else {
-                                        setValueKeyWord(value);
-                                        fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
-                                    }
-                                },
-                                500,
-                                {
-                                    trailing: true,
-                                    leading: false,
-                                },
-                            )}
-                        />
-                        <Button
-                            style={{ backgroundColor: '#7fb77e', color: '#fff' }}
-                            onClick={handleExportFile}
-                        >
-                            <ExportIcon /> Export
-                        </Button>
-                    </div>
-                </div>
-                <Card
-                    className={styles.detailCardLayout}
-                >
-                    <Table
-                        dataSource={listDataLSCG}
-                        rowKey={item => item._id}
-                        columns={columns}
-                        style={{ paddingLeft: '10px', paddingTop: '10px' }}
-                        className={styles.tableStyle}
-                        onChange={handleTableChange}
-                        pagination={{
-                            ...pagination,
-                            total: listDataLSCGLength,
-                            locale: {
-                                items_per_page: '/ Trang',
-                                jump_to: 'Đến trang',
-                                page: '',
-                                next_page: 'Trang sau',
-                                prev_page: 'Trang trước',
-                                next_3: '3 trang sau',
-                                next_5: '5 trang sau',
-                                prev_3: '3 trang trước',
-                                prev_5: '5 trang trước',
-                            },
-                        }}
-                        scroll={{
-                            y: pagination.pageSize >= 10 ? 400 : undefined,
-                            x: window.innerWidth < 1900 ? 100 : undefined,
-                        }}
-                        loading={{ indicator: <div><Spin /></div>, spinning: fetchListLSCGData.loading }}
-                    // expandable={{
-                    //     expandedRowRender: (record) => {
-                    //         return (
-                    //             <>
-                    //                 <div style={{ textAlign: 'center', paddingTop: '10px' }}>
-                    //                     {record.note?.map(item => (
-                    //                         <>
-                    //                             <Typography.Text>{item.content}</Typography.Text>
-                    //                             <br></br>
-                    //                         </>
-                    //                     ))}
-                    //                 </div>
-                    //                 <div style={{ paddingTop: '10px' }}>
-                    //                     <Divider orientation='left'>{initialState?.currentUser?.name} <EditOutlined /></Divider>
-                    //                     <Form form={form} layout='vertical' onFinish={handleSubmitNoteForm}>
-                    //                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    //                             <div style={{ flex: 1 }}>
-                    //                                 <Form.Item
-                    //                                     name="note"
-                    //                                     rules={[
-                    //                                         {
-                    //                                             required: true,
-                    //                                             message: 'Vui lòng nhập ghi chú'
-                    //                                         }
-                    //                                     ]}
-                    //                                 >
-                    //                                     <Input />
-                    //                                 </Form.Item>
-                    //                             </div>
-                    //                             <div style={{ marginLeft: '10px' }}>
-                    //                                 <Form.Item label="">
-                    //                                     <Button
-                    //                                         style={{ backgroundColor: '#1890ff', color: '#fff' }}
-                    //                                         htmlType="submit"
-                    //                                         onClick={() => handleClickUpdateNote(record._id)}
-                    //                                     >
-                    //                                         Lưu
-                    //                                     </Button>
-                    //                                 </Form.Item>
-                    //                             </div>
-                    //                         </div>
-                    //                     </Form>
-                    //                 </div>
-                    //             </>
-                    //         )
-                    //     },
-                    //     expandIcon: ({ expanded, onExpand, record }) => {
-                    //         return (
-                    //             expanded ? (
-                    //                 <UpOutlined onClick={e => onExpand(record, e)} />
-                    //             ) : (
-                    //                 <DownOutlined onClick={e => onExpand(record, e)} />
-                    //             )
-                    //         )
-                    //     }
-                    // }}
-                    />
-                    <Modal
-                        open={isVisibleModalAudio}
-                        onCancel={() => { setVisibleModalAudio(false); audioRef.current.pause() }}
-                        footer={false}
-                        title="Nghe file ghi âm"
-                    >
-                        <div style={{ textAlign: 'center' }}>
-                            <figure>
-                                <audio
-                                    ref={audioRef}
-                                    controls
-                                    src={testAudioURL}>
-                                </audio>
-                            </figure>
-                            {/* <Button onClick={() => handleDownload('http://172.27.228.189:9000/omni-dev/recordings/172.27.228.221/archive/2022/Nov/29/5b85843e-7cf2-4746-afcf-9cbee1109791.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=wCLEkHRxIei9WZH2%2F20221130%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221130T035143Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=a429376d7bdc769344914e4f9373088213657bb8ffdf2f8dc6a5b59805cdb360', 'test.mp3')}>Test</Button> */}
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
+                                    <Select onChange={handleSelectValueKQ} mode="multiple">
+                                        <Select.Option value="success">Thành công</Select.Option>
+                                        <Select.Option value="fail">Thất bại</Select.Option>
+                                        <Select.Option value="busy">Bận</Select.Option>
+                                        <Select.Option value="cancel">Hủy bỏ</Select.Option>
+                                        <Select.Option value="no_answer">Không trả lời</Select.Option>
+                                        <Select.Option value="rejected">Từ chối</Select.Option>
+                                        <Select.Option value="missed">Nhỡ trong hàng chờ</Select.Option>
+                                        <Select.Option value="other_failure">Lý do fail khác</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div style={{ width: '300px' }}>
+                                <Form.Item label="Thời gian" name="Thời gian" style={{ marginBottom: 'unset' }}>
+                                    <RangePicker
+                                        onChange={handleChangeValueRangePicker}
+                                        placeholder={['Từ ngày', 'Đến ngày']}
+                                        format="DD-MM-YYYY"
+                                    />
+                                </Form.Item>
+                            </div>
+                            <div style={{ paddingTop: '29px' }}>
+                                <Form.Item style={{ marginBottom: 'unset' }}>
+                                    <Button
+                                        type='text'
+                                        style={{ color: 'blue' }}
+                                        onClick={(e) => onResetFilter(e)}
+                                    >
+                                        Reset
+                                    </Button>
+                                </Form.Item>
+                            </div>
                         </div>
-                    </Modal>
-                </Card>
+                    </div>
+                    <div style={{ paddingTop: '29px' }}>
+                        <Form.Item name="search_name">
+                            <Input
+                                style={{ width: '300px', marginRight: '10px' }}
+                                prefix={<SearchOutlined />}
+                                placeholder="Tìm kiếm tên người gọi, người nhận"
+                                allowClear
+                                onChange={debounce(
+                                    (e) => {
+                                        const { value } = e.target;
+                                        if (value === "") {
+                                            setValueKeyWord(undefined)
+                                            fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
+                                        }
+                                        else {
+                                            setValueKeyWord(value);
+                                            fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
+                                        }
+                                    },
+                                    500,
+                                    {
+                                        trailing: true,
+                                        leading: false,
+                                    },
+                                )}
+                            />
+                            <Button
+                                style={{ backgroundColor: '#7fb77e', color: '#fff' }}
+                                onClick={handleExportFile}
+                            >
+                                <ExportIcon /> Export
+                            </Button>
+                        </Form.Item>
+                    </div>
+                </Form>
+                <Table
+                    dataSource={listDataLSCG}
+                    rowKey={item => item._id}
+                    columns={columns}
+                    className={styles.tableStyle}
+                    onChange={handleTableChange}
+                    pagination={{
+                        ...pagination,
+                        total: listDataLSCGLength,
+                        locale: {
+                            items_per_page: '/ Trang',
+                            jump_to: 'Đến trang',
+                            page: '',
+                            next_page: 'Trang sau',
+                            prev_page: 'Trang trước',
+                            next_3: '3 trang sau',
+                            next_5: '5 trang sau',
+                            prev_3: '3 trang trước',
+                            prev_5: '5 trang trước',
+                        },
+                    }}
+                    scroll={{
+                        x: window.innerWidth < 1900 ? 100 : undefined,
+                    }}
+                    loading={{ indicator: <div><Spin /></div>, spinning: fetchListLSCGData.loading }}
+                />
+                <Modal
+                    open={isVisibleModalAudio}
+                    onCancel={() => { setVisibleModalAudio(false); audioRef.current.pause() }}
+                    footer={false}
+                    title="Nghe file ghi âm"
+                >
+                    <div style={{ textAlign: 'center' }}>
+                        <figure>
+                            <audio
+                                ref={audioRef}
+                                controls
+                                src={testAudioURL}>
+                            </audio>
+                        </figure>
+                    </div>
+                </Modal>
             </>
         )
     )

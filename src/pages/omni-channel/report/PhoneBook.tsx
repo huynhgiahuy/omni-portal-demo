@@ -748,7 +748,7 @@ const PhoneBook: React.FC = () => {
                 style={{ marginTop: 8 }}
                 rules={[
                   {
-                    pattern: new RegExp('^[0-9]{1,6}$'),
+                    pattern: new RegExp('^[0-9]{4,6}$'),
                     message: 'IP Phone không hợp lệ',
                   },
                 ]}
