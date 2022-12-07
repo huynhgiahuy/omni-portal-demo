@@ -95,6 +95,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   const [statusCall, setStateCall] = useState('Cuộc gọi');
   const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
   const [phoneCall, setPhoneCall] = useState('000 000 0000');
+  const [iconCall, setIconCall] = useState(false);
   const [listNote, setListNote] = useState<listNotesProps[]>([]);
   const { confirm } = Modal;
 
@@ -144,8 +145,10 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       form.setFieldsValue(dataCall?.contact);
       if (dataCall.direction === 'receive') {
         setStateCall('Cuộc gọi đến');
+        setIconCall(true)
       } else {
         setStateCall('Cuộc gọi đi');
+        setIconCall(false);
       }
     } else {
       form.setFieldValue('phone_number', dataCall?.phone);
@@ -267,7 +270,10 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 align="start"
                 style={{ width: '100%', justifyContent: 'center', zIndex: 2 }}
               >
-                <PhoneOutlined
+                {iconCall ? (
+                  <PhoneOutlined className={styles.phonePickUp}></PhoneOutlined>
+                ) : ''}
+                {/* <PhoneOutlined
                   className={styles.phonePickUp}
                   // onClick={() => {
                   //   setPopoverForward(false);
@@ -276,7 +282,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                   //     handleOpenAnswer();
                   //   }, 0);
                   // }}
-                />
+                /> */}
                 <Popover
                   open={isPopoverForward}
                   trigger="click"
@@ -385,7 +391,6 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     />
                   </Popover>
                 )} */}
-
                 <PhoneOutlined
                   className={styles.phoneHandUp}
                   // onClick={() => {

@@ -27,6 +27,7 @@ import { requestEditUserInfo } from './services';
 import { useModel, useRequest } from 'umi';
 import type { RcFile, UploadProps } from 'antd/es/upload/interface';
 import { endpoint, requestGetInfoUser } from '@/services/auth';
+import { requestCheckPhoneContact } from '../report/services';
 
 const PersonalInfo: React.FC = () => {
   const [isEditUser, setEditUser] = useState(false);
@@ -70,21 +71,40 @@ const PersonalInfo: React.FC = () => {
     return res;
   };
 
+  const checkPhoneContact = useRequest(
+    async (data) => {
+      const result: { success: boolean; error_code: number } = await requestCheckPhoneContact(data);
+      if (result.error_code === 4000201) {
+        form.setFields([
+          {
+            name: 'phone_number',
+            errors: ['Số điện thoại đã tồn tại'],
+          },
+        ]);
+        return;
+      }
+    },
+    {
+      manual: true,
+    },
+  );
+
   const handleEditUser = () => {
     setEditUser(!isEditUser);
+    form.setFieldsValue(initialState?.currentUser);
   };
 
   const handleOnFinishEditUser = (values: any) => {
     const res = requestEditUserInfoSubmit(
-      values.name ? values.name : initialState?.currentUser?.name,
-      values.position ? values.position : initialState?.currentUser?.position,
-      values.department ? values.department : initialState?.currentUser?.department,
-      values.level ? values.level : initialState?.currentUser?.level,
-      values.organization ? values.organization : initialState?.currentUser?.organization,
-      values.home_address ? values.home_address : initialState?.currentUser?.home_address,
-      values.work_address ? values.work_address : initialState?.currentUser?.work_address,
-      values.phone_number ? values.phone_number : initialState?.currentUser?.phone_number,
-      values.ip_phone ? values.ip_phone : initialState?.currentUser?.ip_phone,
+      values.name,
+      values.position,
+      values.department,
+      values.level,
+      values.organization,
+      values.home_address,
+      values.work_address,
+      values.phone_number,
+      values.ip_phone,
     );
 
     res.then(async (result: requeGetUserInfoProps) => {
@@ -199,11 +219,7 @@ const PersonalInfo: React.FC = () => {
                   <Typography.Text className={styles.antTextStyle}>Họ tên</Typography.Text>
 
                   {isEditUser === true ? (
-                    <Form.Item
-                      name="name"
-                      className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.name}
-                    >
+                    <Form.Item name="name" className={styles.antFormItemMargin}>
                       <Input disabled style={{ width: '300px' }} />
                     </Form.Item>
                   ) : (
@@ -216,11 +232,7 @@ const PersonalInfo: React.FC = () => {
                   <Typography.Text className={styles.antTextStyle}>Địa chỉ Mail</Typography.Text>
 
                   {isEditUser === true ? (
-                    <Form.Item
-                      name="email_test"
-                      className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.email}
-                    >
+                    <Form.Item name="email_test" className={styles.antFormItemMargin}>
                       <Input disabled style={{ width: '300px' }} />
                     </Form.Item>
                   ) : (
@@ -233,11 +245,7 @@ const PersonalInfo: React.FC = () => {
                   <Typography.Text className={styles.antTextStyle}>Phòng ban</Typography.Text>
 
                   {isEditUser === true ? (
-                    <Form.Item
-                      name="department"
-                      className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.department}
-                    >
+                    <Form.Item name="department" className={styles.antFormItemMargin}>
                       <Input disabled style={{ width: '300px' }} />
                     </Form.Item>
                   ) : (
@@ -254,7 +262,6 @@ const PersonalInfo: React.FC = () => {
                     <Form.Item
                       name="work_address"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.work_address}
                       rules={[
                         {
                           required: true,
@@ -284,7 +291,6 @@ const PersonalInfo: React.FC = () => {
                     <Form.Item
                       name="position"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.position}
                       rules={[
                         {
                           required: true,
@@ -320,8 +326,11 @@ const PersonalInfo: React.FC = () => {
                     <Form.Item
                       name="level"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.level}
                       rules={[
+                        {
+                          whitespace: true,
+                          message: 'Vui lòng không để trống thông tin',
+                        },
                         {
                           required: true,
                           message: 'Vui lòng không để trống thông tin',
@@ -341,19 +350,17 @@ const PersonalInfo: React.FC = () => {
                   )}
                 </div>
                 <div className={styles.antDataDisplay}>
-                  <Typography.Text className={styles.antTextStyle}>
-                    Địa chỉ {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
-                  </Typography.Text>
+                  <Typography.Text className={styles.antTextStyle}>Địa chỉ</Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
                       name="home_address"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.home_address}
                       rules={[
                         {
-                          required: true,
+                          whitespace: true,
                           message: 'Vui lòng không để trống thông tin',
                         },
+
                         {
                           max: 255,
                           message: 'Vui lòng không nhập quá 255 kí tự',
@@ -376,13 +383,12 @@ const PersonalInfo: React.FC = () => {
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>
                     Số điện thoại cá nhân
-                    {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
+                    {isEditUser === true && <span style={{ color: 'red' }}> (*)</span>}
                   </Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
                       name="phone_number"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.phone_number}
                       rules={[
                         {
                           required: true,
@@ -398,7 +404,13 @@ const PersonalInfo: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} className={styles.inputNumber} />
+                      <Input
+                        style={{ width: '300px' }}
+                        className={styles.inputNumber}
+                        onBlur={() => {
+                          checkPhoneContact.run(form.getFieldValue('phone_number'));
+                        }}
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -407,26 +419,23 @@ const PersonalInfo: React.FC = () => {
                   )}
                 </div>
                 <div className={styles.antDataDisplay}>
-                  <Typography.Text className={styles.antTextStyle}>
-                    IP Phone {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
-                  </Typography.Text>
+                  <Typography.Text className={styles.antTextStyle}>IP Phone</Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
                       name="ip_phone"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.ip_phone}
                       rules={[
-                        {
-                          required: true,
-                          message: 'Vui lòng không để trống thông tin',
-                        },
                         {
                           pattern: new RegExp('^[0-9]{4,6}$'),
                           message: 'IP Phone không hợp lệ',
                         },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} className={styles.inputNumber} />
+                      <Input
+                        style={{ width: '300px' }}
+                        className={styles.inputNumber}
+                        value={initialState?.currentUser?.ip_phone}
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>

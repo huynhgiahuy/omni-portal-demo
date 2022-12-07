@@ -545,7 +545,6 @@ const PhoneBook: React.FC = () => {
             display: 'flex',
             justifyContent: 'space-between',
             marginTop: 10,
-            marginRight: '1rem',
           }}
         >
           <Space size="middle">
@@ -633,254 +632,254 @@ const PhoneBook: React.FC = () => {
           </Space>
         </div>
       </Form>
-      <Card className={styles.detailCardLayoutPhone}>
-        <Table
-          dataSource={external === 'Khách hàng' ? dataExternalContacts : dataInternalContacts}
-          columns={columnsDanhba}
-          style={{ paddingLeft: '10px', paddingTop: '10px' }}
-          className={styles.tableStyle}
-          onChange={handleTableChange}
-          pagination={{
-            ...pagination,
-            // total: listAllRolePermission?.length,
-            locale: {
-              items_per_page: '/ Trang',
-              jump_to: 'Đến trang',
-              next_page: 'Trang sau',
-              prev_page: 'Trang trước',
-              next_3: '3 trang sau',
-              next_5: '5 trang sau',
-              prev_3: '3 trang trước',
-              prev_5: '5 trang trước',
-            },
-          }}
-          scroll={{ x: 300 }}
-          loading={{
-            indicator: (
-              <div>
-                <Spin />
-              </div>
-            ),
-            spinning: getUserContact.loading || sendPinStart.loading,
-          }}
-        />
+      <Table
+        dataSource={external === 'Khách hàng' ? dataExternalContacts : dataInternalContacts}
+        columns={columnsDanhba}
+        className={styles.tableStylePhoneBook}
+        onChange={handleTableChange}
+        pagination={{
+          ...pagination,
+          // total: listAllRolePermission?.length,
+          locale: {
+            items_per_page: '/ Trang',
+            jump_to: 'Đến trang',
+            next_page: 'Trang sau',
+            prev_page: 'Trang trước',
+            next_3: '3 trang sau',
+            next_5: '5 trang sau',
+            prev_3: '3 trang trước',
+            prev_5: '5 trang trước',
+          },
+        }}
+        scroll={{ x: 300 }}
+        loading={{
+          indicator: (
+            <div>
+              <Spin />
+            </div>
+          ),
+          spinning: getUserContact.loading || sendPinStart.loading,
+        }}
+      />
+      <Modal
+        open={openModal}
+        className={styles.modal}
+        onCancel={handleCancleModal}
+        title={
+          !isEdit && external === 'Khách hàng'
+            ? 'Thêm khách hàng'
+            : external === 'Khách hàng'
+            ? 'Thông tin khách hàng'
+            : !isEdit && external === 'Nội bộ'
+            ? 'Thêm người dùng'
+            : 'Thông tin người dùng'
+        }
+        footer={false}
+        width={620}
+        centered
+      >
+        <Form {...formItemLayout} form={form} onFinish={handleOnFinish} layout="vertical">
+          <div>
+            <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
+              Họ và tên <span style={{ color: 'red' }}>(*)</span>
+            </Typography.Text>
+            <Form.Item
+              name="full_name"
+              style={{ marginTop: 8 }}
+              rules={[
+                {
+                  whitespace: true,
+                  message: 'Vui lòng không để trống thông tin',
+                },
+                { required: true, message: 'Vui lòng không để trống thông tin' },
+                {
+                  max: 255,
+                  message: 'Vui lòng không nhập quá 255 kí tự',
+                },
+                {
+                  pattern: new RegExp(
+                    '^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ01234556789 ]+$',
+                  ),
+                  message: 'Vui lòng không nhập ký tự đặt biệt',
+                },
+              ]}
+            >
+              <Input placeholder="Nhập họ và tên" />
+            </Form.Item>
+          </div>
+          <div>
+            <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
+              Số điện thoại <span style={{ color: 'red' }}>(*)</span>
+            </Typography.Text>
+            <Form.Item
+              name="phone_number"
+              style={{ marginTop: 8 }}
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng không để trống thông tin',
+                },
+                {
+                  pattern: new RegExp('([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})'),
+                  message: 'Số điện thoại không hợp lệ',
+                },
+                {
+                  max: 10,
+                  message: 'Số điện thoại không hợp lệ',
+                },
+              ]}
+            >
+              <Input
+                placeholder="Nhập số điện thoại"
+                className={styles.inputNumber}
+                onBlur={() => {
+                  checkPhoneContact.run(form.getFieldValue('phone_number'));
+                }}
+              />
+            </Form.Item>
+          </div>
 
-        <Modal
-          open={openModal}
-          className={styles.modal}
-          onCancel={handleCancleModal}
-          title={
-            !isEdit && external === 'Khách hàng'
-              ? 'Thêm khách hàng'
-              : external === 'Khách hàng'
-              ? 'Thông tin khách hàng'
-              : !isEdit && external === 'Nội bộ'
-              ? 'Thêm người dùng'
-              : 'Thông tin người dùng'
-          }
-          footer={false}
-          width={620}
-          centered
-        >
-          <Form {...formItemLayout} form={form} onFinish={handleOnFinish} layout="vertical">
-            <div>
-              <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-                Họ và tên <span style={{ color: 'red' }}>(*)</span>
-              </Typography.Text>
-              <Form.Item
-                name="full_name"
-                style={{ marginTop: 8 }}
-                rules={[
-                  { required: true, message: 'Vui lòng không để trống thông tin' },
-                  {
-                    max: 255,
-                    message: 'Vui lòng không nhập quá 255 kí tự',
-                  },
-                  {
-                    pattern: new RegExp(
-                      '^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ01234556789 ]+$',
-                    ),
-                    message: 'Vui lòng không nhập ký tự đặt biệt',
-                  },
-                ]}
-              >
-                <Input placeholder="Nhập họ và tên" />
-              </Form.Item>
-            </div>
-            <div>
-              <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-                Số điện thoại <span style={{ color: 'red' }}>(*)</span>
-              </Typography.Text>
-              <Form.Item
-                name="phone_number"
-                style={{ marginTop: 8 }}
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng không để trống thông tin',
-                  },
-                  {
-                    pattern: new RegExp('([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})'),
-                    message: 'Số điện thoại không hợp lệ',
-                  },
-                  {
-                    max: 10,
-                    message: 'Số điện thoại không hợp lệ',
-                  },
-                ]}
-              >
-                <Input
-                  placeholder="Nhập số điện thoại"
-                  className={styles.inputNumber}
-                  onBlur={() => {
-                    checkPhoneContact.run(form.getFieldValue('phone_number'));
-                  }}
-                />
-              </Form.Item>
-            </div>
-
-            <div>
-              <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-                IP phone
-              </Typography.Text>
-              <Form.Item
-                name="ip_phone"
-                style={{ marginTop: 8 }}
-                rules={[
-                  {
-                    pattern: new RegExp('^[0-9]{4,6}$'),
-                    message: 'IP Phone không hợp lệ',
-                  },
-                ]}
-              >
-                <Input className={styles.inputNumber} placeholder="Nhập số máy nhánh" />
-              </Form.Item>
-            </div>
-            <div>
-              <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-                Email <span style={{ color: 'red' }}>(*)</span>
-              </Typography.Text>
-              <Form.Item
-                name="email"
-                style={{ marginTop: 8 }}
-                rules={[
-                  { required: true, message: 'Vui lòng không để trống thông tin' },
-                  { type: 'email', message: 'Vui lòng nhập email hợp lệ' },
-                  {
-                    max: 255,
-                    message: 'Vui lòng không nhập quá 255 kí tự',
-                  },
-                ]}
-              >
-                <Input placeholder="Nhập email đơn vị" />
-              </Form.Item>
-            </div>
-            <div>
-              <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-                {external === 'Khách hàng' ? 'Đơn vị công tác' : 'Team'}
-                <span style={{ color: 'red' }}>(*)</span>
-              </Typography.Text>
-              <Form.Item
-                name={external === 'Khách hàng' ? 'work_unit' : 'team'}
-                style={{ marginTop: 8 }}
-                rules={[{ required: true, message: 'Vui lòng không để trống thông tin' }]}
-              >
-                {external === 'Khách hàng' ? (
-                  <Select options={listUnitExternal} placeholder="Chọn đơn vị" />
-                ) : (
-                  <Select
-                    onChange={handleSelectTeam}
-                    loading={getListTeam.loading}
-                    placeholder={'Chọn nhóm'}
-                    menuItemSelectedIcon={<CheckOutlined style={{ marginLeft: 10 }} />}
-                    dropdownRender={(menu) => (
-                      <>
-                        {menu}
-                        <div
-                          style={{
-                            paddingLeft: '14px',
-                            paddingRight: '14px',
-                            paddingBottom: '10px',
-                          }}
-                        >
-                          <hr></hr>
-                          {clickAddNewTeam === false ? (
-                            <Button
-                              style={{
-                                padding: 'unset',
-                                color: 'rgba(0,0,0,0.5)',
-                                fontStyle: 'italic',
-                              }}
-                              type="text"
-                              onClick={() => setClickAddNewTeam(true)}
-                            >
-                              Chỉnh sửa / Thêm team mới
-                            </Button>
-                          ) : (
-                            <Form form={form}>
-                              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <div style={{ flex: 1 }}>
-                                  <Form.Item name="newTeamValue">
-                                    <Input
-                                      placeholder="Nhập team mới tại đây"
-                                      className={styles.addNewTeamPlaceholder}
-                                      onChange={(e) => setNewTeamValue(e.target.value)}
-                                    />
-                                  </Form.Item>
-                                </div>
-                                <div>
-                                  <Form.Item>
-                                    <Space>
-                                      <SaveOutlined
-                                        style={{ marginLeft: 10, fontSize: 14 }}
-                                        onClick={() => handleSubmitNewTeam(newTeamValue)}
-                                      />
-                                      <CloseOutlined
-                                        style={{ fontSize: 14 }}
-                                        onClick={() => setClickAddNewTeam(false)}
-                                      />
-                                    </Space>
-                                  </Form.Item>
-                                </div>
+          <div>
+            <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
+              IP phone
+            </Typography.Text>
+            <Form.Item
+              name="ip_phone"
+              style={{ marginTop: 8 }}
+              rules={[
+                {
+                  pattern: new RegExp('^[0-9]{4,6}$'),
+                  message: 'IP Phone không hợp lệ',
+                },
+              ]}
+            >
+              <Input className={styles.inputNumber} placeholder="Nhập số máy nhánh" />
+            </Form.Item>
+          </div>
+          <div>
+            <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
+              Email <span style={{ color: 'red' }}>(*)</span>
+            </Typography.Text>
+            <Form.Item
+              name="email"
+              style={{ marginTop: 8 }}
+              rules={[
+                { required: true, message: 'Vui lòng không để trống thông tin' },
+                { type: 'email', message: 'Vui lòng nhập email hợp lệ' },
+                {
+                  max: 255,
+                  message: 'Vui lòng không nhập quá 255 kí tự',
+                },
+              ]}
+            >
+              <Input placeholder="Nhập email đơn vị" />
+            </Form.Item>
+          </div>
+          <div>
+            <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
+              {external === 'Khách hàng' ? 'Đơn vị công tác' : 'Team'}
+              <span style={{ color: 'red' }}>(*)</span>
+            </Typography.Text>
+            <Form.Item
+              name={external === 'Khách hàng' ? 'work_unit' : 'team'}
+              style={{ marginTop: 8 }}
+              rules={[{ required: true, message: 'Vui lòng không để trống thông tin' }]}
+            >
+              {external === 'Khách hàng' ? (
+                <Select options={listUnitExternal} placeholder="Chọn đơn vị" />
+              ) : (
+                <Select
+                  onChange={handleSelectTeam}
+                  loading={getListTeam.loading}
+                  placeholder={'Chọn nhóm'}
+                  menuItemSelectedIcon={<CheckOutlined style={{ marginLeft: 10 }} />}
+                  dropdownRender={(menu) => (
+                    <>
+                      {menu}
+                      <div
+                        style={{
+                          paddingLeft: '14px',
+                          paddingRight: '14px',
+                          paddingBottom: '10px',
+                        }}
+                      >
+                        <hr></hr>
+                        {clickAddNewTeam === false ? (
+                          <Button
+                            style={{
+                              padding: 'unset',
+                              color: 'rgba(0,0,0,0.5)',
+                              fontStyle: 'italic',
+                            }}
+                            type="text"
+                            onClick={() => setClickAddNewTeam(true)}
+                          >
+                            Chỉnh sửa / Thêm team mới
+                          </Button>
+                        ) : (
+                          <Form form={form}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <div style={{ flex: 1 }}>
+                                <Form.Item name="newTeamValue">
+                                  <Input
+                                    placeholder="Nhập team mới tại đây"
+                                    className={styles.addNewTeamPlaceholder}
+                                    onChange={(e) => setNewTeamValue(e.target.value)}
+                                  />
+                                </Form.Item>
                               </div>
-                            </Form>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  >
-                    {listTeamPermission.map((item: TeamPermission) => (
-                      <Select.Option value={item.name}>
-                        <div className={styles.flexLayout}>
-                          <div>{item.name}</div>
-                          {clickAddNewTeam === true ? (
-                            <DeleteOutlined onClick={(e) => handleClickDeleteTeam(e, item.id)} />
-                          ) : (
-                            ''
-                          )}
-                        </div>
-                      </Select.Option>
-                    ))}
-                  </Select>
-                )}
-              </Form.Item>
-            </div>
+                              <div>
+                                <Form.Item>
+                                  <Space>
+                                    <SaveOutlined
+                                      style={{ marginLeft: 10, fontSize: 14 }}
+                                      onClick={() => handleSubmitNewTeam(newTeamValue)}
+                                    />
+                                    <CloseOutlined
+                                      style={{ fontSize: 14 }}
+                                      onClick={() => setClickAddNewTeam(false)}
+                                    />
+                                  </Space>
+                                </Form.Item>
+                              </div>
+                            </div>
+                          </Form>
+                        )}
+                      </div>
+                    </>
+                  )}
+                >
+                  {listTeamPermission.map((item: TeamPermission) => (
+                    <Select.Option value={item.name}>
+                      <div className={styles.flexLayout}>
+                        <div>{item.name}</div>
+                        {clickAddNewTeam === true ? (
+                          <DeleteOutlined onClick={(e) => handleClickDeleteTeam(e, item.id)} />
+                        ) : (
+                          ''
+                        )}
+                      </div>
+                    </Select.Option>
+                  ))}
+                </Select>
+              )}
+            </Form.Item>
+          </div>
 
-            <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' }}>
-              <Button style={{ marginRight: '10px' }} onClick={handleCancleModal}>
-                Hủy
-              </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={updateUserContact.loading || addUserContact.loading}
-              >
-                {isEdit ? 'Cập nhập' : 'Tạo mới'}
-              </Button>
-            </div>
-          </Form>
-        </Modal>
-      </Card>
+          <div style={{ marginTop: '30px', display: 'flex', justifyContent: 'center' }}>
+            <Button style={{ marginRight: '10px' }} onClick={handleCancleModal}>
+              Hủy
+            </Button>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={updateUserContact.loading || addUserContact.loading}
+            >
+              {isEdit ? 'Cập nhập' : 'Tạo mới'}
+            </Button>
+          </div>
+        </Form>
+      </Modal>
     </>
   );
 };
