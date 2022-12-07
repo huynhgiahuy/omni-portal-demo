@@ -604,54 +604,48 @@ const HistoryCall: React.FC = () => {
                         </Form.Item>
                     </div>
                 </Form>
-                <Card
-                    className={styles.detailCardLayout}
+                <Table
+                    dataSource={listDataLSCG}
+                    rowKey={item => item._id}
+                    columns={columns}
+                    className={styles.tableStyle}
+                    onChange={handleTableChange}
+                    pagination={{
+                        ...pagination,
+                        total: listDataLSCGLength,
+                        locale: {
+                            items_per_page: '/ Trang',
+                            jump_to: 'Đến trang',
+                            page: '',
+                            next_page: 'Trang sau',
+                            prev_page: 'Trang trước',
+                            next_3: '3 trang sau',
+                            next_5: '5 trang sau',
+                            prev_3: '3 trang trước',
+                            prev_5: '5 trang trước',
+                        },
+                    }}
+                    scroll={{
+                        x: window.innerWidth < 1900 ? 100 : undefined,
+                    }}
+                    loading={{ indicator: <div><Spin /></div>, spinning: fetchListLSCGData.loading }}
+                />
+                <Modal
+                    open={isVisibleModalAudio}
+                    onCancel={() => { setVisibleModalAudio(false); audioRef.current.pause() }}
+                    footer={false}
+                    title="Nghe file ghi âm"
                 >
-                    <Table
-                        dataSource={listDataLSCG}
-                        rowKey={item => item._id}
-                        columns={columns}
-                        style={{ paddingLeft: '10px', paddingTop: '10px' }}
-                        className={styles.tableStyle}
-                        onChange={handleTableChange}
-                        pagination={{
-                            ...pagination,
-                            total: listDataLSCGLength,
-                            locale: {
-                                items_per_page: '/ Trang',
-                                jump_to: 'Đến trang',
-                                page: '',
-                                next_page: 'Trang sau',
-                                prev_page: 'Trang trước',
-                                next_3: '3 trang sau',
-                                next_5: '5 trang sau',
-                                prev_3: '3 trang trước',
-                                prev_5: '5 trang trước',
-                            },
-                        }}
-                        scroll={{
-                            y: pagination.pageSize >= 10 ? 400 : undefined,
-                            x: window.innerWidth < 1900 ? 100 : undefined,
-                        }}
-                        loading={{ indicator: <div><Spin /></div>, spinning: fetchListLSCGData.loading }}
-                    />
-                    <Modal
-                        open={isVisibleModalAudio}
-                        onCancel={() => { setVisibleModalAudio(false); audioRef.current.pause() }}
-                        footer={false}
-                        title="Nghe file ghi âm"
-                    >
-                        <div style={{ textAlign: 'center' }}>
-                            <figure>
-                                <audio
-                                    ref={audioRef}
-                                    controls
-                                    src={testAudioURL}>
-                                </audio>
-                            </figure>
-                        </div>
-                    </Modal>
-                </Card>
+                    <div style={{ textAlign: 'center' }}>
+                        <figure>
+                            <audio
+                                ref={audioRef}
+                                controls
+                                src={testAudioURL}>
+                            </audio>
+                        </figure>
+                    </div>
+                </Modal>
             </>
         )
     )
