@@ -51,42 +51,6 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (values: API.LoginParams) => {
     try {
-      // 登录
-      // const msg = await login({ ...values, type });
-      // console.log(msg);
-      // if (msg.status === 'ok') {
-      //   const defaultLoginSuccessMessage = intl.formatMessage({
-      //     id: 'pages.login.success',
-      //     defaultMessage: 'Đăng nhập thành công',
-      //   });
-      //   message.success(defaultLoginSuccessMessage);
-      //   await fetchUserInfo();
-      //   /** 此方法会跳转到 redirect 参数所在的位置 */
-      //   if (!history) return;
-      //   const { query } = history.location;
-      //   const { redirect } = query as { redirect: string };
-      //   history.push(redirect || '/');
-      //   return;
-      // }
-      // if (values.username === 'admin' && values.password === 'admin') {
-      //   const defaultLoginSuccessMessage = intl.formatMessage({
-      //     id: 'pages.login.success',
-      //     defaultMessage: 'Đăng nhập thành công',
-      //   });
-      //   message.success(defaultLoginSuccessMessage);
-      //   await fetchUserInfo();
-      //   /** 此方法会跳转到 redirect 参数所在的位置 */
-      //   if (!history) return;
-      //   const { query } = history.location;
-      //   const { redirect } = query as { redirect: string };
-      //   history.push(redirect || '/');
-      //   setUserLoginState({ currentAuthority: 'admin', status: 'ok', type: 'account' });
-      // } else {
-      //   message.error('Mật khẩu hoặc tài khoản không đúng vui lòng thử lại');
-      // }
-      // console.log(msg);
-      // 如果失败去设置用户错误信息
-      // setUserLoginState(msg);
     } catch (error) {
       const defaultLoginFailureMessage = intl.formatMessage({
         id: 'pages.login.failure',
