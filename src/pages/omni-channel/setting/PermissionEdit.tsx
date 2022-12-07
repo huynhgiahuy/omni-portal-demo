@@ -40,7 +40,7 @@ import {
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
-import { useRequest, useModel } from 'umi';
+import { useRequest } from 'umi';
 import { debounce } from 'lodash';
 import Ellipse from '../../../assets/Ellipse.svg';
 import OfflineIcon from '../../../../public/offline.png';
@@ -126,7 +126,6 @@ const submitFormLayout = {
 };
 
 const PermissionEdit: React.FC = () => {
-    //const { initialState, setInitialState } = useModel('@@initialState');
     const [isView, setIsView] = useState<string>();
     const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
     const [userKey, setUserKey] = useState<string | any>();
@@ -340,7 +339,7 @@ const PermissionEdit: React.FC = () => {
             okButtonProps: { danger: true },
         });
     };
-    const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
+    const handleTableChange = (newPagination: any) => {
         setPagination({
             ...pagination,
             current: newPagination.current,
@@ -625,30 +624,25 @@ const PermissionEdit: React.FC = () => {
 
     return (
         isView === '403' ? (
-            <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+            <NoFoundPage
+                status="403"
+                title="403"
+                subTitle="Bạn không có quyền xem trang này"
+            />
         ) : (
             <>
                 <Form
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        paddingTop: '30px',
-                        flexWrap: 'wrap'
-                    }}
+                    className={styles.filterFormPermissionEdit}
                     layout='vertical'
                     form={form}
                 >
                     <div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
+                        <div className={styles.filterFormPermissionEditDisplay}>
                             <div style={{ width: '300px' }}>
                                 <Form.Item label="Team" name="Team" style={{ marginBottom: 'unset' }}>
                                     <Select
                                         onChange={handleSelectValueTeam}
                                         mode="multiple"
-                                    // filterOption={(input: any, option: any) =>
-                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    // }
                                     >
                                         {listTeamPermission && listTeamPermission.map((item: TeamPermission) => (
                                             <Select.Option value={item.name}>
@@ -663,10 +657,6 @@ const PermissionEdit: React.FC = () => {
                                     <Select
                                         onChange={handleSelectValueNLV}
                                         mode="multiple"
-                                    // filterOption={(input: any, option: any) =>
-                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    // }
                                     >
                                         <Select.Option value="Miền Bắc">Miền Bắc</Select.Option>
                                         <Select.Option value="Miền Nam">Miền Nam</Select.Option>
@@ -678,10 +668,6 @@ const PermissionEdit: React.FC = () => {
                                     <Select
                                         onChange={handleSelectValueNQ}
                                         mode="multiple"
-                                    // filterOption={(input: any, option: any) =>
-                                    //     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    //     || option.props.value.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    // }
                                     >
                                         {listGroupPermission && listGroupPermission.map((item: GroupPermission) => (
                                             <Select.Option
@@ -798,11 +784,11 @@ const PermissionEdit: React.FC = () => {
                                             dropdownRender={(menu) => (
                                                 <>
                                                     {menu}
-                                                    <div style={{ paddingLeft: '14px', paddingRight: '14px', paddingBottom: '10px' }}>
+                                                    <div className={styles.addNewTeamText}>
                                                         <hr></hr>
                                                         {clickAddNewTeam === false ? (
                                                             <Button
-                                                                style={{ padding: 'unset', color: 'rgba(0,0,0,0.5)', fontStyle: 'italic' }}
+                                                                className={styles.addNewTeamBtn}
                                                                 type='text'
                                                                 onClick={() => setClickAddNewTeam(true)}
                                                             >
@@ -1030,7 +1016,6 @@ const PermissionEdit: React.FC = () => {
                 </Card>
             </>
         )
-
     )
 }
 export default React.memo(PermissionEdit);
