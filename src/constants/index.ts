@@ -335,31 +335,58 @@ export const TREE_DATA_LSCG = [
         key: 'call_history_read',
       },
       {
+        title: 'Xuất báo cáo',
+        key: 'call_history_export',
+      },
+
+      {
         title: 'Nghe ghi âm',
         key: 'call_history_record',
       },
       {
+        title: 'Tải ghi âm',
+        key: 'call_history_dowload',
+      },
+    ],
+  },
+];
+export const OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE = [
+  'call_history_read',
+  'call_history_record',
+  'call_history_export',
+  'call_history_dowload',
+];
+
+export const TREE_DATA_CONTACT = [
+  {
+    title: 'Danh bạ',
+    key: 'contact',
+    children: [
+      {
+        title: 'Xem',
+        key: 'contact_read',
+      },
+      {
+        title: 'Tạo mới',
+        key: 'contact_create',
+      },
+      {
+        title: 'Chỉnh sửa',
+        key: 'contact_update',
+      },
+      {
         title: 'Xóa lịch sử',
-        key: 'call_history_delete',
-      },
-      {
-        title: 'Xuất báo cáo',
-        key: 'call_history_export',
-      },
-      {
-        title: 'Phân tích',
-        key: 'call_history_anlyze',
+        key: 'contact_delete',
       },
     ],
   },
 ];
 
-export const OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE = [
-  'call_history_read',
-  'call_history_record',
-  'call_history_delete',
-  'call_history_export',
-  'call_history_anlyze',
+export const OPTIONS_PERMISSION_TREE_DATA_CONTACT_VALUE = [
+  'contact_read',
+  'contact_create',
+  'contact_delete',
+  'contact_update',
 ];
 
 export const TREE_DATA_TTCT = [
@@ -412,10 +439,6 @@ export const TREE_DATA_TTCN = [
         title: 'Chỉnh sửa',
         key: 'personal_info_update',
       },
-      {
-        title: 'Xoá',
-        key: 'personal_info_delete',
-      },
     ],
   },
 ];
@@ -423,7 +446,6 @@ export const TREE_DATA_TTCN = [
 export const OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE = [
   'personal_info_read',
   'personal_info_update',
-  'personal_info_delete',
 ];
 
 export const TREE_DATA_TTND = [

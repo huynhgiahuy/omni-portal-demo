@@ -45,6 +45,7 @@ import {
   OPTIONS_PERMISSION_RF,
   OPTIONS_PERMISSION_RF_VALUE,
   OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_CONTACT_VALUE,
   OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE,
   OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE,
   OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE,
@@ -53,6 +54,7 @@ import {
   OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE,
   OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE,
   TREE_DATA_BGCT,
+  TREE_DATA_CONTACT,
   TREE_DATA_KHD,
   TREE_DATA_LSCG,
   TREE_DATA_NQ,
@@ -125,6 +127,7 @@ const PermissionRole: React.FC = () => {
   const [valueCheckboxTTCT, setValueCheckboxTTCT] = useState<string[]>([]);
   const [valueCheckboxTTND, setValueCheckboxTTND] = useState<string[]>([]);
   const [valueCheckboxGroupsPer, setValueCheckboxGroupsPer] = useState<string[]>([]);
+  const [valueCheckboxContact, setValueCheckboxContact] = useState<string[]>([]);
 
   const [checkAllDB, setCheckAllDB] = useState(false);
   const [selectListDB, setSelectListDB] = useState<string[]>([]);
@@ -472,6 +475,10 @@ const PermissionRole: React.FC = () => {
     setValueCheckboxGroupsPer(checkedKeys.filter((data: string) => data !== 'permission_group'));
   };
 
+  const onCheckDataTreeContact = (checkedKeys: any, info: any) => {
+    setValueCheckboxContact(checkedKeys.filter((data: string) => data !== 'contact'));
+  };
+
   const fetchListUserRole = async (role_code: string, role_desc: string) => {
     if (permissionList.length === 0) {
       Modal.warning({
@@ -510,14 +517,12 @@ const PermissionRole: React.FC = () => {
       setValueCheckboxGeneralStatistic([]);
       setValueCheckboxTransferShift([]);
       setValueCheckboxNightShift([]);
-      setValueCheckboxHistoryCall([]);
       setValueCheckboxTTCT([]);
     } else {
       setCheckAllReport(true);
       setValueCheckboxGeneralStatistic(OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE);
       setValueCheckboxTransferShift(OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE);
       setValueCheckboxNightShift(OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE);
-      setValueCheckboxHistoryCall(OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE);
       setValueCheckboxTTCT(OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE);
     }
   };
@@ -529,7 +534,6 @@ const PermissionRole: React.FC = () => {
       valueCheckboxGeneralStatistic.length > 0 ||
       valueCheckboxTransferShift.length > 0 ||
       valueCheckboxNightShift.length > 0 ||
-      valueCheckboxHistoryCall.length > 0 ||
       valueCheckboxTTCT.length > 0
     ) {
       setIndeterminateReport(true);
@@ -539,7 +543,6 @@ const PermissionRole: React.FC = () => {
       valueCheckboxGeneralStatistic.length == OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE.length &&
       valueCheckboxTransferShift.length == OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE.length &&
       valueCheckboxNightShift.length == OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE.length &&
-      valueCheckboxHistoryCall.length == OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE.length &&
       valueCheckboxTTCT.length == OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE.length
     ) {
       setIndeterminateReport(false);
@@ -549,7 +552,6 @@ const PermissionRole: React.FC = () => {
     valueCheckboxGeneralStatistic,
     valueCheckboxTransferShift,
     valueCheckboxNightShift,
-    valueCheckboxHistoryCall,
     valueCheckboxTTCT,
   ]);
 
@@ -559,11 +561,15 @@ const PermissionRole: React.FC = () => {
       setValueCheckboxGroupsPer([]);
       setValueCheckboxTTCN([]);
       setValueCheckboxTTND([]);
+      setValueCheckboxHistoryCall([]);
+      setValueCheckboxContact([]);
     } else {
       setCheckAllProfile(true);
       setValueCheckboxGroupsPer(OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE);
       setValueCheckboxTTCN(OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE);
       setValueCheckboxTTND(OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE);
+      setValueCheckboxHistoryCall(OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE);
+      setValueCheckboxContact(OPTIONS_PERMISSION_TREE_DATA_CONTACT_VALUE);
     }
   };
 
@@ -573,7 +579,9 @@ const PermissionRole: React.FC = () => {
     if (
       valueCheckboxTTCN.length > 0 ||
       valueCheckboxTTND.length > 0 ||
-      valueCheckboxGroupsPer.length > 0
+      valueCheckboxGroupsPer.length > 0 ||
+      valueCheckboxHistoryCall.length > 0 ||
+      valueCheckboxContact.length > 0
     ) {
       setIndeterminateProfile(true);
     }
@@ -581,12 +589,20 @@ const PermissionRole: React.FC = () => {
     if (
       valueCheckboxTTCN.length == OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE.length &&
       valueCheckboxTTND.length == OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE.length &&
-      valueCheckboxGroupsPer.length == OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE.length
+      valueCheckboxGroupsPer.length == OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE.length &&
+      valueCheckboxHistoryCall.length == OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE.length &&
+      valueCheckboxContact.length == OPTIONS_PERMISSION_TREE_DATA_CONTACT_VALUE.length
     ) {
       setIndeterminateProfile(false);
       setCheckAllProfile(true);
     }
-  }, [valueCheckboxTTCN, valueCheckboxTTND, valueCheckboxGroupsPer]);
+  }, [
+    valueCheckboxTTCN,
+    valueCheckboxTTND,
+    valueCheckboxGroupsPer,
+    valueCheckboxHistoryCall,
+    valueCheckboxContact,
+  ]);
 
   useEffect(() => {
     if (isEditRole) {
@@ -679,6 +695,13 @@ const PermissionRole: React.FC = () => {
         .map(({ code }) => code);
       if (defaultDataGroupsPer?.length) {
         setValueCheckboxGroupsPer(defaultDataGroupsPer);
+      }
+
+      const defaultDataContact = dataRoleId?.permission_list
+        .filter(({ group }) => group === 'permission_group')
+        .map(({ code }) => code);
+      if (defaultDataContact?.length) {
+        setValueCheckboxContact(defaultDataContact);
       }
     }
   }, [dataRoleId, isEditRole]);
@@ -932,13 +955,6 @@ const PermissionRole: React.FC = () => {
                 checkedKeys={valueCheckboxNightShift}
               />
               <Tree
-                treeData={TREE_DATA_LSCG}
-                checkable
-                onCheck={onCheckDataTreeHistoryCall}
-                className={styles.treeDataCheckbox}
-                checkedKeys={valueCheckboxHistoryCall}
-              />
-              <Tree
                 treeData={TREE_DATA_TTCT}
                 checkable
                 onCheck={onCheckDataTreeTTCT}
@@ -970,6 +986,20 @@ const PermissionRole: React.FC = () => {
                 onCheck={onCheckDataTreeGroupsPer}
                 className={styles.treeDataCheckbox}
                 checkedKeys={valueCheckboxGroupsPer}
+              />
+              <Tree
+                treeData={TREE_DATA_LSCG}
+                checkable
+                onCheck={onCheckDataTreeHistoryCall}
+                className={styles.treeDataCheckbox}
+                checkedKeys={valueCheckboxHistoryCall}
+              />
+              <Tree
+                treeData={TREE_DATA_CONTACT}
+                checkable
+                onCheck={onCheckDataTreeContact}
+                className={styles.treeDataCheckbox}
+                checkedKeys={valueCheckboxContact}
               />
             </>
           );
@@ -1014,39 +1044,35 @@ const PermissionRole: React.FC = () => {
         </Col>
       </Row>
 
-      <Card className={styles.detailCardLayoutNoMar}>
-        <Table
-          dataSource={listAllRolePermission}
-          columns={columns}
-          style={{ paddingLeft: '20px' }}
-          className={styles.permissionTable}
-          onChange={handleTableChange}
-          pagination={{
-            ...pagination,
-            // total: listAllRolePermission?.length,
-            locale: {
-              items_per_page: '/ Trang',
-              jump_to: 'Đến trang',
-              next_page: 'Trang sau',
-              prev_page: 'Trang trước',
-              next_3: '3 trang sau',
-              next_5: '5 trang sau',
-              prev_3: '3 trang trước',
-              prev_5: '5 trang trước',
-            },
-          }}
-          scroll={{ x: 300 }}
-          loading={{
-            indicator: (
-              <div>
-                <Spin />
-              </div>
-            ),
-            spinning: fetchReadRoleAndPerm.loading,
-          }}
-        />
-      </Card>
-
+      <Table
+        dataSource={listAllRolePermission}
+        columns={columns}
+        className={styles.permissionTableRole}
+        onChange={handleTableChange}
+        pagination={{
+          ...pagination,
+          // total: listAllRolePermission?.length,
+          locale: {
+            items_per_page: '/ Trang',
+            jump_to: 'Đến trang',
+            next_page: 'Trang sau',
+            prev_page: 'Trang trước',
+            next_3: '3 trang sau',
+            next_5: '5 trang sau',
+            prev_3: '3 trang trước',
+            prev_5: '5 trang trước',
+          },
+        }}
+        scroll={{ x: 300 }}
+        loading={{
+          indicator: (
+            <div>
+              <Spin />
+            </div>
+          ),
+          spinning: fetchReadRoleAndPerm.loading,
+        }}
+      />
       <Modal
         open={isAddNewPermission}
         onCancel={handleCancleAddNewPermission}
@@ -1078,6 +1104,10 @@ const PermissionRole: React.FC = () => {
                 initialValue=""
                 className={styles.addPermissionInputPlaceholder}
                 rules={[
+                  {
+                    whitespace: true,
+                    message: 'Vui lòng không để trống thông tin',
+                  },
                   {
                     required: true,
                     message: 'Không được để trống thông tin này',
