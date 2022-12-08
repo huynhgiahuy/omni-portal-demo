@@ -173,7 +173,7 @@ export async function requestReadRoleAndPerm(
 }
 
 export async function requestTeamPermissionData() {
-  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_team`, {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/team/read_team`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -272,15 +272,15 @@ export async function requestCreateNewTeam(name?: string) {
 }
 
 export async function requestUpdateUserInfoFinal(
-  user_id?: string,
-  team_id?: string,
-  role_id?: string,
-  department?: string,
-  position?: string,
-  phone_number?: string,
-  ip_phone?: string,
-  level?: string,
-  work_address?: string,
+  user_id: string,
+  team_id: string,
+  role_id: string,
+  department: string,
+  position: string,
+  phone_number: string,
+  ip_phone: string,
+  level: string,
+  work_address: string,
 ) {
   return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/update_user_and_role`, {
     method: 'POST',
