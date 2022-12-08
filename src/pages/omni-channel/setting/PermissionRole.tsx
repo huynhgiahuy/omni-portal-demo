@@ -161,6 +161,7 @@ const PermissionRole: React.FC = () => {
     valueCheckboxTTCT,
     valueCheckboxTTND,
     valueCheckboxGroupsPer,
+    valueCheckboxContact,
     selectListDB,
     selectListIM,
     selectListEM,
@@ -696,7 +697,7 @@ const PermissionRole: React.FC = () => {
       }
 
       const defaultDataContact = dataRoleId?.permission_list
-        .filter(({ group }) => group === 'permission_group')
+        .filter(({ group }) => group === 'contact')
         .map(({ code }) => code);
       if (defaultDataContact?.length) {
         setValueCheckboxContact(defaultDataContact);
