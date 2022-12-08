@@ -220,7 +220,10 @@ const PhoneBook: React.FC = () => {
 
   const addUserContact = useRequest(
     async (data) => {
-      const result: { success: boolean; error_code: number } = await requestAddUserContact(data);
+      const result: { success: boolean; error_code: number } = await requestAddUserContact(
+        token ? token : '',
+        data,
+      );
       if (!result.success) {
         if (result.error_code === 4030102) {
           message.error('Bạn không có quyền thêm');
@@ -242,7 +245,10 @@ const PhoneBook: React.FC = () => {
 
   const updateUserContact = useRequest(
     async (data) => {
-      const res: { success: boolean; error_code: number } = await requestUpdateUserContact(data);
+      const res: { success: boolean; error_code: number } = await requestUpdateUserContact(
+        token ? token : '',
+        data,
+      );
       if (!res.success) {
         if (res.error_code === 4030102) {
           message.error('Bạn không có quyền cập nhập');
@@ -265,7 +271,10 @@ const PhoneBook: React.FC = () => {
 
   const deleteUserContact = useRequest(
     async (id) => {
-      const res: { success: boolean; error_code: number } = await requestDeleteUserContact(id);
+      const res: { success: boolean; error_code: number } = await requestDeleteUserContact(
+        token ? token : '',
+        id,
+      );
       if (!res.success) {
         if (res.error_code === 4030102) {
           message.error('Bạn không có quyền xoá');
@@ -313,7 +322,10 @@ const PhoneBook: React.FC = () => {
 
   const checkPhoneContact = useRequest(
     async (data) => {
-      const result: { success: boolean; error_code: number } = await requestCheckPhoneContact(data);
+      const result: { success: boolean; error_code: number } = await requestCheckPhoneContact(
+        token ? token : '',
+        data,
+      );
       if (result.error_code === 4000201) {
         form.setFields([
           {
