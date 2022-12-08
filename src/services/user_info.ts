@@ -57,7 +57,7 @@ export async function requestGetInfoUser(): Promise<requeGetUserInfoProps> {
 }
 
 export async function requestUpdateStatusUser(
-  data: string,
+  data: number,
   token: string,
 ): Promise<requeGetUserInfoProps> {
   return request(`${endpoint}/user-service/api/settings/user/update_user_status`, {

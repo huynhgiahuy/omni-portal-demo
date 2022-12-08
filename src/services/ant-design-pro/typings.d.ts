@@ -49,7 +49,7 @@ declare namespace API {
       dark_mode?: boolean;
       simple_mode?: boolean;
     };
-    status?: string;
+    status?: number;
     work_address?: string;
   };
 
