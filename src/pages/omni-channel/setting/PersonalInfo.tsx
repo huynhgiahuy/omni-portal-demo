@@ -419,12 +419,18 @@ const PersonalInfo: React.FC = () => {
                   )}
                 </div>
                 <div className={styles.antDataDisplay}>
-                  <Typography.Text className={styles.antTextStyle}>IP Phone</Typography.Text>
+                  <Typography.Text className={styles.antTextStyle}>
+                    IP Phone {isEditUser === true && <span style={{ color: 'red' }}> (*)</span>}
+                  </Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
                       name="ip_phone"
                       className={styles.antFormItemMargin}
                       rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng không để trống thông tin',
+                        },
                         {
                           pattern: new RegExp('^[0-9]{4,6}$'),
                           message: 'IP Phone không hợp lệ',
