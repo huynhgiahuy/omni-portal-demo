@@ -112,6 +112,7 @@ interface DataTypePermissionTable {
 const PermissionRole: React.FC = () => {
   const [form] = Form.useForm();
   const [isView, setIsView] = useState('');
+  const token = window.localStorage?.getItem('access_token');
 
   const [listAllRolePermission, setListAllRolePermission] = useState<DataAllRolePermission[]>([]);
   const [isAddNewPermission, setAddNetPermission] = useState(false);
@@ -171,9 +172,12 @@ const PermissionRole: React.FC = () => {
 
   const fetchReadRoleAndPerm = useRequest(
     async (keyword?: string) => {
-      const res: { success: boolean; error_code: number } = await requestReadRoleAndPerm({
-        keyword,
-      });
+      const res: { success: boolean; error_code: number } = await requestReadRoleAndPerm(
+        token ? token : '',
+        {
+          keyword,
+        },
+      );
       if (!res.success) {
         if (res.error_code === 4030102) {
           setIsView('403');
@@ -194,6 +198,7 @@ const PermissionRole: React.FC = () => {
   const fetchCreateRoleAndPermission = useRequest(
     async (permissionList: string[], role_code: string, role_desc: string) => {
       const res: { success: string; error_code: number } = await requestCreateRoleAndPerm(
+        token ? token : '',
         permissionList,
         role_code,
         role_desc,
@@ -227,6 +232,7 @@ const PermissionRole: React.FC = () => {
   const fetchUpdateRoleAndPermission = useRequest(
     async (permissionList: string[], role_code: string, role_desc: string, id: string) => {
       const res: { success: string; error_code: number } = await requestUpdateRole(
+        token ? token : '',
         permissionList,
         role_code,
         role_desc,
@@ -261,7 +267,10 @@ const PermissionRole: React.FC = () => {
 
   const fetchDeleteRoleAndPermission = useRequest(
     async (id: string) => {
-      const res: { success: string; error_code: number } = await requestDeleteRoleAndPermission(id);
+      const res: { success: string; error_code: number } = await requestDeleteRoleAndPermission(
+        token ? token : '',
+        id,
+      );
       if (!res.success) {
         if (res.error_code === 4030102) {
           message.error('Bạn không có quyền xoá');
