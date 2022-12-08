@@ -45,7 +45,6 @@ import Ellipse from '../../../assets/Ellipse.svg';
 import OfflineIcon from '../../../../public/offline.png';
 import moment from 'moment';
 import NoFoundPage from '@/pages/404';
-import { socket } from '@/socket';
 
 interface PaginationProps {
   current: number;
@@ -581,27 +580,51 @@ const PermissionEdit: React.FC = () => {
   };
 
   const handleSelectValueTeam = (values: any) => {
-    setListValueTeam(values);
-    setPagination({
-      ...pagination,
-      current: 1,
-    });
+    if (values.length === 0) {
+      setListValueTeam(undefined);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    } else {
+      setListValueTeam(values);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    }
   };
 
   const handleSelectValueNLV = (values: any) => {
-    setListValueNLV(values);
-    setPagination({
-      ...pagination,
-      current: 1,
-    });
+    if (values.length === 0) {
+      setListValueNLV(undefined);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    } else {
+      setListValueNLV(values);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    }
   };
 
   const handleSelectValueNQ = (values: any) => {
-    setListValueNQ(values);
-    setPagination({
-      ...pagination,
-      current: 1,
-    });
+    if (values.length === 0) {
+      setListValueNQ(undefined);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    } else {
+      setListValueNQ(values);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    }
   };
 
   return isView === '403' ? (
