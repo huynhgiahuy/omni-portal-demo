@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Card,
   Table,
   Space,
   Modal,
@@ -179,9 +178,8 @@ const PermissionRole: React.FC = () => {
           setIsView('403');
           return;
         }
-      } else {
-        return res;
       }
+      return res;
     },
     {
       onSuccess: (res) => {
@@ -265,7 +263,7 @@ const PermissionRole: React.FC = () => {
       const res: { success: string; error_code: number } = await requestDeleteRoleAndPermission(id);
       if (!res.success) {
         if (res.error_code === 4030102) {
-          message.error('Bạn không có quyền cập nhập');
+          message.error('Bạn không có quyền xoá');
           return;
         } else {
           message.error('Xoá Thất bại');
