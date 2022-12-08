@@ -30,7 +30,7 @@ export async function requestGetUserContact(
   });
 }
 
-export async function requestAddUserContact(data: dataUserContactProps) {
+export async function requestAddUserContact(token: string, data: dataUserContactProps) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/add_user_contact`, {
     method: 'POST',
     headers: {
@@ -40,7 +40,7 @@ export async function requestAddUserContact(data: dataUserContactProps) {
   });
 }
 
-export async function requestUpdateUserContact(data: dataUserContactProps) {
+export async function requestUpdateUserContact(token: string, data: dataUserContactProps) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/update_user_contact`, {
     method: 'POST',
     headers: {
@@ -50,7 +50,7 @@ export async function requestUpdateUserContact(data: dataUserContactProps) {
   });
 }
 
-export async function requestDeleteUserContact(contacts_id: string) {
+export async function requestDeleteUserContact(token: string, contacts_id: string) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/delete_user_contact`, {
     method: 'POST',
     headers: {
@@ -62,7 +62,7 @@ export async function requestDeleteUserContact(contacts_id: string) {
   });
 }
 
-export async function requestCheckPhoneContact(phone_number: string) {
+export async function requestCheckPhoneContact(token: string, phone_number: string) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/check_user_phone_number`, {
     method: 'POST',
     headers: {
