@@ -11,8 +11,8 @@ const WorkingStatus = () => {
   const [isOnline, setIsOnline] = useState(true);
 
   const token = window.localStorage.getItem('access_token');
-  const [option, setOption] = useState(
-    initialState?.currentUser?.status ? initialState?.currentUser?.status : '1',
+  const [option, setOption] = useState<number>(
+    initialState?.currentUser?.status ? initialState?.currentUser?.status : 1,
   );
 
   //Check offline
@@ -29,11 +29,11 @@ const WorkingStatus = () => {
   });
 
   useEffect(() => {
-    if (!isOnline && option === '1') {
-      const res = requestUpdateStatusUser('2', token ? token : '');
+    if (!isOnline && option === 1) {
+      const res = requestUpdateStatusUser(2, token ? token : '');
       res.then(async (result: requeGetUserInfoProps) => {
         if (result.success) {
-          setOption('2');
+          setOption(2);
           await setInitialState((s) => ({
             ...s,
             currentUser: result.data[0],
@@ -48,7 +48,7 @@ const WorkingStatus = () => {
       option !== initialState?.currentUser?.status &&
       initialState?.currentUser?.status !== undefined
     ) {
-      const res = requestUpdateStatusUser(option ? option : '1', token ? token : '');
+      const res = requestUpdateStatusUser(option ? option : 1, token ? token : '');
       res.then(async (result: requeGetUserInfoProps) => {
         if (result.success) {
           await setInitialState((s) => ({
@@ -56,7 +56,7 @@ const WorkingStatus = () => {
             currentUser: result.data[0],
           }));
         } else {
-          setOption(initialState?.currentUser?.status ? initialState?.currentUser?.status : '2');
+          setOption(initialState?.currentUser?.status ? initialState?.currentUser?.status : 2);
           message.error('Chuyển trạng thái không thành công, vui lòng thử lại');
           return;
         }
@@ -70,7 +70,7 @@ const WorkingStatus = () => {
         bordered={false}
         className={styles['status-container']}
         value={option}
-        onSelect={(value: string) => {
+        onSelect={(value: number) => {
           setOption(value);
         }}
         dropdownStyle={{ width: 155 }}
