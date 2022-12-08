@@ -3,7 +3,6 @@ import {
   Button,
   Input,
   Table,
-  Card,
   Segmented,
   Space,
   Image,
@@ -45,6 +44,7 @@ import {
   requestTeamPermissionData,
 } from '../setting/services';
 import { debounce } from 'lodash';
+import NoFoundPage from '@/pages/404';
 
 interface TeamPermission {
   name: string;
@@ -162,6 +162,7 @@ const PhoneBook: React.FC = () => {
   const [setTeamKey] = useState<string | any>();
   const [newTeamValue, setNewTeamValue] = useState<string | any>();
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
+  const [isView, setIsView] = useState('');
 
   const token = window.localStorage?.getItem('access_token');
 
@@ -188,14 +189,15 @@ const PhoneBook: React.FC = () => {
 
   const getUserContact = useRequest(
     async (data) => {
-      const res: { success: boolean } = await requestGetUserContact(
+      const res: { success: boolean; error_code: number } = await requestGetUserContact(
         token ? token : '',
         data ? data : { email_user: initialState?.currentUser?.email },
       );
       if (!res.success) {
-        message.error('Không lấy được danh bạ');
-        return;
-      } else {
+        if (res.error_code === 4030102) {
+          setIsView('403');
+          return;
+        }
       }
       return res;
     },
@@ -218,10 +220,15 @@ const PhoneBook: React.FC = () => {
 
   const addUserContact = useRequest(
     async (data) => {
-      const result: { success: boolean; error: string } = await requestAddUserContact(data);
+      const result: { success: boolean; error_code: number } = await requestAddUserContact(data);
       if (!result.success) {
-        message.error('Thêm thất bại, vui lòng thử lại');
-        return;
+        if (result.error_code === 4030102) {
+          message.error('Bạn không có quyền thêm');
+          return;
+        } else {
+          message.error('Thêm thất bại');
+          return;
+        }
       } else {
         message.success('Thêm thành công');
         getUserContact.run({ email_user: initialState?.currentUser?.email });
@@ -235,10 +242,15 @@ const PhoneBook: React.FC = () => {
 
   const updateUserContact = useRequest(
     async (data) => {
-      const res: { success: boolean } = await requestUpdateUserContact(data);
+      const res: { success: boolean; error_code: number } = await requestUpdateUserContact(data);
       if (!res.success) {
-        message.error('Cập nhập thất bại');
-        return;
+        if (res.error_code === 4030102) {
+          message.error('Bạn không có quyền cập nhập');
+          return;
+        } else {
+          message.error('Cập nhập thất bại');
+          return;
+        }
       } else {
         message.success('Cập nhập thành công');
         getUserContact.run({ email_user: initialState?.currentUser?.email });
@@ -253,10 +265,15 @@ const PhoneBook: React.FC = () => {
 
   const deleteUserContact = useRequest(
     async (id) => {
-      const res: { success: boolean } = await requestDeleteUserContact(id);
+      const res: { success: boolean; error_code: number } = await requestDeleteUserContact(id);
       if (!res.success) {
-        message.error('Xoá thất bại');
-        return;
+        if (res.error_code === 4030102) {
+          message.error('Bạn không có quyền xoá');
+          return;
+        } else {
+          message.error('Xoá thất bại');
+          return;
+        }
       } else {
         message.success('Xoá thành công');
         getUserContact.run({ email_user: initialState?.currentUser?.email });
@@ -515,7 +532,9 @@ const PhoneBook: React.FC = () => {
     fetchTeamPermissionData();
   };
 
-  return (
+  return isView === '403' ? (
+    <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+  ) : (
     <>
       <div style={{ marginTop: '20px' }}>
         <Segmented
