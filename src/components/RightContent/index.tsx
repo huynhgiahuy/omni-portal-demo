@@ -91,12 +91,15 @@ const GlobalHeaderRight: React.FC = () => {
       leading: false,
     },
   );
+  
   useEffect(() => {
+    console.log({ socket });
     const newToken = {
       token: access_token,
     };
     socket.emit('authen_event', newToken);
     socket.on('emit_call_event', (data) => {
+      console.log({data})
       setDataCall(data);
       // fake data when agent answered_call
       //data.event = 'answered_call';
@@ -126,7 +129,7 @@ const GlobalHeaderRight: React.FC = () => {
           break;
       }
     });
-  }, []);
+  }, [socket]);
 
   if (!initialState || !initialState.settings) {
     return null;

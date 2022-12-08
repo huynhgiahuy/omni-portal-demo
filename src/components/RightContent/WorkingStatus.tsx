@@ -8,10 +8,40 @@ import { requeGetUserInfoProps, requestUpdateStatusUser } from '@/services/user_
 
 const WorkingStatus = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
+  const [isOnline, setIsOnline] = useState(true);
+
   const token = window.localStorage.getItem('access_token');
   const [option, setOption] = useState(
     initialState?.currentUser?.status ? initialState?.currentUser?.status : '1',
   );
+
+  //Check offline
+  let time: NodeJS.Timeout;
+  window.addEventListener('blur', () => {
+    time = setTimeout(() => {
+      setIsOnline(false);
+    }, 300 * 1000);
+  });
+
+  window.addEventListener('focus', () => {
+    clearTimeout(time);
+    setIsOnline(true);
+  });
+
+  useEffect(() => {
+    if (!isOnline && option === '1') {
+      const res = requestUpdateStatusUser('2', token ? token : '');
+      res.then(async (result: requeGetUserInfoProps) => {
+        if (result.success) {
+          setOption('2');
+          await setInitialState((s) => ({
+            ...s,
+            currentUser: result.data[0],
+          }));
+        }
+      });
+    }
+  }, [isOnline]);
 
   useEffect(() => {
     if (
