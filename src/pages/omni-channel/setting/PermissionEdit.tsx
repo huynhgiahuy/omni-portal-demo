@@ -140,6 +140,7 @@ const PermissionEdit: React.FC = () => {
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
 
   const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
+  const [isInfoUpdated, setInfoUpdated] = useState(false);
 
   const [listValueTeam, setListValueTeam] = useState<string[] | any>();
   const [listValueNLV, setListValueNLV] = useState<string[] | any>();
@@ -147,6 +148,7 @@ const PermissionEdit: React.FC = () => {
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
 
   const [form] = Form.useForm();
+  const [formFilter] = Form.useForm();
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -294,6 +296,7 @@ const PermissionEdit: React.FC = () => {
 
   const handleSubmitUpdateUserInfoFinal = (values: any) => {
     handleCallApiUpdateUserInfo.run(values);
+    setInfoUpdated(false);
   };
 
   const handleClickDeleteTeam = async (e: any, id: string) => {
@@ -352,46 +355,53 @@ const PermissionEdit: React.FC = () => {
   };
 
   const handleRenderStatusActivity = (status: any) => {
-    if (status === '1') {
+    if (status === 1) {
       return (
         <div style={{ border: '1px solid #1eaf61', borderRadius: 4 }}>
           <CheckCircleFilled style={{ color: ' #1eaf61' }} />
           <span className={styles.readyStatusText}>Sẵn sàng</span>
         </div>
       );
-    } else if (status === '2') {
+    } else if (status === 2) {
       return (
         <div style={{ border: '1px solid #FAAD14', borderRadius: 4 }}>
           <ClockCircleFilled style={{ color: ' #FAAD14' }} />
           <span className={styles.abscentStatusText}>Vắng mặt</span>
         </div>
       );
-    } else if (status === '3') {
+    } else if (status === 3) {
       return (
         <div style={{ border: '1px solid #F5222D', borderRadius: 4 }}>
           <MinusCircleFilled style={{ color: '#F5222D' }} />
           <span className={styles.notDisturbStatusText}>Không làm phiền</span>
         </div>
       );
-    } else if (status === '4') {
+    } else if (status === 4) {
       return (
         <div className={styles.noActivityStatusDisplay}>
           <img src={Ellipse} alt="..." width={14} height={14} />
           <div className={styles.noActivityStatusText}>Không hoạt động</div>
         </div>
       );
+    } else if (status === 6) {
+      return (
+        <div className={styles.offlineStatusDisplay}>
+          <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
+          <div className={styles.offlineStatusText}>Đang offline</div>
+        </div>
+      );
     }
     return;
   };
 
-  const handleRenderOfflineStatus = () => {
-    return (
-      <div className={styles.offlineStatusDisplay}>
-        <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
-        <div className={styles.offlineStatusText}>Đang offline</div>
-      </div>
-    );
-  };
+  // const handleRenderOfflineStatus = () => {
+  //   return (
+  //     <div className={styles.offlineStatusDisplay}>
+  //       <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
+  //       <div className={styles.offlineStatusText}>Đang offline</div>
+  //     </div>
+  //   );
+  // };
 
   const columns: ColumnsType<DataAllUserInfoFinal> = [
     {
@@ -513,13 +523,9 @@ const PermissionEdit: React.FC = () => {
       align: 'center',
       width: '110px',
       render: (text, record) => {
-        if (record.is_online === true) {
-          return text === null || text === undefined
-            ? '-'
-            : handleRenderStatusActivity(record.status);
-        } else {
-          return handleRenderOfflineStatus();
-        }
+        return text === null || text === undefined
+          ? '-'
+          : handleRenderStatusActivity(record.status);
       },
     },
     // {
@@ -567,7 +573,7 @@ const PermissionEdit: React.FC = () => {
       e.stopPropagation();
       e.preventDefault();
     } else {
-      form.resetFields();
+      formFilter.resetFields();
       setListValueTeam(undefined);
       setListValueNLV(undefined);
       setListValueNQ(undefined);
@@ -635,11 +641,11 @@ const PermissionEdit: React.FC = () => {
     />
   ) : (
     <>
-      <Form className={styles.filterFormPermissionEdit} layout="vertical" form={form}>
+      <Form className={styles.filterFormPermissionEdit} layout="vertical" form={formFilter}>
         <div>
           <div className={styles.filterFormPermissionEditDisplay}>
             <div style={{ width: '300px' }}>
-              <Form.Item label="Team" name="Team" style={{ marginBottom: 'unset' }}>
+              <Form.Item label="Team" name="team_id" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueTeam} mode="multiple">
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
@@ -651,7 +657,7 @@ const PermissionEdit: React.FC = () => {
               </Form.Item>
             </div>
             <div style={{ width: '300px' }}>
-              <Form.Item label="Nơi làm việc" name="Nơi làm việc" style={{ marginBottom: 'unset' }}>
+              <Form.Item label="Nơi làm việc" name="work_address" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueNLV} mode="multiple">
                   <Select.Option value="Miền Bắc">Miền Bắc</Select.Option>
                   <Select.Option value="Miền Nam">Miền Nam</Select.Option>
@@ -659,7 +665,7 @@ const PermissionEdit: React.FC = () => {
               </Form.Item>
             </div>
             <div style={{ width: '300px' }}>
-              <Form.Item label="Nhóm quyền" name="Nhóm quyền" style={{ marginBottom: 'unset' }}>
+              <Form.Item label="Nhóm quyền" name="role_id" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueNQ} mode="multiple">
                   {listGroupPermission &&
                     listGroupPermission.map((item: GroupPermission) => (
@@ -754,6 +760,24 @@ const PermissionEdit: React.FC = () => {
           layout="vertical"
           onFinish={handleSubmitUpdateUserInfoFinal}
           requiredMark={false}
+          onValuesChange={() => {
+            form.validateFields().catch((error) => {
+              setInfoUpdated(false);
+              if (
+                error.errorFields.length === 0 &&
+                (error.values.team_id !== listEditUserInfoFinal[0].team_id ||
+                  error.values.role_id !== listEditUserInfoFinal[0].role_id ||
+                  error.values.department !== listEditUserInfoFinal[0].department ||
+                  error.values.phone_number !== listEditUserInfoFinal[0].phone_number ||
+                  error.values.ip_phone !== listEditUserInfoFinal[0].ip_phone ||
+                  error.values.level !== listEditUserInfoFinal[0].level ||
+                  error.values.work_address !== listEditUserInfoFinal[0].work_address ||
+                  error.values.position !== listEditUserInfoFinal[0].position)
+              ) {
+                setInfoUpdated(true);
+              }
+            });
+          }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
@@ -1002,7 +1026,12 @@ const PermissionEdit: React.FC = () => {
             >
               Hủy
             </Button>
-            <Button type="primary" htmlType="submit" loading={handleCallApiUpdateUserInfo.loading}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={handleCallApiUpdateUserInfo.loading}
+              disabled={isInfoUpdated ? false : true}
+            >
               Cập nhật
             </Button>
           </Form.Item>
