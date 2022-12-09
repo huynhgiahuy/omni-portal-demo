@@ -44,10 +44,7 @@ const WorkingStatus = () => {
   }, [isOnline]);
 
   useEffect(() => {
-    if (
-      option !== initialState?.currentUser?.status &&
-      initialState?.currentUser?.status !== undefined
-    ) {
+    if (initialState?.currentUser?.status !== undefined) {
       const res = requestUpdateStatusUser(option ? option : 1, token ? token : '');
       res.then(async (result: requeGetUserInfoProps) => {
         if (result.success) {

@@ -515,7 +515,7 @@ const PhoneBook: React.FC = () => {
     const resNewTeam = await requestCreateNewTeam(newTeamValue);
     if (resNewTeam.success === true) {
       message.success('Thêm thành công');
-      getListTeam.refresh();
+      getListTeam.run();
       form.setFieldValue('newTeamValue', '');
     } else {
       message.error('Thêm thất bại');
@@ -530,10 +530,9 @@ const PhoneBook: React.FC = () => {
       form.setFieldValue('newTeamValue', '');
       setNewTeamValue('');
       form.setFieldValue('team', '');
-      getListTeam.refresh();
+      getListTeam.run();
     } else {
       message.error('Xoá thất bại');
-
       return;
     }
   };
@@ -751,7 +750,7 @@ const PhoneBook: React.FC = () => {
         >
           <div>
             <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Họ và tên <span style={{ color: 'red' }}>(*)</span>
+              Họ và tên{external !== 'Nội bộ' && <span style={{ color: 'red' }}> (*)</span>}
             </Typography.Text>
             <Form.Item
               name="full_name"
@@ -774,12 +773,12 @@ const PhoneBook: React.FC = () => {
                 },
               ]}
             >
-              <Input placeholder="Nhập họ và tên" />
+              <Input placeholder="Nhập họ và tên" disabled={external === 'Nội bộ'} />
             </Form.Item>
           </div>
           <div>
             <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Số điện thoại <span style={{ color: 'red' }}>(*)</span>
+              Số điện thoại{external !== 'Nội bộ' && <span style={{ color: 'red' }}> (*)</span>}
             </Typography.Text>
             <Form.Item
               name="phone_number"
@@ -803,6 +802,7 @@ const PhoneBook: React.FC = () => {
               <Input
                 placeholder="Nhập số điện thoại"
                 className={styles.inputNumber}
+                disabled={external === 'Nội bộ'}
                 onBlur={() => {
                   if (form.getFieldValue('phone_number') !== initialUserContact?.phone_number) {
                     checkPhoneContact.run(form.getFieldValue('phone_number'));
@@ -826,12 +826,16 @@ const PhoneBook: React.FC = () => {
                 },
               ]}
             >
-              <Input className={styles.inputNumber} placeholder="Nhập số máy nhánh" />
+              <Input
+                disabled={external === 'Nội bộ'}
+                className={styles.inputNumber}
+                placeholder="Nhập số máy nhánh"
+              />
             </Form.Item>
           </div>
           <div>
             <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Email <span style={{ color: 'red' }}>(*)</span>
+              Email {external !== 'Nội bộ' && <span style={{ color: 'red' }}> (*)</span>}
             </Typography.Text>
             <Form.Item
               name="email"
@@ -845,7 +849,7 @@ const PhoneBook: React.FC = () => {
                 },
               ]}
             >
-              <Input placeholder="Nhập email đơn vị" />
+              <Input placeholder="Nhập email đơn vị" disabled={external === 'Nội bộ'} />
             </Form.Item>
           </div>
           <div>
