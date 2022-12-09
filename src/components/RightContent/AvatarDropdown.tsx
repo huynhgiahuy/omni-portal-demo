@@ -93,7 +93,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   const onMenuClick = useCallback(
     (event: MenuInfo) => {
       const { key } = event;
-      console.log('avatar_drop_down:>> ', event);
+      // console.log('avatar_drop_down:>> ', event);
       if (key === 'logout') {
         setInitialState((s: any) => ({ ...s, currentUser: undefined }));
         loginOut();
@@ -109,7 +109,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       if (key === 'displayAccessibility') {
         alert('Page display is not exist!');
       }
-      history.push(`/account/${key}`);
+      // history.push(`/account/${key}`);
     },
     [setInitialState],
   );
@@ -220,19 +220,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       }}
     >
       <Menu className={styles.menu} selectedKeys={[]} mode="inline" onClick={onMenuClick}>
-        {/* {menu && (
-        <Menu.Item key="center">
-          <UserOutlined />
-          个人中心
-        </Menu.Item>
-      )}
-      {menu && (
-        <Menu.Item key="settings">
-          <SettingOutlined />
-          个人设置
-        </Menu.Item>
-      )}
-      {menu && <Menu.Divider />} */}
         <Menu.Item key="user">
           <Avatar size="small" style={{ backgroundColor: 'color' }}>
             <UserOutlined style={{ paddingLeft: '2px', width: '10px', color: 'black' }} />
@@ -357,10 +344,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
               <Row>
                 <Col span={4}>
                   <Avatar size="small" style={{ backgroundColor: 'color' }}>
-                    {/* <SettingOutlined
-                    style={{ paddingRight: '13px', width: '10px', color: 'black' }}
-                  /> */}
-                    {/* <Avatar style={{ verticalAlign: 'right' }} size={13} src={IconDark}></Avatar> */}
                     <Image preview={false} src={IconDark}></Image>
                   </Avatar>
                 </Col>
@@ -473,7 +456,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
           alt="avatar"
           icon={!dataImage && <UserOutlined style={{ fontSize: 20, color: 'gray' }} />}
         />
-        {/* <span className={`${styles.name} anticon`}>{currentUser.name}</span> */}
       </span>
     </HeaderDropdown>
   );

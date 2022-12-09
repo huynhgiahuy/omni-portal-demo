@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
@@ -27,9 +27,28 @@ import { requestEditUserInfo } from './services';
 import { useModel, useRequest } from 'umi';
 import type { RcFile, UploadProps } from 'antd/es/upload/interface';
 import { endpoint, requestGetInfoUser } from '@/services/auth';
+import { requestCheckPhoneContact } from '../report/services';
+
+type FormProps = {
+  name: string;
+  position: string;
+  department: string;
+  level: string;
+  organization: string;
+  home_address: string;
+  work_address: string;
+  phone_number: string;
+  ip_phone: string;
+};
+
+type validateFieldsProps = {
+  errorFields: { errors: string[]; name: string[] }[];
+  values: FormProps;
+};
 
 const PersonalInfo: React.FC = () => {
   const [isEditUser, setEditUser] = useState(false);
+  const [isDisable, setIsDisable] = useState(true);
   const { initialState, setInitialState } = useModel('@@initialState');
   const token = window.localStorage.getItem('access_token');
   const [form] = Form.useForm();
@@ -45,17 +64,18 @@ const PersonalInfo: React.FC = () => {
     return res;
   });
 
-  const requestEditUserInfoSubmit = async (
-    name: string,
-    position: string,
-    department: string,
-    level: string,
-    organization: string,
-    home_address: string,
-    work_address: string,
-    phone_number: string,
-    ip_phone: string,
-  ) => {
+  const requestEditUserInfoSubmit = async (data: FormProps) => {
+    const {
+      name,
+      position,
+      department,
+      level,
+      organization,
+      home_address,
+      work_address,
+      phone_number,
+      ip_phone,
+    } = data;
     const res = await requestEditUserInfo(
       name,
       position,
@@ -70,22 +90,34 @@ const PersonalInfo: React.FC = () => {
     return res;
   };
 
+  const checkPhoneContact = useRequest(
+    async (data) => {
+      const result: { success: boolean; error_code: number } = await requestCheckPhoneContact(
+        token ? token : '',
+        data,
+      );
+      if (result.error_code === 4000201) {
+        form.setFields([
+          {
+            name: 'phone_number',
+            errors: ['Số điện thoại đã tồn tại'],
+          },
+        ]);
+        return;
+      }
+    },
+    {
+      manual: true,
+    },
+  );
+
   const handleEditUser = () => {
     setEditUser(!isEditUser);
+    form.setFieldsValue(initialState?.currentUser);
   };
 
-  const handleOnFinishEditUser = (values: any) => {
-    const res = requestEditUserInfoSubmit(
-      values.name ? values.name : initialState?.currentUser?.name,
-      values.position ? values.position : initialState?.currentUser?.position,
-      values.department ? values.department : initialState?.currentUser?.department,
-      values.level ? values.level : initialState?.currentUser?.level,
-      values.organization ? values.organization : initialState?.currentUser?.organization,
-      values.home_address ? values.home_address : initialState?.currentUser?.home_address,
-      values.work_address ? values.work_address : initialState?.currentUser?.work_address,
-      values.phone_number ? values.phone_number : initialState?.currentUser?.phone_number,
-      values.ip_phone ? values.ip_phone : initialState?.currentUser?.ip_phone,
-    );
+  const handleOnFinishEditUser = (values: FormProps) => {
+    const res = requestEditUserInfoSubmit(values);
 
     res.then(async (result: requeGetUserInfoProps) => {
       if (result.success) {
@@ -105,6 +137,7 @@ const PersonalInfo: React.FC = () => {
   const handleOnCancleEditUser = () => {
     setEditUser(false);
     form.resetFields();
+    setIsDisable(true);
   };
 
   const props: UploadProps = {
@@ -187,7 +220,26 @@ const PersonalInfo: React.FC = () => {
         className={styles.detailCardLayout}
       >
         <div style={{ paddingTop: '10px' }}>
-          <Form form={form} onFinish={handleOnFinishEditUser}>
+          <Form
+            form={form}
+            onFinish={handleOnFinishEditUser}
+            onValuesChange={() => {
+              form.validateFields().catch((error: validateFieldsProps) => {
+                setIsDisable(true);
+                if (
+                  error.errorFields.length === 0 &&
+                  (error.values.work_address !== initialState?.currentUser?.work_address ||
+                    error.values.position !== initialState?.currentUser?.position ||
+                    error.values.level !== initialState?.currentUser?.level ||
+                    error.values.home_address !== initialState?.currentUser?.home_address ||
+                    error.values.phone_number !== initialState?.currentUser?.phone_number ||
+                    error.values.ip_phone !== initialState?.currentUser?.ip_phone)
+                ) {
+                  setIsDisable(false);
+                }
+              });
+            }}
+          >
             <Row>
               <Col md={3}></Col>
               <Col md={9}>
@@ -199,11 +251,7 @@ const PersonalInfo: React.FC = () => {
                   <Typography.Text className={styles.antTextStyle}>Họ tên</Typography.Text>
 
                   {isEditUser === true ? (
-                    <Form.Item
-                      name="name"
-                      className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.name}
-                    >
+                    <Form.Item name="name" className={styles.antFormItemMargin}>
                       <Input disabled style={{ width: '300px' }} />
                     </Form.Item>
                   ) : (
@@ -216,11 +264,7 @@ const PersonalInfo: React.FC = () => {
                   <Typography.Text className={styles.antTextStyle}>Địa chỉ Mail</Typography.Text>
 
                   {isEditUser === true ? (
-                    <Form.Item
-                      name="email_test"
-                      className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.email}
-                    >
+                    <Form.Item name="email_test" className={styles.antFormItemMargin}>
                       <Input disabled style={{ width: '300px' }} />
                     </Form.Item>
                   ) : (
@@ -233,11 +277,7 @@ const PersonalInfo: React.FC = () => {
                   <Typography.Text className={styles.antTextStyle}>Phòng ban</Typography.Text>
 
                   {isEditUser === true ? (
-                    <Form.Item
-                      name="department"
-                      className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.department}
-                    >
+                    <Form.Item name="department" className={styles.antFormItemMargin}>
                       <Input disabled style={{ width: '300px' }} />
                     </Form.Item>
                   ) : (
@@ -254,7 +294,6 @@ const PersonalInfo: React.FC = () => {
                     <Form.Item
                       name="work_address"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.work_address}
                       rules={[
                         {
                           required: true,
@@ -284,7 +323,6 @@ const PersonalInfo: React.FC = () => {
                     <Form.Item
                       name="position"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.position}
                       rules={[
                         {
                           required: true,
@@ -320,8 +358,11 @@ const PersonalInfo: React.FC = () => {
                     <Form.Item
                       name="level"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.level}
                       rules={[
+                        {
+                          whitespace: true,
+                          message: 'Vui lòng không để trống thông tin',
+                        },
                         {
                           required: true,
                           message: 'Vui lòng không để trống thông tin',
@@ -341,19 +382,17 @@ const PersonalInfo: React.FC = () => {
                   )}
                 </div>
                 <div className={styles.antDataDisplay}>
-                  <Typography.Text className={styles.antTextStyle}>
-                    Địa chỉ {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
-                  </Typography.Text>
+                  <Typography.Text className={styles.antTextStyle}>Địa chỉ</Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
                       name="home_address"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.home_address}
                       rules={[
                         {
-                          required: true,
+                          whitespace: true,
                           message: 'Vui lòng không để trống thông tin',
                         },
+
                         {
                           max: 255,
                           message: 'Vui lòng không nhập quá 255 kí tự',
@@ -376,29 +415,40 @@ const PersonalInfo: React.FC = () => {
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>
                     Số điện thoại cá nhân
-                    {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
+                    {isEditUser === true && <span style={{ color: 'red' }}> (*)</span>}
                   </Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
                       name="phone_number"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.phone_number}
                       rules={[
                         {
-                          required: true,
-                          message: 'Vui lòng không để trống thông tin',
-                        },
-                        {
-                          pattern: new RegExp('([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})'),
-                          message: 'Số điện thoại không hợp lệ',
-                        },
-                        {
-                          max: 10,
-                          message: 'Số điện thoại không hợp lệ',
+                          validator: (_, value: any) => {
+                            const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
+                            if (value === undefined || !value || value.length === 0) {
+                              return Promise.reject('Vui lòng nhập số di động');
+                            } else if (value.length !== 10) {
+                              return Promise.reject('Số điện thoại không hợp lệ');
+                            } else if (!phoneReg.test(value)) {
+                              return Promise.reject('Số điện thoại không hợp lệ');
+                            }
+                            return Promise.resolve();
+                          },
                         },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} className={styles.inputNumber} />
+                      <Input
+                        style={{ width: '300px' }}
+                        className={styles.inputNumber}
+                        onBlur={() => {
+                          if (
+                            initialState?.currentUser?.phone_number !==
+                            form.getFieldValue('phone_number')
+                          ) {
+                            checkPhoneContact.run(form.getFieldValue('phone_number'));
+                          }
+                        }}
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -408,13 +458,12 @@ const PersonalInfo: React.FC = () => {
                 </div>
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>
-                    IP Phone {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
+                    IP Phone {isEditUser === true && <span style={{ color: 'red' }}> (*)</span>}
                   </Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
                       name="ip_phone"
                       className={styles.antFormItemMargin}
-                      initialValue={initialState?.currentUser?.ip_phone}
                       rules={[
                         {
                           required: true,
@@ -426,7 +475,11 @@ const PersonalInfo: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} className={styles.inputNumber} />
+                      <Input
+                        style={{ width: '300px' }}
+                        className={styles.inputNumber}
+                        value={initialState?.currentUser?.ip_phone}
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -551,7 +604,7 @@ const PersonalInfo: React.FC = () => {
                 <Button style={{ marginRight: '10px' }} onClick={handleOnCancleEditUser}>
                   Hủy
                 </Button>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" disabled={isDisable}>
                   Lưu thay đổi
                 </Button>
               </Form.Item>
