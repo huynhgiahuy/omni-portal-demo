@@ -11,3 +11,11 @@ export const socket = io(omniChannel, {
     Authorization: access_token,
   },
 });
+
+// export const socketStatus = io(omniChannel, {
+//   path: '/user-service/ws/socket.io',
+//   transports: ['websocket'],
+//   // query: {
+//   //   Authorization: access_token,
+//   // },
+// });
