@@ -183,7 +183,7 @@ export async function requestTeamPermissionData() {
 }
 
 export async function requestDeleteTeamPermission(team_id: string) {
-  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/delete_team`, {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/team/delete_team`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
@@ -260,7 +260,7 @@ export async function requestDetailUserInfoFinal(user_id?: string) {
 }
 
 export async function requestCreateNewTeam(name?: string) {
-  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/create_team`, {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/team/create_team`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
