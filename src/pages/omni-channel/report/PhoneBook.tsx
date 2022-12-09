@@ -515,7 +515,8 @@ const PhoneBook: React.FC = () => {
     const resNewTeam = await requestCreateNewTeam(newTeamValue);
     if (resNewTeam.success === true) {
       message.success('Thêm thành công');
-      getListTeam.refresh();
+      setClickAddNewTeam(false);
+      getListTeam.run();
       form.setFieldValue('newTeamValue', '');
     } else {
       message.error('Thêm thất bại');
@@ -529,11 +530,11 @@ const PhoneBook: React.FC = () => {
       message.success('Xoá thành công');
       form.setFieldValue('newTeamValue', '');
       setNewTeamValue('');
+      setClickAddNewTeam(false);
       form.setFieldValue('team', '');
-      getListTeam.refresh();
+      getListTeam.run();
     } else {
       message.error('Xoá thất bại');
-
       return;
     }
   };
@@ -589,7 +590,7 @@ const PhoneBook: React.FC = () => {
           <Space size="middle">
             <Form.Item
               label={external === 'Khách hàng' ? 'Đơn vị' : 'Team'}
-              name={external === 'Khách hàng' ? 'unit' : 'team'}
+              name={external === 'Khách hàng' ? 'unit' : 'team_unit'}
             >
               <Select
                 style={{ width: 200 }}
@@ -601,7 +602,7 @@ const PhoneBook: React.FC = () => {
                     getUserContact.run({
                       keyword: form.getFieldValue('search'),
                       unit: form.getFieldValue('unit'),
-                      team: form.getFieldValue('team'),
+                      team: form.getFieldValue('team_unit'),
                       email_user: initialState?.currentUser?.email,
                     });
                   },
@@ -733,6 +734,7 @@ const PhoneBook: React.FC = () => {
             if (isEdit) {
               form.validateFields().catch((error: validateFieldsProps) => {
                 setIsDisable(true);
+                console.log(form.getFieldValue('team'));
                 if (
                   error.errorFields.length === 0 &&
                   (error.values.full_name !== initialUserContact?.full_name ||
@@ -751,7 +753,7 @@ const PhoneBook: React.FC = () => {
         >
           <div>
             <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Họ và tên <span style={{ color: 'red' }}>(*)</span>
+              Họ và tên{external !== 'Nội bộ' && <span style={{ color: 'red' }}> (*)</span>}
             </Typography.Text>
             <Form.Item
               name="full_name"
@@ -774,12 +776,12 @@ const PhoneBook: React.FC = () => {
                 },
               ]}
             >
-              <Input placeholder="Nhập họ và tên" />
+              <Input placeholder="Nhập họ và tên" disabled={external === 'Nội bộ'} />
             </Form.Item>
           </div>
           <div>
             <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Số điện thoại <span style={{ color: 'red' }}>(*)</span>
+              Số điện thoại{external !== 'Nội bộ' && <span style={{ color: 'red' }}> (*)</span>}
             </Typography.Text>
             <Form.Item
               name="phone_number"
@@ -803,6 +805,7 @@ const PhoneBook: React.FC = () => {
               <Input
                 placeholder="Nhập số điện thoại"
                 className={styles.inputNumber}
+                disabled={external === 'Nội bộ'}
                 onBlur={() => {
                   if (form.getFieldValue('phone_number') !== initialUserContact?.phone_number) {
                     checkPhoneContact.run(form.getFieldValue('phone_number'));
@@ -826,12 +829,16 @@ const PhoneBook: React.FC = () => {
                 },
               ]}
             >
-              <Input className={styles.inputNumber} placeholder="Nhập số máy nhánh" />
+              <Input
+                disabled={external === 'Nội bộ'}
+                className={styles.inputNumber}
+                placeholder="Nhập số máy nhánh"
+              />
             </Form.Item>
           </div>
           <div>
             <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Email <span style={{ color: 'red' }}>(*)</span>
+              Email {external !== 'Nội bộ' && <span style={{ color: 'red' }}> (*)</span>}
             </Typography.Text>
             <Form.Item
               name="email"
@@ -845,7 +852,7 @@ const PhoneBook: React.FC = () => {
                 },
               ]}
             >
-              <Input placeholder="Nhập email đơn vị" />
+              <Input placeholder="Nhập email đơn vị" disabled={external === 'Nội bộ'} />
             </Form.Item>
           </div>
           <div>
