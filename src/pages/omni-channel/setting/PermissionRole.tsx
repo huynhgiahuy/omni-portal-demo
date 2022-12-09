@@ -30,7 +30,7 @@ import {
   requestUpdateRole,
 } from './services';
 import { useRequest } from 'umi';
-import { debounce } from 'lodash';
+import { debounce, isEqual } from 'lodash';
 import { dataPermissionTable } from './FakeData';
 import {
   OPTIONS_PERMISSION_CM,
@@ -111,7 +111,11 @@ interface DataTypePermissionTable {
 
 const PermissionRole: React.FC = () => {
   const [form] = Form.useForm();
+  const [isSubmit, setIsSubmit] = useState(true);
+  const [roleCode, setRoleCode] = useState('');
+  const [roleDesc, setRoleDesc] = useState('');
   const [isView, setIsView] = useState('');
+  const token = window.localStorage?.getItem('access_token');
 
   const [listAllRolePermission, setListAllRolePermission] = useState<DataAllRolePermission[]>([]);
   const [isAddNewPermission, setAddNetPermission] = useState(false);
@@ -161,6 +165,7 @@ const PermissionRole: React.FC = () => {
     valueCheckboxTTCT,
     valueCheckboxTTND,
     valueCheckboxGroupsPer,
+    valueCheckboxContact,
     selectListDB,
     selectListIM,
     selectListEM,
@@ -170,9 +175,12 @@ const PermissionRole: React.FC = () => {
 
   const fetchReadRoleAndPerm = useRequest(
     async (keyword?: string) => {
-      const res: { success: boolean; error_code: number } = await requestReadRoleAndPerm({
-        keyword,
-      });
+      const res: { success: boolean; error_code: number } = await requestReadRoleAndPerm(
+        token ? token : '',
+        {
+          keyword,
+        },
+      );
       if (!res.success) {
         if (res.error_code === 4030102) {
           setIsView('403');
@@ -193,6 +201,7 @@ const PermissionRole: React.FC = () => {
   const fetchCreateRoleAndPermission = useRequest(
     async (permissionList: string[], role_code: string, role_desc: string) => {
       const res: { success: string; error_code: number } = await requestCreateRoleAndPerm(
+        token ? token : '',
         permissionList,
         role_code,
         role_desc,
@@ -226,6 +235,7 @@ const PermissionRole: React.FC = () => {
   const fetchUpdateRoleAndPermission = useRequest(
     async (permissionList: string[], role_code: string, role_desc: string, id: string) => {
       const res: { success: string; error_code: number } = await requestUpdateRole(
+        token ? token : '',
         permissionList,
         role_code,
         role_desc,
@@ -260,7 +270,10 @@ const PermissionRole: React.FC = () => {
 
   const fetchDeleteRoleAndPermission = useRequest(
     async (id: string) => {
-      const res: { success: string; error_code: number } = await requestDeleteRoleAndPermission(id);
+      const res: { success: string; error_code: number } = await requestDeleteRoleAndPermission(
+        token ? token : '',
+        id,
+      );
       if (!res.success) {
         if (res.error_code === 4030102) {
           message.error('Bạn không có quyền xoá');
@@ -696,7 +709,7 @@ const PermissionRole: React.FC = () => {
       }
 
       const defaultDataContact = dataRoleId?.permission_list
-        .filter(({ group }) => group === 'permission_group')
+        .filter(({ group }) => group === 'contact')
         .map(({ code }) => code);
       if (defaultDataContact?.length) {
         setValueCheckboxContact(defaultDataContact);
@@ -1006,6 +1019,64 @@ const PermissionRole: React.FC = () => {
     },
   ];
 
+  useEffect(() => {
+    if (isEditRole) {
+      form
+        .validateFields()
+        .catch(
+          (error: {
+            errorFields: { errors: string[]; name: string[] }[];
+            values: { role_code: string; role_desc: string };
+          }) => {
+            setIsSubmit(true);
+            const codeRoleId = dataRoleId?.permission_list.map(
+              (permission: { code: string }) => permission.code,
+            );
+            const sameArray = isEqual(codeRoleId && codeRoleId.sort(), permissionList.sort());
+
+            if (
+              error.errorFields.length === 0 &&
+              (!sameArray ||
+                dataRoleId?.code !== error.values.role_code ||
+                dataRoleId?.desc !== error.values.role_desc)
+            ) {
+              setIsSubmit(false);
+            }
+          },
+        );
+    } else {
+      setIsSubmit(false);
+      if (form.getFieldError('role_code').length > 0) {
+        setIsSubmit(true);
+      }
+    }
+  }, [
+    roleCode,
+    roleDesc,
+    valueCheckboxGeneralStatistic,
+    valueCheckboxTransferShift,
+    valueCheckboxNightShift,
+    valueCheckboxHistoryCall,
+    valueCheckboxTTCN,
+    valueCheckboxTTCT,
+    valueCheckboxTTND,
+    valueCheckboxGroupsPer,
+    valueCheckboxContact,
+    selectListDB,
+    selectListIM,
+    selectListEM,
+    selectListCM,
+    selectListRF,
+  ]);
+
+  if (isEditRole) {
+    form.validateFields();
+  }
+
+  useEffect(() => {
+    form.validateFields();
+  }, [roleCode, roleDesc]);
+
   return isView === '403' ? (
     <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
   ) : (
@@ -1148,6 +1219,16 @@ const PermissionRole: React.FC = () => {
                   placeholder="Nhập tên nhóm quyền mới"
                   className={styles.addPermissionInput}
                   value={isEditRole ? dataRoleId?.code : ''}
+                  onChange={debounce(
+                    (e) => {
+                      setRoleCode(e.target.value);
+                    },
+                    500,
+                    {
+                      trailing: true,
+                      leading: false,
+                    },
+                  )}
                 />
               </Form.Item>
             </div>
@@ -1183,6 +1264,16 @@ const PermissionRole: React.FC = () => {
                 <Input
                   placeholder="Nhập mô tả cho nhóm quyền"
                   className={styles.addPermissionInput}
+                  onChange={debounce(
+                    (e) => {
+                      setRoleCode(e.target.value);
+                    },
+                    500,
+                    {
+                      trailing: true,
+                      leading: false,
+                    },
+                  )}
                 />
               </Form.Item>
             </div>
@@ -1203,6 +1294,7 @@ const PermissionRole: React.FC = () => {
               type="primary"
               htmlType="submit"
               loading={fetchCreateRoleAndPermission.loading || fetchUpdateRoleAndPermission.loading}
+              disabled={isSubmit}
             >
               {isEditRole ? 'Cập nhập' : 'Tạo mới'}
             </Button>
