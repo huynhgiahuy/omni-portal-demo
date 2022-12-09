@@ -1,8 +1,6 @@
 import api from '@/api';
 import request from '@/utils/request';
 
-const token = window.localStorage?.getItem('access_token');
-
 export type dataUserContactProps = {
   id?: string;
   contacts_id?: string;
