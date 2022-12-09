@@ -40,7 +40,7 @@ import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
 import { useRequest } from 'umi';
-import { debounce } from 'lodash';
+import { debounce, isEqual } from 'lodash';
 import Ellipse from '../../../assets/Ellipse.svg';
 import OfflineIcon from '../../../../public/offline.png';
 import moment from 'moment';
@@ -762,6 +762,7 @@ const PermissionEdit: React.FC = () => {
           requiredMark={false}
           onValuesChange={() => {
             form.validateFields().catch((error) => {
+              console.log(error);
               setInfoUpdated(false);
               if (
                 error.errorFields.length === 0 &&
@@ -895,7 +896,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     validator: (_, value: any) => {
-                      const phoneReg = /([3|5|7|8|9]{1})+([0-9]{8})/;
+                      const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập số di động');
                       } else if (value.length !== 10) {
