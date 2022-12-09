@@ -757,32 +757,23 @@ const PermissionEdit: React.FC = () => {
           layout="vertical"
           onFinish={handleSubmitUpdateUserInfoFinal}
           requiredMark={false}
-          onValuesChange={(changedValues, allValues) => {
-            if (
-              allValues.team_id === listEditUserInfoFinal[0].team_id &&
-              allValues.role_id === listEditUserInfoFinal[0].role_id &&
-              allValues.department === listEditUserInfoFinal[0].department &&
-              allValues.phone_number === listEditUserInfoFinal[0].phone_number &&
-              allValues.ip_phone === listEditUserInfoFinal[0].ip_phone &&
-              allValues.level === listEditUserInfoFinal[0].level &&
-              allValues.work_address === listEditUserInfoFinal[0].work_address &&
-              allValues.position === listEditUserInfoFinal[0].position
-            ) {
+          onValuesChange={() => {
+            form.validateFields().catch((error) => {
               setInfoUpdated(false);
-            } else if (
-              allValues.team_id === '' ||
-              allValues.role_id === '' ||
-              allValues.department === '' ||
-              allValues.phone_number === '' ||
-              allValues.ip_phone === '' ||
-              allValues.level === '' ||
-              allValues.work_address === '' ||
-              allValues.position === ''
-            ) {
-              setInfoUpdated(false);
-            } else {
-              setInfoUpdated(true);
-            }
+              if (
+                error.errorFields.length === 0 &&
+                (error.values.team_id !== listEditUserInfoFinal[0].team_id ||
+                  error.values.role_id !== listEditUserInfoFinal[0].role_id ||
+                  error.values.department !== listEditUserInfoFinal[0].department ||
+                  error.values.phone_number !== listEditUserInfoFinal[0].phone_number ||
+                  error.values.ip_phone !== listEditUserInfoFinal[0].ip_phone ||
+                  error.values.level !== listEditUserInfoFinal[0].level ||
+                  error.values.work_address !== listEditUserInfoFinal[0].work_address ||
+                  error.values.position !== listEditUserInfoFinal[0].position)
+              ) {
+                setInfoUpdated(true);
+              }
+            });
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
