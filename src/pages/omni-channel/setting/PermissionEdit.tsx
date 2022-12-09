@@ -355,46 +355,53 @@ const PermissionEdit: React.FC = () => {
   };
 
   const handleRenderStatusActivity = (status: any) => {
-    if (status === '1') {
+    if (status === 1) {
       return (
         <div style={{ border: '1px solid #1eaf61', borderRadius: 4 }}>
           <CheckCircleFilled style={{ color: ' #1eaf61' }} />
           <span className={styles.readyStatusText}>Sẵn sàng</span>
         </div>
       );
-    } else if (status === '2') {
+    } else if (status === 2) {
       return (
         <div style={{ border: '1px solid #FAAD14', borderRadius: 4 }}>
           <ClockCircleFilled style={{ color: ' #FAAD14' }} />
           <span className={styles.abscentStatusText}>Vắng mặt</span>
         </div>
       );
-    } else if (status === '3') {
+    } else if (status === 3) {
       return (
         <div style={{ border: '1px solid #F5222D', borderRadius: 4 }}>
           <MinusCircleFilled style={{ color: '#F5222D' }} />
           <span className={styles.notDisturbStatusText}>Không làm phiền</span>
         </div>
       );
-    } else if (status === '4') {
+    } else if (status === 4) {
       return (
         <div className={styles.noActivityStatusDisplay}>
           <img src={Ellipse} alt="..." width={14} height={14} />
           <div className={styles.noActivityStatusText}>Không hoạt động</div>
         </div>
       );
+    } else if (status === 6) {
+      return (
+        <div className={styles.offlineStatusDisplay}>
+          <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
+          <div className={styles.offlineStatusText}>Đang offline</div>
+        </div>
+      );
     }
     return;
   };
 
-  const handleRenderOfflineStatus = () => {
-    return (
-      <div className={styles.offlineStatusDisplay}>
-        <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
-        <div className={styles.offlineStatusText}>Đang offline</div>
-      </div>
-    );
-  };
+  // const handleRenderOfflineStatus = () => {
+  //   return (
+  //     <div className={styles.offlineStatusDisplay}>
+  //       <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
+  //       <div className={styles.offlineStatusText}>Đang offline</div>
+  //     </div>
+  //   );
+  // };
 
   const columns: ColumnsType<DataAllUserInfoFinal> = [
     {
@@ -516,13 +523,9 @@ const PermissionEdit: React.FC = () => {
       align: 'center',
       width: '110px',
       render: (text, record) => {
-        if (record.is_online === true) {
-          return text === null || text === undefined
-            ? '-'
-            : handleRenderStatusActivity(record.status);
-        } else {
-          return handleRenderOfflineStatus();
-        }
+        return text === null || text === undefined
+          ? '-'
+          : handleRenderStatusActivity(record.status);
       },
     },
     // {
