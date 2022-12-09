@@ -51,10 +51,7 @@ const WorkingStatus = () => {
       const res = requestUpdateStatusUser(option ? option : 1, token ? token : '');
       res.then(async (result: requeGetUserInfoProps) => {
         if (result.success) {
-          await setInitialState((s) => ({
-            ...s,
-            currentUser: result.data[0],
-          }));
+          setOption(result.data[0].status);
         } else {
           setOption(initialState?.currentUser?.status ? initialState?.currentUser?.status : 2);
           message.error('Chuyển trạng thái không thành công, vui lòng thử lại');
