@@ -209,7 +209,7 @@ const PermissionRole: React.FC = () => {
       if (res.success) {
         message.success('Thêm mới thành công');
         handleCancleAddNewPermission();
-        fetchReadRoleAndPerm.refresh();
+        fetchReadRoleAndPerm.run();
       } else if (res.error_code === 4000104) {
         form.setFields([
           {
@@ -259,7 +259,7 @@ const PermissionRole: React.FC = () => {
       } else {
         handleCancleAddNewPermission();
         message.success('Cập nhập thành công');
-        fetchReadRoleAndPerm.refresh();
+        fetchReadRoleAndPerm.run();
       }
       return res;
     },
@@ -285,7 +285,7 @@ const PermissionRole: React.FC = () => {
       } else {
         handleCancleAddNewPermission();
         message.success('Xoá thành công');
-        fetchReadRoleAndPerm.refresh();
+        fetchReadRoleAndPerm.run();
       }
       return res;
     },
@@ -337,6 +337,7 @@ const PermissionRole: React.FC = () => {
     setValueCheckboxTTCN([]);
     setValueCheckboxTTND([]);
     setValueCheckboxGroupsPer([]);
+    setValueCheckboxContact([]);
     setAddNetPermission(true);
     setIsEditRole(false);
   };
@@ -355,6 +356,7 @@ const PermissionRole: React.FC = () => {
     setValueCheckboxTTCN([]);
     setValueCheckboxTTND([]);
     setValueCheckboxGroupsPer([]);
+    setValueCheckboxContact([]);
 
     setDataRoleId(data);
     form.setFieldValue('role_code', data.code);
