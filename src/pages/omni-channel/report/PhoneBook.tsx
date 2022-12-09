@@ -151,15 +151,21 @@ const formItemLayout = {
   },
 };
 
+type validateFieldsProps = {
+  errorFields: { errors: string[]; name: string[] }[];
+  values: dataUserContactProps;
+};
+
 const PhoneBook: React.FC = () => {
   const { initialState } = useModel('@@initialState');
   const [form] = Form.useForm();
   const [external, setExternal] = useState('Khách hàng');
   const [openModal, setOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [isDisable, setIsDisable] = useState(false);
   const [dataContacts, setDataContacts] = useState<dataUserContactProps[]>([]);
+  const [initialUserContact, setInitialUserContact] = useState<dataUserContactProps>();
   const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
-  const [setTeamKey] = useState<string | any>();
   const [newTeamValue, setNewTeamValue] = useState<string | any>();
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
   const [isView, setIsView] = useState('');
@@ -431,7 +437,9 @@ const PhoneBook: React.FC = () => {
             onClick={() => {
               handleOpenModal();
               setIsEdit(true);
+              setIsDisable(true);
               form.setFieldsValue(record);
+              setInitialUserContact(record);
             }}
           >
             {text}
@@ -491,15 +499,14 @@ const PhoneBook: React.FC = () => {
     },
   ];
 
-  const handleSelectTeam = (values: any) => {
-    setClickAddNewTeam(false);
-    setTeamKey(values);
-  };
+  // const handleSelectTeam = (values: any) => {
+  //   setClickAddNewTeam(false);
+  //   setTeamKey(values);
+  // };
 
   const fetchTeamPermissionData = async () => {
     const resTeam = await requestTeamPermissionData();
     if (resTeam.success === true) {
-      console.log('get');
       setListTeamPermission(resTeam.data);
     }
   };
@@ -540,7 +547,6 @@ const PhoneBook: React.FC = () => {
 
   const handleSubmitNewTeam = (values: any) => {
     handleCreateNewTeamPermission(values);
-
     fetchTeamPermissionData();
   };
 
@@ -555,7 +561,9 @@ const PhoneBook: React.FC = () => {
           onChange={(e) => {
             setExternal(e.toString());
             form.resetFields();
-            getUserContact.run({});
+            getUserContact.run({
+              email_user: initialState?.currentUser?.email,
+            });
           }}
           options={[
             {
@@ -618,7 +626,11 @@ const PhoneBook: React.FC = () => {
               <Button
                 type="link"
                 onClick={() => {
-                  if (form.getFieldValue('unit') || form.getFieldValue('search')) {
+                  if (
+                    form.getFieldValue('unit') ||
+                    form.getFieldValue('team') ||
+                    form.getFieldValue('search')
+                  ) {
                     getUserContact.run({
                       email_user: initialState?.currentUser?.email,
                     });
@@ -652,14 +664,16 @@ const PhoneBook: React.FC = () => {
                 )}
               />
             </Form.Item>
-            <PlusSquareFilled
-              style={{ fontSize: 32, color: '#478D46' }}
-              onClick={() => {
-                handleOpenModal();
-                setIsEdit(false);
-                form.resetFields();
-              }}
-            />
+            {external === 'Khách hàng' && (
+              <PlusSquareFilled
+                style={{ fontSize: 32, color: '#478D46' }}
+                onClick={() => {
+                  handleOpenModal();
+                  setIsEdit(false);
+                  form.resetFields();
+                }}
+              />
+            )}
           </Space>
         </div>
       </Form>
@@ -709,7 +723,32 @@ const PhoneBook: React.FC = () => {
         width={620}
         centered
       >
-        <Form {...formItemLayout} form={form} onFinish={handleOnFinish} layout="vertical">
+        <Form
+          {...formItemLayout}
+          form={form}
+          onFinish={handleOnFinish}
+          layout="vertical"
+          onValuesChange={(_changedValues, values: dataUserContactProps) => {
+            setIsDisable(false);
+            if (isEdit) {
+              form.validateFields().catch((error: validateFieldsProps) => {
+                setIsDisable(true);
+                if (
+                  error.errorFields.length === 0 &&
+                  (error.values.full_name !== initialUserContact?.full_name ||
+                    error.values.phone_number !== initialUserContact?.phone_number ||
+                    error.values.ip_phone !== initialUserContact?.ip_phone ||
+                    error.values.email !== initialUserContact?.email ||
+                    (!!error.values.work_unit &&
+                      error.values.work_unit !== initialUserContact?.work_unit) ||
+                    (!!error.values.team && error.values.team !== initialUserContact?.team))
+                ) {
+                  setIsDisable(false);
+                }
+              });
+            }
+          }}
+        >
           <div>
             <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
               Họ và tên <span style={{ color: 'red' }}>(*)</span>
@@ -747,16 +786,17 @@ const PhoneBook: React.FC = () => {
               style={{ marginTop: 8 }}
               rules={[
                 {
-                  required: true,
-                  message: 'Vui lòng không để trống thông tin',
-                },
-                {
-                  pattern: new RegExp('([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})'),
-                  message: 'Số điện thoại không hợp lệ',
-                },
-                {
-                  max: 10,
-                  message: 'Số điện thoại không hợp lệ',
+                  validator: (_, value: any) => {
+                    const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
+                    if (value === undefined || !value || value.length === 0) {
+                      return Promise.reject('Vui lòng nhập số di động');
+                    } else if (value.length !== 10) {
+                      return Promise.reject('Số điện thoại không hợp lệ');
+                    } else if (!phoneReg.test(value)) {
+                      return Promise.reject('Số điện thoại không hợp lệ');
+                    }
+                    return Promise.resolve();
+                  },
                 },
               ]}
             >
@@ -764,7 +804,9 @@ const PhoneBook: React.FC = () => {
                 placeholder="Nhập số điện thoại"
                 className={styles.inputNumber}
                 onBlur={() => {
-                  checkPhoneContact.run(form.getFieldValue('phone_number'));
+                  if (form.getFieldValue('phone_number') !== initialUserContact?.phone_number) {
+                    checkPhoneContact.run(form.getFieldValue('phone_number'));
+                  }
                 }}
               />
             </Form.Item>
@@ -820,7 +862,7 @@ const PhoneBook: React.FC = () => {
                 <Select options={listUnitExternal} placeholder="Chọn đơn vị" />
               ) : (
                 <Select
-                  onChange={handleSelectTeam}
+                  // onChange={handleSelectTeam}
                   loading={getListTeam.loading}
                   placeholder={'Chọn nhóm'}
                   menuItemSelectedIcon={<CheckOutlined style={{ marginLeft: 10 }} />}
@@ -905,6 +947,7 @@ const PhoneBook: React.FC = () => {
               type="primary"
               htmlType="submit"
               loading={updateUserContact.loading || addUserContact.loading}
+              disabled={isDisable}
             >
               {isEdit ? 'Cập nhập' : 'Tạo mới'}
             </Button>
