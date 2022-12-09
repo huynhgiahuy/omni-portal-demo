@@ -23,11 +23,11 @@
     name: 'omni-channel',
     icon: '/icons/omni_icon.svg',
     routes: [
-      {
-        path: '/omni-channel/report',
-        name: 'report',
-        component: './omni-channel/report/index',
-      },
+      // {
+      //   path: '/omni-channel/report',
+      //   name: 'report',
+      //   component: './omni-channel/report/index',
+      // },
       {
         path: '/omni-channel/profile',
         name: 'profile',

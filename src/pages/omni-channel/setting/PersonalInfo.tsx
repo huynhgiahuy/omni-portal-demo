@@ -48,7 +48,7 @@ type validateFieldsProps = {
 
 const PersonalInfo: React.FC = () => {
   const [isEditUser, setEditUser] = useState(false);
-  const [isSubmit, setIsSubmit] = useState(true);
+  const [isDisable, setIsDisable] = useState(true);
   const { initialState, setInitialState } = useModel('@@initialState');
   const token = window.localStorage.getItem('access_token');
   const [form] = Form.useForm();
@@ -137,7 +137,7 @@ const PersonalInfo: React.FC = () => {
   const handleOnCancleEditUser = () => {
     setEditUser(false);
     form.resetFields();
-    setIsSubmit(true);
+    setIsDisable(true);
   };
 
   const props: UploadProps = {
@@ -225,7 +225,7 @@ const PersonalInfo: React.FC = () => {
             onFinish={handleOnFinishEditUser}
             onValuesChange={() => {
               form.validateFields().catch((error: validateFieldsProps) => {
-                setIsSubmit(true);
+                setIsDisable(true);
                 if (
                   error.errorFields.length === 0 &&
                   (error.values.work_address !== initialState?.currentUser?.work_address ||
@@ -235,7 +235,7 @@ const PersonalInfo: React.FC = () => {
                     error.values.phone_number !== initialState?.currentUser?.phone_number ||
                     error.values.ip_phone !== initialState?.currentUser?.ip_phone)
                 ) {
-                  setIsSubmit(false);
+                  setIsDisable(false);
                 }
               });
             }}
@@ -423,16 +423,17 @@ const PersonalInfo: React.FC = () => {
                       className={styles.antFormItemMargin}
                       rules={[
                         {
-                          required: true,
-                          message: 'Vui lòng không để trống thông tin',
-                        },
-                        {
-                          pattern: new RegExp('([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})'),
-                          message: 'Số điện thoại không hợp lệ',
-                        },
-                        {
-                          max: 10,
-                          message: 'Số điện thoại không hợp lệ',
+                          validator: (_, value: any) => {
+                            const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
+                            if (value === undefined || !value || value.length === 0) {
+                              return Promise.reject('Vui lòng nhập số di động');
+                            } else if (value.length !== 10) {
+                              return Promise.reject('Số điện thoại không hợp lệ');
+                            } else if (!phoneReg.test(value)) {
+                              return Promise.reject('Số điện thoại không hợp lệ');
+                            }
+                            return Promise.resolve();
+                          },
                         },
                       ]}
                     >
@@ -603,7 +604,7 @@ const PersonalInfo: React.FC = () => {
                 <Button style={{ marginRight: '10px' }} onClick={handleOnCancleEditUser}>
                   Hủy
                 </Button>
-                <Button type="primary" htmlType="submit" disabled={isSubmit}>
+                <Button type="primary" htmlType="submit" disabled={isDisable}>
                   Lưu thay đổi
                 </Button>
               </Form.Item>
