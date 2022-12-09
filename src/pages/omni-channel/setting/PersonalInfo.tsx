@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
@@ -29,8 +29,26 @@ import type { RcFile, UploadProps } from 'antd/es/upload/interface';
 import { endpoint, requestGetInfoUser } from '@/services/auth';
 import { requestCheckPhoneContact } from '../report/services';
 
+type FormProps = {
+  name: string;
+  position: string;
+  department: string;
+  level: string;
+  organization: string;
+  home_address: string;
+  work_address: string;
+  phone_number: string;
+  ip_phone: string;
+};
+
+type validateFieldsProps = {
+  errorFields: { errors: string[]; name: string[] }[];
+  values: FormProps;
+};
+
 const PersonalInfo: React.FC = () => {
   const [isEditUser, setEditUser] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(true);
   const { initialState, setInitialState } = useModel('@@initialState');
   const token = window.localStorage.getItem('access_token');
   const [form] = Form.useForm();
@@ -46,17 +64,18 @@ const PersonalInfo: React.FC = () => {
     return res;
   });
 
-  const requestEditUserInfoSubmit = async (
-    name: string,
-    position: string,
-    department: string,
-    level: string,
-    organization: string,
-    home_address: string,
-    work_address: string,
-    phone_number: string,
-    ip_phone: string,
-  ) => {
+  const requestEditUserInfoSubmit = async (data: FormProps) => {
+    const {
+      name,
+      position,
+      department,
+      level,
+      organization,
+      home_address,
+      work_address,
+      phone_number,
+      ip_phone,
+    } = data;
     const res = await requestEditUserInfo(
       name,
       position,
@@ -73,7 +92,10 @@ const PersonalInfo: React.FC = () => {
 
   const checkPhoneContact = useRequest(
     async (data) => {
-      const result: { success: boolean; error_code: number } = await requestCheckPhoneContact(data);
+      const result: { success: boolean; error_code: number } = await requestCheckPhoneContact(
+        token ? token : '',
+        data,
+      );
       if (result.error_code === 4000201) {
         form.setFields([
           {
@@ -94,18 +116,8 @@ const PersonalInfo: React.FC = () => {
     form.setFieldsValue(initialState?.currentUser);
   };
 
-  const handleOnFinishEditUser = (values: any) => {
-    const res = requestEditUserInfoSubmit(
-      values.name,
-      values.position,
-      values.department,
-      values.level,
-      values.organization,
-      values.home_address,
-      values.work_address,
-      values.phone_number,
-      values.ip_phone,
-    );
+  const handleOnFinishEditUser = (values: FormProps) => {
+    const res = requestEditUserInfoSubmit(values);
 
     res.then(async (result: requeGetUserInfoProps) => {
       if (result.success) {
@@ -125,6 +137,7 @@ const PersonalInfo: React.FC = () => {
   const handleOnCancleEditUser = () => {
     setEditUser(false);
     form.resetFields();
+    setIsSubmit(true);
   };
 
   const props: UploadProps = {
@@ -207,7 +220,26 @@ const PersonalInfo: React.FC = () => {
         className={styles.detailCardLayout}
       >
         <div style={{ paddingTop: '10px' }}>
-          <Form form={form} onFinish={handleOnFinishEditUser}>
+          <Form
+            form={form}
+            onFinish={handleOnFinishEditUser}
+            onValuesChange={() => {
+              form.validateFields().catch((error: validateFieldsProps) => {
+                setIsSubmit(true);
+                if (
+                  error.errorFields.length === 0 &&
+                  (error.values.work_address !== initialState?.currentUser?.work_address ||
+                    error.values.position !== initialState?.currentUser?.position ||
+                    error.values.level !== initialState?.currentUser?.level ||
+                    error.values.home_address !== initialState?.currentUser?.home_address ||
+                    error.values.phone_number !== initialState?.currentUser?.phone_number ||
+                    error.values.ip_phone !== initialState?.currentUser?.ip_phone)
+                ) {
+                  setIsSubmit(false);
+                }
+              });
+            }}
+          >
             <Row>
               <Col md={3}></Col>
               <Col md={9}>
@@ -408,7 +440,12 @@ const PersonalInfo: React.FC = () => {
                         style={{ width: '300px' }}
                         className={styles.inputNumber}
                         onBlur={() => {
-                          checkPhoneContact.run(form.getFieldValue('phone_number'));
+                          if (
+                            initialState?.currentUser?.phone_number !==
+                            form.getFieldValue('phone_number')
+                          ) {
+                            checkPhoneContact.run(form.getFieldValue('phone_number'));
+                          }
                         }}
                       />
                     </Form.Item>
@@ -566,7 +603,7 @@ const PersonalInfo: React.FC = () => {
                 <Button style={{ marginRight: '10px' }} onClick={handleOnCancleEditUser}>
                   Hủy
                 </Button>
-                <Button type="primary" htmlType="submit">
+                <Button type="primary" htmlType="submit" disabled={isSubmit}>
                   Lưu thay đổi
                 </Button>
               </Form.Item>
