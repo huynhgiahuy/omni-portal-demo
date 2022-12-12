@@ -161,7 +161,7 @@ const HistoryCall: React.FC = () => {
       newResult = 'Nhỡ trong hàng chờ';
     } else if (result === 'other_failure') {
       color = '#FFAC1C';
-      newResult = 'Lý do fail khác';
+      newResult = 'Thất bại khác';
     }
     return <Tag color={color}>{newResult}</Tag>;
   };
@@ -578,7 +578,7 @@ const HistoryCall: React.FC = () => {
                     Nhỡ trong hàng chờ
                   </Select.Option>
                   <Select.Option value="other_failure" key="other_failure">
-                    Lý do fail khác
+                    Thất bại khác
                   </Select.Option>
                 </Select>
               </Form.Item>
