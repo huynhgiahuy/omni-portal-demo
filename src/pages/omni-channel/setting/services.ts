@@ -139,18 +139,15 @@ export async function requestDetailUserPermission(limit: number, offset: number,
 }
 
 export async function requestDeleteUserPermission(user_id: string) {
-  return request(
-    `${api.UMI_API_BASE_URL}/user-service/api/settings/user/delete_user_permission_info_data`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      data: {
-        user_id,
-      },
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/delete_user_and_role`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+    data: {
+      user_id,
+    },
+  });
 }
 
 export async function requestReadRoleAndPerm(
