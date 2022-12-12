@@ -272,7 +272,7 @@ const PermissionEdit: React.FC = () => {
     socket.on('reload_user_status', () => {
       fetchListAllUserInfoFinalSocket.run();
     });
-  }, [socket]);
+  }, []);
 
   const fetchDetaiUserInfoFinal = async (user_id: any) => {
     const resDetail = await requestDetailUserInfoFinal(user_id);
