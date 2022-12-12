@@ -14,7 +14,6 @@ import AgentModalAnswer from '../AgentModalAnswer';
 import { socket } from '../../socket';
 import { dataUserContactProps, requestGetUserContact } from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
-import { data } from '../../pages/omni-channel/report/FakeData';
 const access_token = localStorage.getItem('access_token');
 
 export type SiderTheme = 'light' | 'dark';
@@ -26,6 +25,7 @@ export type dataProps = {
   event: string;
   call_history: string;
   name: string;
+  is_ip_phone: boolean;
   contact: {
     full_name: string;
     phone_number: string;
@@ -46,8 +46,6 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconHistory, setActiveIconHistory] = useState(false);
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
-  const [isCallerName, setCallerName] = useState('');
-  const [isCallePhone, setCallerPhone] = useState('');
   const [dataCall, setDataCall] = useState<dataProps>();
 
   const token = window.localStorage?.getItem('access_token');
@@ -91,44 +89,51 @@ const GlobalHeaderRight: React.FC = () => {
       leading: false,
     },
   );
-  
+
   useEffect(() => {
     console.log({ socket });
     const newToken = {
       token: access_token,
     };
-    socket.emit('authen_event', newToken);
-    socket.on('emit_call_event', (data) => {
-      console.log({data})
-      setDataCall(data);
-      // fake data when agent answered_call
-      //data.event = 'answered_call';
-      const eventCall = data.event;
-      switch (eventCall) {
-        case 'ringing_call':
-          setTimeout(() => {
-            setIsModalOpenRing(true);
-          }, 0);
+    if (access_token) {
+      socket.emit('authen_event', newToken);
+      socket.on('emit_call_event', (data) => {
+        console.log({ data });
+        setDataCall(data);
+        const eventCall = data.event;
+        switch (eventCall) {
+          case 'ringing_call':
+            setTimeout(() => {
+              setIsModalOpenRing(true);
+            }, 0);
 
-          break;
-        case 'hangup_call':
-          setTimeout(() => {
-            setIsModalOpenRing(false);
-            setIsModalOpenAnswer(false);
-          }, 0);
+            break;
+          case 'hangup_call':
+            setTimeout(() => {
+              setIsModalOpenRing(false);
+              setIsModalOpenAnswer(false);
+              setIsFullScreenModal(false);
+            }, 0);
 
-          break;
-        case 'answered_call':
-          setTimeout(() => {
-            setIsModalOpenRing(false);
-            setIsModalOpenAnswer(true);
-          }, 0);
+            break;
+          case 'answered_call':
+            setTimeout(() => {
+              setIsModalOpenRing(false);
+              setIsModalOpenAnswer(true);
+            }, 0);
 
-          break;
-        default:
-          break;
-      }
-    });
+            break;
+          default:
+            break;
+        }
+      });
+    }
+    return () => {
+      socket.off('updated_user_status');
+      socket.off('emit_call_event');
+      socket.off('authen_event');
+      socket.off('reload_user_status');
+    };
   }, [socket]);
 
   if (!initialState || !initialState.settings) {
