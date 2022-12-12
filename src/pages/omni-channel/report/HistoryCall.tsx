@@ -139,7 +139,7 @@ const HistoryCall: React.FC = () => {
   const handleViewResult = (result: any) => {
     let color, newResult;
     if (result === 'success') {
-      color = '#7CFC00';
+      color = '#0096FF';
       newResult = 'Thành công';
     } else if (result === 'fail') {
       color = '#b20000';
@@ -407,7 +407,7 @@ const HistoryCall: React.FC = () => {
         } else {
           return note.map((item, index) => (
             <>
-              <Typography.Text key={index}>{item.content}</Typography.Text>
+              <Typography.Text key={item.content}>{item.content}</Typography.Text>
               <br></br>
             </>
           ));
@@ -457,7 +457,6 @@ const HistoryCall: React.FC = () => {
   };
 
   const handleChangeValueRangePicker = (value: any, dateString: any) => {
-    console.log(dateString);
     if (dateString[0] === '' && dateString[1] === '') {
       setValueFromDateTime(undefined);
       setValueToDateTime(undefined);
@@ -703,4 +702,4 @@ const HistoryCall: React.FC = () => {
   );
 };
 
-export default React.memo(HistoryCall);
+export default HistoryCall;
