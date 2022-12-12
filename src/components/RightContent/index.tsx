@@ -88,7 +88,7 @@ const GlobalHeaderRight: React.FC = () => {
       leading: false,
     },
   );
-  
+
   useEffect(() => {
     console.log({ socket });
     const newToken = {
@@ -97,7 +97,7 @@ const GlobalHeaderRight: React.FC = () => {
     if (access_token) {
       socket.emit('authen_event', newToken);
       socket.on('emit_call_event', (data) => {
-        console.log({data})
+        console.log({ data });
         setDataCall(data);
         const eventCall = data.event;
         switch (eventCall) {
@@ -105,7 +105,7 @@ const GlobalHeaderRight: React.FC = () => {
             setTimeout(() => {
               setIsModalOpenRing(true);
             }, 0);
-  
+
             break;
           case 'hangup_call':
             setTimeout(() => {
@@ -113,20 +113,26 @@ const GlobalHeaderRight: React.FC = () => {
               setIsModalOpenAnswer(false);
               setIsFullScreenModal(false);
             }, 0);
-  
+
             break;
           case 'answered_call':
             setTimeout(() => {
               setIsModalOpenRing(false);
               setIsModalOpenAnswer(true);
             }, 0);
-  
+
             break;
           default:
             break;
         }
       });
     }
+    return () => {
+      socket.off('updated_user_status');
+      socket.off('emit_call_event');
+      socket.off('authen_event');
+      socket.off('reload_user_status');
+    };
   }, [socket]);
 
   if (!initialState || !initialState.settings) {
