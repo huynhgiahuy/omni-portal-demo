@@ -965,7 +965,7 @@ const PermissionEdit: React.FC = () => {
                       const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập số di động');
-                      } else if (value.length !== 10) {
+                      } else if (value.length < 10 || value.length > 11) {
                         return Promise.reject('Số điện thoại không hợp lệ');
                       } else if (!phoneReg.test(value)) {
                         return Promise.reject('Số điện thoại không hợp lệ');
