@@ -241,8 +241,8 @@ const PersonalInfo: React.FC = () => {
             }}
           >
             <Row>
-              <Col md={3}></Col>
-              <Col md={9}>
+              <Col xs={2} md={3}></Col>
+              <Col xs={22} md={9}>
                 <Typography.Text className={styles.antFieldDisplay}>
                   Giới thiệu về bạn
                 </Typography.Text>
@@ -408,8 +408,8 @@ const PersonalInfo: React.FC = () => {
                   )}
                 </div>
               </Col>
-              <Col md={2}></Col>
-              <Col md={9}>
+              <Col xs={2} md={3}></Col>
+              <Col xs={22} md={9}>
                 <Typography.Text className={styles.antFieldDisplay}>Liên hệ</Typography.Text>
                 <hr></hr>
                 <div className={styles.antDataDisplay}>
@@ -424,10 +424,10 @@ const PersonalInfo: React.FC = () => {
                       rules={[
                         {
                           validator: (_, value: any) => {
-                            const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
+                            const phoneReg = /([0]{1})+([0-9]{1})+([0-9]{8,9})/;
                             if (value === undefined || !value || value.length === 0) {
                               return Promise.reject('Vui lòng nhập số di động');
-                            } else if (value.length !== 10) {
+                            } else if (value.length > 11) {
                               return Promise.reject('Số điện thoại không hợp lệ');
                             } else if (!phoneReg.test(value)) {
                               return Promise.reject('Số điện thoại không hợp lệ');
@@ -470,7 +470,7 @@ const PersonalInfo: React.FC = () => {
                           message: 'Vui lòng không để trống thông tin',
                         },
                         {
-                          pattern: new RegExp('^[0-9]{4,6}$'),
+                          pattern: new RegExp('^[0-9]{4,7}$'),
                           message: 'IP Phone không hợp lệ',
                         },
                       ]}
