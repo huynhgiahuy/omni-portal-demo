@@ -124,6 +124,8 @@ const submitFormLayout = {
   },
 };
 
+const access_token = localStorage.getItem('access_token');
+
 const PermissionEdit: React.FC = () => {
   const [isView, setIsView] = useState<string>();
   const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
@@ -194,8 +196,6 @@ const PermissionEdit: React.FC = () => {
           setListAllUserInfoFinal(res);
         }
       },
-    },
-    {
       manual: true,
     },
   );
@@ -223,14 +223,6 @@ const PermissionEdit: React.FC = () => {
     fetchGroupPermissionData();
   }, []);
 
-  // useEffect(() => {
-  //   console.log(socketStatus);
-  //   socketStatus.emit('updated_user_status', 'test');
-  //   socketStatus.on('updated_user_status', () => {
-  //     console.log('Test');
-  //   });
-  // }, [socketStatus]);
-
   const fetchDetaiUserInfoFinal = async (user_id: any) => {
     const resDetail = await requestDetailUserInfoFinal(user_id);
     if (resDetail.success === true) {
@@ -240,13 +232,13 @@ const PermissionEdit: React.FC = () => {
 
   const handleDeleteUserPermission = async (user_id: string) => {
     const response_delete = await requestDeleteUserPermission(user_id);
-    if (response_delete.success !== true) {
-      message.error('Xóa người dùng thất bại!');
+    if (response_delete.success === true) {
+      message.success('Xóa người dùng thành công!');
+      fetchListAllUserInfoFinal.run();
     } else if (response_delete.error_code === 4030102) {
       message.error('Bạn không có quyền xóa thông tin này!');
     } else {
-      message.success('Xóa người dùng thành công!');
-      fetchListAllUserInfoFinal.run();
+      message.error('Xóa người dùng thất bại!');
     }
   };
 
