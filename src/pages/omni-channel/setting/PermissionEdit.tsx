@@ -200,7 +200,6 @@ const PermissionEdit: React.FC = () => {
     },
   );
 
-  ///
   const fetchListAllUserInfoFinalSocket = useRequest(
     async () => {
       const res: { success: boolean; length: number; error_code: number } =
@@ -266,7 +265,6 @@ const PermissionEdit: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    console.log(socket);
     const newToken = {
       token: access_token,
     };
