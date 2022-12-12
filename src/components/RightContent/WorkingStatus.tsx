@@ -5,6 +5,7 @@ import styles from './index.less';
 import Ellipse from '../../assets/Ellipse.svg';
 import { useModel } from 'umi';
 import { requeGetUserInfoProps, requestUpdateStatusUser } from '@/services/user_info';
+import { socket } from '@/socket';
 
 const WorkingStatus = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
@@ -34,6 +35,7 @@ const WorkingStatus = () => {
       res.then(async (result: requeGetUserInfoProps) => {
         if (result.success) {
           setOption(2);
+          socket.emit('updated_user_status');
           await setInitialState((s) => ({
             ...s,
             currentUser: result.data[0],
@@ -49,6 +51,7 @@ const WorkingStatus = () => {
       res.then(async (result: requeGetUserInfoProps) => {
         if (result.success) {
           setOption(result.data[0].status);
+          socket.emit('updated_user_status');
         } else {
           setOption(initialState?.currentUser?.status ? initialState?.currentUser?.status : 2);
           message.error('Chuyển trạng thái không thành công, vui lòng thử lại');
