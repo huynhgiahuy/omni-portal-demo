@@ -45,6 +45,7 @@ import Ellipse from '../../../assets/Ellipse.svg';
 import OfflineIcon from '../../../../public/offline.png';
 import moment from 'moment';
 import NoFoundPage from '@/pages/404';
+import { socket } from '@/socket';
 
 interface PaginationProps {
   current: number;
@@ -124,9 +125,8 @@ const submitFormLayout = {
   },
 };
 
-const access_token = localStorage.getItem('access_token');
-
 const PermissionEdit: React.FC = () => {
+  const access_token = localStorage.getItem('access_token');
   const [isView, setIsView] = useState<string>();
   const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
   const [userKey, setUserKey] = useState<string | any>();
@@ -200,6 +200,47 @@ const PermissionEdit: React.FC = () => {
     },
   );
 
+  const fetchListAllUserInfoFinalSocket = useRequest(
+    async () => {
+      const res: { success: boolean; length: number; error_code: number } =
+        await requestAllUserInfoFinal(
+          pagination.pageSize,
+          pagination.current,
+          valueKeyWord,
+          listValueTeam,
+          listValueNLV,
+          listValueNQ,
+        );
+      if (!res.success) {
+        if (res.error_code === 4030102) {
+          setIsView('403');
+          return;
+        } else if (res.error_code === 4010106) {
+          message.error('Không tìm thấy dữ liệu');
+          setListAllUserInfoFinal([]);
+          setListAllUserInfoLengthFinal(0);
+          return;
+        } else {
+          message.error('Không tìm thấy dữ liệu');
+          setListAllUserInfoFinal([]);
+          setListAllUserInfoLengthFinal(0);
+          return;
+        }
+      } else {
+        setListAllUserInfoLengthFinal(res.length);
+      }
+      return res;
+    },
+    {
+      onSuccess: (res: any) => {
+        if (res) {
+          setListAllUserInfoFinal(res);
+        }
+      },
+      manual: true,
+    },
+  );
+
   const fetchGroupPermissionData = async () => {
     const resPer = await requestGroupPermissionData();
     if (resPer.success === true) {
@@ -222,6 +263,16 @@ const PermissionEdit: React.FC = () => {
     fetchTeamPermissionData();
     fetchGroupPermissionData();
   }, []);
+
+  useEffect(() => {
+    const newToken = {
+      token: access_token,
+    };
+    socket.emit('reload_user_status', newToken);
+    socket.on('reload_user_status', () => {
+      fetchListAllUserInfoFinalSocket.run();
+    });
+  }, [socket]);
 
   const fetchDetaiUserInfoFinal = async (user_id: any) => {
     const resDetail = await requestDetailUserInfoFinal(user_id);
@@ -650,7 +701,7 @@ const PermissionEdit: React.FC = () => {
       <Form className={styles.filterFormPermissionEdit} layout="vertical" form={formFilter}>
         <div>
           <div className={styles.filterFormPermissionEditDisplay}>
-            <div style={{ width: '300px' }}>
+            <div style={{ width: 300 }}>
               <Form.Item label="Team" name="team_id" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueTeam} mode="multiple">
                   {listTeamPermission &&
@@ -662,7 +713,7 @@ const PermissionEdit: React.FC = () => {
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: '300px' }}>
+            <div style={{ width: 300 }}>
               <Form.Item label="Nơi làm việc" name="work_address" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueNLV} mode="multiple">
                   <Select.Option value="Miền Bắc" key="Miền Bắc">
@@ -674,7 +725,7 @@ const PermissionEdit: React.FC = () => {
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: '300px' }}>
+            <div style={{ width: 300 }}>
               <Form.Item label="Nhóm quyền" name="role_id" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueNQ} mode="multiple">
                   {listGroupPermission &&
@@ -698,7 +749,7 @@ const PermissionEdit: React.FC = () => {
         <div style={{ paddingTop: '29px' }}>
           <Form.Item name="search_name">
             <Input
-              style={{ width: '300px' }}
+              style={{ width: 300 }}
               prefix={<SearchOutlined />}
               placeholder="Tìm kiếm tên người dùng"
               allowClear
@@ -856,6 +907,12 @@ const PermissionEdit: React.FC = () => {
                       </div>
                     </>
                   )}
+                  onDropdownVisibleChange={(open) => {
+                    if (open === false) {
+                      setClickAddNewTeam(false);
+                    }
+                    return;
+                  }}
                 >
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
@@ -997,7 +1054,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     validator: (_, value: any) => {
-                      const numberReg = /^[1-9]{1,6}$/;
+                      const numberReg = /^[1-9]{4,7}$/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập IP Phone');
                       } else if (value.length < 4 && numberReg.test(value) === true) {
@@ -1034,14 +1091,14 @@ const PermissionEdit: React.FC = () => {
             <Button
               style={{ marginRight: '10px' }}
               onClick={handleCancleUpdatePermission}
-              //disabled={handleCallApiUpdateUserInfo.loading}
+              disabled={handleCallApiUpdateUserInfo.loading}
             >
               Hủy
             </Button>
             <Button
               type="primary"
               htmlType="submit"
-              //loading={handleCallApiUpdateUserInfo.loading}
+              loading={handleCallApiUpdateUserInfo.loading}
               disabled={isInfoUpdated ? false : true}
             >
               Cập nhật
@@ -1052,4 +1109,4 @@ const PermissionEdit: React.FC = () => {
     </>
   );
 };
-export default React.memo(PermissionEdit);
+export default PermissionEdit;
