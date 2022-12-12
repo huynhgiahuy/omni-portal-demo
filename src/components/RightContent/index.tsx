@@ -25,6 +25,7 @@ export type dataProps = {
   event: string;
   call_history: string;
   name: string;
+  is_ip_phone: boolean;
   contact: {
     full_name: string;
     phone_number: string;
