@@ -33,6 +33,9 @@
         name: 'profile',
         component: './omni-channel/setting/index',
       },
+      {
+        component: './403',
+      },
     ],
   },
   {
@@ -40,6 +43,6 @@
     redirect: '/omni-channel/profile',
   },
   {
-    component: './404',
+    component: './403',
   },
 ];
