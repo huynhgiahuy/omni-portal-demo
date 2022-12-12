@@ -829,10 +829,10 @@ const PhoneBook: React.FC = () => {
               rules={[
                 {
                   validator: (_, value: any) => {
-                    const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
+                    const phoneReg = /([0]{1})+([0-9]{1})+([0-9]{8,9})/;
                     if (value === undefined || !value || value.length === 0) {
                       return Promise.reject('Vui lòng nhập số di động');
-                    } else if (value.length !== 10) {
+                    } else if (value.length > 11) {
                       return Promise.reject('Số điện thoại không hợp lệ');
                     } else if (!phoneReg.test(value)) {
                       return Promise.reject('Số điện thoại không hợp lệ');
@@ -864,7 +864,7 @@ const PhoneBook: React.FC = () => {
               style={{ marginTop: 8 }}
               rules={[
                 {
-                  pattern: new RegExp('^[0-9]{4,6}$'),
+                  pattern: new RegExp('^[0-9]{4,7}$'),
                   message: 'IP Phone không hợp lệ',
                 },
               ]}

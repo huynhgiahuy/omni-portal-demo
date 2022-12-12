@@ -32,6 +32,7 @@ import {
   requestUpdatenotification,
   requestUpdateScreenMode,
 } from '@/services/user_info';
+import { socket } from '@/socket';
 
 const { SubMenu } = Menu;
 const { Title } = Typography;
@@ -49,6 +50,10 @@ const loginOut = async () => {
   const logoutRequest = await outLogin();
 
   if (logoutRequest.success) {
+    socket.off('updated_user_status');
+    socket.off('emit_call_event');
+    socket.off('authen_event');
+    socket.off('reload_user_status');
     window.localStorage.removeItem('access_token');
     window.localStorage.removeItem('rid');
     window.location.href = logoutRequest.data[0];

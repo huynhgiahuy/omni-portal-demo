@@ -701,7 +701,7 @@ const PermissionEdit: React.FC = () => {
       <Form className={styles.filterFormPermissionEdit} layout="vertical" form={formFilter}>
         <div>
           <div className={styles.filterFormPermissionEditDisplay}>
-            <div style={{ width: 300 }}>
+            <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Team" name="team_id" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueTeam} mode="multiple">
                   {listTeamPermission &&
@@ -713,7 +713,7 @@ const PermissionEdit: React.FC = () => {
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: 300 }}>
+            <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Nơi làm việc" name="work_address" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueNLV} mode="multiple">
                   <Select.Option value="Miền Bắc" key="Miền Bắc">
@@ -725,7 +725,7 @@ const PermissionEdit: React.FC = () => {
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: 300 }}>
+            <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Nhóm quyền" name="role_id" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueNQ} mode="multiple">
                   {listGroupPermission &&
@@ -749,7 +749,7 @@ const PermissionEdit: React.FC = () => {
         <div style={{ paddingTop: '29px' }}>
           <Form.Item name="search_name">
             <Input
-              style={{ width: 300 }}
+              style={{ flex: 2 }}
               prefix={<SearchOutlined />}
               placeholder="Tìm kiếm tên người dùng"
               allowClear
