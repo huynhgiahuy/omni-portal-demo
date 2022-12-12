@@ -509,7 +509,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       />
                     </Form.Item>
                     <Form.Item
-                      label={<Typography.Text style={{ color: '#fff' }}>IIP</Typography.Text>}
+                      label={<Typography.Text style={{ color: '#fff' }}>IPP</Typography.Text>}
                       name="ip_phone"
                       rules={[
                         {
