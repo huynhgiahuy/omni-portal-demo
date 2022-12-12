@@ -540,7 +540,7 @@ const HistoryCall: React.FC = () => {
                 name="Hướng cuộc gọi"
                 style={{ marginBottom: 'unset' }}
               >
-                <Select onChange={handleSelectValueHCG} mode="multiple">
+                <Select onChange={handleSelectValueHCG} mode="multiple" placeholder="Tất cả">
                   <Select.Option value="inbound" key="inbound">
                     Gọi vào
                   </Select.Option>
@@ -555,7 +555,7 @@ const HistoryCall: React.FC = () => {
             </div>
             <div style={{ flex: 2, width: 280 }}>
               <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
-                <Select onChange={handleSelectValueKQ} mode="multiple">
+                <Select onChange={handleSelectValueKQ} mode="multiple" placeholder="Tất cả">
                   <Select.Option value="success" key="success">
                     Thành công
                   </Select.Option>

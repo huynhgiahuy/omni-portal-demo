@@ -451,15 +451,6 @@ const PermissionEdit: React.FC = () => {
     return;
   };
 
-  // const handleRenderOfflineStatus = () => {
-  //   return (
-  //     <div className={styles.offlineStatusDisplay}>
-  //       <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
-  //       <div className={styles.offlineStatusText}>Đang offline</div>
-  //     </div>
-  //   );
-  // };
-
   const columns: ColumnsType<DataAllUserInfoFinal> = [
     {
       title: '#',
@@ -703,7 +694,7 @@ const PermissionEdit: React.FC = () => {
           <div className={styles.filterFormPermissionEditDisplay}>
             <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Team" name="team_id" style={{ marginBottom: 'unset' }}>
-                <Select onChange={handleSelectValueTeam} mode="multiple">
+                <Select onChange={handleSelectValueTeam} mode="multiple" placeholder="Tất cả">
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
                       <Select.Option value={item.name} key={item.id}>
@@ -715,7 +706,7 @@ const PermissionEdit: React.FC = () => {
             </div>
             <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Nơi làm việc" name="work_address" style={{ marginBottom: 'unset' }}>
-                <Select onChange={handleSelectValueNLV} mode="multiple">
+                <Select onChange={handleSelectValueNLV} mode="multiple" placeholder="Tất cả">
                   <Select.Option value="Miền Bắc" key="Miền Bắc">
                     Miền Bắc
                   </Select.Option>
@@ -727,7 +718,7 @@ const PermissionEdit: React.FC = () => {
             </div>
             <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Nhóm quyền" name="role_id" style={{ marginBottom: 'unset' }}>
-                <Select onChange={handleSelectValueNQ} mode="multiple">
+                <Select onChange={handleSelectValueNQ} mode="multiple" placeholder="Tất cả">
                   {listGroupPermission &&
                     listGroupPermission.map((item: GroupPermission) => (
                       <Select.Option value={item.code} key={item.id}>
