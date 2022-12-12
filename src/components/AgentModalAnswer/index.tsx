@@ -227,7 +227,10 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
 
   const addUserContact = useRequest(
     async (data) => {
-      const result: { success: boolean; error: string } = await requestAddUserContact(data);
+      const result: { success: boolean; error: string } = await requestAddUserContact(
+        token ? token : '',
+        data,
+      );
       if (!result.success) {
         message.error('Lưu thất bại');
         return;
@@ -647,7 +650,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       />
                     </Form.Item>
                     <Form.Item
-                      label={<Typography.Text style={{ color: '#fff' }}>IIP</Typography.Text>}
+                      label={<Typography.Text style={{ color: '#fff' }}>IPP</Typography.Text>}
                       name="ip_phone"
                       rules={[
                         {

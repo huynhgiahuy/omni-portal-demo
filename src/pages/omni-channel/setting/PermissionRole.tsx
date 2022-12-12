@@ -111,7 +111,7 @@ interface DataTypePermissionTable {
 
 const PermissionRole: React.FC = () => {
   const [form] = Form.useForm();
-  const [isSubmit, setIsSubmit] = useState(true);
+  const [isDisable, setIsDisable] = useState(true);
   const [roleCode, setRoleCode] = useState('');
   const [roleDesc, setRoleDesc] = useState('');
   const [isView, setIsView] = useState('');
@@ -209,7 +209,7 @@ const PermissionRole: React.FC = () => {
       if (res.success) {
         message.success('Thêm mới thành công');
         handleCancleAddNewPermission();
-        fetchReadRoleAndPerm.refresh();
+        fetchReadRoleAndPerm.run();
       } else if (res.error_code === 4000104) {
         form.setFields([
           {
@@ -259,7 +259,7 @@ const PermissionRole: React.FC = () => {
       } else {
         handleCancleAddNewPermission();
         message.success('Cập nhập thành công');
-        fetchReadRoleAndPerm.refresh();
+        fetchReadRoleAndPerm.run();
       }
       return res;
     },
@@ -285,7 +285,7 @@ const PermissionRole: React.FC = () => {
       } else {
         handleCancleAddNewPermission();
         message.success('Xoá thành công');
-        fetchReadRoleAndPerm.refresh();
+        fetchReadRoleAndPerm.run();
       }
       return res;
     },
@@ -337,6 +337,7 @@ const PermissionRole: React.FC = () => {
     setValueCheckboxTTCN([]);
     setValueCheckboxTTND([]);
     setValueCheckboxGroupsPer([]);
+    setValueCheckboxContact([]);
     setAddNetPermission(true);
     setIsEditRole(false);
   };
@@ -355,6 +356,7 @@ const PermissionRole: React.FC = () => {
     setValueCheckboxTTCN([]);
     setValueCheckboxTTND([]);
     setValueCheckboxGroupsPer([]);
+    setValueCheckboxContact([]);
 
     setDataRoleId(data);
     form.setFieldValue('role_code', data.code);
@@ -1028,7 +1030,7 @@ const PermissionRole: React.FC = () => {
             errorFields: { errors: string[]; name: string[] }[];
             values: { role_code: string; role_desc: string };
           }) => {
-            setIsSubmit(true);
+            setIsDisable(true);
             const codeRoleId = dataRoleId?.permission_list.map(
               (permission: { code: string }) => permission.code,
             );
@@ -1040,14 +1042,14 @@ const PermissionRole: React.FC = () => {
                 dataRoleId?.code !== error.values.role_code ||
                 dataRoleId?.desc !== error.values.role_desc)
             ) {
-              setIsSubmit(false);
+              setIsDisable(false);
             }
           },
         );
     } else {
-      setIsSubmit(false);
+      setIsDisable(false);
       if (form.getFieldError('role_code').length > 0) {
-        setIsSubmit(true);
+        setIsDisable(true);
       }
     }
   }, [
@@ -1266,7 +1268,7 @@ const PermissionRole: React.FC = () => {
                   className={styles.addPermissionInput}
                   onChange={debounce(
                     (e) => {
-                      setRoleCode(e.target.value);
+                      setRoleDesc(e.target.value);
                     },
                     500,
                     {
@@ -1294,7 +1296,7 @@ const PermissionRole: React.FC = () => {
               type="primary"
               htmlType="submit"
               loading={fetchCreateRoleAndPermission.loading || fetchUpdateRoleAndPermission.loading}
-              disabled={isSubmit}
+              disabled={isDisable}
             >
               {isEditRole ? 'Cập nhập' : 'Tạo mới'}
             </Button>

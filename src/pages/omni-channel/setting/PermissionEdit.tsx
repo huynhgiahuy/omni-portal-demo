@@ -81,8 +81,7 @@ interface DataAllUserInfoFinal {
   position: string;
   phone_number: string;
   image: string;
-  status?: string;
-  is_online?: boolean;
+  status: string;
 }
 
 const formItemLayout = {
@@ -124,6 +123,8 @@ const submitFormLayout = {
     },
   },
 };
+
+const access_token = localStorage.getItem('access_token');
 
 const PermissionEdit: React.FC = () => {
   const [isView, setIsView] = useState<string>();
@@ -195,30 +196,9 @@ const PermissionEdit: React.FC = () => {
           setListAllUserInfoFinal(res);
         }
       },
-      onError: (error: any) => {
-        console.log(error);
-      },
+      manual: true,
     },
   );
-
-  const fetchDetaiUserInfoFinal = async (user_id: any) => {
-    const resDetail = await requestDetailUserInfoFinal(user_id);
-    if (resDetail.success === true) {
-      setListEditUserInfoFinal(resDetail.data);
-    }
-  };
-
-  const handleDeleteUserPermission = async (user_id: string) => {
-    const response_delete = await requestDeleteUserPermission(user_id);
-    if (response_delete.success !== true) {
-      message.error('Xóa người dùng thất bại!');
-    } else if (response_delete.error_code === 4030102) {
-      message.error('Bạn không có quyền xóa thông tin này!');
-    } else {
-      message.success('Xóa người dùng thành công!');
-      fetchListAllUserInfoFinal.refresh();
-    }
-  };
 
   const fetchGroupPermissionData = async () => {
     const resPer = await requestGroupPermissionData();
@@ -231,6 +211,34 @@ const PermissionEdit: React.FC = () => {
     const resTeam = await requestTeamPermissionData();
     if (resTeam.success === true) {
       setListTeamPermission(resTeam.data);
+    }
+  };
+
+  useEffect(() => {
+    fetchListAllUserInfoFinal.run();
+  }, [pagination]);
+
+  useEffect(() => {
+    fetchTeamPermissionData();
+    fetchGroupPermissionData();
+  }, []);
+
+  const fetchDetaiUserInfoFinal = async (user_id: any) => {
+    const resDetail = await requestDetailUserInfoFinal(user_id);
+    if (resDetail.success === true) {
+      setListEditUserInfoFinal(resDetail.data);
+    }
+  };
+
+  const handleDeleteUserPermission = async (user_id: string) => {
+    const response_delete = await requestDeleteUserPermission(user_id);
+    if (response_delete.success === true) {
+      message.success('Xóa người dùng thành công!');
+      fetchListAllUserInfoFinal.run();
+    } else if (response_delete.error_code === 4030102) {
+      message.error('Bạn không có quyền xóa thông tin này!');
+    } else {
+      message.error('Xóa người dùng thất bại!');
     }
   };
 
@@ -271,30 +279,36 @@ const PermissionEdit: React.FC = () => {
     }
   };
 
-  const handleCallApiUpdateUserInfo = useRequest(async (values: any) => {
-    const resSubmitUpdate = await requestUpdateUserInfoFinal(
-      userKey,
-      teamKey,
-      roleKey,
-      values.department,
-      values.position,
-      values.phone_number,
-      values.ip_phone,
-      values.level,
-      values.work_address,
-    );
-    if (resSubmitUpdate.success === true) {
-      message.success('Cập nhật thông tin thành công!');
-      fetchListAllUserInfoFinal.refresh();
-      handleCancleUpdatePermission();
-    } else if (resSubmitUpdate.error_code === 4030102) {
-      message.error('Bạn không có quyền cập nhật thông tin!');
-    } else {
-      message.error('Cập nhật thông tin thất bại!');
-    }
-  });
+  const handleCallApiUpdateUserInfo = useRequest(
+    async (values: DataAllUserInfoFinal) => {
+      const resSubmitUpdate: { success: boolean; error_code: number } =
+        await requestUpdateUserInfoFinal(
+          userKey,
+          teamKey,
+          roleKey,
+          values.department,
+          values.position,
+          values.phone_number,
+          values.ip_phone,
+          values.level,
+          values.work_address,
+        );
+      if (resSubmitUpdate.success === true) {
+        message.success('Cập nhật thông tin thành công!');
+        await fetchListAllUserInfoFinal.run();
+        handleCancleUpdatePermission();
+      } else if (resSubmitUpdate.error_code === 4030102) {
+        message.error('Bạn không có quyền cập nhật thông tin!');
+      } else {
+        message.error('Cập nhật thông tin thất bại!');
+      }
+    },
+    {
+      manual: true,
+    },
+  );
 
-  const handleSubmitUpdateUserInfoFinal = (values: any) => {
+  const handleSubmitUpdateUserInfoFinal = (values: DataAllUserInfoFinal) => {
     handleCallApiUpdateUserInfo.run(values);
     setInfoUpdated(false);
   };
@@ -315,15 +329,6 @@ const PermissionEdit: React.FC = () => {
     setRoleKey(values);
   };
 
-  useEffect(() => {
-    fetchListAllUserInfoFinal.refresh();
-  }, [pagination]);
-
-  useEffect(() => {
-    fetchTeamPermissionData();
-    fetchGroupPermissionData();
-  }, []);
-
   const arrListTeam = listTeamPermission?.map((item) => item.name);
 
   const handleClickUpdatePermission = () => {
@@ -332,6 +337,7 @@ const PermissionEdit: React.FC = () => {
   const handleCancleUpdatePermission = () => {
     setClickUpdatePermission(false);
     form.resetFields();
+    setInfoUpdated(false);
   };
   const handleClickDeleteUser = (user_id: string) => {
     Modal.confirm({
@@ -355,46 +361,53 @@ const PermissionEdit: React.FC = () => {
   };
 
   const handleRenderStatusActivity = (status: any) => {
-    if (status === '1') {
+    if (status === 1) {
       return (
         <div style={{ border: '1px solid #1eaf61', borderRadius: 4 }}>
           <CheckCircleFilled style={{ color: ' #1eaf61' }} />
           <span className={styles.readyStatusText}>Sẵn sàng</span>
         </div>
       );
-    } else if (status === '2') {
+    } else if (status === 2) {
       return (
         <div style={{ border: '1px solid #FAAD14', borderRadius: 4 }}>
           <ClockCircleFilled style={{ color: ' #FAAD14' }} />
           <span className={styles.abscentStatusText}>Vắng mặt</span>
         </div>
       );
-    } else if (status === '3') {
+    } else if (status === 3) {
       return (
         <div style={{ border: '1px solid #F5222D', borderRadius: 4 }}>
           <MinusCircleFilled style={{ color: '#F5222D' }} />
           <span className={styles.notDisturbStatusText}>Không làm phiền</span>
         </div>
       );
-    } else if (status === '4') {
+    } else if (status === 4) {
       return (
         <div className={styles.noActivityStatusDisplay}>
           <img src={Ellipse} alt="..." width={14} height={14} />
           <div className={styles.noActivityStatusText}>Không hoạt động</div>
         </div>
       );
+    } else if (status === 6) {
+      return (
+        <div className={styles.offlineStatusDisplay}>
+          <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
+          <div className={styles.offlineStatusText}>Đang offline</div>
+        </div>
+      );
     }
     return;
   };
 
-  const handleRenderOfflineStatus = () => {
-    return (
-      <div className={styles.offlineStatusDisplay}>
-        <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
-        <div className={styles.offlineStatusText}>Đang offline</div>
-      </div>
-    );
-  };
+  // const handleRenderOfflineStatus = () => {
+  //   return (
+  //     <div className={styles.offlineStatusDisplay}>
+  //       <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
+  //       <div className={styles.offlineStatusText}>Đang offline</div>
+  //     </div>
+  //   );
+  // };
 
   const columns: ColumnsType<DataAllUserInfoFinal> = [
     {
@@ -516,13 +529,9 @@ const PermissionEdit: React.FC = () => {
       align: 'center',
       width: '110px',
       render: (text, record) => {
-        if (record.is_online === true) {
-          return text === null || text === undefined
-            ? '-'
-            : handleRenderStatusActivity(record.status);
-        } else {
-          return handleRenderOfflineStatus();
-        }
+        return text === null || text === undefined
+          ? '-'
+          : handleRenderStatusActivity(record.status);
       },
     },
     // {
@@ -656,8 +665,12 @@ const PermissionEdit: React.FC = () => {
             <div style={{ width: '300px' }}>
               <Form.Item label="Nơi làm việc" name="work_address" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueNLV} mode="multiple">
-                  <Select.Option value="Miền Bắc">Miền Bắc</Select.Option>
-                  <Select.Option value="Miền Nam">Miền Nam</Select.Option>
+                  <Select.Option value="Miền Bắc" key="Miền Bắc">
+                    Miền Bắc
+                  </Select.Option>
+                  <Select.Option value="Miền Nam" key="Miền Nam">
+                    Miền Nam
+                  </Select.Option>
                 </Select>
               </Form.Item>
             </div>
@@ -846,7 +859,7 @@ const PermissionEdit: React.FC = () => {
                 >
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
-                      <Select.Option value={item.id}>
+                      <Select.Option value={item.id} key={item.id}>
                         <div className={styles.flexLayout}>
                           <div>{item.name}</div>
                           {clickAddNewTeam === true ? (
@@ -892,7 +905,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     validator: (_, value: any) => {
-                      const phoneReg = /([3|5|7|8|9]{1})+([0-9]{8})/;
+                      const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập số di động');
                       } else if (value.length !== 10) {
@@ -952,7 +965,9 @@ const PermissionEdit: React.FC = () => {
                 <Select onChange={handleSelectRole}>
                   {listGroupPermission &&
                     listGroupPermission.map((item: GroupPermission) => (
-                      <Select.Option value={item.id}>{item.code}</Select.Option>
+                      <Select.Option value={item.id} key={item.id}>
+                        {item.code}
+                      </Select.Option>
                     ))}
                 </Select>
               </Form.Item>
@@ -1019,14 +1034,14 @@ const PermissionEdit: React.FC = () => {
             <Button
               style={{ marginRight: '10px' }}
               onClick={handleCancleUpdatePermission}
-              disabled={handleCallApiUpdateUserInfo.loading}
+              //disabled={handleCallApiUpdateUserInfo.loading}
             >
               Hủy
             </Button>
             <Button
               type="primary"
               htmlType="submit"
-              loading={handleCallApiUpdateUserInfo.loading}
+              //loading={handleCallApiUpdateUserInfo.loading}
               disabled={isInfoUpdated ? false : true}
             >
               Cập nhật
