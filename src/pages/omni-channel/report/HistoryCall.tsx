@@ -161,7 +161,7 @@ const HistoryCall: React.FC = () => {
       newResult = 'Nhỡ trong hàng chờ';
     } else if (result === 'other_failure') {
       color = '#FFAC1C';
-      newResult = 'Lý do fail khác';
+      newResult = 'Thất bại khác';
     }
     return <Tag color={color}>{newResult}</Tag>;
   };
@@ -534,7 +534,7 @@ const HistoryCall: React.FC = () => {
       <Form className={styles.filterFormHistoryCall} layout="vertical" form={form}>
         <div>
           <div className={styles.filterFormHistoryCallDisplay}>
-            <div style={{ width: '300px' }}>
+            <div style={{ flex: 2, width: 280 }}>
               <Form.Item
                 label="Hướng cuộc gọi"
                 name="Hướng cuộc gọi"
@@ -553,7 +553,7 @@ const HistoryCall: React.FC = () => {
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: '300px' }}>
+            <div style={{ flex: 2, width: 280 }}>
               <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueKQ} mode="multiple">
                   <Select.Option value="success" key="success">
@@ -578,12 +578,12 @@ const HistoryCall: React.FC = () => {
                     Nhỡ trong hàng chờ
                   </Select.Option>
                   <Select.Option value="other_failure" key="other_failure">
-                    Lý do fail khác
+                    Thất bại khác
                   </Select.Option>
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: '300px' }}>
+            <div style={{ flex: 2, width: 280 }}>
               <Form.Item label="Thời gian" name="Thời gian" style={{ marginBottom: 'unset' }}>
                 <RangePicker
                   onChange={handleChangeValueRangePicker}
@@ -622,7 +622,7 @@ const HistoryCall: React.FC = () => {
         <div style={{ paddingTop: '29px', display: 'flex', justifyContent: 'space-between' }}>
           <Form.Item name="search_name">
             <Input
-              style={{ width: '300px', marginRight: '10px' }}
+              style={{ flex: 2, width: 280 }}
               prefix={<SearchOutlined />}
               placeholder="Tìm kiếm tên người gọi, người nhận"
               allowClear
@@ -645,7 +645,10 @@ const HistoryCall: React.FC = () => {
               )}
             />
           </Form.Item>
-          <Button style={{ backgroundColor: '#7fb77e', color: '#fff' }} onClick={handleExportFile}>
+          <Button
+            style={{ backgroundColor: '#7fb77e', color: '#fff', marginLeft: '10px' }}
+            onClick={handleExportFile}
+          >
             <ExportIcon /> Export
           </Button>
         </div>
