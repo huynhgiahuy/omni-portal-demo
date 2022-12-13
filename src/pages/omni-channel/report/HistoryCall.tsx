@@ -12,6 +12,7 @@ import {
   Spin,
   Modal,
   Timeline,
+  Tooltip,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlayCircleFilled, SearchOutlined, FormOutlined } from '@ant-design/icons';
@@ -422,7 +423,11 @@ const HistoryCall: React.FC = () => {
       //   }
       // },
       render: (text, record) => {
-        return <FormOutlined style={{ fontSize: 20 }} onClick={() => setVisibleModalNote(true)} />;
+        return (
+          <Tooltip title="Xem ghi chú">
+            <FormOutlined style={{ fontSize: 20 }} onClick={() => setVisibleModalNote(true)} />
+          </Tooltip>
+        );
       },
     },
   ];
