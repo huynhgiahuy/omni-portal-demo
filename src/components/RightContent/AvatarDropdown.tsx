@@ -126,7 +126,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     if (res.success) {
       await setInitialState((s) => ({
         ...s,
-        currentUser: res.data[0],
+        currentUser: { ...initialState?.currentUser, notification: res.data[0] },
       }));
     } else {
       message.error('Cập nhập trạng thái không thành công, vui lòng thử lại');

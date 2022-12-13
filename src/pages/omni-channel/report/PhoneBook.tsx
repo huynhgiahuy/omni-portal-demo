@@ -200,6 +200,38 @@ const PhoneBook: React.FC = () => {
     });
   };
 
+  const getUserContactCheckRole = useRequest(
+    async (data) => {
+      const res: { success: boolean; error_code: number; length: number } =
+        await requestGetUserContact(
+          token ? token : '',
+          data
+            ? data
+            : {
+                email_user: initialState?.currentUser?.email,
+                page_number: pagination.current,
+                number: pagination.pageSize,
+                external_customers: external === 'Khách hàng' ? true : false,
+              },
+        );
+      if (!res.success) {
+        if (res.error_code === 4030102) {
+          setIsView('403');
+          return;
+        }
+      }
+      setContactLength(res.length);
+      return res;
+    },
+    {
+      onSuccess: (res) => {
+        if (res) {
+          setDataContacts(res);
+        }
+      },
+    },
+  );
+
   const getUserContact = useRequest(
     async (data) => {
       const res: { success: boolean; error_code: number; length: number } =
@@ -224,6 +256,7 @@ const PhoneBook: React.FC = () => {
       return res;
     },
     {
+      manual: true,
       onSuccess: (res) => {
         if (res) {
           setDataContacts(res);
@@ -581,6 +614,8 @@ const PhoneBook: React.FC = () => {
 
   return isView === '403' ? (
     <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+  ) : getUserContactCheckRole.loading ? (
+    <div />
   ) : (
     <>
       <div style={{ marginTop: '20px' }}>

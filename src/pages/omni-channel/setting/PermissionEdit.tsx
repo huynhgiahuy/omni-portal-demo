@@ -272,7 +272,7 @@ const PermissionEdit: React.FC = () => {
     socket.on('reload_user_status', () => {
       fetchListAllUserInfoFinalSocket.run();
     });
-  }, [socket]);
+  }, []);
 
   const fetchDetaiUserInfoFinal = async (user_id: any) => {
     const resDetail = await requestDetailUserInfoFinal(user_id);
@@ -450,15 +450,6 @@ const PermissionEdit: React.FC = () => {
     }
     return;
   };
-
-  // const handleRenderOfflineStatus = () => {
-  //   return (
-  //     <div className={styles.offlineStatusDisplay}>
-  //       <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
-  //       <div className={styles.offlineStatusText}>Đang offline</div>
-  //     </div>
-  //   );
-  // };
 
   const columns: ColumnsType<DataAllUserInfoFinal> = [
     {
@@ -691,19 +682,17 @@ const PermissionEdit: React.FC = () => {
   };
 
   return isView === '403' ? (
-    <NoFoundPage
-      status="403"
-      title="403"
-      subTitle="Bạn không có quyền xem trang Thông tin người dùng"
-    />
+    <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+  ) : fetchListAllUserInfoFinal.loading ? (
+    <></>
   ) : (
     <>
       <Form className={styles.filterFormPermissionEdit} layout="vertical" form={formFilter}>
         <div>
           <div className={styles.filterFormPermissionEditDisplay}>
-            <div style={{ width: 300 }}>
+            <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Team" name="team_id" style={{ marginBottom: 'unset' }}>
-                <Select onChange={handleSelectValueTeam} mode="multiple">
+                <Select onChange={handleSelectValueTeam} mode="multiple" placeholder="Tất cả">
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
                       <Select.Option value={item.name} key={item.id}>
@@ -713,9 +702,9 @@ const PermissionEdit: React.FC = () => {
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: 300 }}>
+            <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Nơi làm việc" name="work_address" style={{ marginBottom: 'unset' }}>
-                <Select onChange={handleSelectValueNLV} mode="multiple">
+                <Select onChange={handleSelectValueNLV} mode="multiple" placeholder="Tất cả">
                   <Select.Option value="Miền Bắc" key="Miền Bắc">
                     Miền Bắc
                   </Select.Option>
@@ -725,9 +714,9 @@ const PermissionEdit: React.FC = () => {
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: 300 }}>
+            <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Nhóm quyền" name="role_id" style={{ marginBottom: 'unset' }}>
-                <Select onChange={handleSelectValueNQ} mode="multiple">
+                <Select onChange={handleSelectValueNQ} mode="multiple" placeholder="Tất cả">
                   {listGroupPermission &&
                     listGroupPermission.map((item: GroupPermission) => (
                       <Select.Option value={item.code} key={item.id}>
@@ -749,7 +738,7 @@ const PermissionEdit: React.FC = () => {
         <div style={{ paddingTop: '29px' }}>
           <Form.Item name="search_name">
             <Input
-              style={{ width: 300 }}
+              style={{ flex: 2 }}
               prefix={<SearchOutlined />}
               placeholder="Tìm kiếm tên người dùng"
               allowClear
@@ -965,7 +954,7 @@ const PermissionEdit: React.FC = () => {
                       const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập số di động');
-                      } else if (value.length !== 10) {
+                      } else if (value.length < 10 || value.length > 11) {
                         return Promise.reject('Số điện thoại không hợp lệ');
                       } else if (!phoneReg.test(value)) {
                         return Promise.reject('Số điện thoại không hợp lệ');
