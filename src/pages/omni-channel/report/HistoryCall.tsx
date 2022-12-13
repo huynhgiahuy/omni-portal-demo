@@ -11,6 +11,7 @@ import {
   message,
   Spin,
   Modal,
+  Timeline,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlayCircleFilled, SearchOutlined, FormOutlined } from '@ant-design/icons';
@@ -142,10 +143,10 @@ const HistoryCall: React.FC = () => {
   const handleViewResult = (result: any) => {
     let color, newResult;
     if (result === 1) {
-      color = '#0096FF';
+      color = '#87d068';
       newResult = 'Thành công';
     } else if (result === 2) {
-      color = '#b20000';
+      color = '#ff0000';
       newResult = 'Thất bại';
     } else if (result === 3) {
       color = '#660000';
@@ -166,7 +167,11 @@ const HistoryCall: React.FC = () => {
       color = '#FFAC1C';
       newResult = 'Thất bại khác';
     }
-    return <Tag color={color}>{newResult}</Tag>;
+    return (
+      <Tag color={color} style={{ fontWeight: 'bold' }}>
+        {newResult}
+      </Tag>
+    );
   };
 
   const handleViewCallDirection = (call_direction: any) => {
@@ -709,9 +714,70 @@ const HistoryCall: React.FC = () => {
         open={isVisibleModalNote}
         onCancel={() => setVisibleModalNote(false)}
         footer={false}
-        title="Ghi chú"
+        centered
+        title="Ghi chú cuộc gọi"
       >
-        <Button>Test</Button>
+        <div className={styles.historyCallNoteTimeline}>
+          <Timeline pending={true} pendingDot={null}>
+            <Timeline.Item>
+              <Typography.Paragraph className={styles.historyCallNoteTime}>
+                10-12-2022 15:00:00
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
+                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>
+                  Nội dung:{' '}
+                </Typography.Text>
+                <Typography.Text>
+                  {' '}
+                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
+                  sự phụ trách để xử lý sự cố này
+                </Typography.Text>
+              </Typography.Paragraph>
+            </Timeline.Item>
+            <Timeline.Item>
+              <Typography.Paragraph className={styles.historyCallNoteTime}>
+                10-12-2022 15:00:00
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
+                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>
+                  Nội dung:{' '}
+                </Typography.Text>
+                <Typography.Text>
+                  {' '}
+                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
+                  sự phụ trách để xử lý sự cố này
+                </Typography.Text>
+              </Typography.Paragraph>
+            </Timeline.Item>
+            <Timeline.Item>
+              <Typography.Paragraph className={styles.historyCallNoteTime}>
+                10-12-2022 15:00:00
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
+                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>
+                  Nội dung:{' '}
+                </Typography.Text>
+                <Typography.Text>
+                  {' '}
+                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
+                  sự phụ trách để xử lý sự cố này
+                </Typography.Text>
+              </Typography.Paragraph>
+            </Timeline.Item>
+          </Timeline>
+        </div>
       </Modal>
     </>
   );
