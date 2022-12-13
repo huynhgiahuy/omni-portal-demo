@@ -682,11 +682,9 @@ const PermissionEdit: React.FC = () => {
   };
 
   return isView === '403' ? (
-    <NoFoundPage
-      status="403"
-      title="403"
-      subTitle="Bạn không có quyền xem trang Thông tin người dùng"
-    />
+    <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+  ) : fetchListAllUserInfoFinal.loading ? (
+    <></>
   ) : (
     <>
       <Form className={styles.filterFormPermissionEdit} layout="vertical" form={formFilter}>

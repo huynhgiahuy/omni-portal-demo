@@ -524,11 +524,9 @@ const HistoryCall: React.FC = () => {
   };
 
   return isView === '403' ? (
-    <NoFoundPage
-      status="403"
-      title="403"
-      subTitle="Bạn không có quyền xem trang Lịch sử cuộc gọi"
-    />
+    <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+  ) : fetchListLSCGData.loading ? (
+    <></>
   ) : (
     <>
       <Form className={styles.filterFormHistoryCall} layout="vertical" form={form}>
