@@ -11,9 +11,11 @@ import {
   message,
   Spin,
   Modal,
+  Timeline,
+  Tooltip,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlayCircleFilled, SearchOutlined } from '@ant-design/icons';
+import { PlayCircleFilled, SearchOutlined, FormOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 import styles from '../report/style.less';
@@ -70,6 +72,7 @@ const HistoryCall: React.FC = () => {
   const audioRef = useRef<any>();
 
   const [isVisibleModalAudio, setVisibleModalAudio] = useState(false);
+  const [isVisibleModalNote, setVisibleModalNote] = useState(false);
 
   const [testAudioURL, setTestAudioURL] = useState<any>();
 
@@ -140,32 +143,36 @@ const HistoryCall: React.FC = () => {
 
   const handleViewResult = (result: any) => {
     let color, newResult;
-    if (result === 'success') {
-      color = '#0096FF';
+    if (result === 1) {
+      color = '#87d068';
       newResult = 'Thành công';
-    } else if (result === 'fail') {
-      color = '#b20000';
+    } else if (result === 2) {
+      color = '#ff0000';
       newResult = 'Thất bại';
-    } else if (result === 'busy') {
+    } else if (result === 3) {
       color = '#660000';
       newResult = 'Bận';
-    } else if (result === 'cancel') {
+    } else if (result === 4) {
       color = '#e50000';
       newResult = 'Hủy bỏ';
-    } else if (result === 'no_answer') {
+    } else if (result === 5) {
       color = '#b1b1b1';
       newResult = 'Không trả lời';
-    } else if (result === 'rejected') {
+    } else if (result === 6) {
       color = '#ff0000';
       newResult = 'Từ chối';
-    } else if (result === 'missed') {
+    } else if (result === 7) {
       color = '#9B26B6';
       newResult = 'Nhỡ trong hàng chờ';
-    } else if (result === 'other_failure') {
+    } else if (result === 8) {
       color = '#FFAC1C';
       newResult = 'Thất bại khác';
     }
-    return <Tag color={color}>{newResult}</Tag>;
+    return (
+      <Tag color={color} style={{ fontWeight: 'bold' }}>
+        {newResult}
+      </Tag>
+    );
   };
 
   const handleViewCallDirection = (call_direction: any) => {
@@ -381,39 +388,46 @@ const HistoryCall: React.FC = () => {
       dataIndex: 'note',
       key: 'note',
       align: 'center',
-      width: '250px',
-      render: (note: any[]) => {
-        if (note.length > 2) {
-          return (
-            <>
-              <Typography.Text>{note[0].content}</Typography.Text>
-              <br></br>
-              <br></br>
-              <Typography.Text>{note[1].content}</Typography.Text>
-              <br></br>
-              <br></br>
-              <Typography.Text
-                style={
-                  ellipsis
-                    ? {
-                        width: 200,
-                      }
-                    : undefined
-                }
-                ellipsis={true}
-              >
-                {note[2].content}...
-              </Typography.Text>
-            </>
-          );
-        } else {
-          return note.map((item, index) => (
-            <>
-              <Typography.Text key={item.content}>{item.content}</Typography.Text>
-              <br></br>
-            </>
-          ));
-        }
+      width: '150px',
+      // render: (note: any[]) => {
+      //   if (note.length > 2) {
+      //     return (
+      //       <>
+      //         <Typography.Text>{note[0].content}</Typography.Text>
+      //         <br></br>
+      //         <br></br>
+      //         <Typography.Text>{note[1].content}</Typography.Text>
+      //         <br></br>
+      //         <br></br>
+      //         <Typography.Text
+      //           style={
+      //             ellipsis
+      //               ? {
+      //                   width: 200,
+      //                 }
+      //               : undefined
+      //           }
+      //           ellipsis={true}
+      //         >
+      //           {note[2].content}...
+      //         </Typography.Text>
+      //       </>
+      //     );
+      //   } else {
+      //     return note.map((item, index) => (
+      //       <>
+      //         <Typography.Text key={item.content}>{item.content}</Typography.Text>
+      //         <br></br>
+      //       </>
+      //     ));
+      //   }
+      // },
+      render: (text, record) => {
+        return (
+          <Tooltip title="Xem ghi chú">
+            <FormOutlined style={{ fontSize: 20 }} onClick={() => setVisibleModalNote(true)} />
+          </Tooltip>
+        );
       },
     },
   ];
@@ -556,28 +570,28 @@ const HistoryCall: React.FC = () => {
             <div style={{ flex: 2, width: 280 }}>
               <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
                 <Select onChange={handleSelectValueKQ} mode="multiple" placeholder="Tất cả">
-                  <Select.Option value="success" key="success">
+                  <Select.Option value={1} key="success">
                     Thành công
                   </Select.Option>
-                  <Select.Option value="fail" key="fail">
+                  <Select.Option value={2} key="fail">
                     Thất bại
                   </Select.Option>
-                  <Select.Option value="busy" key="busy">
+                  <Select.Option value={3} key="busy">
                     Bận
                   </Select.Option>
-                  <Select.Option value="cancel" key="cancel">
+                  <Select.Option value={4} key="cancel">
                     Hủy bỏ
                   </Select.Option>
-                  <Select.Option value="no_answer" key="no_answer">
+                  <Select.Option value={5} key="no_answer">
                     Không trả lời
                   </Select.Option>
-                  <Select.Option value="rejected" key="rejected">
+                  <Select.Option value={6} key="rejected">
                     Từ chối
                   </Select.Option>
-                  <Select.Option value="missed" key="missed">
+                  <Select.Option value={7} key="missed">
                     Nhỡ trong hàng chờ
                   </Select.Option>
-                  <Select.Option value="other_failure" key="other_failure">
+                  <Select.Option value={8} key="other_failure">
                     Thất bại khác
                   </Select.Option>
                 </Select>
@@ -699,6 +713,75 @@ const HistoryCall: React.FC = () => {
           <figure>
             <audio ref={audioRef} controls src={testAudioURL}></audio>
           </figure>
+        </div>
+      </Modal>
+      <Modal
+        open={isVisibleModalNote}
+        onCancel={() => setVisibleModalNote(false)}
+        footer={false}
+        centered
+        title="Ghi chú cuộc gọi"
+      >
+        <div className={styles.historyCallNoteTimeline}>
+          <Timeline pending={true} pendingDot={null}>
+            <Timeline.Item>
+              <Typography.Paragraph className={styles.historyCallNoteTime}>
+                10-12-2022 15:00:00
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
+                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>
+                  Nội dung:{' '}
+                </Typography.Text>
+                <Typography.Text>
+                  {' '}
+                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
+                  sự phụ trách để xử lý sự cố này
+                </Typography.Text>
+              </Typography.Paragraph>
+            </Timeline.Item>
+            <Timeline.Item>
+              <Typography.Paragraph className={styles.historyCallNoteTime}>
+                10-12-2022 15:00:00
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
+                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>
+                  Nội dung:{' '}
+                </Typography.Text>
+                <Typography.Text>
+                  {' '}
+                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
+                  sự phụ trách để xử lý sự cố này
+                </Typography.Text>
+              </Typography.Paragraph>
+            </Timeline.Item>
+            <Timeline.Item>
+              <Typography.Paragraph className={styles.historyCallNoteTime}>
+                10-12-2022 15:00:00
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
+                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>
+                  Nội dung:{' '}
+                </Typography.Text>
+                <Typography.Text>
+                  {' '}
+                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
+                  sự phụ trách để xử lý sự cố này
+                </Typography.Text>
+              </Typography.Paragraph>
+            </Timeline.Item>
+          </Timeline>
         </div>
       </Modal>
     </>
