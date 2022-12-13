@@ -53,17 +53,6 @@ const PersonalInfo: React.FC = () => {
   const token = window.localStorage.getItem('access_token');
   const [form] = Form.useForm();
 
-  useRequest(async () => {
-    const res: { success: boolean; data: any } = await requestGetInfoUser(token ? token : '');
-    if (res.success) {
-      await setInitialState((s) => ({
-        ...s,
-        currentUser: res.data[0],
-      }));
-    }
-    return res;
-  });
-
   const requestEditUserInfoSubmit = async (data: FormProps) => {
     const {
       name,
