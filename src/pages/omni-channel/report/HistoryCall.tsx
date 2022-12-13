@@ -105,6 +105,8 @@ const HistoryCall: React.FC = () => {
       if (!res.success) {
         if (res.error_code === 4030102) {
           setIsView('403');
+          setListDataLSCG([]);
+          setListDataLSCGLength(0);
           return;
         } else if (res.error_code === 4010106) {
           message.error('Không tìm thấy dữ liệu');
@@ -525,7 +527,7 @@ const HistoryCall: React.FC = () => {
 
   return isView === '403' ? (
     <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
-  ) : fetchListLSCGData.data === undefined ? (
+  ) : fetchListLSCGData.data === undefined && listDataLSCG === undefined ? (
     <></>
   ) : (
     <>
