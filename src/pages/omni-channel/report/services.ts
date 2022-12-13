@@ -165,3 +165,13 @@ export async function requestSaveCallNote(
     },
   );
 }
+
+export async function requestGetTranferInfo(token: string, data?: {}) {
+  return request(`${api.UMI_API_BASE_URL}/user-service/api/user/get_transfer_info`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data,
+  });
+}
