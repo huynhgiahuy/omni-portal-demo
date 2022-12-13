@@ -146,7 +146,14 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
           if (result.success) {
             await setInitialState((s) => ({
               ...s,
-              currentUser: result.data[0],
+              currentUser: {
+                ...initialState.currentUser,
+                setting: {
+                  ...initialState.settings,
+                  dark_mode: result.data[0].dark_mode,
+                  simple_mode: result.data[0].simple_mode,
+                },
+              },
             }));
           } else {
             return;
