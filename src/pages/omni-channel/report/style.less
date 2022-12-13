@@ -198,3 +198,24 @@
     }
   }
 }
+.historyCallNoteTimeline {
+  max-height: 400px;
+  margin-top: 10px;
+  padding-top: 10px;
+  padding-right: 10px;
+  overflow-y: scroll;
+  :global {
+    .ant-timeline.ant-timeline-pending .ant-timeline-item-last .ant-timeline-item-tail {
+      border-left: 2px solid #e8e8e8;
+    }
+    .ant-timeline-item-pending .ant-timeline-item-head {
+      font-size: 0px;
+    }
+  }
+}
+.historyCallNoteTime {
+  color: #1890ff;
+}
+.historyCallNoteField {
+  font-weight: bold;
+}
