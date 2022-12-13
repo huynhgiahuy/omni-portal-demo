@@ -525,7 +525,7 @@ const HistoryCall: React.FC = () => {
 
   return isView === '403' ? (
     <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
-  ) : fetchListLSCGData.loading ? (
+  ) : fetchListLSCGData.data === undefined ? (
     <></>
   ) : (
     <>

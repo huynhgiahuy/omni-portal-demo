@@ -127,6 +127,7 @@ const submitFormLayout = {
 
 const PermissionEdit: React.FC = () => {
   const access_token = localStorage.getItem('access_token');
+  const [isLoading, setLoading] = useState(false);
   const [isView, setIsView] = useState<string>();
   const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
   const [userKey, setUserKey] = useState<string | any>();
@@ -170,7 +171,7 @@ const PermissionEdit: React.FC = () => {
           listValueNLV,
           listValueNQ,
         );
-      if (!res.success) {
+      if (res.success === false) {
         if (res.error_code === 4030102) {
           setIsView('403');
           return;
@@ -683,7 +684,7 @@ const PermissionEdit: React.FC = () => {
 
   return isView === '403' ? (
     <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
-  ) : fetchListAllUserInfoFinal.loading ? (
+  ) : fetchListAllUserInfoFinal.data === undefined ? (
     <></>
   ) : (
     <>
