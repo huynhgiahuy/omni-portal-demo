@@ -3,17 +3,41 @@ import { message, Select, Space } from 'antd';
 import { useEffect, useState } from 'react';
 import styles from './index.less';
 import Ellipse from '../../assets/Ellipse.svg';
-import { useModel } from 'umi';
+import { useModel, useRequest } from 'umi';
 import { requeGetUserInfoProps, requestUpdateStatusUser } from '@/services/user_info';
 import { socket } from '@/socket';
+import useMousePosition from '@/hooks/useMousePosition';
 
 const WorkingStatus = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
+  const { x, y } = useMousePosition();
+  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isOnline, setIsOnline] = useState(true);
 
   const token = window.localStorage.getItem('access_token');
   const [option, setOption] = useState<number>(
     initialState?.currentUser?.status ? initialState?.currentUser?.status : 1,
+  );
+
+  const updateStatusUser = useRequest(
+    async (option: number) => {
+      const res: { success: boolean; data: any } = await requestUpdateStatusUser(
+        option,
+        token ? token : '',
+      );
+
+      if (res.success) {
+        setOption(res.data[0].status);
+        socket.emit('updated_user_status');
+      } else {
+        setOption(initialState?.currentUser?.status ? initialState?.currentUser?.status : 2);
+        message.error('Chuyển trạng thái không thành công, vui lòng thử lại');
+        return;
+      }
+    },
+    {
+      manual: true,
+    },
   );
 
   //Check offline
@@ -38,7 +62,7 @@ const WorkingStatus = () => {
           socket.emit('updated_user_status');
           await setInitialState((s) => ({
             ...s,
-            currentUser: result.data[0],
+            currentUser: { ...initialState?.currentUser, status: result.data[0] },
           }));
         }
       });
@@ -46,20 +70,15 @@ const WorkingStatus = () => {
   }, [isOnline]);
 
   useEffect(() => {
-    if (initialState?.currentUser?.status !== undefined) {
-      const res = requestUpdateStatusUser(option ? option : 1, token ? token : '');
-      res.then(async (result: requeGetUserInfoProps) => {
-        if (result.success) {
-          setOption(result.data[0].status);
-          socket.emit('updated_user_status');
-        } else {
-          setOption(initialState?.currentUser?.status ? initialState?.currentUser?.status : 2);
-          message.error('Chuyển trạng thái không thành công, vui lòng thử lại');
-          return;
-        }
-      });
-    }
-  }, [option]);
+    let timeMouse: NodeJS.Timeout = setTimeout(() => {
+      setIsOnline(false);
+    }, 300 * 1000);
+    const handleMouseMove = () => {
+      clearTimeout(timeMouse);
+      setIsOnline(true);
+    };
+    document.addEventListener('mousemove', handleMouseMove);
+  }, [x, y]);
 
   return (
     <Space size={0} align="center">
@@ -69,6 +88,7 @@ const WorkingStatus = () => {
         value={option}
         onSelect={(value: number) => {
           setOption(value);
+          updateStatusUser.run(value);
         }}
         dropdownStyle={{ width: 155 }}
         dropdownMatchSelectWidth={false}
