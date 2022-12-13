@@ -388,7 +388,7 @@ const HistoryCall: React.FC = () => {
       dataIndex: 'note',
       key: 'note',
       align: 'center',
-      width: '250px',
+      width: '150px',
       // render: (note: any[]) => {
       //   if (note.length > 2) {
       //     return (
