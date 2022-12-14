@@ -65,9 +65,12 @@ const HistoryCall: React.FC = () => {
   const [valueToDateTime, setValueToDateTime] = useState<string | any>();
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
 
+  const [isHCGFilter, setHCGFilter] = useState(false);
+  const [isKQFilter, setKQFilter] = useState(false);
+  const [isTimeFilter, setTimeFilter] = useState(false);
+
   const [listDataLSCG, setListDataLSCG] = useState<DataLSCGType[] | any>();
   const [listDataLSCGLength, setListDataLSCGLength] = useState<string | any>();
-  const [ellipsis, setEllipsis] = useState<any>(true);
 
   const audioRef = useRef<any>();
 
@@ -371,12 +374,7 @@ const HistoryCall: React.FC = () => {
             />
             <img
               src={DownloadIcon}
-              style={{
-                background: '#1890ff',
-                padding: '3px',
-                borderRadius: '30px',
-                verticalAlign: 'sub',
-              }}
+              className={styles.fileDownloadIcon}
               onClick={() => downloadAudio(record._id, record.record_name)}
             />
           </>
@@ -389,39 +387,6 @@ const HistoryCall: React.FC = () => {
       key: 'note',
       align: 'center',
       width: '150px',
-      // render: (note: any[]) => {
-      //   if (note.length > 2) {
-      //     return (
-      //       <>
-      //         <Typography.Text>{note[0].content}</Typography.Text>
-      //         <br></br>
-      //         <br></br>
-      //         <Typography.Text>{note[1].content}</Typography.Text>
-      //         <br></br>
-      //         <br></br>
-      //         <Typography.Text
-      //           style={
-      //             ellipsis
-      //               ? {
-      //                   width: 200,
-      //                 }
-      //               : undefined
-      //           }
-      //           ellipsis={true}
-      //         >
-      //           {note[2].content}...
-      //         </Typography.Text>
-      //       </>
-      //     );
-      //   } else {
-      //     return note.map((item, index) => (
-      //       <>
-      //         <Typography.Text key={item.content}>{item.content}</Typography.Text>
-      //         <br></br>
-      //       </>
-      //     ));
-      //   }
-      // },
       render: (text, record) => {
         return (
           <Tooltip title="Xem ghi chú">
@@ -442,12 +407,14 @@ const HistoryCall: React.FC = () => {
 
   const handleSelectValueHCG = (values: any) => {
     if (values.length === 0) {
+      setHCGFilter(false);
       setListValueHCG(undefined);
       setPagination({
         ...pagination,
         current: 1,
       });
     } else {
+      setHCGFilter(true);
       setListValueHCG(values);
       setPagination({
         ...pagination,
@@ -458,12 +425,14 @@ const HistoryCall: React.FC = () => {
 
   const handleSelectValueKQ = (values: any) => {
     if (values.length === 0) {
+      setKQFilter(false);
       setListValueKQ(undefined);
       setPagination({
         ...pagination,
         current: 1,
       });
     } else {
+      setKQFilter(true);
       setListValueKQ(values);
       setPagination({
         ...pagination,
@@ -474,10 +443,12 @@ const HistoryCall: React.FC = () => {
 
   const handleChangeValueRangePicker = (value: any, dateString: any) => {
     if (dateString[0] === '' && dateString[1] === '') {
+      setTimeFilter(false);
       setValueFromDateTime(undefined);
       setValueToDateTime(undefined);
       fetchListLSCGData.run(undefined, undefined);
     } else {
+      setTimeFilter(true);
       setValueFromDateTime(moment(dateString[0], 'DD-MM-YYYY').startOf('day'));
       setValueToDateTime(moment(dateString[1], 'DD-MM-YYYY').endOf('day'));
       fetchListLSCGData.run(
@@ -500,6 +471,9 @@ const HistoryCall: React.FC = () => {
       e.preventDefault();
     } else {
       form.resetFields();
+      setHCGFilter(false);
+      setKQFilter(false);
+      setTimeFilter(false);
       setListValueHCG(undefined);
       setListValueKQ(undefined);
       setValueKeyWord(undefined);
@@ -550,7 +524,11 @@ const HistoryCall: React.FC = () => {
           <div className={styles.filterFormHistoryCallDisplay}>
             <div style={{ flex: 2, width: 280 }}>
               <Form.Item
-                label="Hướng cuộc gọi"
+                label={
+                  <Typography.Text className={isHCGFilter ? `${styles.filterFieldActive}` : ''}>
+                    Hướng cuộc gọi
+                  </Typography.Text>
+                }
                 name="Hướng cuộc gọi"
                 style={{ marginBottom: 'unset' }}
               >
@@ -568,7 +546,15 @@ const HistoryCall: React.FC = () => {
               </Form.Item>
             </div>
             <div style={{ flex: 2, width: 280 }}>
-              <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
+              <Form.Item
+                label={
+                  <Typography.Text className={isKQFilter ? `${styles.filterFieldActive}` : ''}>
+                    Kết quả
+                  </Typography.Text>
+                }
+                name="Kết quả"
+                style={{ marginBottom: 'unset' }}
+              >
                 <Select onChange={handleSelectValueKQ} mode="multiple" placeholder="Tất cả">
                   <Select.Option value={1} key="success">
                     Thành công
@@ -598,7 +584,15 @@ const HistoryCall: React.FC = () => {
               </Form.Item>
             </div>
             <div style={{ flex: 2, width: 280 }}>
-              <Form.Item label="Thời gian" name="Thời gian" style={{ marginBottom: 'unset' }}>
+              <Form.Item
+                label={
+                  <Typography.Text className={isTimeFilter ? `${styles.filterFieldActive}` : ''}>
+                    Thời gian
+                  </Typography.Text>
+                }
+                name="Thời gian"
+                style={{ marginBottom: 'unset' }}
+              >
                 <RangePicker
                   onChange={handleChangeValueRangePicker}
                   className={styles.antRangePicker}

@@ -127,7 +127,6 @@ const submitFormLayout = {
 
 const PermissionEdit: React.FC = () => {
   const access_token = localStorage.getItem('access_token');
-  const [isLoading, setLoading] = useState(false);
   const [isView, setIsView] = useState<string>();
   const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
   const [userKey, setUserKey] = useState<string | any>();
@@ -147,7 +146,13 @@ const PermissionEdit: React.FC = () => {
   const [listValueTeam, setListValueTeam] = useState<string[] | any>();
   const [listValueNLV, setListValueNLV] = useState<string[] | any>();
   const [listValueNQ, setListValueNQ] = useState<string[] | any>();
+  const [listValueStatus, setListValueStatus] = useState<string[] | any>();
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
+
+  const [isTeamFilter, setTeamFilter] = useState(false);
+  const [isNLVFilter, setNLVFilter] = useState(false);
+  const [isNQFilter, setNQFilter] = useState(false);
+  const [isStatusFilter, setStatusFilter] = useState(false);
 
   const [form] = Form.useForm();
   const [formFilter] = Form.useForm();
@@ -170,6 +175,7 @@ const PermissionEdit: React.FC = () => {
           listValueTeam,
           listValueNLV,
           listValueNQ,
+          listValueStatus,
         );
       if (res.success === false) {
         if (res.error_code === 4030102) {
@@ -211,6 +217,7 @@ const PermissionEdit: React.FC = () => {
           listValueTeam,
           listValueNLV,
           listValueNQ,
+          listValueStatus,
         );
       if (!res.success) {
         if (res.error_code === 4030102) {
@@ -617,15 +624,21 @@ const PermissionEdit: React.FC = () => {
       listValueTeam === undefined &&
       listValueNLV === undefined &&
       listValueNQ === undefined &&
+      listValueStatus === undefined &&
       valueKeyWord === undefined
     ) {
       e.stopPropagation();
       e.preventDefault();
     } else {
       formFilter.resetFields();
+      setTeamFilter(false);
+      setNLVFilter(false);
+      setNQFilter(false);
+      setStatusFilter(false);
       setListValueTeam(undefined);
       setListValueNLV(undefined);
       setListValueNQ(undefined);
+      setListValueStatus(undefined);
       setValueKeyWord(undefined);
       setPagination({
         ...pagination,
@@ -636,12 +649,14 @@ const PermissionEdit: React.FC = () => {
 
   const handleSelectValueTeam = (values: any) => {
     if (values.length === 0) {
+      setTeamFilter(false);
       setListValueTeam(undefined);
       setPagination({
         ...pagination,
         current: 1,
       });
     } else {
+      setTeamFilter(true);
       setListValueTeam(values);
       setPagination({
         ...pagination,
@@ -652,12 +667,14 @@ const PermissionEdit: React.FC = () => {
 
   const handleSelectValueNLV = (values: any) => {
     if (values.length === 0) {
+      setNLVFilter(false);
       setListValueNLV(undefined);
       setPagination({
         ...pagination,
         current: 1,
       });
     } else {
+      setNLVFilter(true);
       setListValueNLV(values);
       setPagination({
         ...pagination,
@@ -668,13 +685,33 @@ const PermissionEdit: React.FC = () => {
 
   const handleSelectValueNQ = (values: any) => {
     if (values.length === 0) {
+      setNQFilter(false);
       setListValueNQ(undefined);
       setPagination({
         ...pagination,
         current: 1,
       });
     } else {
+      setNQFilter(true);
       setListValueNQ(values);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    }
+  };
+
+  const handleSelectValueStatus = (values: any) => {
+    if (values.length === 0) {
+      setStatusFilter(false);
+      setListValueStatus(undefined);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    } else {
+      setStatusFilter(true);
+      setListValueStatus(values);
       setPagination({
         ...pagination,
         current: 1,
@@ -692,7 +729,15 @@ const PermissionEdit: React.FC = () => {
         <div>
           <div className={styles.filterFormPermissionEditDisplay}>
             <div style={{ flex: 2, width: 217 }}>
-              <Form.Item label="Team" name="team_id" style={{ marginBottom: 'unset' }}>
+              <Form.Item
+                label={
+                  <Typography.Text className={isTeamFilter ? `${styles.filterFieldActive}` : ''}>
+                    Team
+                  </Typography.Text>
+                }
+                name="team_id"
+                style={{ marginBottom: 'unset' }}
+              >
                 <Select onChange={handleSelectValueTeam} mode="multiple" placeholder="Tất cả">
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
@@ -704,7 +749,15 @@ const PermissionEdit: React.FC = () => {
               </Form.Item>
             </div>
             <div style={{ flex: 2, width: 217 }}>
-              <Form.Item label="Nơi làm việc" name="work_address" style={{ marginBottom: 'unset' }}>
+              <Form.Item
+                label={
+                  <Typography.Text className={isNLVFilter ? `${styles.filterFieldActive}` : ''}>
+                    Nơi làm việc
+                  </Typography.Text>
+                }
+                name="work_address"
+                style={{ marginBottom: 'unset' }}
+              >
                 <Select onChange={handleSelectValueNLV} mode="multiple" placeholder="Tất cả">
                   <Select.Option value="Miền Bắc" key="Miền Bắc">
                     Miền Bắc
@@ -716,7 +769,15 @@ const PermissionEdit: React.FC = () => {
               </Form.Item>
             </div>
             <div style={{ flex: 2, width: 217 }}>
-              <Form.Item label="Nhóm quyền" name="role_id" style={{ marginBottom: 'unset' }}>
+              <Form.Item
+                label={
+                  <Typography.Text className={isNQFilter ? `${styles.filterFieldActive}` : ''}>
+                    Nhóm quyền
+                  </Typography.Text>
+                }
+                name="role_id"
+                style={{ marginBottom: 'unset' }}
+              >
                 <Select onChange={handleSelectValueNQ} mode="multiple" placeholder="Tất cả">
                   {listGroupPermission &&
                     listGroupPermission.map((item: GroupPermission) => (
@@ -724,6 +785,35 @@ const PermissionEdit: React.FC = () => {
                         {item.code}
                       </Select.Option>
                     ))}
+                </Select>
+              </Form.Item>
+            </div>
+            <div style={{ flex: 2, width: 217 }}>
+              <Form.Item
+                label={
+                  <Typography.Text className={isStatusFilter ? `${styles.filterFieldActive}` : ''}>
+                    Trạng thái hoạt động
+                  </Typography.Text>
+                }
+                name="status"
+                style={{ marginBottom: 'unset' }}
+              >
+                <Select onChange={handleSelectValueStatus} mode="multiple" placeholder="Tất cả">
+                  <Select.Option value={1} key={1}>
+                    Sẵn sàng
+                  </Select.Option>
+                  <Select.Option value={2} key={2}>
+                    Vắng mặt
+                  </Select.Option>
+                  <Select.Option value={3} key={3}>
+                    Không làm phiền
+                  </Select.Option>
+                  <Select.Option value={4} key={4}>
+                    Không hoạt động
+                  </Select.Option>
+                  <Select.Option value={6} key={6}>
+                    Đang offline
+                  </Select.Option>
                 </Select>
               </Form.Item>
             </div>

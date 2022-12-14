@@ -227,6 +227,7 @@ export async function requestAllUserInfoFinal(
   team_name?: any,
   work_address?: any,
   role_code?: any,
+  status?: any,
 ) {
   return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_user_and_role`, {
     method: 'POST',
@@ -240,6 +241,7 @@ export async function requestAllUserInfoFinal(
       team_name,
       work_address,
       role_code,
+      status,
     },
   });
 }
