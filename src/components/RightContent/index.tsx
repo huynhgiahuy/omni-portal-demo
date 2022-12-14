@@ -44,7 +44,9 @@ const GlobalHeaderRight: React.FC = () => {
   const [isModalOpenRing, setIsModalOpenRing] = useState(false);
   const [isModalOpenAnswer, setIsModalOpenAnswer] = useState(false);
   const [isFullScreenModal, setIsFullScreenModal] = useState(false);
-  const [dataTranfers, setDataTranfers] = useState<dataUserContactProps[]>([]);
+  const [dataTranfers, setDataTranfers] = useState<
+    { id: string; name: string; ip_phone: string }[]
+  >([]);
 
   const [valueCheckboxUser, setValueCheckboxUser] = useState<string>('');
   const [isVisibleHistoryCall, setVisibleHistoryCall] = useState(false);
@@ -57,34 +59,22 @@ const GlobalHeaderRight: React.FC = () => {
 
   const getTranferInfo = useRequest(
     async (data) => {
-      const res: { success: boolean } = await requestGetTranferInfo(
-        token ? token : '',
-        data ? data : { email_user: initialState?.currentUser?.email },
-      );
+      const res: { success: boolean; data: { id: string; name: string; ip_phone: string }[] } =
+        await requestGetTranferInfo(token ? token : '', data ? data : {});
       if (!res.success) {
         return;
       }
+      setDataTranfers(res.data);
       return res;
     },
     {
       manual: true,
-      onSuccess: (res) => {
-        if (res) {
-          setDataTranfers(res);
-        }
-      },
     },
   );
 
-  useEffect(() => {
-    if (isModalOpenRing || isModalOpenAnswer) {
-      getTranferInfo.run({ email_user: initialState?.currentUser?.email });
-    }
-  }, [isModalOpenRing, isModalOpenAnswer]);
-
   const handelUserTransfer = debounce(
     (keyword?: string) => {
-      getTranferInfo.run({ email_user: initialState?.currentUser?.email, keyword });
+      getTranferInfo.run({ keyword });
     },
     500,
     {
@@ -94,13 +84,19 @@ const GlobalHeaderRight: React.FC = () => {
   );
 
   useEffect(() => {
+    if (isModalOpenRing || isModalOpenAnswer) {
+      getTranferInfo.run({});
+    }
+  }, [isModalOpenRing, isModalOpenAnswer]);
+
+  useEffect(() => {
+    console.log({ socket });
     const newToken = {
       token: access_token,
     };
     if (access_token) {
       socket.emit('authen_event', newToken);
       socket.on('reload_user_status', () => {
-        console.log(123);
         getTranferInfo.run({});
       });
       socket.on('emit_call_event', (data) => {
