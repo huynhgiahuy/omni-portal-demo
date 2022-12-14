@@ -257,7 +257,13 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   );
 
   useEffect(() => {
-    refTimer.current.reset();
+    refTimer.current.start();
+    if (!isModalOpen) {
+      refTimer.current.reset();
+      setTimeout(() => {
+        refTimer.current.stop();
+      });
+    }
   }, [isModalOpen]);
 
   useEffect(() => {
