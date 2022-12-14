@@ -70,12 +70,13 @@ const WorkingStatus = () => {
   }, [isOnline]);
 
   useEffect(() => {
-    let timeMouse: NodeJS.Timeout = setTimeout(() => {
-      setIsOnline(false);
-    }, 300 * 1000);
+    let timeMouse: NodeJS.Timeout;
     const handleMouseMove = () => {
       clearTimeout(timeMouse);
       setIsOnline(true);
+      timeMouse = setTimeout(() => {
+        setIsOnline(false);
+      }, 300 * 1000);
     };
     document.addEventListener('mousemove', handleMouseMove);
   }, [x, y]);

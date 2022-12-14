@@ -56,7 +56,7 @@ type AgentModalAnswerProps = {
   hours: React.ReactNode;
   minutes: React.ReactNode;
   seconds: React.ReactNode;
-  dataContacts: dataUserContactProps[];
+  dataContacts: { id: string; name: string; ip_phone: string }[];
   refTimer: React.MutableRefObject<any>;
   dataCall?: dataProps;
 };
@@ -253,8 +253,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   const { confirm } = Modal;
 
   const listTransfer = useMemo(
-    () =>
-      dataContacts?.map((user) => ({ id: user.id, label: user.full_name, value: user.ip_phone })),
+    () => dataContacts?.map((user) => ({ id: user.id, label: user.name, value: user.ip_phone })),
     [dataContacts],
   );
 
