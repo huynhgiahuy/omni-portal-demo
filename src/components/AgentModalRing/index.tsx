@@ -51,7 +51,6 @@ type AgentModalRingProps = {
   isActiveIconHistory: boolean;
   isActiveIconNote: boolean;
   dataContacts: { id: string; name: string; ip_phone: string }[];
-  refTimer: React.MutableRefObject<any>;
   dataCall?: dataProps;
 };
 
@@ -86,7 +85,6 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   isActiveIconHistory,
   isActiveIconNote,
   dataContacts,
-  refTimer,
   dataCall,
 }) => {
   const [form] = Form.useForm();
