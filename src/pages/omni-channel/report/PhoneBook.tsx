@@ -167,6 +167,7 @@ const PhoneBook: React.FC = () => {
   const [initialUserContact, setInitialUserContact] = useState<dataUserContactProps>();
   const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
   const [newTeamValue, setNewTeamValue] = useState<string | any>();
+  const [contactLength, setContactLength] = useState(1);
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
   const [isView, setIsView] = useState('');
 
@@ -191,20 +192,35 @@ const PhoneBook: React.FC = () => {
       current: newPagination.current,
       pageSize: newPagination.pageSize,
     });
+    getUserContact.run({
+      email_user: initialState?.currentUser?.email,
+      page_number: newPagination.current,
+      number: newPagination.pageSize,
+      external_customers: external === 'Khách hàng' ? true : false,
+    });
   };
 
-  const getUserContact = useRequest(
+  const getUserContactCheckRole = useRequest(
     async (data) => {
-      const res: { success: boolean; error_code: number } = await requestGetUserContact(
-        token ? token : '',
-        data ? data : { email_user: initialState?.currentUser?.email },
-      );
+      const res: { success: boolean; error_code: number; length: number } =
+        await requestGetUserContact(
+          token ? token : '',
+          data
+            ? data
+            : {
+                email_user: initialState?.currentUser?.email,
+                page_number: pagination.current,
+                number: pagination.pageSize,
+                external_customers: external === 'Khách hàng' ? true : false,
+              },
+        );
       if (!res.success) {
         if (res.error_code === 4030102) {
           setIsView('403');
           return;
         }
       }
+      setContactLength(res.length);
       return res;
     },
     {
@@ -216,12 +232,37 @@ const PhoneBook: React.FC = () => {
     },
   );
 
-  const dataExternalContacts = dataContacts.filter(
-    (user: { external_customers: boolean }) => user.external_customers,
-  );
-
-  const dataInternalContacts = dataContacts.filter(
-    (user: { external_customers: boolean }) => !user.external_customers,
+  const getUserContact = useRequest(
+    async (data) => {
+      const res: { success: boolean; error_code: number; length: number } =
+        await requestGetUserContact(
+          token ? token : '',
+          data
+            ? data
+            : {
+                email_user: initialState?.currentUser?.email,
+                page_number: pagination.current,
+                number: pagination.pageSize,
+                external_customers: external === 'Khách hàng' ? true : false,
+              },
+        );
+      if (!res.success) {
+        if (res.error_code === 4030102) {
+          setIsView('403');
+          return;
+        }
+      }
+      setContactLength(res.length);
+      return res;
+    },
+    {
+      manual: true,
+      onSuccess: (res) => {
+        if (res) {
+          setDataContacts(res);
+        }
+      },
+    },
   );
 
   const addUserContact = useRequest(
@@ -240,7 +281,12 @@ const PhoneBook: React.FC = () => {
         }
       } else {
         message.success('Thêm thành công');
-        getUserContact.run({ email_user: initialState?.currentUser?.email });
+        getUserContact.run({
+          email_user: initialState?.currentUser?.email,
+          page_number: pagination.current,
+          number: pagination.pageSize,
+          external_customers: external === 'Khách hàng' ? true : false,
+        });
         handleCancleModal();
       }
     },
@@ -265,7 +311,12 @@ const PhoneBook: React.FC = () => {
         }
       } else {
         message.success('Cập nhập thành công');
-        getUserContact.run({ email_user: initialState?.currentUser?.email });
+        getUserContact.run({
+          email_user: initialState?.currentUser?.email,
+          page_number: pagination.current,
+          number: pagination.pageSize,
+          external_customers: external === 'Khách hàng' ? true : false,
+        });
         handleCancleModal();
       }
       return res;
@@ -291,7 +342,12 @@ const PhoneBook: React.FC = () => {
         }
       } else {
         message.success('Xoá thành công');
-        getUserContact.run({ email_user: initialState?.currentUser?.email });
+        getUserContact.run({
+          email_user: initialState?.currentUser?.email,
+          page_number: pagination.current,
+          number: pagination.pageSize,
+          external_customers: external === 'Khách hàng' ? true : false,
+        });
         handleCancleModal();
       }
       return res;
@@ -309,7 +365,12 @@ const PhoneBook: React.FC = () => {
         return;
       } else {
         message.success('Lưu thành công');
-        getUserContact.run({ email_user: initialState?.currentUser?.email });
+        getUserContact.run({
+          email_user: initialState?.currentUser?.email,
+          page_number: pagination.current,
+          number: pagination.pageSize,
+          external_customers: external === 'Khách hàng' ? true : false,
+        });
       }
       return res;
     },
@@ -553,6 +614,8 @@ const PhoneBook: React.FC = () => {
 
   return isView === '403' ? (
     <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+  ) : getUserContactCheckRole.loading ? (
+    <div />
   ) : (
     <>
       <div style={{ marginTop: '20px' }}>
@@ -564,6 +627,9 @@ const PhoneBook: React.FC = () => {
             form.resetFields();
             getUserContact.run({
               email_user: initialState?.currentUser?.email,
+              page_number: pagination.current,
+              number: pagination.pageSize,
+              external_customers: e.toString() === 'Khách hàng' ? true : false,
             });
           }}
           options={[
@@ -604,6 +670,9 @@ const PhoneBook: React.FC = () => {
                       unit: form.getFieldValue('unit'),
                       team: form.getFieldValue('team_unit'),
                       email_user: initialState?.currentUser?.email,
+                      page_number: pagination.current,
+                      number: pagination.pageSize,
+                      external_customers: external === 'Khách hàng' ? true : false,
                     });
                   },
                   500,
@@ -634,6 +703,9 @@ const PhoneBook: React.FC = () => {
                   ) {
                     getUserContact.run({
                       email_user: initialState?.currentUser?.email,
+                      page_number: pagination.current,
+                      number: pagination.pageSize,
+                      external_customers: external === 'Khách hàng' ? true : false,
                     });
                   }
                   form.resetFields();
@@ -655,6 +727,9 @@ const PhoneBook: React.FC = () => {
                       keyword: form.getFieldValue('search'),
                       unit: form.getFieldValue('unit'),
                       email_user: initialState?.currentUser?.email,
+                      page_number: pagination.current,
+                      number: pagination.pageSize,
+                      external_customers: external === 'Khách hàng' ? true : false,
                     });
                   },
                   500,
@@ -679,13 +754,13 @@ const PhoneBook: React.FC = () => {
         </div>
       </Form>
       <Table
-        dataSource={external === 'Khách hàng' ? dataExternalContacts : dataInternalContacts}
+        dataSource={dataContacts}
         columns={columnsDanhba}
         className={styles.tableStylePhoneBook}
         onChange={handleTableChange}
         pagination={{
           ...pagination,
-          // total: listAllRolePermission?.length,
+          total: contactLength,
           locale: {
             items_per_page: '/ Trang',
             jump_to: 'Đến trang',
@@ -789,10 +864,10 @@ const PhoneBook: React.FC = () => {
               rules={[
                 {
                   validator: (_, value: any) => {
-                    const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
+                    const phoneReg = /([0]{1})+([0-9]{1})+([0-9]{8,9})/;
                     if (value === undefined || !value || value.length === 0) {
                       return Promise.reject('Vui lòng nhập số di động');
-                    } else if (value.length !== 10) {
+                    } else if (value.length > 11) {
                       return Promise.reject('Số điện thoại không hợp lệ');
                     } else if (!phoneReg.test(value)) {
                       return Promise.reject('Số điện thoại không hợp lệ');
@@ -824,7 +899,7 @@ const PhoneBook: React.FC = () => {
               style={{ marginTop: 8 }}
               rules={[
                 {
-                  pattern: new RegExp('^[0-9]{4,6}$'),
+                  pattern: new RegExp('^[0-9]{4,7}$'),
                   message: 'IP Phone không hợp lệ',
                 },
               ]}

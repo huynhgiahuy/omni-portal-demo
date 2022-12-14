@@ -40,11 +40,12 @@ import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
 import { useRequest } from 'umi';
-import { debounce, isEqual } from 'lodash';
+import { debounce } from 'lodash';
 import Ellipse from '../../../assets/Ellipse.svg';
 import OfflineIcon from '../../../../public/offline.png';
 import moment from 'moment';
 import NoFoundPage from '@/pages/404';
+import { socket } from '@/socket';
 
 interface PaginationProps {
   current: number;
@@ -81,8 +82,7 @@ interface DataAllUserInfoFinal {
   position: string;
   phone_number: string;
   image: string;
-  status?: string;
-  is_online?: boolean;
+  status: string;
 }
 
 const formItemLayout = {
@@ -126,6 +126,8 @@ const submitFormLayout = {
 };
 
 const PermissionEdit: React.FC = () => {
+  const access_token = localStorage.getItem('access_token');
+  const [isLoading, setLoading] = useState(false);
   const [isView, setIsView] = useState<string>();
   const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
   const [userKey, setUserKey] = useState<string | any>();
@@ -169,6 +171,47 @@ const PermissionEdit: React.FC = () => {
           listValueNLV,
           listValueNQ,
         );
+      if (res.success === false) {
+        if (res.error_code === 4030102) {
+          setIsView('403');
+          return;
+        } else if (res.error_code === 4010106) {
+          message.error('Không tìm thấy dữ liệu');
+          setListAllUserInfoFinal([]);
+          setListAllUserInfoLengthFinal(0);
+          return;
+        } else {
+          message.error('Không tìm thấy dữ liệu');
+          setListAllUserInfoFinal([]);
+          setListAllUserInfoLengthFinal(0);
+          return;
+        }
+      } else {
+        setListAllUserInfoLengthFinal(res.length);
+      }
+      return res;
+    },
+    {
+      onSuccess: (res: any) => {
+        if (res) {
+          setListAllUserInfoFinal(res);
+        }
+      },
+      manual: true,
+    },
+  );
+
+  const fetchListAllUserInfoFinalSocket = useRequest(
+    async () => {
+      const res: { success: boolean; length: number; error_code: number } =
+        await requestAllUserInfoFinal(
+          pagination.pageSize,
+          pagination.current,
+          valueKeyWord,
+          listValueTeam,
+          listValueNLV,
+          listValueNQ,
+        );
       if (!res.success) {
         if (res.error_code === 4030102) {
           setIsView('403');
@@ -195,30 +238,9 @@ const PermissionEdit: React.FC = () => {
           setListAllUserInfoFinal(res);
         }
       },
-      onError: (error: any) => {
-        console.log(error);
-      },
+      manual: true,
     },
   );
-
-  const fetchDetaiUserInfoFinal = async (user_id: any) => {
-    const resDetail = await requestDetailUserInfoFinal(user_id);
-    if (resDetail.success === true) {
-      setListEditUserInfoFinal(resDetail.data);
-    }
-  };
-
-  const handleDeleteUserPermission = async (user_id: string) => {
-    const response_delete = await requestDeleteUserPermission(user_id);
-    if (response_delete.success !== true) {
-      message.error('Xóa người dùng thất bại!');
-    } else if (response_delete.error_code === 4030102) {
-      message.error('Bạn không có quyền xóa thông tin này!');
-    } else {
-      message.success('Xóa người dùng thành công!');
-      fetchListAllUserInfoFinal.refresh();
-    }
-  };
 
   const fetchGroupPermissionData = async () => {
     const resPer = await requestGroupPermissionData();
@@ -231,6 +253,44 @@ const PermissionEdit: React.FC = () => {
     const resTeam = await requestTeamPermissionData();
     if (resTeam.success === true) {
       setListTeamPermission(resTeam.data);
+    }
+  };
+
+  useEffect(() => {
+    fetchListAllUserInfoFinal.run();
+  }, [pagination]);
+
+  useEffect(() => {
+    fetchTeamPermissionData();
+    fetchGroupPermissionData();
+  }, []);
+
+  useEffect(() => {
+    const newToken = {
+      token: access_token,
+    };
+    socket.emit('reload_user_status', newToken);
+    socket.on('reload_user_status', () => {
+      fetchListAllUserInfoFinalSocket.run();
+    });
+  }, []);
+
+  const fetchDetaiUserInfoFinal = async (user_id: any) => {
+    const resDetail = await requestDetailUserInfoFinal(user_id);
+    if (resDetail.success === true) {
+      setListEditUserInfoFinal(resDetail.data);
+    }
+  };
+
+  const handleDeleteUserPermission = async (user_id: string) => {
+    const response_delete = await requestDeleteUserPermission(user_id);
+    if (response_delete.success === true) {
+      message.success('Xóa người dùng thành công!');
+      fetchListAllUserInfoFinal.run();
+    } else if (response_delete.error_code === 4030102) {
+      message.error('Bạn không có quyền xóa thông tin này!');
+    } else {
+      message.error('Xóa người dùng thất bại!');
     }
   };
 
@@ -271,30 +331,36 @@ const PermissionEdit: React.FC = () => {
     }
   };
 
-  const handleCallApiUpdateUserInfo = useRequest(async (values: any) => {
-    const resSubmitUpdate = await requestUpdateUserInfoFinal(
-      userKey,
-      teamKey,
-      roleKey,
-      values.department,
-      values.position,
-      values.phone_number,
-      values.ip_phone,
-      values.level,
-      values.work_address,
-    );
-    if (resSubmitUpdate.success === true) {
-      message.success('Cập nhật thông tin thành công!');
-      fetchListAllUserInfoFinal.refresh();
-      handleCancleUpdatePermission();
-    } else if (resSubmitUpdate.error_code === 4030102) {
-      message.error('Bạn không có quyền cập nhật thông tin!');
-    } else {
-      message.error('Cập nhật thông tin thất bại!');
-    }
-  });
+  const handleCallApiUpdateUserInfo = useRequest(
+    async (values: DataAllUserInfoFinal) => {
+      const resSubmitUpdate: { success: boolean; error_code: number } =
+        await requestUpdateUserInfoFinal(
+          userKey,
+          teamKey,
+          roleKey,
+          values.department,
+          values.position,
+          values.phone_number,
+          values.ip_phone,
+          values.level,
+          values.work_address,
+        );
+      if (resSubmitUpdate.success === true) {
+        message.success('Cập nhật thông tin thành công!');
+        await fetchListAllUserInfoFinal.run();
+        handleCancleUpdatePermission();
+      } else if (resSubmitUpdate.error_code === 4030102) {
+        message.error('Bạn không có quyền cập nhật thông tin!');
+      } else {
+        message.error('Cập nhật thông tin thất bại!');
+      }
+    },
+    {
+      manual: true,
+    },
+  );
 
-  const handleSubmitUpdateUserInfoFinal = (values: any) => {
+  const handleSubmitUpdateUserInfoFinal = (values: DataAllUserInfoFinal) => {
     handleCallApiUpdateUserInfo.run(values);
     setInfoUpdated(false);
   };
@@ -315,15 +381,6 @@ const PermissionEdit: React.FC = () => {
     setRoleKey(values);
   };
 
-  useEffect(() => {
-    fetchListAllUserInfoFinal.refresh();
-  }, [pagination]);
-
-  useEffect(() => {
-    fetchTeamPermissionData();
-    fetchGroupPermissionData();
-  }, []);
-
   const arrListTeam = listTeamPermission?.map((item) => item.name);
 
   const handleClickUpdatePermission = () => {
@@ -332,6 +389,7 @@ const PermissionEdit: React.FC = () => {
   const handleCancleUpdatePermission = () => {
     setClickUpdatePermission(false);
     form.resetFields();
+    setInfoUpdated(false);
   };
   const handleClickDeleteUser = (user_id: string) => {
     Modal.confirm({
@@ -393,15 +451,6 @@ const PermissionEdit: React.FC = () => {
     }
     return;
   };
-
-  // const handleRenderOfflineStatus = () => {
-  //   return (
-  //     <div className={styles.offlineStatusDisplay}>
-  //       <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
-  //       <div className={styles.offlineStatusText}>Đang offline</div>
-  //     </div>
-  //   );
-  // };
 
   const columns: ColumnsType<DataAllUserInfoFinal> = [
     {
@@ -634,19 +683,17 @@ const PermissionEdit: React.FC = () => {
   };
 
   return isView === '403' ? (
-    <NoFoundPage
-      status="403"
-      title="403"
-      subTitle="Bạn không có quyền xem trang Thông tin người dùng"
-    />
+    <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+  ) : fetchListAllUserInfoFinal.data === undefined ? (
+    <></>
   ) : (
     <>
       <Form className={styles.filterFormPermissionEdit} layout="vertical" form={formFilter}>
         <div>
           <div className={styles.filterFormPermissionEditDisplay}>
-            <div style={{ width: '300px' }}>
+            <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Team" name="team_id" style={{ marginBottom: 'unset' }}>
-                <Select onChange={handleSelectValueTeam} mode="multiple">
+                <Select onChange={handleSelectValueTeam} mode="multiple" placeholder="Tất cả">
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
                       <Select.Option value={item.name} key={item.id}>
@@ -656,17 +703,21 @@ const PermissionEdit: React.FC = () => {
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: '300px' }}>
+            <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Nơi làm việc" name="work_address" style={{ marginBottom: 'unset' }}>
-                <Select onChange={handleSelectValueNLV} mode="multiple">
-                  <Select.Option value="Miền Bắc">Miền Bắc</Select.Option>
-                  <Select.Option value="Miền Nam">Miền Nam</Select.Option>
+                <Select onChange={handleSelectValueNLV} mode="multiple" placeholder="Tất cả">
+                  <Select.Option value="Miền Bắc" key="Miền Bắc">
+                    Miền Bắc
+                  </Select.Option>
+                  <Select.Option value="Miền Nam" key="Miền Nam">
+                    Miền Nam
+                  </Select.Option>
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: '300px' }}>
+            <div style={{ flex: 2, width: 217 }}>
               <Form.Item label="Nhóm quyền" name="role_id" style={{ marginBottom: 'unset' }}>
-                <Select onChange={handleSelectValueNQ} mode="multiple">
+                <Select onChange={handleSelectValueNQ} mode="multiple" placeholder="Tất cả">
                   {listGroupPermission &&
                     listGroupPermission.map((item: GroupPermission) => (
                       <Select.Option value={item.code} key={item.id}>
@@ -688,7 +739,7 @@ const PermissionEdit: React.FC = () => {
         <div style={{ paddingTop: '29px' }}>
           <Form.Item name="search_name">
             <Input
-              style={{ width: '300px' }}
+              style={{ flex: 2 }}
               prefix={<SearchOutlined />}
               placeholder="Tìm kiếm tên người dùng"
               allowClear
@@ -762,7 +813,6 @@ const PermissionEdit: React.FC = () => {
           requiredMark={false}
           onValuesChange={() => {
             form.validateFields().catch((error) => {
-              console.log(error);
               setInfoUpdated(false);
               if (
                 error.errorFields.length === 0 &&
@@ -847,10 +897,16 @@ const PermissionEdit: React.FC = () => {
                       </div>
                     </>
                   )}
+                  onDropdownVisibleChange={(open) => {
+                    if (open === false) {
+                      setClickAddNewTeam(false);
+                    }
+                    return;
+                  }}
                 >
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
-                      <Select.Option value={item.id}>
+                      <Select.Option value={item.id} key={item.id}>
                         <div className={styles.flexLayout}>
                           <div>{item.name}</div>
                           {clickAddNewTeam === true ? (
@@ -899,7 +955,7 @@ const PermissionEdit: React.FC = () => {
                       const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập số di động');
-                      } else if (value.length !== 10) {
+                      } else if (value.length < 10 || value.length > 11) {
                         return Promise.reject('Số điện thoại không hợp lệ');
                       } else if (!phoneReg.test(value)) {
                         return Promise.reject('Số điện thoại không hợp lệ');
@@ -956,7 +1012,9 @@ const PermissionEdit: React.FC = () => {
                 <Select onChange={handleSelectRole}>
                   {listGroupPermission &&
                     listGroupPermission.map((item: GroupPermission) => (
-                      <Select.Option value={item.id}>{item.code}</Select.Option>
+                      <Select.Option value={item.id} key={item.id}>
+                        {item.code}
+                      </Select.Option>
                     ))}
                 </Select>
               </Form.Item>
@@ -986,7 +1044,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     validator: (_, value: any) => {
-                      const numberReg = /^[1-9]{1,6}$/;
+                      const numberReg = /^[1-9]{4,7}$/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập IP Phone');
                       } else if (value.length < 4 && numberReg.test(value) === true) {
@@ -1041,4 +1099,4 @@ const PermissionEdit: React.FC = () => {
     </>
   );
 };
-export default React.memo(PermissionEdit);
+export default PermissionEdit;

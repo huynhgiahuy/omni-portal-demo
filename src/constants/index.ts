@@ -345,7 +345,7 @@ export const TREE_DATA_LSCG = [
       },
       {
         title: 'Tải ghi âm',
-        key: 'call_history_dowload',
+        key: 'call_history_download',
       },
     ],
   },
@@ -354,7 +354,7 @@ export const OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE = [
   'call_history_read',
   'call_history_record',
   'call_history_export',
-  'call_history_dowload',
+  'call_history_download',
 ];
 
 export const TREE_DATA_CONTACT = [

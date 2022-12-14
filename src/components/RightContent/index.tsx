@@ -12,9 +12,12 @@ import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
 import { socket } from '../../socket';
-import { dataUserContactProps, requestGetUserContact } from '@/pages/omni-channel/report/services';
+import {
+  dataUserContactProps,
+  requestGetTranferInfo,
+  requestGetUserContact,
+} from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
-import { data } from '../../pages/omni-channel/report/FakeData';
 const access_token = localStorage.getItem('access_token');
 
 export type SiderTheme = 'light' | 'dark';
@@ -26,6 +29,7 @@ export type dataProps = {
   event: string;
   call_history: string;
   name: string;
+  is_ip_phone: boolean;
   contact: {
     full_name: string;
     phone_number: string;
@@ -39,29 +43,25 @@ const GlobalHeaderRight: React.FC = () => {
   const [isModalOpenRing, setIsModalOpenRing] = useState(false);
   const [isModalOpenAnswer, setIsModalOpenAnswer] = useState(false);
   const [isFullScreenModal, setIsFullScreenModal] = useState(false);
-  const [dataContacts, setDataContacts] = useState<dataUserContactProps[]>([]);
+  const [dataTranfers, setDataTranfers] = useState<dataUserContactProps[]>([]);
 
   const [valueCheckboxUser, setValueCheckboxUser] = useState<string>('');
   const [isVisibleHistoryCall, setVisibleHistoryCall] = useState(false);
   const [isActiveIconHistory, setActiveIconHistory] = useState(false);
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
-  const [isCallerName, setCallerName] = useState('');
-  const [isCallePhone, setCallerPhone] = useState('');
   const [dataCall, setDataCall] = useState<dataProps>();
 
   const token = window.localStorage?.getItem('access_token');
 
-  const getUserContact = useRequest(
+  const getTranferInfo = useRequest(
     async (data) => {
-      const res: { success: boolean } = await requestGetUserContact(
+      const res: { success: boolean } = await requestGetTranferInfo(
         token ? token : '',
         data ? data : { email_user: initialState?.currentUser?.email },
       );
       if (!res.success) {
-        message.error('Không lấy được danh bạ');
         return;
-      } else {
       }
       return res;
     },
@@ -69,7 +69,7 @@ const GlobalHeaderRight: React.FC = () => {
       manual: true,
       onSuccess: (res) => {
         if (res) {
-          setDataContacts(res);
+          setDataTranfers(res);
         }
       },
     },
@@ -77,13 +77,13 @@ const GlobalHeaderRight: React.FC = () => {
 
   useEffect(() => {
     if (isModalOpenRing || isModalOpenAnswer) {
-      getUserContact.run({ email_user: initialState?.currentUser?.email });
+      getTranferInfo.run({ email_user: initialState?.currentUser?.email });
     }
   }, [isModalOpenRing, isModalOpenAnswer]);
 
   const handelUserTransfer = debounce(
     (keyword?: string) => {
-      getUserContact.run({ email_user: initialState?.currentUser?.email, keyword });
+      getTranferInfo.run({ email_user: initialState?.currentUser?.email, keyword });
     },
     500,
     {
@@ -91,44 +91,55 @@ const GlobalHeaderRight: React.FC = () => {
       leading: false,
     },
   );
-  
+
   useEffect(() => {
     console.log({ socket });
     const newToken = {
       token: access_token,
     };
-    socket.emit('authen_event', newToken);
-    socket.on('emit_call_event', (data) => {
-      console.log({data})
-      setDataCall(data);
-      // fake data when agent answered_call
-      //data.event = 'answered_call';
-      const eventCall = data.event;
-      switch (eventCall) {
-        case 'ringing_call':
-          setTimeout(() => {
-            setIsModalOpenRing(true);
-          }, 0);
+    if (access_token) {
+      socket.emit('authen_event', newToken);
+      socket.on('reload_user_status', () => {
+        console.log(123);
+        getTranferInfo.run({});
+      });
+      socket.on('emit_call_event', (data) => {
+        console.log({ data });
+        setDataCall(data);
+        const eventCall = data.event;
+        switch (eventCall) {
+          case 'ringing_call':
+            setTimeout(() => {
+              setIsModalOpenRing(true);
+            }, 0);
 
-          break;
-        case 'hangup_call':
-          setTimeout(() => {
-            setIsModalOpenRing(false);
-            setIsModalOpenAnswer(false);
-          }, 0);
+            break;
+          case 'hangup_call':
+            setTimeout(() => {
+              setIsModalOpenRing(false);
+              setIsModalOpenAnswer(false);
+              setIsFullScreenModal(false);
+            }, 0);
 
-          break;
-        case 'answered_call':
-          setTimeout(() => {
-            setIsModalOpenRing(false);
-            setIsModalOpenAnswer(true);
-          }, 0);
+            break;
+          case 'answered_call':
+            setTimeout(() => {
+              setIsModalOpenRing(false);
+              setIsModalOpenAnswer(true);
+            }, 0);
 
-          break;
-        default:
-          break;
-      }
-    });
+            break;
+          default:
+            break;
+        }
+      });
+    }
+    return () => {
+      socket.off('updated_user_status');
+      socket.off('emit_call_event');
+      socket.off('authen_event');
+      socket.off('reload_user_status');
+    };
   }, [socket]);
 
   if (!initialState || !initialState.settings) {
@@ -258,7 +269,7 @@ const GlobalHeaderRight: React.FC = () => {
               isVisibleNoteCall={isVisibleNoteCall}
               isActiveIconHistory={isActiveIconHistory}
               isActiveIconNote={isActiveIconNote}
-              dataContacts={dataContacts}
+              dataContacts={dataTranfers}
               handelUserTransfer={handelUserTransfer}
               dataCall={dataCall}
             />
@@ -280,7 +291,7 @@ const GlobalHeaderRight: React.FC = () => {
               isVisibleNoteCall={isVisibleNoteCall}
               isActiveIconHistory={isActiveIconHistory}
               isActiveIconNote={isActiveIconNote}
-              dataContacts={dataContacts}
+              dataContacts={dataTranfers}
               handelUserTransfer={handelUserTransfer}
               dataCall={dataCall}
             />

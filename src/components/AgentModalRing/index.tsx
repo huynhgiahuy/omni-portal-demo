@@ -145,13 +145,18 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       form.setFieldsValue(dataCall?.contact);
       if (dataCall.direction === 'receive') {
         setStateCall('Cuộc gọi đến');
-        setIconCall(true)
+        setIconCall(true);
       } else {
         setStateCall('Cuộc gọi đi');
         setIconCall(false);
       }
     } else {
-      form.setFieldValue('phone_number', dataCall?.phone);
+      if (dataCall?.is_ip_phone) {
+        form.setFieldValue('ip_phone', dataCall?.phone);
+      } else {
+        form.setFieldValue('phone_number', dataCall?.phone);
+      }
+
       setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
     }
   });
@@ -270,9 +275,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 align="start"
                 style={{ width: '100%', justifyContent: 'center', zIndex: 2 }}
               >
-                {iconCall ? (
-                  <PhoneOutlined className={styles.phonePickUp}></PhoneOutlined>
-                ) : ''}
+                {iconCall ? <PhoneOutlined className={styles.phonePickUp}></PhoneOutlined> : ''}
                 {/* <PhoneOutlined
                   className={styles.phonePickUp}
                   // onClick={() => {
@@ -509,7 +512,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       />
                     </Form.Item>
                     <Form.Item
-                      label={<Typography.Text style={{ color: '#fff' }}>IIP</Typography.Text>}
+                      label={<Typography.Text style={{ color: '#fff' }}>IPP</Typography.Text>}
                       name="ip_phone"
                       rules={[
                         {

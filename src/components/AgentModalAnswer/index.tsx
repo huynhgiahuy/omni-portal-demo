@@ -278,7 +278,11 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
         setStateCall('Cuộc gọi đi');
       }
     } else {
-      form.setFieldValue('phone_number', dataCall?.phone);
+      if (dataCall?.is_ip_phone) {
+        form.setFieldValue('ip_phone', dataCall?.phone);
+      } else {
+        form.setFieldValue('phone_number', dataCall?.phone);
+      }
       setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
     }
   });
@@ -650,7 +654,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                       />
                     </Form.Item>
                     <Form.Item
-                      label={<Typography.Text style={{ color: '#fff' }}>IIP</Typography.Text>}
+                      label={<Typography.Text style={{ color: '#fff' }}>IPP</Typography.Text>}
                       name="ip_phone"
                       rules={[
                         {

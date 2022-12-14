@@ -32,6 +32,7 @@ import {
   requestUpdatenotification,
   requestUpdateScreenMode,
 } from '@/services/user_info';
+import { socket } from '@/socket';
 
 const { SubMenu } = Menu;
 const { Title } = Typography;
@@ -49,6 +50,10 @@ const loginOut = async () => {
   const logoutRequest = await outLogin();
 
   if (logoutRequest.success) {
+    socket.off('updated_user_status');
+    socket.off('emit_call_event');
+    socket.off('authen_event');
+    socket.off('reload_user_status');
     window.localStorage.removeItem('access_token');
     window.localStorage.removeItem('rid');
     window.location.href = logoutRequest.data[0];
@@ -121,7 +126,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     if (res.success) {
       await setInitialState((s) => ({
         ...s,
-        currentUser: res.data[0],
+        currentUser: { ...initialState?.currentUser, notification: res.data[0] },
       }));
     } else {
       message.error('Cập nhập trạng thái không thành công, vui lòng thử lại');
@@ -141,7 +146,14 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
           if (result.success) {
             await setInitialState((s) => ({
               ...s,
-              currentUser: result.data[0],
+              currentUser: {
+                ...initialState.currentUser,
+                setting: {
+                  ...initialState.settings,
+                  dark_mode: result.data[0].dark_mode,
+                  simple_mode: result.data[0].simple_mode,
+                },
+              },
             }));
           } else {
             return;

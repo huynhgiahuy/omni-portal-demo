@@ -11,9 +11,11 @@ import {
   message,
   Spin,
   Modal,
+  Timeline,
+  Tooltip,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlayCircleFilled, SearchOutlined } from '@ant-design/icons';
+import { PlayCircleFilled, SearchOutlined, FormOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 import styles from '../report/style.less';
@@ -70,6 +72,7 @@ const HistoryCall: React.FC = () => {
   const audioRef = useRef<any>();
 
   const [isVisibleModalAudio, setVisibleModalAudio] = useState(false);
+  const [isVisibleModalNote, setVisibleModalNote] = useState(false);
 
   const [testAudioURL, setTestAudioURL] = useState<any>();
 
@@ -105,6 +108,8 @@ const HistoryCall: React.FC = () => {
       if (!res.success) {
         if (res.error_code === 4030102) {
           setIsView('403');
+          setListDataLSCG([]);
+          setListDataLSCGLength(0);
           return;
         } else if (res.error_code === 4010106) {
           message.error('Không tìm thấy dữ liệu');
@@ -138,32 +143,36 @@ const HistoryCall: React.FC = () => {
 
   const handleViewResult = (result: any) => {
     let color, newResult;
-    if (result === 'success') {
-      color = '#7CFC00';
+    if (result === 1) {
+      color = '#87d068';
       newResult = 'Thành công';
-    } else if (result === 'fail') {
-      color = '#b20000';
+    } else if (result === 2) {
+      color = '#ff0000';
       newResult = 'Thất bại';
-    } else if (result === 'busy') {
+    } else if (result === 3) {
       color = '#660000';
       newResult = 'Bận';
-    } else if (result === 'cancel') {
+    } else if (result === 4) {
       color = '#e50000';
       newResult = 'Hủy bỏ';
-    } else if (result === 'no_answer') {
+    } else if (result === 5) {
       color = '#b1b1b1';
       newResult = 'Không trả lời';
-    } else if (result === 'rejected') {
+    } else if (result === 6) {
       color = '#ff0000';
       newResult = 'Từ chối';
-    } else if (result === 'missed') {
+    } else if (result === 7) {
       color = '#9B26B6';
       newResult = 'Nhỡ trong hàng chờ';
-    } else if (result === 'other_failure') {
+    } else if (result === 8) {
       color = '#FFAC1C';
-      newResult = 'Lý do fail khác';
+      newResult = 'Thất bại khác';
     }
-    return <Tag color={color}>{newResult}</Tag>;
+    return (
+      <Tag color={color} style={{ fontWeight: 'bold' }}>
+        {newResult}
+      </Tag>
+    );
   };
 
   const handleViewCallDirection = (call_direction: any) => {
@@ -351,8 +360,6 @@ const HistoryCall: React.FC = () => {
     },
     {
       title: 'Ghi âm',
-      dataIndex: 'ghiam',
-      key: 'ghiam',
       width: '120px',
       align: 'center',
       render: (text, record) => {
@@ -381,42 +388,48 @@ const HistoryCall: React.FC = () => {
       dataIndex: 'note',
       key: 'note',
       align: 'center',
-      width: '250px',
-      render: (note: any[]) => {
-        if (note.length > 2) {
-          return (
-            <>
-              <Typography.Text>{note[0].content}</Typography.Text>
-              <br></br>
-              <br></br>
-              <Typography.Text>{note[1].content}</Typography.Text>
-              <br></br>
-              <br></br>
-              <Typography.Text
-                style={
-                  ellipsis
-                    ? {
-                        width: 200,
-                      }
-                    : undefined
-                }
-                ellipsis={true}
-              >
-                {note[2].content}...
-              </Typography.Text>
-            </>
-          );
-        } else {
-          return note.map((item) => (
-            <>
-              <Typography.Text>{item.content}</Typography.Text>
-              <br></br>
-            </>
-          ));
-        }
+      width: '150px',
+      // render: (note: any[]) => {
+      //   if (note.length > 2) {
+      //     return (
+      //       <>
+      //         <Typography.Text>{note[0].content}</Typography.Text>
+      //         <br></br>
+      //         <br></br>
+      //         <Typography.Text>{note[1].content}</Typography.Text>
+      //         <br></br>
+      //         <br></br>
+      //         <Typography.Text
+      //           style={
+      //             ellipsis
+      //               ? {
+      //                   width: 200,
+      //                 }
+      //               : undefined
+      //           }
+      //           ellipsis={true}
+      //         >
+      //           {note[2].content}...
+      //         </Typography.Text>
+      //       </>
+      //     );
+      //   } else {
+      //     return note.map((item, index) => (
+      //       <>
+      //         <Typography.Text key={item.content}>{item.content}</Typography.Text>
+      //         <br></br>
+      //       </>
+      //     ));
+      //   }
+      // },
+      render: (text, record) => {
+        return (
+          <Tooltip title="Xem ghi chú">
+            <FormOutlined style={{ fontSize: 20 }} onClick={() => setVisibleModalNote(true)} />
+          </Tooltip>
+        );
       },
     },
-    Table.EXPAND_COLUMN,
   ];
 
   const handleTableChange = (newPagination: any) => {
@@ -464,8 +477,7 @@ const HistoryCall: React.FC = () => {
       setValueFromDateTime(undefined);
       setValueToDateTime(undefined);
       fetchListLSCGData.run(undefined, undefined);
-    } else dateString[0] !== '' && dateString[1] !== '';
-    {
+    } else {
       setValueFromDateTime(moment(dateString[0], 'DD-MM-YYYY').startOf('day'));
       setValueToDateTime(moment(dateString[1], 'DD-MM-YYYY').endOf('day'));
       fetchListLSCGData.run(
@@ -528,49 +540,87 @@ const HistoryCall: React.FC = () => {
   };
 
   return isView === '403' ? (
-    <NoFoundPage
-      status="403"
-      title="403"
-      subTitle="Bạn không có quyền xem trang Lịch sử cuộc gọi"
-    />
+    <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+  ) : fetchListLSCGData.data === undefined && listDataLSCG === undefined ? (
+    <></>
   ) : (
     <>
       <Form className={styles.filterFormHistoryCall} layout="vertical" form={form}>
         <div>
           <div className={styles.filterFormHistoryCallDisplay}>
-            <div style={{ width: '300px' }}>
+            <div style={{ flex: 2, width: 280 }}>
               <Form.Item
                 label="Hướng cuộc gọi"
                 name="Hướng cuộc gọi"
                 style={{ marginBottom: 'unset' }}
               >
-                <Select onChange={handleSelectValueHCG} mode="multiple">
-                  <Select.Option value="inbound">Gọi vào</Select.Option>
-                  <Select.Option value="outbound">Gọi ra</Select.Option>
-                  <Select.Option value="local">Gọi nội bộ</Select.Option>
+                <Select onChange={handleSelectValueHCG} mode="multiple" placeholder="Tất cả">
+                  <Select.Option value="inbound" key="inbound">
+                    Gọi vào
+                  </Select.Option>
+                  <Select.Option value="outbound" key="outbound">
+                    Gọi ra
+                  </Select.Option>
+                  <Select.Option value="local" key="local">
+                    Gọi nội bộ
+                  </Select.Option>
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: '300px' }}>
+            <div style={{ flex: 2, width: 280 }}>
               <Form.Item label="Kết quả" name="Kết quả" style={{ marginBottom: 'unset' }}>
-                <Select onChange={handleSelectValueKQ} mode="multiple">
-                  <Select.Option value="success">Thành công</Select.Option>
-                  <Select.Option value="fail">Thất bại</Select.Option>
-                  <Select.Option value="busy">Bận</Select.Option>
-                  <Select.Option value="cancel">Hủy bỏ</Select.Option>
-                  <Select.Option value="no_answer">Không trả lời</Select.Option>
-                  <Select.Option value="rejected">Từ chối</Select.Option>
-                  <Select.Option value="missed">Nhỡ trong hàng chờ</Select.Option>
-                  <Select.Option value="other_failure">Lý do fail khác</Select.Option>
+                <Select onChange={handleSelectValueKQ} mode="multiple" placeholder="Tất cả">
+                  <Select.Option value={1} key="success">
+                    Thành công
+                  </Select.Option>
+                  <Select.Option value={2} key="fail">
+                    Thất bại
+                  </Select.Option>
+                  <Select.Option value={3} key="busy">
+                    Bận
+                  </Select.Option>
+                  <Select.Option value={4} key="cancel">
+                    Hủy bỏ
+                  </Select.Option>
+                  <Select.Option value={5} key="no_answer">
+                    Không trả lời
+                  </Select.Option>
+                  <Select.Option value={6} key="rejected">
+                    Từ chối
+                  </Select.Option>
+                  <Select.Option value={7} key="missed">
+                    Nhỡ trong hàng chờ
+                  </Select.Option>
+                  <Select.Option value={8} key="other_failure">
+                    Thất bại khác
+                  </Select.Option>
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ width: '300px' }}>
+            <div style={{ flex: 2, width: 280 }}>
               <Form.Item label="Thời gian" name="Thời gian" style={{ marginBottom: 'unset' }}>
                 <RangePicker
                   onChange={handleChangeValueRangePicker}
+                  className={styles.antRangePicker}
                   placeholder={['Từ ngày', 'Đến ngày']}
                   format="DD-MM-YYYY"
+                  ranges={{
+                    'Hôm nay': [moment(), moment()],
+                    'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    '7 ngày qua': [moment().subtract(6, 'days'), moment()],
+                    '30 ngày qua    ': [moment().subtract(29, 'days'), moment()],
+                    'Tháng này': [moment().startOf('month'), moment().endOf('month')],
+                    'Tháng trước': [
+                      moment().subtract(1, 'month').startOf('month'),
+                      moment().subtract(1, 'month').endOf('month'),
+                    ],
+                    'Năm này': [moment().startOf('year'), moment().endOf('year')],
+                    'Năm trước': [
+                      moment().subtract(1, 'year').startOf('year'),
+                      moment().subtract(1, 'year').endOf('year'),
+                    ],
+                  }}
+                  popupClassName={styles.antRangePicker}
                 />
               </Form.Item>
             </div>
@@ -583,10 +633,10 @@ const HistoryCall: React.FC = () => {
             </div>
           </div>
         </div>
-        <div style={{ paddingTop: '29px' }}>
+        <div style={{ paddingTop: '29px', display: 'flex', justifyContent: 'space-between' }}>
           <Form.Item name="search_name">
             <Input
-              style={{ width: '300px', marginRight: '10px' }}
+              style={{ flex: 2, width: 280 }}
               prefix={<SearchOutlined />}
               placeholder="Tìm kiếm tên người gọi, người nhận"
               allowClear
@@ -608,13 +658,13 @@ const HistoryCall: React.FC = () => {
                 },
               )}
             />
-            <Button
-              style={{ backgroundColor: '#7fb77e', color: '#fff' }}
-              onClick={handleExportFile}
-            >
-              <ExportIcon /> Export
-            </Button>
           </Form.Item>
+          <Button
+            style={{ backgroundColor: '#7fb77e', color: '#fff', marginLeft: '10px' }}
+            onClick={handleExportFile}
+          >
+            <ExportIcon /> Export
+          </Button>
         </div>
       </Form>
       <Table
@@ -665,8 +715,77 @@ const HistoryCall: React.FC = () => {
           </figure>
         </div>
       </Modal>
+      <Modal
+        open={isVisibleModalNote}
+        onCancel={() => setVisibleModalNote(false)}
+        footer={false}
+        centered
+        title="Ghi chú cuộc gọi"
+      >
+        <div className={styles.historyCallNoteTimeline}>
+          <Timeline pending={true} pendingDot={null}>
+            <Timeline.Item>
+              <Typography.Paragraph className={styles.historyCallNoteTime}>
+                10-12-2022 15:00:00
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
+                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>
+                  Nội dung:{' '}
+                </Typography.Text>
+                <Typography.Text>
+                  {' '}
+                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
+                  sự phụ trách để xử lý sự cố này
+                </Typography.Text>
+              </Typography.Paragraph>
+            </Timeline.Item>
+            <Timeline.Item>
+              <Typography.Paragraph className={styles.historyCallNoteTime}>
+                10-12-2022 15:00:00
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
+                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>
+                  Nội dung:{' '}
+                </Typography.Text>
+                <Typography.Text>
+                  {' '}
+                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
+                  sự phụ trách để xử lý sự cố này
+                </Typography.Text>
+              </Typography.Paragraph>
+            </Timeline.Item>
+            <Timeline.Item>
+              <Typography.Paragraph className={styles.historyCallNoteTime}>
+                10-12-2022 15:00:00
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
+                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
+              </Typography.Paragraph>
+              <Typography.Paragraph>
+                <Typography.Text className={styles.historyCallNoteField}>
+                  Nội dung:{' '}
+                </Typography.Text>
+                <Typography.Text>
+                  {' '}
+                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
+                  sự phụ trách để xử lý sự cố này
+                </Typography.Text>
+              </Typography.Paragraph>
+            </Timeline.Item>
+          </Timeline>
+        </div>
+      </Modal>
     </>
   );
 };
 
-export default React.memo(HistoryCall);
+export default HistoryCall;

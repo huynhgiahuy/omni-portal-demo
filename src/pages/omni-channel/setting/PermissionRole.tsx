@@ -173,6 +173,31 @@ const PermissionRole: React.FC = () => {
     selectListRF,
   );
 
+  const fetchReadRoleAndPermCheckRole = useRequest(
+    async (keyword?: string) => {
+      const res: { success: boolean; error_code: number } = await requestReadRoleAndPerm(
+        token ? token : '',
+        {
+          keyword,
+        },
+      );
+      if (!res.success) {
+        if (res.error_code === 4030102) {
+          setIsView('403');
+          return;
+        }
+      }
+      return res;
+    },
+    {
+      onSuccess: (res) => {
+        if (res) {
+          setListAllRolePermission(res);
+        }
+      },
+    },
+  );
+
   const fetchReadRoleAndPerm = useRequest(
     async (keyword?: string) => {
       const res: { success: boolean; error_code: number } = await requestReadRoleAndPerm(
@@ -190,6 +215,7 @@ const PermissionRole: React.FC = () => {
       return res;
     },
     {
+      manual: true,
       onSuccess: (res) => {
         if (res) {
           setListAllRolePermission(res);
@@ -1081,6 +1107,8 @@ const PermissionRole: React.FC = () => {
 
   return isView === '403' ? (
     <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
+  ) : fetchReadRoleAndPermCheckRole.loading ? (
+    <div />
   ) : (
     <>
       <Row style={{ marginTop: 15 }}>
