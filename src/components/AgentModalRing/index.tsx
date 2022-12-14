@@ -147,7 +147,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       setNameCall(dataCall.contact?.full_name);
       setPhoneCall(dataCall.contact?.phone_number);
       form.setFieldsValue(dataCall?.contact);
-      if (dataCall.direction === 'receive') {
+      if (dataCall.call_type === 'receive') {
         setStateCall('Cuộc gọi đến');
         setIconCall(true);
       } else {

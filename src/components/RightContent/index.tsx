@@ -35,6 +35,7 @@ export type dataProps = {
     phone_number: string;
     work_unit: string;
   };
+  call_type: string;
 };
 
 const GlobalHeaderRight: React.FC = () => {
@@ -84,7 +85,7 @@ const GlobalHeaderRight: React.FC = () => {
 
   useEffect(() => {
     if (isModalOpenRing || isModalOpenAnswer) {
-      getTranferInfo.run({ email_user: initialState?.currentUser?.email });
+      getTranferInfo.run({});
     }
   }, [isModalOpenRing, isModalOpenAnswer]);
 
