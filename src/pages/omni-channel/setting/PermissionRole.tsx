@@ -1152,6 +1152,7 @@ const PermissionRole: React.FC = () => {
           ...pagination,
           // total: listAllRolePermission?.length,
           locale: {
+            page: '',
             items_per_page: '/ Trang',
             jump_to: 'Đến trang',
             next_page: 'Trang sau',

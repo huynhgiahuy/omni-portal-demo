@@ -50,7 +50,7 @@ type AgentModalRingProps = {
   isVisibleNoteCall: boolean;
   isActiveIconHistory: boolean;
   isActiveIconNote: boolean;
-  dataContacts: dataUserContactProps[];
+  dataContacts: { id: string; name: string; ip_phone: string }[];
   refTimer: React.MutableRefObject<any>;
   dataCall?: dataProps;
 };
@@ -135,7 +135,11 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
 
   const listTransfer = useMemo(
     () =>
-      dataContacts?.map((user) => ({ id: user.id, label: user.full_name, value: user.ip_phone })),
+      dataContacts?.map((user, index) => ({
+        id: user.id ? user.id : index,
+        label: user.name,
+        value: user.ip_phone,
+      })),
     [dataContacts],
   );
   useEffect(() => {
