@@ -448,7 +448,7 @@ const PermissionEdit: React.FC = () => {
           <div className={styles.noActivityStatusText}>Không hoạt động</div>
         </div>
       );
-    } else if (status === 6) {
+    } else if (status === 5) {
       return (
         <div className={styles.offlineStatusDisplay}>
           <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
@@ -811,7 +811,7 @@ const PermissionEdit: React.FC = () => {
                   <Select.Option value={4} key={4}>
                     Không hoạt động
                   </Select.Option>
-                  <Select.Option value={6} key={6}>
+                  <Select.Option value={5} key={5}>
                     Đang offline
                   </Select.Option>
                 </Select>
