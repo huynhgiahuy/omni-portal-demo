@@ -253,7 +253,12 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   const { confirm } = Modal;
 
   const listTransfer = useMemo(
-    () => dataContacts?.map((user) => ({ id: user.id, label: user.name, value: user.ip_phone })),
+    () =>
+      dataContacts?.map((user, index) => ({
+        id: user.id ? user.id : index,
+        label: user.name,
+        value: user.ip_phone,
+      })),
     [dataContacts],
   );
 
