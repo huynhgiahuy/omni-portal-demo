@@ -762,6 +762,7 @@ const PhoneBook: React.FC = () => {
           ...pagination,
           total: contactLength,
           locale: {
+            page: '',
             items_per_page: '/ Trang',
             jump_to: 'Đến trang',
             next_page: 'Trang sau',

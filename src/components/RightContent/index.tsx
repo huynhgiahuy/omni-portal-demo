@@ -1,6 +1,4 @@
 import { message, Space } from 'antd';
-// import { QuestionCircleOutlined } from '@ant-design/icons';
-import Timer from 'react-compound-timer';
 import React, { useEffect, useRef, useState } from 'react';
 import { useModel, useRequest } from 'umi';
 import Avatar from './AvatarDropdown';
@@ -12,11 +10,7 @@ import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
 import { socket } from '../../socket';
-import {
-  dataUserContactProps,
-  requestGetTranferInfo,
-  requestGetUserContact,
-} from '@/pages/omni-channel/report/services';
+import { requestGetTranferInfo } from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
 const access_token = localStorage.getItem('access_token');
 
@@ -35,15 +29,17 @@ export type dataProps = {
     phone_number: string;
     work_unit: string;
   };
+  call_type: string;
 };
 
 const GlobalHeaderRight: React.FC = () => {
-  const refTimer = useRef<any>(null);
   const { initialState } = useModel('@@initialState');
   const [isModalOpenRing, setIsModalOpenRing] = useState(false);
   const [isModalOpenAnswer, setIsModalOpenAnswer] = useState(false);
   const [isFullScreenModal, setIsFullScreenModal] = useState(false);
-  const [dataTranfers, setDataTranfers] = useState<dataUserContactProps[]>([]);
+  const [dataTranfers, setDataTranfers] = useState<
+    { id: string; name: string; ip_phone: string }[]
+  >([]);
 
   const [valueCheckboxUser, setValueCheckboxUser] = useState<string>('');
   const [isVisibleHistoryCall, setVisibleHistoryCall] = useState(false);
@@ -56,34 +52,22 @@ const GlobalHeaderRight: React.FC = () => {
 
   const getTranferInfo = useRequest(
     async (data) => {
-      const res: { success: boolean } = await requestGetTranferInfo(
-        token ? token : '',
-        data ? data : { email_user: initialState?.currentUser?.email },
-      );
+      const res: { success: boolean; data: { id: string; name: string; ip_phone: string }[] } =
+        await requestGetTranferInfo(token ? token : '', data ? data : {});
       if (!res.success) {
         return;
       }
+      setDataTranfers(res.data);
       return res;
     },
     {
       manual: true,
-      onSuccess: (res) => {
-        if (res) {
-          setDataTranfers(res);
-        }
-      },
     },
   );
 
-  useEffect(() => {
-    if (isModalOpenRing || isModalOpenAnswer) {
-      getTranferInfo.run({ email_user: initialState?.currentUser?.email });
-    }
-  }, [isModalOpenRing, isModalOpenAnswer]);
-
   const handelUserTransfer = debounce(
     (keyword?: string) => {
-      getTranferInfo.run({ email_user: initialState?.currentUser?.email, keyword });
+      getTranferInfo.run({ keyword });
     },
     500,
     {
@@ -93,18 +77,21 @@ const GlobalHeaderRight: React.FC = () => {
   );
 
   useEffect(() => {
-    console.log({ socket });
+    if (isModalOpenRing || isModalOpenAnswer) {
+      getTranferInfo.run({});
+    }
+  }, [isModalOpenRing, isModalOpenAnswer]);
+
+  useEffect(() => {
     const newToken = {
       token: access_token,
     };
     if (access_token) {
       socket.emit('authen_event', newToken);
       socket.on('reload_user_status', () => {
-        console.log(123);
         getTranferInfo.run({});
       });
       socket.on('emit_call_event', (data) => {
-        console.log({ data });
         setDataCall(data);
         const eventCall = data.event;
         switch (eventCall) {
@@ -231,73 +218,44 @@ const GlobalHeaderRight: React.FC = () => {
       <Diapad />
       <NoticeIconView />
       <Avatar />
-      {/* <SelectLang className={styles.action} /> */}
-      {/* <a
-        onClick={showModalRing}
-        style={{
-          position: 'absolute',
-          left: 0,
-          background: 'white',
-          color: 'white',
-          borderColor: 'white',
-          bottom: 0,
-        }}
-      >
-        Button
-      </a> */}
 
-      <Timer
-        initialTime={0}
-        formatValue={(value) => `${value < 10 ? `0${value}` : value}`}
-        ref={refTimer}
-      >
-        {() => (
-          <>
-            <AgentModalRing
-              refTimer={refTimer}
-              isModalOpen={isModalOpenRing}
-              handleOk={handleOkRing}
-              handleCancel={handleCancelRing}
-              handleOpenAnswer={showModalAnswer}
-              isFullScreenModal={isFullScreenModal}
-              handleFullScreenModal={handleFullScreenModal}
-              handleSelectForwardUser={handleSelectForwardUser}
-              handleClickIconHistory={handleClickIconHistory}
-              handleClickIconNote={handleClickIconNote}
-              valueCheckboxUser={valueCheckboxUser}
-              isVisibleHistoryCall={isVisibleHistoryCall}
-              isVisibleNoteCall={isVisibleNoteCall}
-              isActiveIconHistory={isActiveIconHistory}
-              isActiveIconNote={isActiveIconNote}
-              dataContacts={dataTranfers}
-              handelUserTransfer={handelUserTransfer}
-              dataCall={dataCall}
-            />
-            <AgentModalAnswer
-              hours={<Timer.Hours />}
-              minutes={<Timer.Minutes />}
-              seconds={<Timer.Seconds />}
-              refTimer={refTimer}
-              isModalOpen={isModalOpenAnswer}
-              handleOk={handleOkAnswer}
-              handleCancel={handleCancelAnswer}
-              isFullScreenModal={isFullScreenModal}
-              handleFullScreenModal={handleFullScreenModal}
-              handleSelectForwardUser={handleSelectForwardUser}
-              handleClickIconHistory={handleClickIconHistory}
-              handleClickIconNote={handleClickIconNote}
-              valueCheckboxUser={valueCheckboxUser}
-              isVisibleHistoryCall={isVisibleHistoryCall}
-              isVisibleNoteCall={isVisibleNoteCall}
-              isActiveIconHistory={isActiveIconHistory}
-              isActiveIconNote={isActiveIconNote}
-              dataContacts={dataTranfers}
-              handelUserTransfer={handelUserTransfer}
-              dataCall={dataCall}
-            />
-          </>
-        )}
-      </Timer>
+      <AgentModalRing
+        isModalOpen={isModalOpenRing}
+        handleOk={handleOkRing}
+        handleCancel={handleCancelRing}
+        handleOpenAnswer={showModalAnswer}
+        isFullScreenModal={isFullScreenModal}
+        handleFullScreenModal={handleFullScreenModal}
+        handleSelectForwardUser={handleSelectForwardUser}
+        handleClickIconHistory={handleClickIconHistory}
+        handleClickIconNote={handleClickIconNote}
+        valueCheckboxUser={valueCheckboxUser}
+        isVisibleHistoryCall={isVisibleHistoryCall}
+        isVisibleNoteCall={isVisibleNoteCall}
+        isActiveIconHistory={isActiveIconHistory}
+        isActiveIconNote={isActiveIconNote}
+        dataContacts={dataTranfers}
+        handelUserTransfer={handelUserTransfer}
+        dataCall={dataCall}
+      />
+      <AgentModalAnswer
+        isModalOpen={isModalOpenAnswer}
+        handleOk={handleOkAnswer}
+        handleCancel={handleCancelAnswer}
+        isFullScreenModal={isFullScreenModal}
+        handleFullScreenModal={handleFullScreenModal}
+        handleSelectForwardUser={handleSelectForwardUser}
+        handleClickIconHistory={handleClickIconHistory}
+        handleClickIconNote={handleClickIconNote}
+        valueCheckboxUser={valueCheckboxUser}
+        isVisibleHistoryCall={isVisibleHistoryCall}
+        isVisibleNoteCall={isVisibleNoteCall}
+        isActiveIconHistory={isActiveIconHistory}
+        isActiveIconNote={isActiveIconNote}
+        dataContacts={dataTranfers}
+        handelUserTransfer={handelUserTransfer}
+        dataCall={dataCall}
+      />
     </Space>
   );
 };

@@ -50,8 +50,7 @@ type AgentModalRingProps = {
   isVisibleNoteCall: boolean;
   isActiveIconHistory: boolean;
   isActiveIconNote: boolean;
-  dataContacts: dataUserContactProps[];
-  refTimer: React.MutableRefObject<any>;
+  dataContacts: { id: string; name: string; ip_phone: string }[];
   dataCall?: dataProps;
 };
 
@@ -86,7 +85,6 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   isActiveIconHistory,
   isActiveIconNote,
   dataContacts,
-  refTimer,
   dataCall,
 }) => {
   const [form] = Form.useForm();
@@ -135,7 +133,11 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
 
   const listTransfer = useMemo(
     () =>
-      dataContacts?.map((user) => ({ id: user.id, label: user.full_name, value: user.ip_phone })),
+      dataContacts?.map((user, index) => ({
+        id: user.id ? user.id : index,
+        label: user.name,
+        value: user.ip_phone,
+      })),
     [dataContacts],
   );
   useEffect(() => {
@@ -143,7 +145,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       setNameCall(dataCall.contact?.full_name);
       setPhoneCall(dataCall.contact?.phone_number);
       form.setFieldsValue(dataCall?.contact);
-      if (dataCall.direction === 'receive') {
+      if (dataCall.call_type === 'receive') {
         setStateCall('Cuộc gọi đến');
         setIconCall(true);
       } else {
