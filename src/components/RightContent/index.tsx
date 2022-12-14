@@ -35,6 +35,7 @@ export type dataProps = {
     phone_number: string;
     work_unit: string;
   };
+  call_type: string;
 };
 
 const GlobalHeaderRight: React.FC = () => {
@@ -93,7 +94,6 @@ const GlobalHeaderRight: React.FC = () => {
   );
 
   useEffect(() => {
-    console.log({ socket });
     const newToken = {
       token: access_token,
     };
