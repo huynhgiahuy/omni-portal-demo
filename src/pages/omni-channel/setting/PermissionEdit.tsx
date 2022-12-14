@@ -811,7 +811,7 @@ const PermissionEdit: React.FC = () => {
                   <Select.Option value={4} key={4}>
                     Không hoạt động
                   </Select.Option>
-                  <Select.Option value={6} key={6}>
+                  <Select.Option value={5} key={5}>
                     Đang offline
                   </Select.Option>
                 </Select>
