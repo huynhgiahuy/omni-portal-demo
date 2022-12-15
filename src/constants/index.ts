@@ -657,3 +657,95 @@ export const OPTIONS_WORK_ADDRESS = [
     value: 'mb',
   },
 ];
+
+export const OPTIONS_FILTER_NLV = [
+  {
+    label: 'Miền Nam',
+    value: 'Miền Nam',
+  },
+  {
+    label: 'Miền Bắc',
+    value: 'Miền Bắc',
+  },
+];
+
+export const OPTIONS_FILTER_NLV_VALUE = ['Miền Nam', 'Miền Bắc'];
+
+export const OPTIONS_FILTER_STATUS = [
+  {
+    label: 'Sẵn sàng',
+    value: 1,
+  },
+  {
+    label: 'Vắng mặt',
+    value: 2,
+  },
+  {
+    label: 'Không làm phiền',
+    value: 3,
+  },
+  {
+    label: 'Không hoạt động',
+    value: 4,
+  },
+  {
+    label: 'Đang offline',
+    value: 5,
+  },
+];
+
+export const OPTIONS_FILTER_STATUS_VALUE = [1, 2, 3, 4, 5];
+
+export const OPTIONS_FILTER_CALL_DIRECTION = [
+  {
+    label: 'Gọi vào',
+    value: 'inbound',
+  },
+  {
+    label: 'Gọi ra',
+    value: 'outbound',
+  },
+  {
+    label: 'Gọi nội bộ',
+    value: 'local',
+  },
+];
+
+export const OPTIONS_FILTER_CALL_DIRECTION_VALUE = ['inbound', 'outbound', 'local'];
+
+export const OPTIONS_FILTER_CALL_RESULT = [
+  {
+    label: 'Thành công',
+    value: 1,
+  },
+  {
+    label: 'Thất bại',
+    value: 2,
+  },
+  {
+    label: 'Bận',
+    value: 3,
+  },
+  {
+    label: 'Hủy bỏ',
+    value: 4,
+  },
+  {
+    label: 'Không trả lời',
+    value: 5,
+  },
+  {
+    label: 'Từ chối',
+    value: 6,
+  },
+  {
+    label: 'Nhỡ trong hàng chờ',
+    value: 7,
+  },
+  {
+    label: 'Thất bại khác',
+    value: 8,
+  },
+];
+
+export const OPTIONS_FILTER_CALL_RESULT_VALUE = [1, 2, 3, 4, 5, 6, 7, 8];

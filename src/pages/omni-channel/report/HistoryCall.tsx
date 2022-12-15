@@ -13,13 +13,21 @@ import {
   Modal,
   Timeline,
   Tooltip,
+  Checkbox,
+  Popover,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlayCircleFilled, SearchOutlined, FormOutlined } from '@ant-design/icons';
+import {
+  PlayCircleFilled,
+  SearchOutlined,
+  FormOutlined,
+  FilterFilled,
+  FilterOutlined,
+} from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 import styles from '../report/style.less';
-import { requestHistoryCallData } from './services';
+import { requestHistoryCallData, requestGetDetailCallNote } from './services';
 import { useRequest } from 'umi';
 import { debounce } from 'lodash';
 import CallInboundIcon from '@/components/PhoneCallType/CallInboundIcon';
@@ -30,6 +38,12 @@ import fileDownload from 'js-file-download';
 import axios from 'axios';
 import api from '@/api';
 import NoFoundPage from '@/pages/404';
+import {
+  OPTIONS_FILTER_CALL_DIRECTION,
+  OPTIONS_FILTER_CALL_DIRECTION_VALUE,
+  OPTIONS_FILTER_CALL_RESULT,
+  OPTIONS_FILTER_CALL_RESULT_VALUE,
+} from '@/constants';
 
 const { RangePicker } = DatePicker;
 
@@ -46,7 +60,7 @@ interface DataLSCGType {
   sip_from_user?: string;
   caller_destination?: string;
   start_epoch?: string;
-  billsec?: string;
+  billsec?: number;
   hangup_cause?: string;
   record_path?: string;
   record_name?: string;
@@ -56,11 +70,24 @@ interface DataLSCGType {
   result?: string;
 }
 
+interface notesProps {
+  call_direction: string;
+  content: string;
+  create_at: number;
+  personnel: string;
+}
+
+interface listNotesProps {
+  call_id: string;
+  id: string;
+  note: notesProps[];
+  phone_number: string;
+}
+
 const HistoryCall: React.FC = () => {
   const [isView, setIsView] = useState<string>();
+  const [listNote, setListNote] = useState<listNotesProps[]>([]);
 
-  const [listValueHCG, setListValueHCG] = useState<string[] | any>();
-  const [listValueKQ, setListValueKQ] = useState<string[] | any>();
   const [valueFromDateTime, setValueFromDateTime] = useState<string | any>();
   const [valueToDateTime, setValueToDateTime] = useState<string | any>();
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
@@ -76,15 +103,27 @@ const HistoryCall: React.FC = () => {
 
   const [isVisibleModalAudio, setVisibleModalAudio] = useState(false);
   const [isVisibleModalNote, setVisibleModalNote] = useState(false);
+  const [isDownloadFile, setDownloadFile] = useState(false);
 
   const [testAudioURL, setTestAudioURL] = useState<any>();
+  const [recordId, setRecordId] = useState<string>();
+
+  const [listValueHCG, setListValueHCG] = useState<string[] | any>();
+  const [indeterminateHCG, setIndeterminateHCG] = useState(false);
+  const [checkAllHCG, setCheckAllHCG] = useState(false);
+  const [isFilterActiveButtonHCG, setIsFilterActiveButtonHCG] = useState(false);
+
+  const [listValueResult, setListValueResult] = useState<string[] | any>();
+  const [indeterminateResult, setIndeterminateResult] = useState(false);
+  const [checkAllResult, setCheckAllResult] = useState(false);
+  const [isFilterActiveButtonResult, setIsFilterActiveButtonResult] = useState(false);
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
-    pageSize: 5,
+    pageSize: 10,
     showSizeChanger: true,
     showQuickJumper: true,
-    pageSizeOptions: ['5', '10', '30', '50'],
+    pageSizeOptions: ['5', '10', '20', '30', '50'],
   });
 
   const [form] = Form.useForm();
@@ -105,7 +144,7 @@ const HistoryCall: React.FC = () => {
         from_datetime,
         to_datetime,
         listValueHCG,
-        listValueKQ,
+        listValueResult,
         valueKeyWord,
       );
       if (!res.success) {
@@ -140,9 +179,92 @@ const HistoryCall: React.FC = () => {
     },
   );
 
+  const fetchListDetailCallNote = useRequest(
+    async (callId: any, phoneNumber: any, callDirection: any) => {
+      const res: { success: boolean; data: any } = await requestGetDetailCallNote(
+        token ? token : '',
+        callId,
+        phoneNumber,
+        callDirection,
+      );
+      if (!res.success) {
+        message.error('Không lấy được lịch sử note');
+        return;
+      } else {
+        setListNote(res.data);
+      }
+      return res;
+    },
+    {
+      manual: true,
+    },
+  );
+
   useEffect(() => {
     fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
   }, [pagination]);
+
+  const handleCheckFilterHCG = (list: any) => {
+    setIndeterminateHCG(!!list.length && list.length < OPTIONS_FILTER_CALL_DIRECTION.length);
+    setCheckAllHCG(list.length === OPTIONS_FILTER_CALL_DIRECTION.length);
+    setListValueHCG(list);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (list.length > 0) {
+      setIsFilterActiveButtonHCG(true);
+    } else {
+      setIsFilterActiveButtonHCG(false);
+      setListValueHCG(undefined);
+    }
+  };
+
+  const handleCheckAllFilterHCG = (e: any) => {
+    setListValueHCG(e.target.checked ? OPTIONS_FILTER_CALL_DIRECTION_VALUE : undefined);
+    setIndeterminateHCG(false);
+    setCheckAllHCG(e.target.checked);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (e.target.checked) {
+      setIsFilterActiveButtonHCG(true);
+    } else {
+      setIsFilterActiveButtonHCG(false);
+    }
+  };
+
+  const handleCheckFilterResult = (list: any) => {
+    setIndeterminateResult(!!list.length && list.length < OPTIONS_FILTER_CALL_RESULT.length);
+    setCheckAllResult(list.length === OPTIONS_FILTER_CALL_RESULT.length);
+    setListValueResult(list);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (list.length > 0) {
+      setIsFilterActiveButtonResult(true);
+    } else {
+      setIsFilterActiveButtonResult(false);
+      setListValueResult(undefined);
+    }
+  };
+
+  const handleCheckAllFilterResult = (e: any) => {
+    setListValueResult(e.target.checked ? OPTIONS_FILTER_CALL_RESULT_VALUE : undefined);
+    setIndeterminateResult(false);
+    setCheckAllResult(e.target.checked);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (e.target.checked) {
+      setIsFilterActiveButtonResult(true);
+    } else {
+      setIsFilterActiveButtonResult(false);
+    }
+  };
 
   const handleViewResult = (result: any) => {
     let color, newResult;
@@ -226,7 +348,7 @@ const HistoryCall: React.FC = () => {
   const playAudio = async (fileId?: any, recordName?: any) => {
     try {
       const response = await axios({
-        url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file_url`,
+        url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_url`,
         method: 'POST',
         data: {
           call_id: fileId,
@@ -236,12 +358,10 @@ const HistoryCall: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (response.data.success === true) {
-        setTestAudioURL(response.data.data[0]);
-      } else if (response.data.error_code === 4030102) {
+      if (response.data.error_code === 4030102) {
         message.error('Bạn không có quyền nghe file ghi âm!');
       } else {
-        message.error('Không thể nghe file ghi âm!');
+        setTestAudioURL(response.data.data[0]);
       }
     } catch (e) {
       message.error('Không thể nghe file ghi âm!');
@@ -250,6 +370,7 @@ const HistoryCall: React.FC = () => {
 
   const downloadAudio = async (fileId?: any, recordName?: any) => {
     try {
+      setDownloadFile(true);
       const response = await axios({
         url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_file`,
         method: 'POST',
@@ -262,13 +383,13 @@ const HistoryCall: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (response.data.success === true) {
+      if (response.data.error_code === 4030102) {
+        message.error('Bạn không có quyền tải file ghi âm!');
+        setDownloadFile(false);
+      } else {
         const audioFormatBlob = new Blob([response.data], { type: 'audio/*' });
         fileDownload(audioFormatBlob, recordName);
-      } else if (response.data.error_code === 4030102) {
-        message.error('Bạn không có quyền tải file ghi âm!');
-      } else {
-        message.error('Không thể tải file ghi âm!');
+        setDownloadFile(false);
       }
     } catch (e) {
       message.error('Không thể tải file ghi âm!');
@@ -278,6 +399,11 @@ const HistoryCall: React.FC = () => {
   const handleOpenModalPlaying = async (fieldId?: any, recordName?: any) => {
     setVisibleModalAudio(true);
     await playAudio(fieldId, recordName);
+  };
+
+  const handleGetDetailCallNote = (callId: any, phoneNumber: any, callDirection: any) => {
+    fetchListDetailCallNote.run(callId, phoneNumber, callDirection);
+    setVisibleModalNote(true);
   };
 
   const columns: ColumnsType<DataLSCGType> = [
@@ -368,15 +494,29 @@ const HistoryCall: React.FC = () => {
       render: (text, record) => {
         return (
           <>
-            <PlayCircleFilled
-              style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }}
-              onClick={() => handleOpenModalPlaying(record._id, record.record_name)}
-            />
-            <img
-              src={DownloadIcon}
-              className={styles.fileDownloadIcon}
-              onClick={() => downloadAudio(record._id, record.record_name)}
-            />
+            {record.billsec === 0 ? (
+              ''
+            ) : (
+              <PlayCircleFilled
+                style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }}
+                onClick={() => handleOpenModalPlaying(record._id, record.record_name)}
+              />
+            )}
+            {isDownloadFile === true && record.billsec !== 0 && record._id === recordId ? (
+              <Spin />
+            ) : (isDownloadFile === false && record.billsec === 0) ||
+              (isDownloadFile === true && record.billsec === 0) ? (
+              ''
+            ) : (
+              <img
+                src={DownloadIcon}
+                className={styles.fileDownloadIcon}
+                onClick={() => {
+                  downloadAudio(record._id, record.record_name);
+                  setRecordId(record._id);
+                }}
+              />
+            )}
           </>
         );
       },
@@ -390,7 +530,10 @@ const HistoryCall: React.FC = () => {
       render: (text, record) => {
         return (
           <Tooltip title="Xem ghi chú">
-            <FormOutlined style={{ fontSize: 20 }} onClick={() => setVisibleModalNote(true)} />
+            <FormOutlined
+              style={{ fontSize: 20 }}
+              onClick={() => handleGetDetailCallNote(record._id, record.sip_from_user, 'local')}
+            />
           </Tooltip>
         );
       },
@@ -403,42 +546,6 @@ const HistoryCall: React.FC = () => {
       current: newPagination.current,
       pageSize: newPagination.pageSize,
     });
-  };
-
-  const handleSelectValueHCG = (values: any) => {
-    if (values.length === 0) {
-      setHCGFilter(false);
-      setListValueHCG(undefined);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    } else {
-      setHCGFilter(true);
-      setListValueHCG(values);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    }
-  };
-
-  const handleSelectValueKQ = (values: any) => {
-    if (values.length === 0) {
-      setKQFilter(false);
-      setListValueKQ(undefined);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    } else {
-      setKQFilter(true);
-      setListValueKQ(values);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    }
   };
 
   const handleChangeValueRangePicker = (value: any, dateString: any) => {
@@ -461,8 +568,8 @@ const HistoryCall: React.FC = () => {
   const onResetFilter = (e: any) => {
     if (
       listValueHCG === undefined &&
-      listValueKQ === undefined &&
-      listValueKQ === undefined &&
+      listValueResult === undefined &&
+      listValueResult === undefined &&
       valueKeyWord === undefined &&
       valueFromDateTime === undefined &&
       valueToDateTime === undefined
@@ -471,14 +578,18 @@ const HistoryCall: React.FC = () => {
       e.preventDefault();
     } else {
       form.resetFields();
-      setHCGFilter(false);
-      setKQFilter(false);
       setTimeFilter(false);
       setListValueHCG(undefined);
-      setListValueKQ(undefined);
+      setListValueResult(undefined);
       setValueKeyWord(undefined);
       setValueFromDateTime(undefined);
       setValueToDateTime(undefined);
+      setIsFilterActiveButtonHCG(false);
+      setIsFilterActiveButtonResult(false);
+      setIndeterminateHCG(false);
+      setIndeterminateResult(false);
+      setCheckAllHCG(false);
+      setCheckAllResult(false);
       setPagination({
         ...pagination,
         current: 1,
@@ -493,7 +604,7 @@ const HistoryCall: React.FC = () => {
         method: 'POST',
         data: {
           direction: listValueHCG,
-          result: listValueKQ,
+          result: listValueResult,
           from_datetime: valueFromDateTime,
           to_datetime: valueToDateTime,
           search_name: valueKeyWord,
@@ -522,77 +633,100 @@ const HistoryCall: React.FC = () => {
       <Form className={styles.filterFormHistoryCall} layout="vertical" form={form}>
         <div>
           <div className={styles.filterFormHistoryCallDisplay}>
-            <div style={{ flex: 2, width: 280 }}>
-              <Form.Item
-                label={
-                  <Typography.Text className={isHCGFilter ? `${styles.filterFieldActive}` : ''}>
+            <div>
+              <Form.Item name="Hướng cuộc gọi" style={{ marginBottom: 'unset' }}>
+                <Popover
+                  trigger="click"
+                  placement="bottom"
+                  overlayClassName={styles.popoverPlacement}
+                  content={
+                    <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
+                      <div>
+                        <Checkbox
+                          indeterminate={indeterminateHCG}
+                          onChange={handleCheckAllFilterHCG}
+                          checked={checkAllHCG}
+                          className={styles.checkboxPopoverAll}
+                        >
+                          Chọn tất cả
+                        </Checkbox>
+                      </div>
+                      <div>
+                        <Checkbox.Group
+                          value={listValueHCG}
+                          onChange={handleCheckFilterHCG}
+                          options={OPTIONS_FILTER_CALL_DIRECTION}
+                          className={styles.checkboxPopover}
+                        />
+                      </div>
+                    </div>
+                  }
+                >
+                  <Button
+                    className={
+                      isFilterActiveButtonHCG === false
+                        ? `${styles.buttonFilter}`
+                        : `${styles.buttonFilterActive}`
+                    }
+                  >
                     Hướng cuộc gọi
-                  </Typography.Text>
-                }
-                name="Hướng cuộc gọi"
-                style={{ marginBottom: 'unset' }}
-              >
-                <Select onChange={handleSelectValueHCG} mode="multiple" placeholder="Tất cả">
-                  <Select.Option value="inbound" key="inbound">
-                    Gọi vào
-                  </Select.Option>
-                  <Select.Option value="outbound" key="outbound">
-                    Gọi ra
-                  </Select.Option>
-                  <Select.Option value="local" key="local">
-                    Gọi nội bộ
-                  </Select.Option>
-                </Select>
+                    {isFilterActiveButtonHCG ? (
+                      <FilterFilled className={styles.filterIconActive} />
+                    ) : (
+                      <FilterOutlined className={styles.filterIcon} />
+                    )}
+                  </Button>
+                </Popover>
               </Form.Item>
             </div>
-            <div style={{ flex: 2, width: 280 }}>
-              <Form.Item
-                label={
-                  <Typography.Text className={isKQFilter ? `${styles.filterFieldActive}` : ''}>
+            <div>
+              <Form.Item name="Kết quả" style={{ marginBottom: 'unset' }}>
+                <Popover
+                  trigger="click"
+                  placement="bottom"
+                  overlayClassName={styles.popoverPlacement}
+                  content={
+                    <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
+                      <div>
+                        <Checkbox
+                          indeterminate={indeterminateResult}
+                          onChange={handleCheckAllFilterResult}
+                          checked={checkAllResult}
+                          className={styles.checkboxPopoverAll}
+                        >
+                          Chọn tất cả
+                        </Checkbox>
+                      </div>
+                      <div>
+                        <Checkbox.Group
+                          value={listValueResult}
+                          onChange={handleCheckFilterResult}
+                          options={OPTIONS_FILTER_CALL_RESULT}
+                          className={styles.checkboxPopover}
+                        />
+                      </div>
+                    </div>
+                  }
+                >
+                  <Button
+                    className={
+                      isFilterActiveButtonResult === false
+                        ? `${styles.buttonFilter}`
+                        : `${styles.buttonFilterActive}`
+                    }
+                  >
                     Kết quả
-                  </Typography.Text>
-                }
-                name="Kết quả"
-                style={{ marginBottom: 'unset' }}
-              >
-                <Select onChange={handleSelectValueKQ} mode="multiple" placeholder="Tất cả">
-                  <Select.Option value={1} key="success">
-                    Thành công
-                  </Select.Option>
-                  <Select.Option value={2} key="fail">
-                    Thất bại
-                  </Select.Option>
-                  <Select.Option value={3} key="busy">
-                    Bận
-                  </Select.Option>
-                  <Select.Option value={4} key="cancel">
-                    Hủy bỏ
-                  </Select.Option>
-                  <Select.Option value={5} key="no_answer">
-                    Không trả lời
-                  </Select.Option>
-                  <Select.Option value={6} key="rejected">
-                    Từ chối
-                  </Select.Option>
-                  <Select.Option value={7} key="missed">
-                    Nhỡ trong hàng chờ
-                  </Select.Option>
-                  <Select.Option value={8} key="other_failure">
-                    Thất bại khác
-                  </Select.Option>
-                </Select>
+                    {isFilterActiveButtonResult ? (
+                      <FilterFilled className={styles.filterIconActive} />
+                    ) : (
+                      <FilterOutlined className={styles.filterIcon} />
+                    )}
+                  </Button>
+                </Popover>
               </Form.Item>
             </div>
-            <div style={{ flex: 2, width: 280 }}>
-              <Form.Item
-                label={
-                  <Typography.Text className={isTimeFilter ? `${styles.filterFieldActive}` : ''}>
-                    Thời gian
-                  </Typography.Text>
-                }
-                name="Thời gian"
-                style={{ marginBottom: 'unset' }}
-              >
+            <div>
+              <Form.Item name="Thời gian" style={{ marginBottom: 'unset' }}>
                 <RangePicker
                   onChange={handleChangeValueRangePicker}
                   className={styles.antRangePicker}
@@ -618,7 +752,7 @@ const HistoryCall: React.FC = () => {
                 />
               </Form.Item>
             </div>
-            <div style={{ paddingTop: '29px' }}>
+            <div>
               <Form.Item style={{ marginBottom: 'unset' }}>
                 <Button type="text" style={{ color: 'blue' }} onClick={(e) => onResetFilter(e)}>
                   Reset
@@ -627,7 +761,7 @@ const HistoryCall: React.FC = () => {
             </div>
           </div>
         </div>
-        <div style={{ paddingTop: '29px', display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Form.Item name="search_name">
             <Input
               style={{ flex: 2, width: 280 }}
@@ -718,63 +852,25 @@ const HistoryCall: React.FC = () => {
       >
         <div className={styles.historyCallNoteTimeline}>
           <Timeline pending={true} pendingDot={null}>
-            <Timeline.Item>
-              <Typography.Paragraph className={styles.historyCallNoteTime}>
-                10-12-2022 15:00:00
-              </Typography.Paragraph>
-              <Typography.Paragraph>
-                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
-                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
-              </Typography.Paragraph>
-              <Typography.Paragraph>
-                <Typography.Text className={styles.historyCallNoteField}>
-                  Nội dung:{' '}
-                </Typography.Text>
-                <Typography.Text>
-                  {' '}
-                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
-                  sự phụ trách để xử lý sự cố này
-                </Typography.Text>
-              </Typography.Paragraph>
-            </Timeline.Item>
-            <Timeline.Item>
-              <Typography.Paragraph className={styles.historyCallNoteTime}>
-                10-12-2022 15:00:00
-              </Typography.Paragraph>
-              <Typography.Paragraph>
-                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
-                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
-              </Typography.Paragraph>
-              <Typography.Paragraph>
-                <Typography.Text className={styles.historyCallNoteField}>
-                  Nội dung:{' '}
-                </Typography.Text>
-                <Typography.Text>
-                  {' '}
-                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
-                  sự phụ trách để xử lý sự cố này
-                </Typography.Text>
-              </Typography.Paragraph>
-            </Timeline.Item>
-            <Timeline.Item>
-              <Typography.Paragraph className={styles.historyCallNoteTime}>
-                10-12-2022 15:00:00
-              </Typography.Paragraph>
-              <Typography.Paragraph>
-                <Typography.Text className={styles.historyCallNoteField}>Nhân sự: </Typography.Text>
-                <Typography.Text>Lâm Mỹ Huyền</Typography.Text>{' '}
-              </Typography.Paragraph>
-              <Typography.Paragraph>
-                <Typography.Text className={styles.historyCallNoteField}>
-                  Nội dung:{' '}
-                </Typography.Text>
-                <Typography.Text>
-                  {' '}
-                  Đây là cuộc gọi giả lập yêu cầu xử lý sự cố khẩn cấp, đã liên lạc với CBQL và nhân
-                  sự phụ trách để xử lý sự cố này
-                </Typography.Text>
-              </Typography.Paragraph>
-            </Timeline.Item>
+            {listNote[0]?.note?.map((item) => (
+              <Timeline.Item>
+                <Typography.Paragraph className={styles.historyCallNoteTime}>
+                  {moment.unix(item.create_at).format('DD-MM-YYYY')}
+                </Typography.Paragraph>
+                <Typography.Paragraph>
+                  <Typography.Text className={styles.historyCallNoteField}>
+                    Nhân sự:{' '}
+                  </Typography.Text>
+                  <Typography.Text>{item.personnel}</Typography.Text>{' '}
+                </Typography.Paragraph>
+                <Typography.Paragraph>
+                  <Typography.Text className={styles.historyCallNoteField}>
+                    Nội dung:{' '}
+                  </Typography.Text>
+                  <Typography.Text> {item.content}</Typography.Text>
+                </Typography.Paragraph>
+              </Timeline.Item>
+            ))}
           </Timeline>
         </div>
       </Modal>
