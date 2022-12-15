@@ -418,7 +418,6 @@
   flex-wrap: wrap;
   justify-content: space-between;
   padding-top: 30px;
-  padding-bottom: 20px;
 }
 .filterFormPermissionEditDisplay {
   display: flex;
@@ -439,4 +438,95 @@
 .filterFieldActive {
   font-weight: bold;
   text-decoration: underline;
+}
+.checkboxPopoverAll {
+  :global {
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #87c686;
+      border-color: #87c686;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner:after {
+      left: 50%;
+      transform: rotate(45deg) scale(1) translate(-100%, -20%);
+    }
+    .ant-checkbox-group-item {
+      display: flex;
+      margin-right: 0;
+    }
+    .ant-checkbox-wrapper {
+      color: rgba(0, 0, 0, 1);
+    }
+  }
+  color: rgba(0, 0, 0, 1);
+  font-style: italic;
+}
+.checkboxPopover {
+  :global {
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #87c686;
+      border-color: #87c686;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner:after {
+      left: 50%;
+      transform: rotate(45deg) scale(1) translate(-100%, -20%);
+    }
+    .ant-checkbox-group-item {
+      display: flex;
+      margin-right: 0;
+    }
+    .ant-checkbox-wrapper {
+      color: rgba(0, 0, 0, 1);
+    }
+  }
+}
+.buttonFilter {
+  color: #87c686;
+  font-weight: bold;
+  border-radius: unset;
+}
+.buttonFilter:hover {
+  color: #87c686;
+  border-color: #87c686;
+}
+.buttonFilter:focus {
+  color: #87c686;
+  border-color: #87c686;
+}
+
+.buttonFilterActive {
+  color: #87c686;
+  font-weight: bold;
+  border-color: #87c686;
+  border-width: 3px;
+  border-radius: unset;
+  box-shadow: #87c686;
+}
+.buttonFilterActive:hover {
+  color: #87c686;
+  border-color: #87c686;
+}
+.buttonFilterActive:focus {
+  color: #87c686;
+  border-color: #87c686;
+}
+.popoverPlacement {
+  padding-top: 5px;
+}
+.filterIcon {
+  color: #87c686;
+}
+.filterIconActive {
+  color: #87c686;
 }
