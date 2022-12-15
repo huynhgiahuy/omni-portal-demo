@@ -1,6 +1,6 @@
 import { CheckCircleFilled, ClockCircleFilled, MinusCircleFilled } from '@ant-design/icons';
 import { message, Select, Space } from 'antd';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styles from './index.less';
 import Ellipse from '../../assets/Ellipse.svg';
 import { useModel, useRequest } from 'umi';
@@ -41,17 +41,6 @@ const WorkingStatus = () => {
   );
 
   //Check offline
-  let time: NodeJS.Timeout;
-  window.addEventListener('blur', () => {
-    time = setTimeout(() => {
-      setIsOnline(false);
-    }, 300 * 1000);
-  });
-
-  window.addEventListener('focus', () => {
-    clearTimeout(time);
-    setIsOnline(true);
-  });
 
   useEffect(() => {
     if (!isOnline && option === 1) {
@@ -66,19 +55,37 @@ const WorkingStatus = () => {
           }));
         }
       });
+    } else if (isOnline && option === 2) {
+      const res = requestUpdateStatusUser(1, token ? token : '');
+      res.then(async (result: requeGetUserInfoProps) => {
+        if (result.success) {
+          setOption(1);
+          socket.emit('updated_user_status');
+          await setInitialState((s) => ({
+            ...s,
+            currentUser: { ...initialState?.currentUser, status: result.data[0] },
+          }));
+        }
+      });
     }
-  }, [isOnline]);
+  }, [isOnline, option]);
 
   useEffect(() => {
     let timeMouse: NodeJS.Timeout;
     const handleMouseMove = () => {
       clearTimeout(timeMouse);
       setIsOnline(true);
+
       timeMouse = setTimeout(() => {
         setIsOnline(false);
       }, 300 * 1000);
     };
     document.addEventListener('mousemove', handleMouseMove);
+    if (x == 0 && y == 0) {
+      setTimeout(() => {
+        setIsOnline(false);
+      }, 300 * 1000);
+    }
   }, [x, y]);
 
   return (
