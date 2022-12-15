@@ -141,24 +141,23 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
     [dataContacts],
   );
   useEffect(() => {
+    if (dataCall?.call_type === 'receive') {
+      setStateCall('Cuộc gọi đến');
+      setIconCall(true);
+    } else {
+      setStateCall('Cuộc gọi đi');
+      setIconCall(false);
+    }
     if (dataCall?.contact) {
       setNameCall(dataCall.contact?.full_name);
       setPhoneCall(dataCall.contact?.phone_number);
       form.setFieldsValue(dataCall?.contact);
-      if (dataCall.call_type === 'receive') {
-        setStateCall('Cuộc gọi đến');
-        setIconCall(true);
-      } else {
-        setStateCall('Cuộc gọi đi');
-        setIconCall(false);
-      }
     } else {
       if (dataCall?.is_ip_phone) {
         form.setFieldValue('ip_phone', dataCall?.phone);
       } else {
         form.setFieldValue('phone_number', dataCall?.phone);
       }
-
       setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
     }
   });
@@ -182,7 +181,6 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   useEffect(() => {
     setPopoverForward(false);
   }, [dataCall]);
-
   return (
     <>
       <Modal
