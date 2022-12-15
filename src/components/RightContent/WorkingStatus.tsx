@@ -1,6 +1,6 @@
 import { CheckCircleFilled, ClockCircleFilled, MinusCircleFilled } from '@ant-design/icons';
 import { message, Select, Space } from 'antd';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import styles from './index.less';
 import Ellipse from '../../assets/Ellipse.svg';
 import { useModel, useRequest } from 'umi';
@@ -11,7 +11,7 @@ import useMousePosition from '@/hooks/useMousePosition';
 const WorkingStatus = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
   const { x, y } = useMousePosition();
-  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [checkMouse, setCheckMouse] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
 
   const token = window.localStorage.getItem('access_token');
@@ -41,24 +41,27 @@ const WorkingStatus = () => {
   );
 
   //Check offline
-  let time: NodeJS.Timeout;
-  window.addEventListener('blur', () => {
-    time = setTimeout(() => {
-      setIsOnline(false);
-    }, 300 * 1000);
-  });
-
-  window.addEventListener('focus', () => {
-    clearTimeout(time);
-    setIsOnline(true);
-  });
 
   useEffect(() => {
     if (!isOnline && option === 1) {
-      const res = requestUpdateStatusUser(2, token ? token : '');
+      if (checkMouse) {
+        const res = requestUpdateStatusUser(2, token ? token : '');
+        res.then(async (result: requeGetUserInfoProps) => {
+          if (result.success) {
+            setOption(2);
+            socket.emit('updated_user_status');
+            await setInitialState((s) => ({
+              ...s,
+              currentUser: { ...initialState?.currentUser, status: result.data[0] },
+            }));
+          }
+        });
+      }
+    } else if (isOnline && option === 2) {
+      const res = requestUpdateStatusUser(1, token ? token : '');
       res.then(async (result: requeGetUserInfoProps) => {
         if (result.success) {
-          setOption(2);
+          setOption(1);
           socket.emit('updated_user_status');
           await setInitialState((s) => ({
             ...s,
@@ -67,18 +70,46 @@ const WorkingStatus = () => {
         }
       });
     }
-  }, [isOnline]);
+  }, [isOnline, option, checkMouse]);
 
   useEffect(() => {
-    let timeMouse: NodeJS.Timeout;
-    const handleMouseMove = () => {
-      clearTimeout(timeMouse);
-      setIsOnline(true);
-      timeMouse = setTimeout(() => {
-        setIsOnline(false);
-      }, 300 * 1000);
-    };
-    document.addEventListener('mousemove', handleMouseMove);
+    if (checkMouse) {
+      let timeMouse: NodeJS.Timeout;
+      const handleMouseMove = () => {
+        clearTimeout(timeMouse);
+        setIsOnline(true);
+
+        timeMouse = setTimeout(() => {
+          setIsOnline(false);
+        }, 300 * 1000);
+      };
+      document.addEventListener('mousemove', handleMouseMove);
+      if (x == 0 && y == 0) {
+        setTimeout(() => {
+          setIsOnline(false);
+        }, 300 * 1000);
+      }
+    }
+
+    socket.on('emit_call_event', (data) => {
+      const eventCall = data.event;
+      switch (eventCall) {
+        case 'hangup_call':
+          setIsOnline(true);
+          setCheckMouse(true);
+          setTimeout(() => {
+            setIsOnline(false);
+          }, 300 * 1000);
+
+          break;
+        case 'answered_call':
+          setIsOnline(true);
+          setCheckMouse(false);
+          break;
+        default:
+          break;
+      }
+    });
   }, [x, y]);
 
   return (
@@ -100,7 +131,7 @@ const WorkingStatus = () => {
             Sẵn sàng
           </span>
         </Select.Option>
-        <Select.Option value={2}>
+        <Select.Option value={2} disabled={true}>
           <ClockCircleFilled style={{ color: ' #FAAD14' }} />
           <span style={{ color: '#FAAD14' }} className={styles['text-status']}>
             Vắng mặt

@@ -98,14 +98,12 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   const { confirm } = Modal;
 
   const token = window.localStorage?.getItem('access_token');
-
   let notes: notesProps[] = [];
   listNote?.map((notesItem) => {
     return notesItem.note.map((item) => {
       return (notes = [...notes, item]);
     });
   });
-
   const getTakeCallNote = useRequest(
     async (data) => {
       const res: { success: boolean; data: any } = await requestGetTakeCallNote(
@@ -141,24 +139,23 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
     [dataContacts],
   );
   useEffect(() => {
+    if (dataCall?.call_type === 'receive') {
+      setStateCall('Cuộc gọi đến');
+      setIconCall(true);
+    } else {
+      setStateCall('Cuộc gọi đi');
+      setIconCall(false);
+    }
     if (dataCall?.contact) {
       setNameCall(dataCall.contact?.full_name);
       setPhoneCall(dataCall.contact?.phone_number);
       form.setFieldsValue(dataCall?.contact);
-      if (dataCall.call_type === 'receive') {
-        setStateCall('Cuộc gọi đến');
-        setIconCall(true);
-      } else {
-        setStateCall('Cuộc gọi đi');
-        setIconCall(false);
-      }
     } else {
       if (dataCall?.is_ip_phone) {
         form.setFieldValue('ip_phone', dataCall?.phone);
       } else {
         form.setFieldValue('phone_number', dataCall?.phone);
       }
-
       setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
     }
   });
@@ -178,11 +175,9 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       onCancel() {},
     });
   };
-
   useEffect(() => {
     setPopoverForward(false);
   }, [dataCall]);
-
   return (
     <>
       <Modal
@@ -240,11 +235,11 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     <span className={styles.material_icons}></span>
                   </div>
                   <img
-                    src={AvatarModal}
+                    src={ dataCall?.image ?  `data:image/jpeg;base64,${dataCall?.image}` : AvatarModal } 
                     alt=""
                     width={isFullScreenModal ? 105 : 58}
                     height={isFullScreenModal ? 105 : 58}
-                    style={{ position: 'relative', left: -8, zIndex: 2 }}
+                    style={{ position: 'relative', left: -8, zIndex: 2 , borderRadius: '95%' }}
                   />
                   <div className={styles.circle1} />
                   <div className={styles.circle2} />
