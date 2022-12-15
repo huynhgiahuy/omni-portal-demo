@@ -98,14 +98,12 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   const { confirm } = Modal;
 
   const token = window.localStorage?.getItem('access_token');
-
   let notes: notesProps[] = [];
   listNote?.map((notesItem) => {
     return notesItem.note.map((item) => {
       return (notes = [...notes, item]);
     });
   });
-
   const getTakeCallNote = useRequest(
     async (data) => {
       const res: { success: boolean; data: any } = await requestGetTakeCallNote(
@@ -177,7 +175,6 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       onCancel() {},
     });
   };
-
   useEffect(() => {
     setPopoverForward(false);
   }, [dataCall]);
@@ -238,11 +235,11 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     <span className={styles.material_icons}></span>
                   </div>
                   <img
-                    src={AvatarModal}
+                    src={ dataCall?.image ?  `data:image/jpeg;base64,${dataCall?.image}` : AvatarModal } 
                     alt=""
                     width={isFullScreenModal ? 105 : 58}
                     height={isFullScreenModal ? 105 : 58}
-                    style={{ position: 'relative', left: -8, zIndex: 2 }}
+                    style={{ position: 'relative', left: -8, zIndex: 2 , borderRadius: '95%' }}
                   />
                   <div className={styles.circle1} />
                   <div className={styles.circle2} />
