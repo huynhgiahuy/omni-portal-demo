@@ -90,7 +90,9 @@ const GlobalHeaderRight: React.FC = () => {
     if (access_token) {
       socket.emit('authen_event', newToken);
       socket.on('reload_user_status', () => {
-        getTranferInfo.run({});
+        if (isModalOpenAnswer || isModalOpenRing) {
+          getTranferInfo.run({});
+        }
       });
       socket.on('emit_call_event', (data) => {
         setDataCall(data);
