@@ -169,6 +169,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   const [nameCall, setNameCall] = useState('Chưa có trong danh bạ');
   const [phoneCall, setPhoneCall] = useState('0000 000 000');
   const [statusCall, setStateCall] = useState('Cuộc gọi');
+  const [isSendNote, setIsSendNote] = useState(false);
 
   const token = window.localStorage?.getItem('access_token');
 
@@ -183,7 +184,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
     async (data) => {
       const res: { success: boolean; data: any } = await requestGetTakeCallNote(
         token ? token : '',
-        data ? data : { phone_number: dataCall?.phone },
+        data,
       );
       if (!res.success) {
         message.error('Không lấy được lịch sử note');
@@ -210,7 +211,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
       } else {
         message.success('Lưu thành công');
         form.setFieldValue('note', '');
-        getTakeCallNote.run({ phone_number: phoneCall });
+        getTakeCallNote.run({ phone_number: dataCall?.phone, call_direction: dataCall?.direction });
       }
       return res;
     },
@@ -240,7 +241,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
 
   useEffect(() => {
     if (isModalOpen) {
-      getTakeCallNote.run({ phone_number: phoneCall });
+      getTakeCallNote.run({ phone_number: dataCall?.phone, call_direction: dataCall?.direction });
     }
   }, [isModalOpen]);
 
@@ -257,7 +258,13 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   );
 
   useEffect(() => {
-    refTimer.current.reset();
+    refTimer.current.start();
+    if (!isModalOpen) {
+      refTimer.current.reset();
+      setTimeout(() => {
+        refTimer.current.stop();
+      });
+    }
   }, [isModalOpen]);
 
   useEffect(() => {
@@ -745,6 +752,12 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                         <Input.TextArea
                           className={styles.inputHistoryFormStyle}
                           placeholder="Nhập thông tin"
+                          onChange={() => {
+                            setIsSendNote(true);
+                            if (!form.getFieldValue('note').trim()) {
+                              setIsSendNote(false);
+                            }
+                          }}
                           style={{ height: 77, resize: 'none' }}
                         />
                       </Form.Item>
@@ -760,7 +773,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                           <Button
                             type="primary"
                             htmlType="button"
-                            disabled={!form.getFieldValue('note')}
+                            disabled={!isSendNote}
                             onClick={() => {
                               const data = {
                                 call_id: dataCall?.call_id,
@@ -771,6 +784,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                                   : 'Chưa có tên',
                                 content: form.getFieldValue('note'),
                               };
+
                               sendSaveCallNote.run(data);
                             }}
                           >
