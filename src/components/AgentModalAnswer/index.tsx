@@ -281,16 +281,17 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   }, [dataCall]);
 
   useEffect(() => {
+    if (dataCall?.call_type === 'receive') {
+      setStateCall('Cuộc gọi đến');
+    } else {
+      setStateCall('Cuộc gọi đi');
+    }
+
     if (dataCall?.contact) {
       setNameCall(dataCall.contact?.full_name);
       setPhoneCall(dataCall.contact?.phone_number);
       form.setFieldsValue(dataCall?.contact);
       setIsSave(false);
-      if (dataCall.direction === 'receive') {
-        setStateCall('Cuộc gọi đến');
-      } else {
-        setStateCall('Cuộc gọi đi');
-      }
     } else {
       if (dataCall?.is_ip_phone) {
         form.setFieldValue('ip_phone', dataCall?.phone);
@@ -570,12 +571,19 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                               <Typography.Paragraph
                                 style={{
                                   marginBottom: 'unset',
-                                  color: note.call_direction === 'receive' ? '#54FF00' : '#FFAA00',
+                                  color:
+                                    note.call_direction === 'inbound'
+                                      ? '#54FF00'
+                                      : note.call_direction === 'inbound'
+                                      ? '#FFAA00'
+                                      : '#19C6EE',
                                 }}
                               >
-                                {note.call_direction === 'receive'
+                                {note.call_direction === 'inbound'
                                   ? ' Cuộc gọi đến'
-                                  : ' Cuộc gọi đi'}
+                                  : note.call_direction === 'inbound'
+                                  ? ' Cuộc gọi đi'
+                                  : 'Cuộc gọi nội bộ'}
                               </Typography.Paragraph>
                               {/* <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
                               00:12
