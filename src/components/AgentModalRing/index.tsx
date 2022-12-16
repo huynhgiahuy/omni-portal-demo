@@ -9,27 +9,21 @@ import {
   Form,
   Input,
   Timeline,
-  Row,
-  Col,
-  Divider,
   List,
   message,
 } from 'antd';
 import {
-  ExclamationCircleFilled,
   FullscreenExitOutlined,
   FullscreenOutlined,
   PhoneOutlined,
   UserOutlined,
   EditOutlined,
   HistoryOutlined,
-  UnorderedListOutlined,
 } from '@ant-design/icons';
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
 import AvatarModal from '../../../public/avatar_modal_ring.png';
-import { dataUserContactProps, requestGetTakeCallNote } from '@/pages/omni-channel/report/services';
-import { debounce } from 'lodash';
+import { requestGetTakeCallNote } from '@/pages/omni-channel/report/services';
 import { dataProps } from '../RightContent';
 import { useRequest } from 'umi';
 import moment from 'moment';
@@ -95,17 +89,14 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   const [phoneCall, setPhoneCall] = useState('000 000 0000');
   const [iconCall, setIconCall] = useState(false);
   const [listNote, setListNote] = useState<listNotesProps[]>([]);
-  const { confirm } = Modal;
 
   const token = window.localStorage?.getItem('access_token');
-
   let notes: notesProps[] = [];
   listNote?.map((notesItem) => {
     return notesItem.note.map((item) => {
       return (notes = [...notes, item]);
     });
   });
-
   const getTakeCallNote = useRequest(
     async (data) => {
       const res: { success: boolean; data: any } = await requestGetTakeCallNote(
@@ -126,10 +117,22 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   );
 
   useEffect(() => {
-    if (isModalOpen) {
-      getTakeCallNote.run({ phone_number: phoneCall });
+    if (isVisibleHistoryCall) {
+      if (dataCall?.direction === 'local') {
+        getTakeCallNote.run({
+          phone_number: dataCall?.contact?.ip_phone,
+          call_direction: dataCall?.direction,
+          call_id: dataCall?.call_id,
+        });
+      } else {
+        getTakeCallNote.run({
+          call_id: dataCall?.call_id,
+          phone_number: dataCall?.contact?.phone_number,
+          call_direction: dataCall?.direction,
+        });
+      }
     }
-  }, [isModalOpen]);
+  }, [isVisibleHistoryCall]);
 
   const listTransfer = useMemo(
     () =>
@@ -141,48 +144,48 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
     [dataContacts],
   );
   useEffect(() => {
+    if (dataCall?.call_type === 'receive') {
+      setStateCall('Cuộc gọi đến');
+      setIconCall(true);
+    } else {
+      setStateCall('Cuộc gọi đi');
+      setIconCall(false);
+    }
     if (dataCall?.contact) {
       setNameCall(dataCall.contact?.full_name);
       setPhoneCall(dataCall.contact?.phone_number);
       form.setFieldsValue(dataCall?.contact);
-      if (dataCall.call_type === 'receive') {
-        setStateCall('Cuộc gọi đến');
-        setIconCall(true);
-      } else {
-        setStateCall('Cuộc gọi đi');
-        setIconCall(false);
-      }
     } else {
       if (dataCall?.is_ip_phone) {
         form.setFieldValue('ip_phone', dataCall?.phone);
       } else {
         form.setFieldValue('phone_number', dataCall?.phone);
       }
-
       setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
     }
   });
-  const showConfirm = () => {
-    confirm({
-      title: 'Kết thúc cuộc gọi',
-      icon: <ExclamationCircleFilled style={{ fill: '#FAAD14' }} />,
-      content: <p style={{ marginBottom: 46 }}>Bạn có chắc chắn muốn ngắt kết nối cuộc gọi này?</p>,
-      bodyStyle: { padding: '24px 32px' },
-      width: 437,
-      centered: true,
-      okText: 'Kết thúc',
-      onOk() {
-        handleCancel();
-      },
-      cancelText: 'Huỷ',
-      onCancel() {},
-    });
-  };
+
+  //  const { confirm } = Modal;
+  // const showConfirm = () => {
+  //   confirm({
+  //     title: 'Kết thúc cuộc gọi',
+  //     icon: <ExclamationCircleFilled style={{ fill: '#FAAD14' }} />,
+  //     content: <p style={{ marginBottom: 46 }}>Bạn có chắc chắn muốn ngắt kết nối cuộc gọi này?</p>,
+  //     bodyStyle: { padding: '24px 32px' },
+  //     width: 437,
+  //     centered: true,
+  //     okText: 'Kết thúc',
+  //     onOk() {
+  //       handleCancel();
+  //     },
+  //     cancelText: 'Huỷ',
+  //     onCancel() {},
+  //   });
+  // };
 
   useEffect(() => {
     setPopoverForward(false);
   }, [dataCall]);
-
   return (
     <>
       <Modal
@@ -240,11 +243,13 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     <span className={styles.material_icons}></span>
                   </div>
                   <img
-                    src={AvatarModal}
+                    src={
+                      dataCall?.image ? `data:image/jpeg;base64,${dataCall?.image}` : AvatarModal
+                    }
                     alt=""
                     width={isFullScreenModal ? 105 : 58}
                     height={isFullScreenModal ? 105 : 58}
-                    style={{ position: 'relative', left: -8, zIndex: 2 }}
+                    style={{ position: 'relative', left: -8, zIndex: 2, borderRadius: '95%' }}
                   />
                   <div className={styles.circle1} />
                   <div className={styles.circle2} />

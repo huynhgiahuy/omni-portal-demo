@@ -1,5 +1,5 @@
-import { message, Space } from 'antd';
-import React, { useEffect, useRef, useState } from 'react';
+import { Space } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
@@ -28,8 +28,10 @@ export type dataProps = {
     full_name: string;
     phone_number: string;
     work_unit: string;
+    ip_phone: string;
   };
   call_type: string;
+  image: string;
 };
 
 const GlobalHeaderRight: React.FC = () => {
@@ -123,6 +125,7 @@ const GlobalHeaderRight: React.FC = () => {
         }
       });
     }
+    console.log({socket})
     return () => {
       socket.off('updated_user_status');
       socket.off('emit_call_event');
@@ -141,10 +144,6 @@ const GlobalHeaderRight: React.FC = () => {
   if ((navTheme === 'dark' && layout === 'top') || layout === 'mix') {
     className = `${styles.right}  ${styles.dark}`;
   }
-
-  const showModalRing = () => {
-    setIsModalOpenRing(true);
-  };
 
   const handleOkRing = () => {
     setIsModalOpenRing(false);
