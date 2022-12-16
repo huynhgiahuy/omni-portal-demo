@@ -6,7 +6,6 @@ import {
   Input,
   Tag,
   Form,
-  Select,
   DatePicker,
   message,
   Spin,
@@ -640,7 +639,7 @@ const HistoryCall: React.FC = () => {
                   placement="bottom"
                   overlayClassName={styles.popoverPlacement}
                   content={
-                    <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
+                    <>
                       <div>
                         <Checkbox
                           indeterminate={indeterminateHCG}
@@ -651,7 +650,8 @@ const HistoryCall: React.FC = () => {
                           Chọn tất cả
                         </Checkbox>
                       </div>
-                      <div>
+                      <hr></hr>
+                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
                         <Checkbox.Group
                           value={listValueHCG}
                           onChange={handleCheckFilterHCG}
@@ -659,7 +659,7 @@ const HistoryCall: React.FC = () => {
                           className={styles.checkboxPopover}
                         />
                       </div>
-                    </div>
+                    </>
                   }
                 >
                   <Button
@@ -686,7 +686,7 @@ const HistoryCall: React.FC = () => {
                   placement="bottom"
                   overlayClassName={styles.popoverPlacement}
                   content={
-                    <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
+                    <>
                       <div>
                         <Checkbox
                           indeterminate={indeterminateResult}
@@ -697,7 +697,8 @@ const HistoryCall: React.FC = () => {
                           Chọn tất cả
                         </Checkbox>
                       </div>
-                      <div>
+                      <hr></hr>
+                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
                         <Checkbox.Group
                           value={listValueResult}
                           onChange={handleCheckFilterResult}
@@ -705,7 +706,7 @@ const HistoryCall: React.FC = () => {
                           className={styles.checkboxPopover}
                         />
                       </div>
-                    </div>
+                    </>
                   }
                 >
                   <Button
