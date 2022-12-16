@@ -812,7 +812,7 @@ const PermissionEdit: React.FC = () => {
                   placement="bottom"
                   overlayClassName={styles.popoverPlacement}
                   content={
-                    <div style={{ maxHeight: 150, overflowY: 'scroll' }}>
+                    <>
                       <div>
                         <Checkbox
                           indeterminate={indeterminateTeam}
@@ -823,7 +823,8 @@ const PermissionEdit: React.FC = () => {
                           Chọn tất cả
                         </Checkbox>
                       </div>
-                      <div>
+                      <hr></hr>
+                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
                         <Checkbox.Group
                           value={listValueTeam}
                           onChange={handleCheckFilterTeam}
@@ -832,7 +833,11 @@ const PermissionEdit: React.FC = () => {
                           {listTeamPermission &&
                             listTeamPermission.map((item: TeamPermission) => (
                               <div key={item.id}>
-                                <Checkbox key={item.id} value={item.name}>
+                                <Checkbox
+                                  key={item.id}
+                                  value={item.name}
+                                  style={{ paddingBottom: 10 }}
+                                >
                                   {item.name}
                                 </Checkbox>
                                 <br />
@@ -840,7 +845,7 @@ const PermissionEdit: React.FC = () => {
                             ))}
                         </Checkbox.Group>
                       </div>
-                    </div>
+                    </>
                   }
                 >
                   <Button
@@ -867,7 +872,7 @@ const PermissionEdit: React.FC = () => {
                   placement="bottom"
                   overlayClassName={styles.popoverPlacement}
                   content={
-                    <div style={{ maxHeight: 150, overflowY: 'scroll' }}>
+                    <>
                       <div>
                         <Checkbox
                           indeterminate={indeterminateNLV}
@@ -878,7 +883,8 @@ const PermissionEdit: React.FC = () => {
                           Chọn tất cả
                         </Checkbox>
                       </div>
-                      <div>
+                      <hr></hr>
+                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
                         <Checkbox.Group
                           value={listValueNLV}
                           onChange={handleCheckFilterNLV}
@@ -886,7 +892,7 @@ const PermissionEdit: React.FC = () => {
                           className={styles.checkboxPopover}
                         />
                       </div>
-                    </div>
+                    </>
                   }
                 >
                   <Button
@@ -913,7 +919,7 @@ const PermissionEdit: React.FC = () => {
                   placement="bottom"
                   overlayClassName={styles.popoverPlacement}
                   content={
-                    <div style={{ maxHeight: 150, overflowY: 'scroll' }}>
+                    <>
                       <div>
                         <Checkbox
                           indeterminate={indeterminateNQ}
@@ -924,7 +930,8 @@ const PermissionEdit: React.FC = () => {
                           Chọn tất cả
                         </Checkbox>
                       </div>
-                      <div>
+                      <hr></hr>
+                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
                         <Checkbox.Group
                           value={listValueNQ}
                           onChange={handleCheckFilterNQ}
@@ -933,7 +940,11 @@ const PermissionEdit: React.FC = () => {
                           {listGroupPermission &&
                             listGroupPermission.map((item: GroupPermission) => (
                               <div key={item.id}>
-                                <Checkbox key={item.id} value={item.code}>
+                                <Checkbox
+                                  key={item.id}
+                                  value={item.code}
+                                  style={{ paddingBottom: 10 }}
+                                >
                                   {item.code}
                                 </Checkbox>
                                 <br />
@@ -941,7 +952,7 @@ const PermissionEdit: React.FC = () => {
                             ))}
                         </Checkbox.Group>
                       </div>
-                    </div>
+                    </>
                   }
                 >
                   <Button
@@ -968,7 +979,7 @@ const PermissionEdit: React.FC = () => {
                   placement="bottom"
                   overlayClassName={styles.popoverPlacement}
                   content={
-                    <div style={{ maxHeight: 150, overflowY: 'scroll' }}>
+                    <>
                       <div>
                         <Checkbox
                           indeterminate={indeterminateStatus}
@@ -979,7 +990,8 @@ const PermissionEdit: React.FC = () => {
                           Chọn tất cả
                         </Checkbox>
                       </div>
-                      <div>
+                      <hr></hr>
+                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
                         <Checkbox.Group
                           value={listValueStatus}
                           onChange={handleCheckFilterStatus}
@@ -987,7 +999,7 @@ const PermissionEdit: React.FC = () => {
                           className={styles.checkboxPopover}
                         />
                       </div>
-                    </div>
+                    </>
                   }
                 >
                   <Button
@@ -997,7 +1009,7 @@ const PermissionEdit: React.FC = () => {
                         : `${styles.buttonFilterActive}`
                     }
                   >
-                    Trạng thái hoạt động
+                    Trạng thái
                     {isFilterActiveButtonStatus ? (
                       <FilterFilled className={styles.filterIconActive} />
                     ) : (
