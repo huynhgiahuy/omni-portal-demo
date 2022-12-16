@@ -12,6 +12,8 @@ import {
   Select,
   message,
   Tooltip,
+  Popover,
+  Checkbox,
 } from 'antd';
 import {
   EditOutlined,
@@ -25,6 +27,8 @@ import {
   CheckCircleFilled,
   ClockCircleFilled,
   MinusCircleFilled,
+  FilterFilled,
+  FilterOutlined,
 } from '@ant-design/icons';
 import {
   requestDeleteUserPermission,
@@ -36,6 +40,12 @@ import {
   requestCreateNewTeam,
   requestUpdateUserInfoFinal,
 } from './services';
+import {
+  OPTIONS_FILTER_NLV,
+  OPTIONS_FILTER_NLV_VALUE,
+  OPTIONS_FILTER_STATUS,
+  OPTIONS_FILTER_STATUS_VALUE,
+} from '@/constants';
 import styles from '../setting/style.less';
 import type { ColumnsType } from 'antd/es/table';
 import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
@@ -46,6 +56,7 @@ import OfflineIcon from '../../../../public/offline.png';
 import moment from 'moment';
 import NoFoundPage from '@/pages/404';
 import { socket } from '@/socket';
+import FilterIcon from '../../../../public/filter-icon.svg';
 
 interface PaginationProps {
   current: number;
@@ -82,7 +93,7 @@ interface DataAllUserInfoFinal {
   position: string;
   phone_number: string;
   image: string;
-  status: string;
+  status: any;
 }
 
 const formItemLayout = {
@@ -137,32 +148,43 @@ const PermissionEdit: React.FC = () => {
   const [listAllUserInfoLengthFinal, setListAllUserInfoLengthFinal] = useState<string | any>();
   const [listEditUserInfoFinal, setListEditUserInfoFinal] = useState<DataAllUserInfoFinal[]>([]);
   const [newTeamValue, setNewTeamValue] = useState<string | any>();
-  const [listGroupPermission, setListGroupPermission] = useState<GroupPermission[]>([]);
-  const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
+  const [listGroupPermission, setListGroupPermission] = useState<any>();
+  const [listTeamPermission, setListTeamPermission] = useState<any>();
 
   const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
   const [isInfoUpdated, setInfoUpdated] = useState(false);
 
-  const [listValueTeam, setListValueTeam] = useState<string[] | any>();
-  const [listValueNLV, setListValueNLV] = useState<string[] | any>();
-  const [listValueNQ, setListValueNQ] = useState<string[] | any>();
-  const [listValueStatus, setListValueStatus] = useState<string[] | any>();
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
-
-  const [isTeamFilter, setTeamFilter] = useState(false);
-  const [isNLVFilter, setNLVFilter] = useState(false);
-  const [isNQFilter, setNQFilter] = useState(false);
-  const [isStatusFilter, setStatusFilter] = useState(false);
 
   const [form] = Form.useForm();
   const [formFilter] = Form.useForm();
+
+  const [listValueTeam, setListValueTeam] = useState<string[] | any>();
+  const [indeterminateTeam, setIndeterminateTeam] = useState(false);
+  const [checkAllTeam, setCheckAllTeam] = useState(false);
+  const [isFilterActiveButtonTeam, setIsFilterActiveButtonTeam] = useState(false);
+
+  const [listValueNLV, setListValueNLV] = useState<string[] | any>();
+  const [indeterminateNLV, setIndeterminateNLV] = useState(false);
+  const [checkAllNLV, setCheckAllNLV] = useState(false);
+  const [isFilterActiveButtonNLV, setIsFilterActiveButtonNLV] = useState(false);
+
+  const [listValueNQ, setListValueNQ] = useState<string[] | any>();
+  const [indeterminateNQ, setIndeterminateNQ] = useState(false);
+  const [checkAllNQ, setCheckAllNQ] = useState(false);
+  const [isFilterActiveButtonNQ, setIsFilterActiveButtonNQ] = useState(false);
+
+  const [listValueStatus, setListValueStatus] = useState<any>();
+  const [indeterminateStatus, setIndeterminateStatus] = useState(false);
+  const [checkAllStatus, setCheckAllStatus] = useState(false);
+  const [isFilterActiveButtonStatus, setIsFilterActiveButtonStatus] = useState(false);
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 5,
     showSizeChanger: true,
     showQuickJumper: true,
-    pageSizeOptions: ['5', '10', '30', '50'],
+    pageSizeOptions: ['5', '10', '20', '30', '50'],
   });
 
   const fetchListAllUserInfoFinal = useRequest(
@@ -282,6 +304,133 @@ const PermissionEdit: React.FC = () => {
     });
   }, []);
 
+  const listTeamPermissionVal = listTeamPermission?.map((item: TeamPermission) => item.name);
+  const listGroupPermissionVal = listGroupPermission?.map((item: GroupPermission) => item.code);
+
+  const handleCheckFilterTeam = (list: any) => {
+    setIndeterminateTeam(!!list.length && list.length < listTeamPermission?.length);
+    setCheckAllTeam(list.length === listTeamPermission?.length);
+    setListValueTeam(list);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (list.length > 0) {
+      setIsFilterActiveButtonTeam(true);
+    } else {
+      setIsFilterActiveButtonTeam(false);
+      setListValueTeam(undefined);
+    }
+  };
+
+  const handleCheckAllFilterTeam = (e: any) => {
+    setListValueTeam(e.target.checked ? listTeamPermissionVal : undefined);
+    setIndeterminateTeam(false);
+    setCheckAllTeam(e.target.checked);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (e.target.checked) {
+      setIsFilterActiveButtonTeam(true);
+    } else {
+      setIsFilterActiveButtonTeam(false);
+    }
+  };
+
+  const handleCheckFilterNLV = (list: any) => {
+    setIndeterminateNLV(!!list.length && list.length < OPTIONS_FILTER_NLV.length);
+    setCheckAllNLV(list.length === OPTIONS_FILTER_NLV.length);
+    setListValueNLV(list);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (list.length > 0) {
+      setIsFilterActiveButtonNLV(true);
+    } else {
+      setIsFilterActiveButtonNLV(false);
+      setListValueNLV(undefined);
+    }
+  };
+
+  const handleCheckAllFilterNLV = (e: any) => {
+    setListValueNLV(e.target.checked ? OPTIONS_FILTER_NLV_VALUE : undefined);
+    setIndeterminateNLV(false);
+    setCheckAllNLV(e.target.checked);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (e.target.checked) {
+      setIsFilterActiveButtonNLV(true);
+    } else {
+      setIsFilterActiveButtonNLV(false);
+    }
+  };
+
+  const handleCheckFilterNQ = (list: any) => {
+    setIndeterminateNQ(!!list.length && list.length < listGroupPermission?.length);
+    setCheckAllNQ(list.length === listGroupPermission?.length);
+    setListValueNQ(list);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (list.length > 0) {
+      setIsFilterActiveButtonNQ(true);
+    } else {
+      setIsFilterActiveButtonNQ(false);
+      setListValueNQ(undefined);
+    }
+  };
+
+  const handleCheckAllFilterNQ = (e: any) => {
+    setListValueNQ(e.target.checked ? listGroupPermissionVal : undefined);
+    setIndeterminateNQ(false);
+    setCheckAllNQ(e.target.checked);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (e.target.checked) {
+      setIsFilterActiveButtonNQ(true);
+    } else {
+      setIsFilterActiveButtonNQ(false);
+    }
+  };
+
+  const handleCheckFilterStatus = (list: any) => {
+    setIndeterminateStatus(!!list.length && list.length < OPTIONS_FILTER_STATUS.length);
+    setCheckAllStatus(list.length === OPTIONS_FILTER_STATUS.length);
+    setListValueStatus(list);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (list.length > 0) {
+      setIsFilterActiveButtonStatus(true);
+    } else {
+      setIsFilterActiveButtonStatus(false);
+      setListValueStatus(undefined);
+    }
+  };
+
+  const handleCheckAllFilterStatus = (e: any) => {
+    setListValueStatus(e.target.checked ? OPTIONS_FILTER_STATUS_VALUE : undefined);
+    setIndeterminateStatus(false);
+    setCheckAllStatus(e.target.checked);
+    setPagination({
+      ...pagination,
+      current: 1,
+    });
+    if (e.target.checked) {
+      setIsFilterActiveButtonStatus(true);
+    } else {
+      setIsFilterActiveButtonStatus(false);
+    }
+  };
+
   const fetchDetaiUserInfoFinal = async (user_id: any) => {
     const resDetail = await requestDetailUserInfoFinal(user_id);
     if (resDetail.success === true) {
@@ -324,7 +473,7 @@ const PermissionEdit: React.FC = () => {
   };
 
   const handleSubmitNewTeam = async (e: any, values: any) => {
-    if (arrListTeam.includes(values)) {
+    if (listTeamPermissionVal.includes(values)) {
       message.error('Team đã tồn tại!');
     } else if (values === undefined || values === '') {
       e.stopPropagation();
@@ -388,8 +537,6 @@ const PermissionEdit: React.FC = () => {
     setRoleKey(values);
   };
 
-  const arrListTeam = listTeamPermission?.map((item) => item.name);
-
   const handleClickUpdatePermission = () => {
     setClickUpdatePermission(true);
   };
@@ -448,7 +595,7 @@ const PermissionEdit: React.FC = () => {
           <div className={styles.noActivityStatusText}>Không hoạt động</div>
         </div>
       );
-    } else if (status === 6) {
+    } else if (status === 5) {
       return (
         <div className={styles.offlineStatusDisplay}>
           <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
@@ -584,12 +731,6 @@ const PermissionEdit: React.FC = () => {
           : handleRenderStatusActivity(record.status);
       },
     },
-    // {
-    //     title: 'Trạng thái IIP',
-    //     dataIndex: '',
-    //     key: '',
-    //     align: 'center'
-    // },
     {
       title: '',
       align: 'center',
@@ -631,87 +772,23 @@ const PermissionEdit: React.FC = () => {
       e.preventDefault();
     } else {
       formFilter.resetFields();
-      setTeamFilter(false);
-      setNLVFilter(false);
-      setNQFilter(false);
-      setStatusFilter(false);
+      setCheckAllTeam(false);
+      setCheckAllNLV(false);
+      setCheckAllNQ(false);
+      setCheckAllStatus(false);
+      setIsFilterActiveButtonTeam(false);
+      setIsFilterActiveButtonNLV(false);
+      setIsFilterActiveButtonNQ(false);
+      setIsFilterActiveButtonStatus(false);
+      setIndeterminateTeam(false);
+      setIndeterminateNLV(false);
+      setIndeterminateNQ(false);
+      setIndeterminateStatus(false);
       setListValueTeam(undefined);
       setListValueNLV(undefined);
       setListValueNQ(undefined);
       setListValueStatus(undefined);
       setValueKeyWord(undefined);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    }
-  };
-
-  const handleSelectValueTeam = (values: any) => {
-    if (values.length === 0) {
-      setTeamFilter(false);
-      setListValueTeam(undefined);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    } else {
-      setTeamFilter(true);
-      setListValueTeam(values);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    }
-  };
-
-  const handleSelectValueNLV = (values: any) => {
-    if (values.length === 0) {
-      setNLVFilter(false);
-      setListValueNLV(undefined);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    } else {
-      setNLVFilter(true);
-      setListValueNLV(values);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    }
-  };
-
-  const handleSelectValueNQ = (values: any) => {
-    if (values.length === 0) {
-      setNQFilter(false);
-      setListValueNQ(undefined);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    } else {
-      setNQFilter(true);
-      setListValueNQ(values);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    }
-  };
-
-  const handleSelectValueStatus = (values: any) => {
-    if (values.length === 0) {
-      setStatusFilter(false);
-      setListValueStatus(undefined);
-      setPagination({
-        ...pagination,
-        current: 1,
-      });
-    } else {
-      setStatusFilter(true);
-      setListValueStatus(values);
       setPagination({
         ...pagination,
         current: 1,
@@ -728,96 +805,221 @@ const PermissionEdit: React.FC = () => {
       <Form className={styles.filterFormPermissionEdit} layout="vertical" form={formFilter}>
         <div>
           <div className={styles.filterFormPermissionEditDisplay}>
-            <div style={{ flex: 2, width: 217 }}>
-              <Form.Item
-                label={
-                  <Typography.Text className={isTeamFilter ? `${styles.filterFieldActive}` : ''}>
+            <div>
+              <Form.Item name="team_id" style={{ marginBottom: 'unset' }}>
+                <Popover
+                  trigger="click"
+                  placement="bottom"
+                  overlayClassName={styles.popoverPlacement}
+                  content={
+                    <>
+                      <div>
+                        <Checkbox
+                          indeterminate={indeterminateTeam}
+                          onChange={handleCheckAllFilterTeam}
+                          checked={checkAllTeam}
+                          className={styles.checkboxPopoverAll}
+                        >
+                          Chọn tất cả
+                        </Checkbox>
+                      </div>
+                      <hr></hr>
+                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
+                        <Checkbox.Group
+                          value={listValueTeam}
+                          onChange={handleCheckFilterTeam}
+                          className={styles.checkboxPopover}
+                        >
+                          {listTeamPermission &&
+                            listTeamPermission.map((item: TeamPermission) => (
+                              <div key={item.id}>
+                                <Checkbox
+                                  key={item.id}
+                                  value={item.name}
+                                  style={{ paddingBottom: 10 }}
+                                >
+                                  {item.name}
+                                </Checkbox>
+                                <br />
+                              </div>
+                            ))}
+                        </Checkbox.Group>
+                      </div>
+                    </>
+                  }
+                >
+                  <Button
+                    className={
+                      isFilterActiveButtonTeam === false
+                        ? `${styles.buttonFilter}`
+                        : `${styles.buttonFilterActive}`
+                    }
+                  >
                     Team
-                  </Typography.Text>
-                }
-                name="team_id"
-                style={{ marginBottom: 'unset' }}
-              >
-                <Select onChange={handleSelectValueTeam} mode="multiple" placeholder="Tất cả">
-                  {listTeamPermission &&
-                    listTeamPermission.map((item: TeamPermission) => (
-                      <Select.Option value={item.name} key={item.id}>
-                        {item.name}
-                      </Select.Option>
-                    ))}
-                </Select>
+                    {isFilterActiveButtonTeam ? (
+                      <FilterFilled className={styles.filterIconActive} />
+                    ) : (
+                      <FilterOutlined className={styles.filterIcon} />
+                    )}
+                  </Button>
+                </Popover>
               </Form.Item>
             </div>
-            <div style={{ flex: 2, width: 217 }}>
-              <Form.Item
-                label={
-                  <Typography.Text className={isNLVFilter ? `${styles.filterFieldActive}` : ''}>
+            <div>
+              <Form.Item name="work_address" style={{ marginBottom: 'unset' }}>
+                <Popover
+                  trigger="click"
+                  placement="bottom"
+                  overlayClassName={styles.popoverPlacement}
+                  content={
+                    <>
+                      <div>
+                        <Checkbox
+                          indeterminate={indeterminateNLV}
+                          onChange={handleCheckAllFilterNLV}
+                          checked={checkAllNLV}
+                          className={styles.checkboxPopoverAll}
+                        >
+                          Chọn tất cả
+                        </Checkbox>
+                      </div>
+                      <hr></hr>
+                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
+                        <Checkbox.Group
+                          value={listValueNLV}
+                          onChange={handleCheckFilterNLV}
+                          options={OPTIONS_FILTER_NLV}
+                          className={styles.checkboxPopover}
+                        />
+                      </div>
+                    </>
+                  }
+                >
+                  <Button
+                    className={
+                      isFilterActiveButtonNLV === false
+                        ? `${styles.buttonFilter}`
+                        : `${styles.buttonFilterActive}`
+                    }
+                  >
                     Nơi làm việc
-                  </Typography.Text>
-                }
-                name="work_address"
-                style={{ marginBottom: 'unset' }}
-              >
-                <Select onChange={handleSelectValueNLV} mode="multiple" placeholder="Tất cả">
-                  <Select.Option value="Miền Bắc" key="Miền Bắc">
-                    Miền Bắc
-                  </Select.Option>
-                  <Select.Option value="Miền Nam" key="Miền Nam">
-                    Miền Nam
-                  </Select.Option>
-                </Select>
+                    {isFilterActiveButtonNLV ? (
+                      <FilterFilled className={styles.filterIconActive} />
+                    ) : (
+                      <FilterOutlined className={styles.filterIcon} />
+                    )}
+                  </Button>
+                </Popover>
               </Form.Item>
             </div>
-            <div style={{ flex: 2, width: 217 }}>
-              <Form.Item
-                label={
-                  <Typography.Text className={isNQFilter ? `${styles.filterFieldActive}` : ''}>
+            <div>
+              <Form.Item name="role_id" style={{ marginBottom: 'unset' }}>
+                <Popover
+                  trigger="click"
+                  placement="bottom"
+                  overlayClassName={styles.popoverPlacement}
+                  content={
+                    <>
+                      <div>
+                        <Checkbox
+                          indeterminate={indeterminateNQ}
+                          onChange={handleCheckAllFilterNQ}
+                          checked={checkAllNQ}
+                          className={styles.checkboxPopoverAll}
+                        >
+                          Chọn tất cả
+                        </Checkbox>
+                      </div>
+                      <hr></hr>
+                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
+                        <Checkbox.Group
+                          value={listValueNQ}
+                          onChange={handleCheckFilterNQ}
+                          className={styles.checkboxPopover}
+                        >
+                          {listGroupPermission &&
+                            listGroupPermission.map((item: GroupPermission) => (
+                              <div key={item.id}>
+                                <Checkbox
+                                  key={item.id}
+                                  value={item.code}
+                                  style={{ paddingBottom: 10 }}
+                                >
+                                  {item.code}
+                                </Checkbox>
+                                <br />
+                              </div>
+                            ))}
+                        </Checkbox.Group>
+                      </div>
+                    </>
+                  }
+                >
+                  <Button
+                    className={
+                      isFilterActiveButtonNQ === false
+                        ? `${styles.buttonFilter}`
+                        : `${styles.buttonFilterActive}`
+                    }
+                  >
                     Nhóm quyền
-                  </Typography.Text>
-                }
-                name="role_id"
-                style={{ marginBottom: 'unset' }}
-              >
-                <Select onChange={handleSelectValueNQ} mode="multiple" placeholder="Tất cả">
-                  {listGroupPermission &&
-                    listGroupPermission.map((item: GroupPermission) => (
-                      <Select.Option value={item.code} key={item.id}>
-                        {item.code}
-                      </Select.Option>
-                    ))}
-                </Select>
+                    {isFilterActiveButtonNQ ? (
+                      <FilterFilled className={styles.filterIconActive} />
+                    ) : (
+                      <FilterOutlined className={styles.filterIcon} />
+                    )}
+                  </Button>
+                </Popover>
               </Form.Item>
             </div>
-            <div style={{ flex: 2, width: 217 }}>
-              <Form.Item
-                label={
-                  <Typography.Text className={isStatusFilter ? `${styles.filterFieldActive}` : ''}>
-                    Trạng thái hoạt động
-                  </Typography.Text>
-                }
-                name="status"
-                style={{ marginBottom: 'unset' }}
-              >
-                <Select onChange={handleSelectValueStatus} mode="multiple" placeholder="Tất cả">
-                  <Select.Option value={1} key={1}>
-                    Sẵn sàng
-                  </Select.Option>
-                  <Select.Option value={2} key={2}>
-                    Vắng mặt
-                  </Select.Option>
-                  <Select.Option value={3} key={3}>
-                    Không làm phiền
-                  </Select.Option>
-                  <Select.Option value={4} key={4}>
-                    Không hoạt động
-                  </Select.Option>
-                  <Select.Option value={6} key={6}>
-                    Đang offline
-                  </Select.Option>
-                </Select>
+            <div>
+              <Form.Item name="status" style={{ marginBottom: 'unset' }}>
+                <Popover
+                  trigger="click"
+                  placement="bottom"
+                  overlayClassName={styles.popoverPlacement}
+                  content={
+                    <>
+                      <div>
+                        <Checkbox
+                          indeterminate={indeterminateStatus}
+                          onChange={handleCheckAllFilterStatus}
+                          checked={checkAllStatus}
+                          className={styles.checkboxPopoverAll}
+                        >
+                          Chọn tất cả
+                        </Checkbox>
+                      </div>
+                      <hr></hr>
+                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
+                        <Checkbox.Group
+                          value={listValueStatus}
+                          onChange={handleCheckFilterStatus}
+                          options={OPTIONS_FILTER_STATUS}
+                          className={styles.checkboxPopover}
+                        />
+                      </div>
+                    </>
+                  }
+                >
+                  <Button
+                    className={
+                      isFilterActiveButtonStatus === false
+                        ? `${styles.buttonFilter}`
+                        : `${styles.buttonFilterActive}`
+                    }
+                  >
+                    Trạng thái
+                    {isFilterActiveButtonStatus ? (
+                      <FilterFilled className={styles.filterIconActive} />
+                    ) : (
+                      <FilterOutlined className={styles.filterIcon} />
+                    )}
+                  </Button>
+                </Popover>
               </Form.Item>
             </div>
-            <div style={{ paddingTop: '29px' }}>
+            <div>
               <Form.Item style={{ marginBottom: 'unset' }} label="">
                 <Button type="text" style={{ color: 'blue' }} onClick={(e) => onReset(e)}>
                   Reset
@@ -826,7 +1028,7 @@ const PermissionEdit: React.FC = () => {
             </div>
           </div>
         </div>
-        <div style={{ paddingTop: '29px' }}>
+        <div>
           <Form.Item name="search_name">
             <Input
               style={{ flex: 2 }}

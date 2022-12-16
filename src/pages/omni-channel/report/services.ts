@@ -129,7 +129,10 @@ export async function requestSendPinUser(
   });
 }
 
-export async function requestGetTakeCallNote(token: string, data?: { phone_number: string }) {
+export async function requestGetTakeCallNote(
+  token: string,
+  data?: { phone_number: string; call_direction: string },
+) {
   return request(
     `${api.UMI_API_BASE_URL}/voip-service/api/call/take_call_note`,
 
@@ -173,5 +176,24 @@ export async function requestGetTranferInfo(token: string, data?: {}) {
       Authorization: `Bearer ${token}`,
     },
     data,
+  });
+}
+
+export async function requestGetDetailCallNote(
+  token: string,
+  call_id: any,
+  phone_number: any,
+  call_direction: any,
+) {
+  return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/take_call_note`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      call_id,
+      phone_number,
+      call_direction,
+    },
   });
 }

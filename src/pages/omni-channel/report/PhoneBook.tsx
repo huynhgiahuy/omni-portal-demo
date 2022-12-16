@@ -659,9 +659,10 @@ const PhoneBook: React.FC = () => {
               name={external === 'Khách hàng' ? 'unit' : 'team_unit'}
             >
               <Select
-                style={{ width: 200 }}
+                style={{ width: 250 }}
                 placeholder="Tất cả"
                 mode="multiple"
+                maxTagCount="responsive"
                 loading={getListTeam?.loading}
                 onChange={debounce(
                   () => {
