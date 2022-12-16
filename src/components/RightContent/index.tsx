@@ -31,6 +31,7 @@ export type dataProps = {
     ip_phone: string;
   };
   call_type: string;
+  image: string;
 };
 
 const GlobalHeaderRight: React.FC = () => {
@@ -124,6 +125,7 @@ const GlobalHeaderRight: React.FC = () => {
         }
       });
     }
+    console.log({socket})
     return () => {
       socket.off('updated_user_status');
       socket.off('emit_call_event');
