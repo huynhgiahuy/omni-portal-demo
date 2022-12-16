@@ -110,6 +110,7 @@ const GlobalHeaderRight: React.FC = () => {
               setIsModalOpenRing(false);
               setIsModalOpenAnswer(false);
               setIsFullScreenModal(false);
+              setVisibleHistoryCall(false);
             }, 0);
 
             break;
@@ -125,7 +126,7 @@ const GlobalHeaderRight: React.FC = () => {
         }
       });
     }
-    console.log({socket})
+    console.log({ socket });
     return () => {
       socket.off('updated_user_status');
       socket.off('emit_call_event');
