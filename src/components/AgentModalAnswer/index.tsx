@@ -16,7 +16,6 @@ import {
 import {
   AudioFilled,
   CaretRightOutlined,
-  ExclamationCircleFilled,
   FullscreenExitOutlined,
   FullscreenOutlined,
   PauseOutlined,
@@ -160,8 +159,8 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   const refTimer = useRef<any>(null);
   const [form] = Form.useForm();
   const { initialState } = useModel('@@initialState');
-  const [isPlay, setIsPlay] = useState(true);
-  const [isRecord, setIsRecord] = useState(false);
+  const [isPlay, _setIsPlay] = useState(true);
+  const [isRecord, _setIsRecord] = useState(false);
   const [isPopoverForward, setPopoverForward] = useState(false);
   const [userSelect, setUserSelect] = useState('');
   const [isSave, setIsSave] = useState(true);
@@ -240,12 +239,22 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   );
 
   useEffect(() => {
-    if (isModalOpen) {
-      getTakeCallNote.run({ phone_number: dataCall?.phone, call_direction: dataCall?.direction });
+    if (isVisibleHistoryCall) {
+      if (dataCall?.direction === 'local') {
+        getTakeCallNote.run({
+          phone_number: dataCall?.contact?.ip_phone,
+          call_direction: dataCall?.direction,
+          call_id: dataCall?.call_id,
+        });
+      } else {
+        getTakeCallNote.run({
+          call_id: dataCall?.call_id,
+          phone_number: dataCall?.contact?.phone_number,
+          call_direction: dataCall?.direction,
+        });
+      }
     }
-  }, [isModalOpen]);
-
-  const { confirm } = Modal;
+  }, [isVisibleHistoryCall]);
 
   const listTransfer = useMemo(
     () =>
@@ -292,23 +301,24 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
     }
   });
 
-  const showConfirm = () => {
-    confirm({
-      title: 'Kết thúc cuộc gọi',
-      icon: <ExclamationCircleFilled style={{ fill: '#FAAD14' }} />,
-      content: <p style={{ marginBottom: 46 }}>Bạn có chắc chắn muốn ngắt kết nối cuộc gọi này?</p>,
-      centered: true,
-      width: 437,
-      bodyStyle: { padding: '24px 32px' },
-      okText: 'Kết thúc',
-      onOk() {
-        refTimer.current.reset();
-        handleCancel();
-      },
-      cancelText: 'Huỷ',
-      onCancel() {},
-    });
-  };
+  //  const { confirm } = Modal;
+  // const showConfirm = () => {
+  //   confirm({
+  //     title: 'Kết thúc cuộc gọi',
+  //     icon: <ExclamationCircleFilled style={{ fill: '#FAAD14' }} />,
+  //     content: <p style={{ marginBottom: 46 }}>Bạn có chắc chắn muốn ngắt kết nối cuộc gọi này?</p>,
+  //     centered: true,
+  //     width: 437,
+  //     bodyStyle: { padding: '24px 32px' },
+  //     okText: 'Kết thúc',
+  //     onOk() {
+  //       refTimer.current.reset();
+  //       handleCancel();
+  //     },
+  //     cancelText: 'Huỷ',
+  //     onCancel() {},
+  //   });
+  // };
 
   const handleOnFinish = (values: any) => {
     values.external_customers = true;
