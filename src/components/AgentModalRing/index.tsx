@@ -9,27 +9,21 @@ import {
   Form,
   Input,
   Timeline,
-  Row,
-  Col,
-  Divider,
   List,
   message,
 } from 'antd';
 import {
-  ExclamationCircleFilled,
   FullscreenExitOutlined,
   FullscreenOutlined,
   PhoneOutlined,
   UserOutlined,
   EditOutlined,
   HistoryOutlined,
-  UnorderedListOutlined,
 } from '@ant-design/icons';
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
 import AvatarModal from '../../../public/avatar_modal_ring.png';
-import { dataUserContactProps, requestGetTakeCallNote } from '@/pages/omni-channel/report/services';
-import { debounce } from 'lodash';
+import { requestGetTakeCallNote } from '@/pages/omni-channel/report/services';
 import { dataProps } from '../RightContent';
 import { useRequest } from 'umi';
 import moment from 'moment';
@@ -95,7 +89,6 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   const [phoneCall, setPhoneCall] = useState('000 000 0000');
   const [iconCall, setIconCall] = useState(false);
   const [listNote, setListNote] = useState<listNotesProps[]>([]);
-  const { confirm } = Modal;
 
   const token = window.localStorage?.getItem('access_token');
 
@@ -126,10 +119,22 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   );
 
   useEffect(() => {
-    if (isModalOpen) {
-      getTakeCallNote.run({ phone_number: phoneCall });
+    if (isVisibleHistoryCall) {
+      if (dataCall?.direction === 'local') {
+        getTakeCallNote.run({
+          phone_number: dataCall?.contact?.ip_phone,
+          call_direction: dataCall?.direction,
+          call_id: dataCall?.call_id,
+        });
+      } else {
+        getTakeCallNote.run({
+          call_id: dataCall?.call_id,
+          phone_number: dataCall?.contact?.phone_number,
+          call_direction: dataCall?.direction,
+        });
+      }
     }
-  }, [isModalOpen]);
+  }, [isVisibleHistoryCall]);
 
   const listTransfer = useMemo(
     () =>
@@ -162,22 +167,24 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
     }
   });
-  const showConfirm = () => {
-    confirm({
-      title: 'Kết thúc cuộc gọi',
-      icon: <ExclamationCircleFilled style={{ fill: '#FAAD14' }} />,
-      content: <p style={{ marginBottom: 46 }}>Bạn có chắc chắn muốn ngắt kết nối cuộc gọi này?</p>,
-      bodyStyle: { padding: '24px 32px' },
-      width: 437,
-      centered: true,
-      okText: 'Kết thúc',
-      onOk() {
-        handleCancel();
-      },
-      cancelText: 'Huỷ',
-      onCancel() {},
-    });
-  };
+
+  //  const { confirm } = Modal;
+  // const showConfirm = () => {
+  //   confirm({
+  //     title: 'Kết thúc cuộc gọi',
+  //     icon: <ExclamationCircleFilled style={{ fill: '#FAAD14' }} />,
+  //     content: <p style={{ marginBottom: 46 }}>Bạn có chắc chắn muốn ngắt kết nối cuộc gọi này?</p>,
+  //     bodyStyle: { padding: '24px 32px' },
+  //     width: 437,
+  //     centered: true,
+  //     okText: 'Kết thúc',
+  //     onOk() {
+  //       handleCancel();
+  //     },
+  //     cancelText: 'Huỷ',
+  //     onCancel() {},
+  //   });
+  // };
 
   useEffect(() => {
     setPopoverForward(false);
