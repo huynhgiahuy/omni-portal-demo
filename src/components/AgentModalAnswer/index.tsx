@@ -253,6 +253,8 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
           call_direction: dataCall?.direction,
         });
       }
+    } else {
+      setListNote([]);
     }
   }, [isVisibleHistoryCall]);
 
