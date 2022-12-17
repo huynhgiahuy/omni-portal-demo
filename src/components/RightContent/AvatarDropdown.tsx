@@ -82,7 +82,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       const { key } = event;
       // console.log('avatar_drop_down:>> ', event);
       if (key === 'logout') {
-        setInitialState((s: any) => ({ ...s, currentUser: undefined }));
         loginOut();
         return;
       }
@@ -96,7 +95,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       if (key === 'displayAccessibility') {
         alert('Page display is not exist!');
       }
-      // history.push(`/account/${key}`);
     },
     [setInitialState],
   );
