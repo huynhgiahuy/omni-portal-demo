@@ -6,7 +6,6 @@ import {
   Input,
   Tag,
   Form,
-  DatePicker,
   message,
   Spin,
   Modal,
@@ -30,8 +29,11 @@ import fileDownload from 'js-file-download';
 import axios from 'axios';
 import api from '@/api';
 import NoFoundPage from '@/pages/404';
-
-const { RangePicker } = DatePicker;
+import {
+  OPTIONS_FILTER_HISTORY_CALL_DIRECTION,
+  OPTIONS_FILTER_HISTORY_CALL_RESULT,
+} from '@/constants';
+import CustomizeRangePicker from '@/components/RangePicker';
 
 interface PaginationProps {
   current: number;
@@ -597,17 +599,8 @@ const HistoryCall: React.FC = () => {
                   mode="multiple"
                   maxTagCount="responsive"
                   placeholder="Tất cả"
-                >
-                  <Select.Option value="inbound" key="inbound">
-                    Gọi vào
-                  </Select.Option>
-                  <Select.Option value="outbound" key="outbound">
-                    Gọi ra
-                  </Select.Option>
-                  <Select.Option value="local" key="local">
-                    Gọi nội bộ
-                  </Select.Option>
-                </Select>
+                  options={OPTIONS_FILTER_HISTORY_CALL_DIRECTION}
+                />
               </Form.Item>
             </div>
             <div style={{ width: '300px' }}>
@@ -625,32 +618,8 @@ const HistoryCall: React.FC = () => {
                   mode="multiple"
                   maxTagCount="responsive"
                   placeholder="Tất cả"
-                >
-                  <Select.Option value={1} key={1}>
-                    Thành công
-                  </Select.Option>
-                  <Select.Option value={2} key={2}>
-                    Thất bại
-                  </Select.Option>
-                  <Select.Option value={3} key={3}>
-                    Bận
-                  </Select.Option>
-                  <Select.Option value={4} key={4}>
-                    Hủy bỏ
-                  </Select.Option>
-                  <Select.Option value={5} key={5}>
-                    Không trả lời
-                  </Select.Option>
-                  <Select.Option value={6} key={6}>
-                    Từ chối
-                  </Select.Option>
-                  <Select.Option value={7} key={7}>
-                    Nhỡ trong hàng chờ
-                  </Select.Option>
-                  <Select.Option value={8} key={8}>
-                    Thất bại khác
-                  </Select.Option>
-                </Select>
+                  options={OPTIONS_FILTER_HISTORY_CALL_RESULT}
+                />
               </Form.Item>
             </div>
             <div style={{ width: '300px' }}>
@@ -663,29 +632,7 @@ const HistoryCall: React.FC = () => {
                 name="Thời gian"
                 style={{ marginBottom: 'unset' }}
               >
-                <RangePicker
-                  onChange={handleChangeValueRangePicker}
-                  className={styles.antRangePicker}
-                  placeholder={['Từ ngày', 'Đến ngày']}
-                  format="DD-MM-YYYY"
-                  ranges={{
-                    'Hôm nay': [moment(), moment()],
-                    'Hôm qua': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    '7 ngày qua': [moment().subtract(6, 'days'), moment()],
-                    '30 ngày qua    ': [moment().subtract(29, 'days'), moment()],
-                    'Tháng này': [moment().startOf('month'), moment().endOf('month')],
-                    'Tháng trước': [
-                      moment().subtract(1, 'month').startOf('month'),
-                      moment().subtract(1, 'month').endOf('month'),
-                    ],
-                    'Năm này': [moment().startOf('year'), moment().endOf('year')],
-                    'Năm trước': [
-                      moment().subtract(1, 'year').startOf('year'),
-                      moment().subtract(1, 'year').endOf('year'),
-                    ],
-                  }}
-                  popupClassName={styles.antRangePicker}
-                />
+                <CustomizeRangePicker handleChangeValueRangePicker={handleChangeValueRangePicker} />
               </Form.Item>
             </div>
             <div style={{ paddingTop: '29px' }}>

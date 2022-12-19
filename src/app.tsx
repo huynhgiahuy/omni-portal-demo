@@ -4,9 +4,9 @@ import { PageLoading, SettingDrawer } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import defaultSettings from '../config/defaultSettings';
-import { socket } from './socket';
 
 const loginPath = '/user/login';
+const token = window.localStorage?.getItem('access_token');
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
@@ -68,7 +68,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
         history.push(loginPath);
       }
 
-      if (location.pathname !== loginPath && !socket.connected) {
+      if (location.pathname !== loginPath && !token) {
         window.location.reload();
       }
     },
