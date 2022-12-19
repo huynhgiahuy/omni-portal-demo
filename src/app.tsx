@@ -7,7 +7,6 @@ import defaultSettings from '../config/defaultSettings';
 import { socket } from './socket';
 
 const loginPath = '/user/login';
-const token = window.localStorage?.getItem('access_token');
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
 export const initialStateConfig = {
