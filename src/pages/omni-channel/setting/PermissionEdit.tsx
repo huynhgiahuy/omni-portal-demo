@@ -1127,7 +1127,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     validator: (_, value: any) => {
-                      const numberReg = /^[1-9]{4,7}$/;
+                      const numberReg = /^[0-9]{4,7}$/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập IP Phone');
                       } else if (value.length < 4 && numberReg.test(value) === true) {
