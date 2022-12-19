@@ -21,7 +21,6 @@ import {
   Form,
 } from 'antd';
 import { history, useModel, FormattedMessage } from 'umi';
-import { stringify } from 'querystring';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
 import { outLogin } from '@/services/ant-design-pro/api';
@@ -32,7 +31,6 @@ import {
   requestUpdatenotification,
   requestUpdateScreenMode,
 } from '@/services/user_info';
-import { socket } from '@/socket';
 
 const { SubMenu } = Menu;
 const { Title } = Typography;
@@ -45,30 +43,14 @@ export type GlobalHeaderRightProps = {
  * 退出登录，并且将当前的 url 保存
  */
 const loginOut = async () => {
-  const { query = {}, search, pathname } = history.location;
-  const { redirect } = query;
   const logoutRequest = await outLogin();
 
   if (logoutRequest.success) {
-    socket.off('updated_user_status');
-    socket.off('emit_call_event');
-    socket.off('authen_event');
-    socket.off('reload_user_status');
     window.localStorage.removeItem('access_token');
     window.localStorage.removeItem('rid');
     window.location.href = logoutRequest.data[0];
   } else {
     message.error('Không thể đăng xuất vui lòng thử lại');
-  }
-
-  // Note: There may be security issues, please note
-  if (window.location.pathname !== '/user/login' && !redirect) {
-    history.replace({
-      pathname: '/user/login',
-      search: stringify({
-        redirect: pathname + search,
-      }),
-    });
   }
 };
 
@@ -100,7 +82,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       const { key } = event;
       // console.log('avatar_drop_down:>> ', event);
       if (key === 'logout') {
-        setInitialState((s: any) => ({ ...s, currentUser: undefined }));
         loginOut();
         return;
       }
@@ -114,7 +95,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
       if (key === 'displayAccessibility') {
         alert('Page display is not exist!');
       }
-      // history.push(`/account/${key}`);
     },
     [setInitialState],
   );

@@ -12,17 +12,10 @@ import {
   Modal,
   Timeline,
   Tooltip,
-  Checkbox,
-  Popover,
+  Select,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import {
-  PlayCircleFilled,
-  SearchOutlined,
-  FormOutlined,
-  FilterFilled,
-  FilterOutlined,
-} from '@ant-design/icons';
+import { PlayCircleFilled, SearchOutlined, FormOutlined } from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 import styles from '../report/style.less';
@@ -37,12 +30,6 @@ import fileDownload from 'js-file-download';
 import axios from 'axios';
 import api from '@/api';
 import NoFoundPage from '@/pages/404';
-import {
-  OPTIONS_FILTER_CALL_DIRECTION,
-  OPTIONS_FILTER_CALL_DIRECTION_VALUE,
-  OPTIONS_FILTER_CALL_RESULT,
-  OPTIONS_FILTER_CALL_RESULT_VALUE,
-} from '@/constants';
 
 const { RangePicker } = DatePicker;
 
@@ -87,6 +74,8 @@ const HistoryCall: React.FC = () => {
   const [isView, setIsView] = useState<string>();
   const [listNote, setListNote] = useState<listNotesProps[]>([]);
 
+  const [listValueHCG, setListValueHCG] = useState<string[] | any>();
+  const [listValueKQ, setListValueKQ] = useState<string[] | any>();
   const [valueFromDateTime, setValueFromDateTime] = useState<string | any>();
   const [valueToDateTime, setValueToDateTime] = useState<string | any>();
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
@@ -106,16 +95,6 @@ const HistoryCall: React.FC = () => {
 
   const [testAudioURL, setTestAudioURL] = useState<any>();
   const [recordId, setRecordId] = useState<string>();
-
-  const [listValueHCG, setListValueHCG] = useState<string[] | any>();
-  const [indeterminateHCG, setIndeterminateHCG] = useState(false);
-  const [checkAllHCG, setCheckAllHCG] = useState(false);
-  const [isFilterActiveButtonHCG, setIsFilterActiveButtonHCG] = useState(false);
-
-  const [listValueResult, setListValueResult] = useState<string[] | any>();
-  const [indeterminateResult, setIndeterminateResult] = useState(false);
-  const [checkAllResult, setCheckAllResult] = useState(false);
-  const [isFilterActiveButtonResult, setIsFilterActiveButtonResult] = useState(false);
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -143,7 +122,7 @@ const HistoryCall: React.FC = () => {
         from_datetime,
         to_datetime,
         listValueHCG,
-        listValueResult,
+        listValueKQ,
         valueKeyWord,
       );
       if (!res.success) {
@@ -202,68 +181,6 @@ const HistoryCall: React.FC = () => {
   useEffect(() => {
     fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
   }, [pagination]);
-
-  const handleCheckFilterHCG = (list: any) => {
-    setIndeterminateHCG(!!list.length && list.length < OPTIONS_FILTER_CALL_DIRECTION.length);
-    setCheckAllHCG(list.length === OPTIONS_FILTER_CALL_DIRECTION.length);
-    setListValueHCG(list);
-    setPagination({
-      ...pagination,
-      current: 1,
-    });
-    if (list.length > 0) {
-      setIsFilterActiveButtonHCG(true);
-    } else {
-      setIsFilterActiveButtonHCG(false);
-      setListValueHCG(undefined);
-    }
-  };
-
-  const handleCheckAllFilterHCG = (e: any) => {
-    setListValueHCG(e.target.checked ? OPTIONS_FILTER_CALL_DIRECTION_VALUE : undefined);
-    setIndeterminateHCG(false);
-    setCheckAllHCG(e.target.checked);
-    setPagination({
-      ...pagination,
-      current: 1,
-    });
-    if (e.target.checked) {
-      setIsFilterActiveButtonHCG(true);
-    } else {
-      setIsFilterActiveButtonHCG(false);
-    }
-  };
-
-  const handleCheckFilterResult = (list: any) => {
-    setIndeterminateResult(!!list.length && list.length < OPTIONS_FILTER_CALL_RESULT.length);
-    setCheckAllResult(list.length === OPTIONS_FILTER_CALL_RESULT.length);
-    setListValueResult(list);
-    setPagination({
-      ...pagination,
-      current: 1,
-    });
-    if (list.length > 0) {
-      setIsFilterActiveButtonResult(true);
-    } else {
-      setIsFilterActiveButtonResult(false);
-      setListValueResult(undefined);
-    }
-  };
-
-  const handleCheckAllFilterResult = (e: any) => {
-    setListValueResult(e.target.checked ? OPTIONS_FILTER_CALL_RESULT_VALUE : undefined);
-    setIndeterminateResult(false);
-    setCheckAllResult(e.target.checked);
-    setPagination({
-      ...pagination,
-      current: 1,
-    });
-    if (e.target.checked) {
-      setIsFilterActiveButtonResult(true);
-    } else {
-      setIsFilterActiveButtonResult(false);
-    }
-  };
 
   const handleViewResult = (result: any) => {
     let color, newResult;
@@ -493,7 +410,7 @@ const HistoryCall: React.FC = () => {
       render: (text, record) => {
         return (
           <>
-            {record.billsec === 0 ? (
+            {record.billsec === 0 || record.billsec === undefined ? (
               ''
             ) : (
               <PlayCircleFilled
@@ -504,7 +421,9 @@ const HistoryCall: React.FC = () => {
             {isDownloadFile === true && record.billsec !== 0 && record._id === recordId ? (
               <Spin />
             ) : (isDownloadFile === false && record.billsec === 0) ||
-              (isDownloadFile === true && record.billsec === 0) ? (
+              record.billsec === undefined ||
+              (isDownloadFile === true && record.billsec === 0) ||
+              record.billsec === undefined ? (
               ''
             ) : (
               <img
@@ -547,6 +466,42 @@ const HistoryCall: React.FC = () => {
     });
   };
 
+  const handleSelectValueHCG = (values: any) => {
+    if (values.length === 0) {
+      setListValueHCG(undefined);
+      setHCGFilter(false);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    } else {
+      setHCGFilter(true);
+      setListValueHCG(values);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    }
+  };
+
+  const handleSelectValueKQ = (values: any) => {
+    if (values.length === 0) {
+      setListValueKQ(undefined);
+      setKQFilter(false);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    } else {
+      setKQFilter(true);
+      setListValueKQ(values);
+      setPagination({
+        ...pagination,
+        current: 1,
+      });
+    }
+  };
+
   const handleChangeValueRangePicker = (value: any, dateString: any) => {
     if (dateString[0] === '' && dateString[1] === '') {
       setTimeFilter(false);
@@ -567,8 +522,7 @@ const HistoryCall: React.FC = () => {
   const onResetFilter = (e: any) => {
     if (
       listValueHCG === undefined &&
-      listValueResult === undefined &&
-      listValueResult === undefined &&
+      listValueKQ === undefined &&
       valueKeyWord === undefined &&
       valueFromDateTime === undefined &&
       valueToDateTime === undefined
@@ -577,18 +531,14 @@ const HistoryCall: React.FC = () => {
       e.preventDefault();
     } else {
       form.resetFields();
+      setHCGFilter(false);
+      setKQFilter(false);
       setTimeFilter(false);
       setListValueHCG(undefined);
-      setListValueResult(undefined);
+      setListValueKQ(undefined);
       setValueKeyWord(undefined);
       setValueFromDateTime(undefined);
       setValueToDateTime(undefined);
-      setIsFilterActiveButtonHCG(false);
-      setIsFilterActiveButtonResult(false);
-      setIndeterminateHCG(false);
-      setIndeterminateResult(false);
-      setCheckAllHCG(false);
-      setCheckAllResult(false);
       setPagination({
         ...pagination,
         current: 1,
@@ -603,7 +553,7 @@ const HistoryCall: React.FC = () => {
         method: 'POST',
         data: {
           direction: listValueHCG,
-          result: listValueResult,
+          result: listValueKQ,
           from_datetime: valueFromDateTime,
           to_datetime: valueToDateTime,
           search_name: valueKeyWord,
@@ -632,102 +582,87 @@ const HistoryCall: React.FC = () => {
       <Form className={styles.filterFormHistoryCall} layout="vertical" form={form}>
         <div>
           <div className={styles.filterFormHistoryCallDisplay}>
-            <div>
-              <Form.Item name="Hướng cuộc gọi" style={{ marginBottom: 'unset' }}>
-                <Popover
-                  trigger="click"
-                  placement="bottom"
-                  overlayClassName={styles.popoverPlacement}
-                  content={
-                    <>
-                      <div>
-                        <Checkbox
-                          indeterminate={indeterminateHCG}
-                          onChange={handleCheckAllFilterHCG}
-                          checked={checkAllHCG}
-                          className={styles.checkboxPopoverAll}
-                        >
-                          Chọn tất cả
-                        </Checkbox>
-                      </div>
-                      <hr></hr>
-                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
-                        <Checkbox.Group
-                          value={listValueHCG}
-                          onChange={handleCheckFilterHCG}
-                          options={OPTIONS_FILTER_CALL_DIRECTION}
-                          className={styles.checkboxPopover}
-                        />
-                      </div>
-                    </>
-                  }
-                >
-                  <Button
-                    className={
-                      isFilterActiveButtonHCG === false
-                        ? `${styles.buttonFilter}`
-                        : `${styles.buttonFilterActive}`
-                    }
-                  >
+            <div style={{ width: '300px' }}>
+              <Form.Item
+                label={
+                  <Typography.Text className={isHCGFilter ? `${styles.filterFieldActive}` : ''}>
                     Hướng cuộc gọi
-                    {isFilterActiveButtonHCG ? (
-                      <FilterFilled className={styles.filterIconActive} />
-                    ) : (
-                      <FilterOutlined className={styles.filterIcon} />
-                    )}
-                  </Button>
-                </Popover>
-              </Form.Item>
-            </div>
-            <div>
-              <Form.Item name="Kết quả" style={{ marginBottom: 'unset' }}>
-                <Popover
-                  trigger="click"
-                  placement="bottom"
-                  overlayClassName={styles.popoverPlacement}
-                  content={
-                    <>
-                      <div>
-                        <Checkbox
-                          indeterminate={indeterminateResult}
-                          onChange={handleCheckAllFilterResult}
-                          checked={checkAllResult}
-                          className={styles.checkboxPopoverAll}
-                        >
-                          Chọn tất cả
-                        </Checkbox>
-                      </div>
-                      <hr></hr>
-                      <div style={{ maxHeight: 200, overflowY: 'scroll' }}>
-                        <Checkbox.Group
-                          value={listValueResult}
-                          onChange={handleCheckFilterResult}
-                          options={OPTIONS_FILTER_CALL_RESULT}
-                          className={styles.checkboxPopover}
-                        />
-                      </div>
-                    </>
-                  }
+                  </Typography.Text>
+                }
+                name="Hướng cuộc gọi"
+                style={{ marginBottom: 'unset' }}
+              >
+                <Select
+                  onChange={handleSelectValueHCG}
+                  mode="multiple"
+                  maxTagCount="responsive"
+                  placeholder="Tất cả"
                 >
-                  <Button
-                    className={
-                      isFilterActiveButtonResult === false
-                        ? `${styles.buttonFilter}`
-                        : `${styles.buttonFilterActive}`
-                    }
-                  >
-                    Kết quả
-                    {isFilterActiveButtonResult ? (
-                      <FilterFilled className={styles.filterIconActive} />
-                    ) : (
-                      <FilterOutlined className={styles.filterIcon} />
-                    )}
-                  </Button>
-                </Popover>
+                  <Select.Option value="inbound" key="inbound">
+                    Gọi vào
+                  </Select.Option>
+                  <Select.Option value="outbound" key="outbound">
+                    Gọi ra
+                  </Select.Option>
+                  <Select.Option value="local" key="local">
+                    Gọi nội bộ
+                  </Select.Option>
+                </Select>
               </Form.Item>
             </div>
-            <div>
-              <Form.Item name="Thời gian" style={{ marginBottom: 'unset' }}>
+            <div style={{ width: '300px' }}>
+              <Form.Item
+                label={
+                  <Typography.Text className={isKQFilter ? `${styles.filterFieldActive}` : ''}>
+                    Kết quả
+                  </Typography.Text>
+                }
+                name="Kết quả"
+                style={{ marginBottom: 'unset' }}
+              >
+                <Select
+                  onChange={handleSelectValueKQ}
+                  mode="multiple"
+                  maxTagCount="responsive"
+                  placeholder="Tất cả"
+                >
+                  <Select.Option value={1} key={1}>
+                    Thành công
+                  </Select.Option>
+                  <Select.Option value={2} key={2}>
+                    Thất bại
+                  </Select.Option>
+                  <Select.Option value={3} key={3}>
+                    Bận
+                  </Select.Option>
+                  <Select.Option value={4} key={4}>
+                    Hủy bỏ
+                  </Select.Option>
+                  <Select.Option value={5} key={5}>
+                    Không trả lời
+                  </Select.Option>
+                  <Select.Option value={6} key={6}>
+                    Từ chối
+                  </Select.Option>
+                  <Select.Option value={7} key={7}>
+                    Nhỡ trong hàng chờ
+                  </Select.Option>
+                  <Select.Option value={8} key={8}>
+                    Thất bại khác
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div style={{ width: '300px' }}>
+              <Form.Item
+                label={
+                  <Typography.Text className={isTimeFilter ? `${styles.filterFieldActive}` : ''}>
+                    Thời gian
+                  </Typography.Text>
+                }
+                name="Thời gian"
+                style={{ marginBottom: 'unset' }}
+              >
                 <RangePicker
                   onChange={handleChangeValueRangePicker}
                   className={styles.antRangePicker}
@@ -753,7 +688,7 @@ const HistoryCall: React.FC = () => {
                 />
               </Form.Item>
             </div>
-            <div>
+            <div style={{ paddingTop: '29px' }}>
               <Form.Item style={{ marginBottom: 'unset' }}>
                 <Button type="text" style={{ color: 'blue' }} onClick={(e) => onResetFilter(e)}>
                   Reset
@@ -762,10 +697,10 @@ const HistoryCall: React.FC = () => {
             </div>
           </div>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div style={{ paddingTop: '29px', display: 'flex', justifyContent: 'space-between' }}>
           <Form.Item name="search_name">
             <Input
-              style={{ flex: 2, width: 280 }}
+              style={{ width: '300px', marginRight: '10px' }}
               prefix={<SearchOutlined />}
               placeholder="Tìm kiếm tên người gọi, người nhận"
               allowClear
@@ -788,10 +723,7 @@ const HistoryCall: React.FC = () => {
               )}
             />
           </Form.Item>
-          <Button
-            style={{ backgroundColor: '#7fb77e', color: '#fff', marginLeft: '10px' }}
-            onClick={handleExportFile}
-          >
+          <Button style={{ backgroundColor: '#7fb77e', color: '#fff' }} onClick={handleExportFile}>
             <ExportIcon /> Export
           </Button>
         </div>
@@ -853,25 +785,31 @@ const HistoryCall: React.FC = () => {
       >
         <div className={styles.historyCallNoteTimeline}>
           <Timeline pending={true} pendingDot={null}>
-            {listNote[0]?.note?.map((item) => (
-              <Timeline.Item>
-                <Typography.Paragraph className={styles.historyCallNoteTime}>
-                  {moment.unix(item.create_at).format('DD-MM-YYYY')}
-                </Typography.Paragraph>
-                <Typography.Paragraph>
-                  <Typography.Text className={styles.historyCallNoteField}>
-                    Nhân sự:{' '}
-                  </Typography.Text>
-                  <Typography.Text>{item.personnel}</Typography.Text>{' '}
-                </Typography.Paragraph>
-                <Typography.Paragraph>
-                  <Typography.Text className={styles.historyCallNoteField}>
-                    Nội dung:{' '}
-                  </Typography.Text>
-                  <Typography.Text> {item.content}</Typography.Text>
-                </Typography.Paragraph>
-              </Timeline.Item>
-            ))}
+            {listNote[0]?.note?.length ? (
+              listNote[0]?.note?.map((item) => (
+                <Timeline.Item>
+                  <Typography.Paragraph className={styles.historyCallNoteTime}>
+                    {moment.unix(item.create_at).format('DD-MM-YYYY')}
+                  </Typography.Paragraph>
+                  <Typography.Paragraph>
+                    <Typography.Text className={styles.historyCallNoteField}>
+                      Nhân sự:{' '}
+                    </Typography.Text>
+                    <Typography.Text>{item.personnel}</Typography.Text>{' '}
+                  </Typography.Paragraph>
+                  <Typography.Paragraph>
+                    <Typography.Text className={styles.historyCallNoteField}>
+                      Nội dung:{' '}
+                    </Typography.Text>
+                    <Typography.Text> {item.content}</Typography.Text>
+                  </Typography.Paragraph>
+                </Timeline.Item>
+              ))
+            ) : (
+              <div style={{ textAlign: 'center' }}>
+                <Typography.Text>Không có ghi chú</Typography.Text>
+              </div>
+            )}
           </Timeline>
         </div>
       </Modal>
