@@ -1,4 +1,4 @@
-import { Space } from 'antd';
+import { message, Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
 import Avatar from './AvatarDropdown';
@@ -88,6 +88,10 @@ const GlobalHeaderRight: React.FC = () => {
     const newToken = {
       token: access_token,
     };
+    if (!socket.connected) {
+      message.error('Không sẵn sàng nhận cuộc gọi');
+    }
+
     if (access_token) {
       socket.emit('authen_event', newToken);
       socket.on('reload_user_status', () => {
