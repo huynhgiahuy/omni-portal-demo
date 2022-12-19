@@ -592,7 +592,12 @@ const HistoryCall: React.FC = () => {
                 name="Hướng cuộc gọi"
                 style={{ marginBottom: 'unset' }}
               >
-                <Select onChange={handleSelectValueHCG} mode="multiple" maxTagCount="responsive">
+                <Select
+                  onChange={handleSelectValueHCG}
+                  mode="multiple"
+                  maxTagCount="responsive"
+                  placeholder="Tất cả"
+                >
                   <Select.Option value="inbound" key="inbound">
                     Gọi vào
                   </Select.Option>
@@ -615,7 +620,12 @@ const HistoryCall: React.FC = () => {
                 name="Kết quả"
                 style={{ marginBottom: 'unset' }}
               >
-                <Select onChange={handleSelectValueKQ} mode="multiple" maxTagCount="responsive">
+                <Select
+                  onChange={handleSelectValueKQ}
+                  mode="multiple"
+                  maxTagCount="responsive"
+                  placeholder="Tất cả"
+                >
                   <Select.Option value={1} key={1}>
                     Thành công
                   </Select.Option>
