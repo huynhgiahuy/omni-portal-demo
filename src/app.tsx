@@ -69,7 +69,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       }
 
       if (location.pathname !== loginPath && !socket.connected) {
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        });
       }
     },
     // links: isDev
