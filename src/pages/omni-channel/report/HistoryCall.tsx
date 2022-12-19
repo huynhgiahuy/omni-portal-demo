@@ -796,7 +796,9 @@ const HistoryCall: React.FC = () => {
                 </Timeline.Item>
               ))
             ) : (
-              <Timeline.Item>Không có ghi chú</Timeline.Item>
+              <div style={{ textAlign: 'center' }}>
+                <Typography.Text>Không có ghi chú</Typography.Text>
+              </div>
             )}
           </Timeline>
         </div>
