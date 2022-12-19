@@ -1,4 +1,4 @@
-import { message, Space } from 'antd';
+import { Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
 import Avatar from './AvatarDropdown';
@@ -88,9 +88,6 @@ const GlobalHeaderRight: React.FC = () => {
     const newToken = {
       token: access_token,
     };
-    if (!socket.connected) {
-      message.error('Không sẵn sàng nhận cuộc gọi');
-    }
 
     if (access_token) {
       socket.emit('authen_event', newToken);
@@ -130,14 +127,13 @@ const GlobalHeaderRight: React.FC = () => {
         }
       });
     }
-    console.log({ socket });
     return () => {
       socket.off('updated_user_status');
       socket.off('emit_call_event');
       socket.off('authen_event');
       socket.off('reload_user_status');
     };
-  }, [socket]);
+  }, [socket, token]);
 
   if (!initialState || !initialState.settings) {
     return null;
