@@ -9,7 +9,6 @@ import NoticeIconView from '../NoticeIcon';
 import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
-import { socket } from '../../socket';
 import { requestGetTranferInfo } from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
 import { wsContext } from '@/contexts/socketioContext';
