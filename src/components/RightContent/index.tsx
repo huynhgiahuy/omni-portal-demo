@@ -1,5 +1,5 @@
 import { Space } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
@@ -12,6 +12,7 @@ import AgentModalAnswer from '../AgentModalAnswer';
 import { socket } from '../../socket';
 import { requestGetTranferInfo } from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
+import { wsContext } from '@/contexts/socketioContext';
 const access_token = localStorage.getItem('access_token');
 
 export type SiderTheme = 'light' | 'dark';
@@ -35,6 +36,7 @@ export type dataProps = {
 };
 
 const GlobalHeaderRight: React.FC = () => {
+  const wsContextValue = useContext(wsContext);
   const { initialState } = useModel('@@initialState');
   const [isModalOpenRing, setIsModalOpenRing] = useState(false);
   const [isModalOpenAnswer, setIsModalOpenAnswer] = useState(false);
@@ -50,12 +52,10 @@ const GlobalHeaderRight: React.FC = () => {
   const [isActiveIconNote, setActiveIconNote] = useState(false);
   const [dataCall, setDataCall] = useState<dataProps>();
 
-  const token = window.localStorage?.getItem('access_token');
-
   const getTranferInfo = useRequest(
     async (data) => {
       const res: { success: boolean; data: { id: string; name: string; ip_phone: string }[] } =
-        await requestGetTranferInfo(token ? token : '', data ? data : {});
+        await requestGetTranferInfo(access_token ? access_token : '', data ? data : {});
       if (!res.success) {
         return;
       }
@@ -90,13 +90,14 @@ const GlobalHeaderRight: React.FC = () => {
     };
 
     if (access_token) {
-      socket.emit('authen_event', newToken);
-      socket.on('reload_user_status', () => {
+      wsContextValue.socketio.connect();
+      wsContextValue.socketio.emit('authen_event', newToken);
+      wsContextValue.socketio.on('reload_user_status', () => {
         if (isModalOpenAnswer || isModalOpenRing) {
           getTranferInfo.run({});
         }
       });
-      socket.on('emit_call_event', (data) => {
+      wsContextValue.socketio.on('emit_call_event', (data: any) => {
         setDataCall(data);
         const eventCall = data.event;
         switch (eventCall) {
@@ -128,12 +129,12 @@ const GlobalHeaderRight: React.FC = () => {
       });
     }
     return () => {
-      socket.off('updated_user_status');
-      socket.off('emit_call_event');
-      socket.off('authen_event');
-      socket.off('reload_user_status');
+      wsContextValue.socketio.off('updated_user_status');
+      wsContextValue.socketio.off('emit_call_event');
+      wsContextValue.socketio.off('authen_event');
+      wsContextValue.socketio.off('reload_user_status');
     };
-  }, [socket, token]);
+  }, [wsContextValue.socketio, access_token]);
 
   if (!initialState || !initialState.settings) {
     return null;

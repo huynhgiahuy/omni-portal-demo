@@ -421,6 +421,7 @@ const PhoneBook: React.FC = () => {
     if (isEdit) {
       values.contacts_id = form.getFieldValue('id');
       values.external_customers = external === 'Khách hàng' ? true : false;
+      values.pin_user = initialUserContact?.pin_user ? initialUserContact?.pin_user : false;
       updateUserContact.run(values);
     } else {
       values.external_customers = external === 'Khách hàng' ? true : false;
@@ -811,7 +812,6 @@ const PhoneBook: React.FC = () => {
             if (isEdit) {
               form.validateFields().catch((error: validateFieldsProps) => {
                 setIsDisable(true);
-                console.log(form.getFieldValue('team'));
                 if (
                   error.errorFields.length === 0 &&
                   (error.values.full_name !== initialUserContact?.full_name ||
