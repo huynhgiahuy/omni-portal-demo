@@ -88,9 +88,9 @@ const GlobalHeaderRight: React.FC = () => {
     const newToken = {
       token: access_token,
     };
+    wsContextValue.socketio.connect();
 
     if (access_token) {
-      wsContextValue.socketio.connect();
       wsContextValue.socketio.emit('authen_event', newToken);
       wsContextValue.socketio.on('reload_user_status', () => {
         if (isModalOpenAnswer || isModalOpenRing) {
