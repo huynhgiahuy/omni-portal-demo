@@ -88,45 +88,44 @@ const GlobalHeaderRight: React.FC = () => {
       token: access_token,
     };
     wsContextValue.socketio.connect();
+    wsContextValue.socketio.emit('authen_event', newToken);
 
-    if (access_token) {
-      wsContextValue.socketio.emit('authen_event', newToken);
-      wsContextValue.socketio.on('reload_user_status', () => {
-        if (isModalOpenAnswer || isModalOpenRing) {
-          getTranferInfo.run({});
-        }
-      });
-      wsContextValue.socketio.on('emit_call_event', (data: any) => {
-        setDataCall(data);
-        const eventCall = data.event;
-        switch (eventCall) {
-          case 'ringing_call':
-            setTimeout(() => {
-              setIsModalOpenRing(true);
-            }, 0);
+    wsContextValue.socketio.on('reload_user_status', () => {
+      if (isModalOpenAnswer || isModalOpenRing) {
+        getTranferInfo.run({});
+      }
+    });
+    wsContextValue.socketio.on('emit_call_event', (data) => {
+      setDataCall(data);
+      const eventCall = data.event;
+      switch (eventCall) {
+        case 'ringing_call':
+          setTimeout(() => {
+            setIsModalOpenRing(true);
+          }, 0);
 
-            break;
-          case 'hangup_call':
-            setTimeout(() => {
-              setIsModalOpenRing(false);
-              setIsModalOpenAnswer(false);
-              setIsFullScreenModal(false);
-              setVisibleHistoryCall(false);
-            }, 0);
+          break;
+        case 'hangup_call':
+          setTimeout(() => {
+            setIsModalOpenRing(false);
+            setIsModalOpenAnswer(false);
+            setIsFullScreenModal(false);
+            setVisibleHistoryCall(false);
+          }, 0);
 
-            break;
-          case 'answered_call':
-            setTimeout(() => {
-              setIsModalOpenRing(false);
-              setIsModalOpenAnswer(true);
-            }, 0);
+          break;
+        case 'answered_call':
+          setTimeout(() => {
+            setIsModalOpenRing(false);
+            setIsModalOpenAnswer(true);
+          }, 0);
 
-            break;
-          default:
-            break;
-        }
-      });
-    }
+          break;
+        default:
+          break;
+      }
+    });
+
     return () => {
       wsContextValue.socketio.off('updated_user_status');
       wsContextValue.socketio.off('emit_call_event');
