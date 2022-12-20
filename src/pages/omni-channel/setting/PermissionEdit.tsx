@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Table,
   Space,
@@ -45,7 +45,8 @@ import Ellipse from '../../../assets/Ellipse.svg';
 import OfflineIcon from '../../../../public/offline.png';
 import moment from 'moment';
 import NoFoundPage from '@/pages/404';
-import { socket } from '@/socket';
+import { OPTIONS_FILTER_NLV, OPTIONS_FILTER_STATUS } from '@/constants';
+import { wsContext } from '@/contexts/socketioContext';
 
 interface PaginationProps {
   current: number;
@@ -127,6 +128,7 @@ const submitFormLayout = {
 
 const PermissionEdit: React.FC = () => {
   const access_token = localStorage.getItem('access_token');
+  const wsContextValue = useContext(wsContext);
   const [isView, setIsView] = useState<string>();
   const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
   const [userKey, setUserKey] = useState<string | any>();
@@ -276,11 +278,13 @@ const PermissionEdit: React.FC = () => {
     const newToken = {
       token: access_token,
     };
-    socket.emit('reload_user_status', newToken);
-    socket.on('reload_user_status', () => {
+    wsContextValue.socketio.connect();
+    wsContextValue.socketio.emit('reload_user_status', newToken);
+    wsContextValue.socketio.on('reload_user_status', () => {
+      console.log(123);
       fetchListAllUserInfoFinalSocket.run();
     });
-  }, []);
+  }, [wsContextValue.socketio]);
 
   const fetchDetaiUserInfoFinal = async (user_id: any) => {
     const resDetail = await requestDetailUserInfoFinal(user_id);
@@ -584,12 +588,6 @@ const PermissionEdit: React.FC = () => {
           : handleRenderStatusActivity(record.status);
       },
     },
-    // {
-    //     title: 'Trạng thái IIP',
-    //     dataIndex: '',
-    //     key: '',
-    //     align: 'center'
-    // },
     {
       title: '',
       align: 'center',
@@ -763,14 +761,12 @@ const PermissionEdit: React.FC = () => {
                 name="work_address"
                 style={{ marginBottom: 'unset' }}
               >
-                <Select onChange={handleSelectValueNLV} mode="multiple" placeholder="Tất cả">
-                  <Select.Option value="Miền Bắc" key="Miền Bắc">
-                    Miền Bắc
-                  </Select.Option>
-                  <Select.Option value="Miền Nam" key="Miền Nam">
-                    Miền Nam
-                  </Select.Option>
-                </Select>
+                <Select
+                  onChange={handleSelectValueNLV}
+                  mode="multiple"
+                  placeholder="Tất cả"
+                  options={OPTIONS_FILTER_NLV}
+                />
               </Form.Item>
             </div>
             <div style={{ flex: 2, width: 217 }}>
@@ -813,23 +809,8 @@ const PermissionEdit: React.FC = () => {
                   mode="multiple"
                   placeholder="Tất cả"
                   maxTagCount="responsive"
-                >
-                  <Select.Option value={1} key={1}>
-                    Sẵn sàng
-                  </Select.Option>
-                  <Select.Option value={2} key={2}>
-                    Vắng mặt
-                  </Select.Option>
-                  <Select.Option value={3} key={3}>
-                    Không làm phiền
-                  </Select.Option>
-                  <Select.Option value={4} key={4}>
-                    Không hoạt động
-                  </Select.Option>
-                  <Select.Option value={5} key={5}>
-                    Đang offline
-                  </Select.Option>
-                </Select>
+                  options={OPTIONS_FILTER_STATUS}
+                />
               </Form.Item>
             </div>
             <div style={{ paddingTop: '29px' }}>
@@ -1149,7 +1130,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     validator: (_, value: any) => {
-                      const numberReg = /^[1-9]{4,7}$/;
+                      const numberReg = /^[0-9]{4,7}$/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập IP Phone');
                       } else if (value.length < 4 && numberReg.test(value) === true) {

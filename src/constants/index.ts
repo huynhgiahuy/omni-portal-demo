@@ -749,3 +749,53 @@ export const OPTIONS_FILTER_CALL_RESULT = [
 ];
 
 export const OPTIONS_FILTER_CALL_RESULT_VALUE = [1, 2, 3, 4, 5, 6, 7, 8];
+
+export const OPTIONS_FILTER_HISTORY_CALL_DIRECTION = [
+  {
+    label: 'Gọi vào',
+    value: 'inbound',
+  },
+  {
+    label: 'Gọi ra',
+    value: 'outbound',
+  },
+  {
+    label: 'Nội bộ',
+    value: 'local',
+  },
+];
+
+export const OPTIONS_FILTER_HISTORY_CALL_RESULT = [
+  {
+    label: 'Thành công',
+    value: 1,
+  },
+  {
+    label: 'Thất bại',
+    value: 2,
+  },
+  {
+    label: 'Bận',
+    value: 3,
+  },
+  {
+    label: 'Hủy bỏ',
+    value: 4,
+  },
+  {
+    label: 'Không trả lời',
+    value: 5,
+  },
+  {
+    label: 'Từ chối',
+    value: 6,
+  },
+  {
+    label: 'Nhỡ trong hàng chờ',
+    value: 7,
+  },
+  {
+    label: 'Thất bại khác',
+    value: 8,
+  },
+];

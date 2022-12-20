@@ -26,7 +26,7 @@ import { requeGetUserInfoProps } from '@/services/user_info';
 import { requestEditUserInfo } from './services';
 import { useModel, useRequest } from 'umi';
 import type { RcFile, UploadProps } from 'antd/es/upload/interface';
-import { endpoint, requestGetInfoUser } from '@/services/auth';
+import { endpoint} from '@/services/auth';
 import { requestCheckPhoneContact } from '../report/services';
 
 type FormProps = {
