@@ -84,11 +84,8 @@ const GlobalHeaderRight: React.FC = () => {
   }, [isModalOpenRing, isModalOpenAnswer]);
 
   useEffect(() => {
-    const newToken = {
-      token: access_token,
-    };
     wsContextValue.socketio.connect();
-    wsContextValue.socketio.emit('authen_event', newToken);
+    wsContextValue.socketio.emit('authen_event', wsContextValue.token);
 
     wsContextValue.socketio.on('reload_user_status', () => {
       if (isModalOpenAnswer || isModalOpenRing) {
@@ -125,14 +122,7 @@ const GlobalHeaderRight: React.FC = () => {
           break;
       }
     });
-
-    return () => {
-      wsContextValue.socketio.off('updated_user_status');
-      wsContextValue.socketio.off('emit_call_event');
-      wsContextValue.socketio.off('authen_event');
-      wsContextValue.socketio.off('reload_user_status');
-    };
-  }, [wsContextValue.socketio, access_token]);
+  }, [access_token]);
 
   if (!initialState || !initialState.settings) {
     return null;
