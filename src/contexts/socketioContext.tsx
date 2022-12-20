@@ -12,7 +12,6 @@ export const wsContext = React.createContext<{ socketio: Socket }>({
     query: {
       Authorization: '',
     },
-    reconnectionAttempts: 2,
     autoConnect: false,
   }),
 });
@@ -25,7 +24,6 @@ export function WebSocketConTextProvider({ children }: { children: React.ReactNo
       query: {
         Authorization: access_token,
       },
-      reconnectionAttempts: 2,
       autoConnect: false,
     }),
   );
