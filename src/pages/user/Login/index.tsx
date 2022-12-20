@@ -6,7 +6,7 @@ import { history, useIntl, useModel } from 'umi';
 import styles from './index.less';
 import { getUrlSSO, requestGetInfoUser } from '@/services/auth';
 import api from '../../../api';
-
+const token = window.localStorage.getItem('access_token');
 const Login: React.FC = () => {
   const [type, setType] = useState<string>('account');
   const [isLogin, setIsLogin] = useState<boolean>(true);
@@ -18,15 +18,15 @@ const Login: React.FC = () => {
     await setInitialState((s) => ({
       ...s,
       currentUser: data[0],
+      token: token,
     }));
   };
 
   useLayoutEffect(() => {
-    if (window.localStorage.getItem('access_token')) {
-      const tokent = window.localStorage.getItem('access_token');
+    if (token) {
       const requestInfoUser = async () => {
         setIsLogin(false);
-        return tokent && (await requestGetInfoUser(tokent));
+        return token && (await requestGetInfoUser(token));
       };
 
       requestInfoUser()
@@ -34,6 +34,7 @@ const Login: React.FC = () => {
           if (res.success) {
             setIsLogin(false);
             fetchUserInfo(res.data);
+
             if (history.length > 2) {
               history.go(-1);
             } else {

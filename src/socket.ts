@@ -11,4 +11,5 @@ export const socket = io(omniChannel, {
     Authorization: access_token,
   },
   reconnectionAttempts: 1,
+  autoConnect: false,
 });

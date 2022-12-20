@@ -4,8 +4,7 @@ import { PageLoading, SettingDrawer } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import defaultSettings from '../config/defaultSettings';
-import { socket } from './socket';
-
+import WebSocketConTextProvider from './contexts/socketioContext';
 const loginPath = '/user/login';
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
@@ -19,6 +18,7 @@ export const initialStateConfig = {
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
+  token?: string | null;
   loading?: boolean;
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
 }> {
@@ -53,7 +53,12 @@ export async function getInitialState(): Promise<{
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
-    rightContentRender: () => initialState?.currentUser && <RightContent />,
+    rightContentRender: () =>
+      initialState?.currentUser?.email && (
+        <WebSocketConTextProvider>
+          <RightContent />
+        </WebSocketConTextProvider>
+      ),
     disableContentMargin: false,
     // waterMarkProps: {
     //   content: initialState?.currentUser?.name,
@@ -66,12 +71,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
-      }
-
-      if (location.pathname !== loginPath && !socket.connected) {
-        setTimeout(() => {
-          window.location.reload();
-        });
       }
     },
     // links: isDev
@@ -93,7 +92,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     childrenRender: (children, props) => {
       // if (initialState?.loading) return <PageLoading />;
       return (
-        <>
+        <WebSocketConTextProvider>
           {children}
           {!props.location?.pathname?.includes('/login') && (
             <SettingDrawer
@@ -124,7 +123,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
               }}
             />
           )}
-        </>
+        </WebSocketConTextProvider>
       );
     },
     ...initialState?.settings,

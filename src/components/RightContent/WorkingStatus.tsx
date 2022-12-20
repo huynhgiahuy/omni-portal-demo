@@ -1,15 +1,16 @@
 import { CheckCircleFilled, ClockCircleFilled, MinusCircleFilled } from '@ant-design/icons';
 import { message, Select, Space } from 'antd';
-import { useCallback, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import styles from './index.less';
 import Ellipse from '../../assets/Ellipse.svg';
 import { useModel, useRequest } from 'umi';
 import { requeGetUserInfoProps, requestUpdateStatusUser } from '@/services/user_info';
-import { socket } from '@/socket';
 import useMousePosition from '@/hooks/useMousePosition';
+import { wsContext } from '@/contexts/socketioContext';
 
 const WorkingStatus = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
+  const wsContextValue = useContext(wsContext);
   const { x, y } = useMousePosition();
   const [checkMouse, setCheckMouse] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
@@ -28,7 +29,7 @@ const WorkingStatus = () => {
 
       if (res.success) {
         setOption(res.data[0].status);
-        socket.emit('updated_user_status');
+        wsContextValue.socketio.emit('updated_user_status');
       } else {
         setOption(initialState?.currentUser?.status ? initialState?.currentUser?.status : 2);
         message.error('Chuyển trạng thái không thành công, vui lòng thử lại');
@@ -49,7 +50,7 @@ const WorkingStatus = () => {
         res.then(async (result: requeGetUserInfoProps) => {
           if (result.success) {
             setOption(2);
-            socket.emit('updated_user_status');
+            wsContextValue.socketio.emit('updated_user_status');
             await setInitialState((s) => ({
               ...s,
               currentUser: { ...initialState?.currentUser, status: result.data[0] },
@@ -62,7 +63,7 @@ const WorkingStatus = () => {
       res.then(async (result: requeGetUserInfoProps) => {
         if (result.success) {
           setOption(1);
-          socket.emit('updated_user_status');
+          wsContextValue.socketio.emit('updated_user_status');
           await setInitialState((s) => ({
             ...s,
             currentUser: { ...initialState?.currentUser, status: result.data[0] },
@@ -91,7 +92,7 @@ const WorkingStatus = () => {
       }
     }
 
-    socket.on('emit_call_event', (data) => {
+    wsContextValue.socketio.on('emit_call_event', (data) => {
       const eventCall = data.event;
       switch (eventCall) {
         case 'hangup_call':
