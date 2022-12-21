@@ -12,6 +12,7 @@ import AgentModalAnswer from '../AgentModalAnswer';
 import { requestGetTranferInfo } from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
 import { wsContext } from '@/contexts/socketioContext';
+import { socket } from '@/socket';
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -85,7 +86,7 @@ const GlobalHeaderRight: React.FC = () => {
 
   useEffect(() => {
     wsContextValue.socketio.connect();
-    wsContextValue.socketio.emit('authen_event', wsContextValue.token);
+    wsContextValue.socketio.emit('authen_event', { token: wsContextValue.token });
 
     wsContextValue.socketio.on('reload_user_status', () => {
       if (isModalOpenAnswer || isModalOpenRing) {
