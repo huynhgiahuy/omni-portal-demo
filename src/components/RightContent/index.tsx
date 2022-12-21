@@ -9,11 +9,9 @@ import NoticeIconView from '../NoticeIcon';
 import WorkingStatus from './WorkingStatus';
 import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
-import { socket } from '../../socket';
 import { requestGetTranferInfo } from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
 import { wsContext } from '@/contexts/socketioContext';
-const access_token = localStorage.getItem('access_token');
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -51,6 +49,7 @@ const GlobalHeaderRight: React.FC = () => {
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
   const [dataCall, setDataCall] = useState<dataProps>();
+  const access_token = localStorage.getItem('access_token');
 
   const getTranferInfo = useRequest(
     async (data) => {
@@ -85,56 +84,45 @@ const GlobalHeaderRight: React.FC = () => {
   }, [isModalOpenRing, isModalOpenAnswer]);
 
   useEffect(() => {
-    const newToken = {
-      token: access_token,
-    };
     wsContextValue.socketio.connect();
+    wsContextValue.socketio.emit('authen_event', wsContextValue.token);
 
-    if (access_token) {
-      wsContextValue.socketio.emit('authen_event', newToken);
-      wsContextValue.socketio.on('reload_user_status', () => {
-        if (isModalOpenAnswer || isModalOpenRing) {
-          getTranferInfo.run({});
-        }
-      });
-      wsContextValue.socketio.on('emit_call_event', (data: any) => {
-        setDataCall(data);
-        const eventCall = data.event;
-        switch (eventCall) {
-          case 'ringing_call':
-            setTimeout(() => {
-              setIsModalOpenRing(true);
-            }, 0);
+    wsContextValue.socketio.on('reload_user_status', () => {
+      if (isModalOpenAnswer || isModalOpenRing) {
+        getTranferInfo.run({});
+      }
+    });
+    wsContextValue.socketio.on('emit_call_event', (data) => {
+      setDataCall(data);
+      const eventCall = data.event;
+      switch (eventCall) {
+        case 'ringing_call':
+          setTimeout(() => {
+            setIsModalOpenRing(true);
+          }, 0);
 
-            break;
-          case 'hangup_call':
-            setTimeout(() => {
-              setIsModalOpenRing(false);
-              setIsModalOpenAnswer(false);
-              setIsFullScreenModal(false);
-              setVisibleHistoryCall(false);
-            }, 0);
+          break;
+        case 'hangup_call':
+          setTimeout(() => {
+            setIsModalOpenRing(false);
+            setIsModalOpenAnswer(false);
+            setIsFullScreenModal(false);
+            setVisibleHistoryCall(false);
+          }, 0);
 
-            break;
-          case 'answered_call':
-            setTimeout(() => {
-              setIsModalOpenRing(false);
-              setIsModalOpenAnswer(true);
-            }, 0);
+          break;
+        case 'answered_call':
+          setTimeout(() => {
+            setIsModalOpenRing(false);
+            setIsModalOpenAnswer(true);
+          }, 0);
 
-            break;
-          default:
-            break;
-        }
-      });
-    }
-    return () => {
-      wsContextValue.socketio.off('updated_user_status');
-      wsContextValue.socketio.off('emit_call_event');
-      wsContextValue.socketio.off('authen_event');
-      wsContextValue.socketio.off('reload_user_status');
-    };
-  }, [wsContextValue.socketio, access_token]);
+          break;
+        default:
+          break;
+      }
+    });
+  }, [access_token]);
 
   if (!initialState || !initialState.settings) {
     return null;

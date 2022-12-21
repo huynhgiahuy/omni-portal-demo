@@ -5,16 +5,16 @@ const { UMI_API_BASE_URL } = process.env;
 
 const omniChannel = `${UMI_API_BASE_URL}`;
 
-export const wsContext = React.createContext<{ socketio: Socket }>({
+export const wsContext = React.createContext<{ socketio: Socket; token: string | null }>({
   socketio: io(omniChannel, {
     path: '/voip-service/ws/socket.io',
     transports: ['websocket'],
     query: {
       Authorization: '',
     },
-    reconnectionAttempts: 2,
     autoConnect: false,
   }),
+  token: '',
 });
 export function WebSocketConTextProvider({ children }: { children: React.ReactNode }) {
   const access_token = localStorage.getItem('access_token');
@@ -25,13 +25,13 @@ export function WebSocketConTextProvider({ children }: { children: React.ReactNo
       query: {
         Authorization: access_token,
       },
-      reconnectionAttempts: 2,
       autoConnect: false,
     }),
   );
 
   const value = {
     socketio: socket,
+    token: access_token,
   };
 
   return <wsContext.Provider value={value}>{children}</wsContext.Provider>;

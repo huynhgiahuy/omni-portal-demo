@@ -127,7 +127,6 @@ const submitFormLayout = {
 };
 
 const PermissionEdit: React.FC = () => {
-  const access_token = localStorage.getItem('access_token');
   const wsContextValue = useContext(wsContext);
   const [isView, setIsView] = useState<string>();
   const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
@@ -275,11 +274,8 @@ const PermissionEdit: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const newToken = {
-      token: access_token,
-    };
     wsContextValue.socketio.connect();
-    wsContextValue.socketio.emit('reload_user_status', newToken);
+    wsContextValue.socketio.emit('reload_user_status', wsContextValue.token);
     wsContextValue.socketio.on('reload_user_status', () => {
       console.log(123);
       fetchListAllUserInfoFinalSocket.run();
