@@ -6,11 +6,11 @@ import { history, useIntl, useModel } from 'umi';
 import styles from './index.less';
 import { getUrlSSO, requestGetInfoUser } from '@/services/auth';
 import api from '../../../api';
-const token = window.localStorage.getItem('access_token');
 const Login: React.FC = () => {
   const [type, setType] = useState<string>('account');
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const { setInitialState } = useModel('@@initialState');
+  const token = window.localStorage.getItem('access_token');
 
   const intl = useIntl();
 

@@ -12,7 +12,6 @@ import AgentModalAnswer from '../AgentModalAnswer';
 import { requestGetTranferInfo } from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
 import { wsContext } from '@/contexts/socketioContext';
-const access_token = localStorage.getItem('access_token');
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -50,6 +49,7 @@ const GlobalHeaderRight: React.FC = () => {
   const [isVisibleNoteCall, setVisibleNoteCall] = useState(false);
   const [isActiveIconNote, setActiveIconNote] = useState(false);
   const [dataCall, setDataCall] = useState<dataProps>();
+  const access_token = localStorage.getItem('access_token');
 
   const getTranferInfo = useRequest(
     async (data) => {

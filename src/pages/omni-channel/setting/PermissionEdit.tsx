@@ -127,7 +127,6 @@ const submitFormLayout = {
 };
 
 const PermissionEdit: React.FC = () => {
-  const access_token = localStorage.getItem('access_token');
   const wsContextValue = useContext(wsContext);
   const [isView, setIsView] = useState<string>();
   const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
