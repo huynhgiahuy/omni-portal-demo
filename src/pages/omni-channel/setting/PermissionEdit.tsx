@@ -275,9 +275,8 @@ const PermissionEdit: React.FC = () => {
 
   useEffect(() => {
     wsContextValue.socketio.connect();
-    wsContextValue.socketio.emit('reload_user_status', wsContextValue.token);
+    wsContextValue.socketio.emit('reload_user_status', { token: wsContextValue.token });
     wsContextValue.socketio.on('reload_user_status', () => {
-      console.log(123);
       fetchListAllUserInfoFinalSocket.run();
     });
   }, [wsContextValue.socketio]);
