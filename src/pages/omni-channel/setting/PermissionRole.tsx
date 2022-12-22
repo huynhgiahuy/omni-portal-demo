@@ -49,7 +49,7 @@ import {
   OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE,
   OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE,
   OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE,
-  OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE,
+  // OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE,
   OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE,
   OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE,
   TREE_DATA_BGCT,
@@ -58,7 +58,7 @@ import {
   TREE_DATA_LSCG,
   TREE_DATA_NQ,
   TREE_DATA_TKC,
-  TREE_DATA_TTCN,
+  // TREE_DATA_TTCN,
   TREE_DATA_TTCT,
   TREE_DATA_TTND,
 } from '@/constants';
@@ -501,9 +501,9 @@ const PermissionRole: React.FC = () => {
   const onCheckDataTreeHistoryCall = (checkedKeys: any, info: any) => {
     setValueCheckboxHistoryCall(checkedKeys.filter((data: string) => data !== 'call_history'));
   };
-  const onCheckDataTreeTTCN = (checkedKeys: any, info: any) => {
-    setValueCheckboxTTCN(checkedKeys.filter((data: string) => data !== 'personal_info'));
-  };
+  // const onCheckDataTreeTTCN = (checkedKeys: any, info: any) => {
+  //   setValueCheckboxTTCN(checkedKeys.filter((data: string) => data !== 'personal_info'));
+  // };
   const onCheckDataTreeTTCT = (checkedKeys: any, info: any) => {
     setValueCheckboxTTCT(checkedKeys.filter((data: string) => data !== 'shift_info'));
   };
@@ -605,7 +605,7 @@ const PermissionRole: React.FC = () => {
     } else {
       setCheckAllProfile(true);
       setValueCheckboxGroupsPer(OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE);
-      setValueCheckboxTTCN(OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE);
+      // setValueCheckboxTTCN(OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE);
       setValueCheckboxTTND(OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE);
       setValueCheckboxHistoryCall(OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE);
       setValueCheckboxContact(OPTIONS_PERMISSION_TREE_DATA_CONTACT_VALUE);
@@ -616,7 +616,7 @@ const PermissionRole: React.FC = () => {
     setIndeterminateProfile(false);
     setCheckAllProfile(false);
     if (
-      valueCheckboxTTCN.length > 0 ||
+      // valueCheckboxTTCN.length > 0 ||
       valueCheckboxTTND.length > 0 ||
       valueCheckboxGroupsPer.length > 0 ||
       valueCheckboxHistoryCall.length > 0 ||
@@ -626,7 +626,7 @@ const PermissionRole: React.FC = () => {
     }
 
     if (
-      valueCheckboxTTCN.length == OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE.length &&
+      // valueCheckboxTTCN.length == OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE.length &&
       valueCheckboxTTND.length == OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE.length &&
       valueCheckboxGroupsPer.length == OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE.length &&
       valueCheckboxHistoryCall.length == OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE.length &&
@@ -636,7 +636,7 @@ const PermissionRole: React.FC = () => {
       setCheckAllProfile(true);
     }
   }, [
-    valueCheckboxTTCN,
+    // valueCheckboxTTCN,
     valueCheckboxTTND,
     valueCheckboxGroupsPer,
     valueCheckboxHistoryCall,
@@ -958,18 +958,7 @@ const PermissionRole: React.FC = () => {
               value={selectListRF}
             />
           );
-        }
-        // else if (record.module === 'Thiết kế') {
-        //   return (
-        //     <Checkbox.Group
-        //       options={OPTIONS_PERMISSION_DESIGN}
-        //       className={styles.antCheckboxGroup}
-        //       onChange={handleCheckFilterDesign}
-        //       value={selectListDesign}
-        //     />
-        //   );
-        // }
-        else if (record.module === 'Report') {
+        } else if (record.module === 'Report') {
           return (
             <>
               <Tree
@@ -1005,13 +994,13 @@ const PermissionRole: React.FC = () => {
         } else {
           return (
             <>
-              <Tree
+              {/* <Tree
                 treeData={TREE_DATA_TTCN}
                 checkable
                 onCheck={onCheckDataTreeTTCN}
                 className={styles.treeDataCheckbox}
                 checkedKeys={valueCheckboxTTCN}
-              />
+              /> */}
               <Tree
                 treeData={TREE_DATA_TTND}
                 checkable
