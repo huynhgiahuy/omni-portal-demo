@@ -145,7 +145,7 @@ const PermissionEdit: React.FC = () => {
   const [isInfoUpdated, setInfoUpdated] = useState(false);
 
   const [listValueTeam, setListValueTeam] = useState<string[] | any>();
-  const [listValueNLV, setListValueNLV] = useState<string[] | any>();
+  const [listValueNLV, setListValueNLV] = useState<string[]>();
   const [listValueNQ, setListValueNQ] = useState<string[] | any>();
   const [listValueStatus, setListValueStatus] = useState<string[] | any>();
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
@@ -674,7 +674,7 @@ const PermissionEdit: React.FC = () => {
       });
     } else {
       setNLVFilter(true);
-      setListValueNLV(values);
+      setListValueNLV([values]);
       setPagination({
         ...pagination,
         current: 1,
