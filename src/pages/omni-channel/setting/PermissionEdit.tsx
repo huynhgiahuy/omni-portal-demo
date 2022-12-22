@@ -764,7 +764,6 @@ const PermissionEdit: React.FC = () => {
               >
                 <Select
                   onChange={handleSelectValueNLV}
-                  mode="multiple"
                   placeholder="Tất cả"
                   options={OPTIONS_FILTER_NLV}
                 />
