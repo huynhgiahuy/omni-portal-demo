@@ -277,7 +277,6 @@ const PermissionEdit: React.FC = () => {
     wsContextValue.socketio.connect();
     wsContextValue.socketio.emit('reload_user_status', wsContextValue.token);
     wsContextValue.socketio.on('reload_user_status', () => {
-      console.log(123);
       fetchListAllUserInfoFinalSocket.run();
     });
   }, [wsContextValue.socketio]);
@@ -464,13 +463,19 @@ const PermissionEdit: React.FC = () => {
       title: '#',
       align: 'center',
       width: '60px',
-      render: (text, record) => (
-        <>
-          {(pagination.current - 1) * pagination.pageSize +
-            listAllUserInfoFinal.indexOf(record) +
-            1}
-        </>
-      ),
+      render: (text, record, index) => {
+        if (valueKeyWord === '' || valueKeyWord === undefined) {
+          return (
+            <>
+              {(pagination.current - 1) * pagination.pageSize +
+                listAllUserInfoFinal.indexOf(record) +
+                1}
+            </>
+          );
+        } else {
+          return index + 1;
+        }
+      },
     },
     {
       title: 'Tên người dùng',
