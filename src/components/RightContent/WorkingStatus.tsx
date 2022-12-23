@@ -119,6 +119,11 @@ const WorkingStatus = () => {
         setOption(data.status);
       }
     });
+    wsContextValue.socketio.on('reload_user_status', (data) => {
+      if (data.user_id === initialState?.currentUser?.id) {
+        updateStatusUser.run(data.status);
+      }
+    });
   }, []);
 
   return (
