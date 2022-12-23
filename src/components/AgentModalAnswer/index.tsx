@@ -291,7 +291,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
 
     if (dataCall?.contact) {
       setNameCall(dataCall.contact?.full_name);
-      setPhoneCall(dataCall.contact?.phone_number);
+      //setPhoneCall(dataCall.contact?.phone_number);
       form.setFieldsValue(dataCall?.contact);
       setIsSave(false);
     } else {
@@ -300,8 +300,8 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
       } else {
         form.setFieldValue('phone_number', dataCall?.phone);
       }
-      setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
     }
+    setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
   });
 
   //  const { confirm } = Modal;
