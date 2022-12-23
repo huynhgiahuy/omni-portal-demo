@@ -46,7 +46,8 @@ import OfflineIcon from '../../../../public/offline.png';
 import moment from 'moment';
 import NoFoundPage from '@/pages/404';
 import { OPTIONS_FILTER_NLV, OPTIONS_FILTER_STATUS } from '@/constants';
-import { wsContext } from '@/contexts/socketioContext';
+import { useAtom } from 'jotai';
+import { socketAtom } from '@/socketio';
 
 interface PaginationProps {
   current: number;
@@ -127,7 +128,7 @@ const submitFormLayout = {
 };
 
 const PermissionEdit: React.FC = () => {
-  const wsContextValue = useContext(wsContext);
+  const [socket] = useAtom(socketAtom);
   const [isView, setIsView] = useState<string>();
   const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
   const [userKey, setUserKey] = useState<string | any>();
@@ -274,12 +275,10 @@ const PermissionEdit: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    wsContextValue.socketio.connect();
-    wsContextValue.socketio.emit('reload_user_status', { token: wsContextValue.token });
-    wsContextValue.socketio.on('reload_user_status', () => {
+    socket?.on('reload_user_status', () => {
       fetchListAllUserInfoFinalSocket.run();
     });
-  }, [wsContextValue.socketio]);
+  }, []);
 
   const fetchDetaiUserInfoFinal = async (user_id: any) => {
     const resDetail = await requestDetailUserInfoFinal(user_id);
