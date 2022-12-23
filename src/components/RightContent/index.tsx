@@ -1,5 +1,5 @@
-import { message, Space } from 'antd';
-import React, { useContext, useEffect, useState } from 'react';
+import { Space } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
@@ -11,8 +11,9 @@ import AgentModalRing from '../AgentModalRing';
 import AgentModalAnswer from '../AgentModalAnswer';
 import { requestGetTranferInfo } from '@/pages/omni-channel/report/services';
 import { debounce } from 'lodash';
-import { wsContext } from '@/contexts/socketioContext';
-import { socket } from '@/socket';
+import { useAtom } from 'jotai';
+import { socketAtom } from '@/socketio';
+import useSubWs from '@/hooks/useSocket';
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -35,7 +36,7 @@ export type dataProps = {
 };
 
 const GlobalHeaderRight: React.FC = () => {
-  const wsContextValue = useContext(wsContext);
+  const [socket] = useAtom(socketAtom);
   const { initialState } = useModel('@@initialState');
   const [isModalOpenRing, setIsModalOpenRing] = useState(false);
   const [isModalOpenAnswer, setIsModalOpenAnswer] = useState(false);
@@ -78,6 +79,37 @@ const GlobalHeaderRight: React.FC = () => {
     },
   );
 
+  useSubWs('emit_call_event', (data: dataProps) => {
+    setDataCall(data);
+    const eventCall = data.event;
+    switch (eventCall) {
+      case 'ringing_call':
+        setTimeout(() => {
+          setIsModalOpenRing(true);
+        }, 0);
+
+        break;
+      case 'hangup_call':
+        setTimeout(() => {
+          setIsModalOpenRing(false);
+          setIsModalOpenAnswer(false);
+          setIsFullScreenModal(false);
+          setVisibleHistoryCall(false);
+        }, 0);
+
+        break;
+      case 'answered_call':
+        setTimeout(() => {
+          setIsModalOpenRing(false);
+          setIsModalOpenAnswer(true);
+        }, 0);
+
+        break;
+      default:
+        break;
+    }
+  });
+
   useEffect(() => {
     if (isModalOpenRing || isModalOpenAnswer) {
       getTranferInfo.run({});
@@ -85,49 +117,9 @@ const GlobalHeaderRight: React.FC = () => {
   }, [isModalOpenRing, isModalOpenAnswer]);
 
   useEffect(() => {
-    wsContextValue.socketio.connect();
-    setTimeout(() => {
-      if (wsContextValue.socketio) {
-        message.success('Sẵn sàng nhận cuộc gọi');
-      } else {
-        message.error('Không sẵn sàng nhận cuộc gọi');
-      }
-    }, 200);
-    wsContextValue.socketio.emit('authen_event', { token: wsContextValue.token });
-
-    wsContextValue.socketio.on('reload_user_status', () => {
+    socket?.on('reload_user_status', () => {
       if (isModalOpenAnswer || isModalOpenRing) {
         getTranferInfo.run({});
-      }
-    });
-    wsContextValue.socketio.on('emit_call_event', (data) => {
-      setDataCall(data);
-      const eventCall = data.event;
-      switch (eventCall) {
-        case 'ringing_call':
-          setTimeout(() => {
-            setIsModalOpenRing(true);
-          }, 0);
-
-          break;
-        case 'hangup_call':
-          setTimeout(() => {
-            setIsModalOpenRing(false);
-            setIsModalOpenAnswer(false);
-            setIsFullScreenModal(false);
-            setVisibleHistoryCall(false);
-          }, 0);
-
-          break;
-        case 'answered_call':
-          setTimeout(() => {
-            setIsModalOpenRing(false);
-            setIsModalOpenAnswer(true);
-          }, 0);
-
-          break;
-        default:
-          break;
       }
     });
   }, [access_token]);
