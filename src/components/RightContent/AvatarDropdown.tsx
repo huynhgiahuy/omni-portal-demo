@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   LogoutOutlined,
   SettingOutlined,
@@ -31,7 +31,6 @@ import {
   requestUpdatenotification,
   requestUpdateScreenMode,
 } from '@/services/user_info';
-import { wsContext } from '@/contexts/socketioContext';
 
 const { SubMenu } = Menu;
 const { Title } = Typography;
@@ -44,11 +43,9 @@ export type GlobalHeaderRightProps = {
  * 退出登录，并且将当前的 url 保存
  */
 const loginOut = async () => {
-  const wsContextValue = useContext(wsContext);
   const logoutRequest = await outLogin();
 
   if (logoutRequest.success) {
-    wsContextValue.socketio.disconnect();
     window.localStorage.removeItem('access_token');
     window.localStorage.removeItem('rid');
     window.location.href = logoutRequest.data[0];
