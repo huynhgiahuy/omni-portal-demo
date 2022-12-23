@@ -145,7 +145,7 @@ const PermissionEdit: React.FC = () => {
   const [isInfoUpdated, setInfoUpdated] = useState(false);
 
   const [listValueTeam, setListValueTeam] = useState<string[] | any>();
-  const [listValueNLV, setListValueNLV] = useState<string[] | any>();
+  const [listValueNLV, setListValueNLV] = useState<string[]>();
   const [listValueNQ, setListValueNQ] = useState<string[] | any>();
   const [listValueStatus, setListValueStatus] = useState<string[] | any>();
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
@@ -277,7 +277,6 @@ const PermissionEdit: React.FC = () => {
     wsContextValue.socketio.connect();
     wsContextValue.socketio.emit('reload_user_status', { token: wsContextValue.token });
     wsContextValue.socketio.on('reload_user_status', () => {
-      console.log(123);
       fetchListAllUserInfoFinalSocket.run();
     });
   }, [wsContextValue.socketio]);
@@ -464,13 +463,19 @@ const PermissionEdit: React.FC = () => {
       title: '#',
       align: 'center',
       width: '60px',
-      render: (text, record) => (
-        <>
-          {(pagination.current - 1) * pagination.pageSize +
-            listAllUserInfoFinal.indexOf(record) +
-            1}
-        </>
-      ),
+      render: (text, record, index) => {
+        if (valueKeyWord === '' || valueKeyWord === undefined) {
+          return (
+            <>
+              {(pagination.current - 1) * pagination.pageSize +
+                listAllUserInfoFinal.indexOf(record) +
+                1}
+            </>
+          );
+        } else {
+          return index + 1;
+        }
+      },
     },
     {
       title: 'Tên người dùng',
@@ -669,7 +674,7 @@ const PermissionEdit: React.FC = () => {
       });
     } else {
       setNLVFilter(true);
-      setListValueNLV(values);
+      setListValueNLV([values]);
       setPagination({
         ...pagination,
         current: 1,
@@ -759,7 +764,6 @@ const PermissionEdit: React.FC = () => {
               >
                 <Select
                   onChange={handleSelectValueNLV}
-                  mode="multiple"
                   placeholder="Tất cả"
                   options={OPTIONS_FILTER_NLV}
                 />

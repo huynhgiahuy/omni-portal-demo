@@ -113,6 +113,19 @@ const WorkingStatus = () => {
     });
   }, [x, y]);
 
+  useEffect(() => {
+    wsContextValue.socketio.on('updated_profile_status', (data) => {
+      if (data.status) {
+        setOption(data.status);
+      }
+    });
+    wsContextValue.socketio.on('reload_user_status', (data) => {
+      if (data.user_id === initialState?.currentUser?.id) {
+        updateStatusUser.run(data.status);
+      }
+    });
+  }, []);
+
   return (
     <Space size={0} align="center">
       <Select

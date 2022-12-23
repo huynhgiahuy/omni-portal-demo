@@ -153,7 +153,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
     }
     if (dataCall?.contact) {
       setNameCall(dataCall.contact?.full_name);
-      setPhoneCall(dataCall.contact?.phone_number);
+      //setPhoneCall(dataCall.contact?.phone_number);
       form.setFieldsValue(dataCall?.contact);
     } else {
       if (dataCall?.is_ip_phone) {
@@ -161,8 +161,8 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       } else {
         form.setFieldValue('phone_number', dataCall?.phone);
       }
-      setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
     }
+    setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
   });
 
   //  const { confirm } = Modal;
