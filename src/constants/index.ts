@@ -426,28 +426,6 @@ export const OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE = [
   'shift_info_export',
 ];
 
-export const TREE_DATA_TTCN = [
-  {
-    title: 'Thông tin cá nhân',
-    key: 'personal_info',
-    children: [
-      {
-        title: 'Xem',
-        key: 'personal_info_read',
-      },
-      {
-        title: 'Chỉnh sửa',
-        key: 'personal_info_update',
-      },
-    ],
-  },
-];
-
-export const OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE = [
-  'personal_info_read',
-  'personal_info_update',
-];
-
 export const TREE_DATA_TTND = [
   {
     title: 'Thông tin người dùng',
