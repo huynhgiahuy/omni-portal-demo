@@ -700,7 +700,7 @@ const PhoneBook: React.FC = () => {
                 onClick={() => {
                   if (
                     form.getFieldValue('unit') ||
-                    form.getFieldValue('team') ||
+                    form.getFieldValue('team_unit') ||
                     form.getFieldValue('search')
                   ) {
                     getUserContact.run({
