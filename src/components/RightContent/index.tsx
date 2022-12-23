@@ -1,4 +1,4 @@
-import { Space } from 'antd';
+import { message, Space } from 'antd';
 import React, { useContext, useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
 import Avatar from './AvatarDropdown';
@@ -86,6 +86,13 @@ const GlobalHeaderRight: React.FC = () => {
 
   useEffect(() => {
     wsContextValue.socketio.connect();
+    setTimeout(() => {
+      if (wsContextValue.socketio) {
+        message.success('Sẵn sàng nhận cuộc gọi');
+      } else {
+        message.error('Không sẵn sàng nhận cuộc gọi');
+      }
+    }, 200);
     wsContextValue.socketio.emit('authen_event', { token: wsContextValue.token });
 
     wsContextValue.socketio.on('reload_user_status', () => {
