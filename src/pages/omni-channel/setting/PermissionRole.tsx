@@ -126,7 +126,6 @@ const PermissionRole: React.FC = () => {
   const [valueCheckboxTransferShift, setValueCheckboxTransferShift] = useState<string[]>([]);
   const [valueCheckboxNightShift, setValueCheckboxNightShift] = useState<string[]>([]);
   const [valueCheckboxHistoryCall, setValueCheckboxHistoryCall] = useState<string[]>([]);
-  const [valueCheckboxTTCN, setValueCheckboxTTCN] = useState<string[]>([]);
   const [valueCheckboxTTCT, setValueCheckboxTTCT] = useState<string[]>([]);
   const [valueCheckboxTTND, setValueCheckboxTTND] = useState<string[]>([]);
   const [valueCheckboxGroupsPer, setValueCheckboxGroupsPer] = useState<string[]>([]);
@@ -161,7 +160,6 @@ const PermissionRole: React.FC = () => {
     valueCheckboxTransferShift,
     valueCheckboxNightShift,
     valueCheckboxHistoryCall,
-    valueCheckboxTTCN,
     valueCheckboxTTCT,
     valueCheckboxTTND,
     valueCheckboxGroupsPer,
@@ -360,7 +358,6 @@ const PermissionRole: React.FC = () => {
     setValueCheckboxNightShift([]);
     setValueCheckboxHistoryCall([]);
     setValueCheckboxTTCT([]);
-    setValueCheckboxTTCN([]);
     setValueCheckboxTTND([]);
     setValueCheckboxGroupsPer([]);
     setValueCheckboxContact([]);
@@ -379,7 +376,6 @@ const PermissionRole: React.FC = () => {
     setValueCheckboxNightShift([]);
     setValueCheckboxHistoryCall([]);
     setValueCheckboxTTCT([]);
-    setValueCheckboxTTCN([]);
     setValueCheckboxTTND([]);
     setValueCheckboxGroupsPer([]);
     setValueCheckboxContact([]);
@@ -501,9 +497,7 @@ const PermissionRole: React.FC = () => {
   const onCheckDataTreeHistoryCall = (checkedKeys: any, info: any) => {
     setValueCheckboxHistoryCall(checkedKeys.filter((data: string) => data !== 'call_history'));
   };
-  // const onCheckDataTreeTTCN = (checkedKeys: any, info: any) => {
-  //   setValueCheckboxTTCN(checkedKeys.filter((data: string) => data !== 'personal_info'));
-  // };
+
   const onCheckDataTreeTTCT = (checkedKeys: any, info: any) => {
     setValueCheckboxTTCT(checkedKeys.filter((data: string) => data !== 'shift_info'));
   };
@@ -598,14 +592,12 @@ const PermissionRole: React.FC = () => {
     if (checkAllProfile) {
       setCheckAllProfile(false);
       setValueCheckboxGroupsPer([]);
-      setValueCheckboxTTCN([]);
       setValueCheckboxTTND([]);
       setValueCheckboxHistoryCall([]);
       setValueCheckboxContact([]);
     } else {
       setCheckAllProfile(true);
       setValueCheckboxGroupsPer(OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE);
-      // setValueCheckboxTTCN(OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE);
       setValueCheckboxTTND(OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE);
       setValueCheckboxHistoryCall(OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE);
       setValueCheckboxContact(OPTIONS_PERMISSION_TREE_DATA_CONTACT_VALUE);
@@ -616,7 +608,6 @@ const PermissionRole: React.FC = () => {
     setIndeterminateProfile(false);
     setCheckAllProfile(false);
     if (
-      // valueCheckboxTTCN.length > 0 ||
       valueCheckboxTTND.length > 0 ||
       valueCheckboxGroupsPer.length > 0 ||
       valueCheckboxHistoryCall.length > 0 ||
@@ -626,7 +617,6 @@ const PermissionRole: React.FC = () => {
     }
 
     if (
-      // valueCheckboxTTCN.length == OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE.length &&
       valueCheckboxTTND.length == OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE.length &&
       valueCheckboxGroupsPer.length == OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE.length &&
       valueCheckboxHistoryCall.length == OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE.length &&
@@ -635,13 +625,7 @@ const PermissionRole: React.FC = () => {
       setIndeterminateProfile(false);
       setCheckAllProfile(true);
     }
-  }, [
-    // valueCheckboxTTCN,
-    valueCheckboxTTND,
-    valueCheckboxGroupsPer,
-    valueCheckboxHistoryCall,
-    valueCheckboxContact,
-  ]);
+  }, [valueCheckboxTTND, valueCheckboxGroupsPer, valueCheckboxHistoryCall, valueCheckboxContact]);
 
   useEffect(() => {
     if (isEditRole) {
@@ -713,13 +697,6 @@ const PermissionRole: React.FC = () => {
         .map(({ code }) => code);
       if (defaultDataTTCT?.length) {
         setValueCheckboxTTCT(defaultDataTTCT);
-      }
-
-      const defaultDataTTCN = dataRoleId?.permission_list
-        .filter(({ group }) => group === 'personal_info')
-        .map(({ code }) => code);
-      if (defaultDataTTCN?.length) {
-        setValueCheckboxTTCN(defaultDataTTCN);
       }
 
       const defaultDataTTND = dataRoleId?.permission_list
@@ -994,13 +971,6 @@ const PermissionRole: React.FC = () => {
         } else {
           return (
             <>
-              {/* <Tree
-                treeData={TREE_DATA_TTCN}
-                checkable
-                onCheck={onCheckDataTreeTTCN}
-                className={styles.treeDataCheckbox}
-                checkedKeys={valueCheckboxTTCN}
-              /> */}
               <Tree
                 treeData={TREE_DATA_TTND}
                 checkable
@@ -1074,7 +1044,6 @@ const PermissionRole: React.FC = () => {
     valueCheckboxTransferShift,
     valueCheckboxNightShift,
     valueCheckboxHistoryCall,
-    valueCheckboxTTCN,
     valueCheckboxTTCT,
     valueCheckboxTTND,
     valueCheckboxGroupsPer,
