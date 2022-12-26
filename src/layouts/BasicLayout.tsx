@@ -1,5 +1,4 @@
 import { socketAtom } from '@/socketio';
-import { message } from 'antd';
 import { useAtom } from 'jotai';
 import React, { useEffect } from 'react';
 import { io } from 'socket.io-client';
@@ -22,14 +21,9 @@ const BasicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           Authorization: access_token,
         },
       });
+
       newSocket.emit('authen_event', { token: access_token });
-      setTimeout(() => {
-        if (newSocket.connected) {
-          message.success('Sẵn sàng nhận cuộc gọi');
-        } else {
-          message.error('Không sẵn sàng nhận cuộc gọi');
-        }
-      }, 800);
+
       setSocket(newSocket);
     }
   }, []);
