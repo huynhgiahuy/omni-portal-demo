@@ -659,7 +659,10 @@ const HistoryCall: React.FC = () => {
                     fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
                   } else {
                     setValueKeyWord(value);
-                    fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
+                    setPagination({
+                      ...pagination,
+                      current: 1,
+                    });
                   }
                 },
                 500,
