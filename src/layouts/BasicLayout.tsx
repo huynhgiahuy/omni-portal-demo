@@ -29,7 +29,7 @@ const BasicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         } else {
           message.error('Không sẵn sàng nhận cuộc gọi');
         }
-      }, 500);
+      }, 800);
       setSocket(newSocket);
     }
   }, []);
