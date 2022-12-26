@@ -26,7 +26,7 @@ import { requeGetUserInfoProps } from '@/services/user_info';
 import { requestEditUserInfo } from './services';
 import { useModel, useRequest } from 'umi';
 import type { RcFile, UploadProps } from 'antd/es/upload/interface';
-import { endpoint} from '@/services/auth';
+import { endpoint } from '@/services/auth';
 import { requestCheckPhoneContact } from '../report/services';
 
 type FormProps = {
@@ -253,7 +253,7 @@ const PersonalInfo: React.FC = () => {
                   <Typography.Text className={styles.antTextStyle}>Địa chỉ Mail</Typography.Text>
 
                   {isEditUser === true ? (
-                    <Form.Item name="email_test" className={styles.antFormItemMargin}>
+                    <Form.Item name="email" className={styles.antFormItemMargin}>
                       <Input disabled style={{ width: '300px' }} />
                     </Form.Item>
                   ) : (
