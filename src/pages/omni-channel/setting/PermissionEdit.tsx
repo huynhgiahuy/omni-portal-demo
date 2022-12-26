@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   Space,
@@ -836,7 +836,10 @@ const PermissionEdit: React.FC = () => {
                     fetchListAllUserInfoFinal.run();
                   } else {
                     setValueKeyWord(value);
-                    fetchListAllUserInfoFinal.run();
+                    setPagination({
+                      ...pagination,
+                      current: 1,
+                    });
                   }
                 },
                 500,

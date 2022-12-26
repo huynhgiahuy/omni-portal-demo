@@ -21,7 +21,11 @@ const WorkingStatus = () => {
   const [isOnline, setIsOnline] = useState(true);
 
   const [option, setOption] = useState<number>(
-    initialState?.currentUser?.status ? initialState?.currentUser?.status : 1,
+    initialState?.currentUser?.status
+      ? initialState?.currentUser?.status == 5
+        ? 1
+        : initialState?.currentUser?.status
+      : 1,
   );
 
   const updateStatusUser = useRequest(
@@ -121,7 +125,7 @@ const WorkingStatus = () => {
   });
 
   useSubWs('reload_user_status', (data: { user_id: string; status: number }) => {
-    if (data.user_id === initialState?.currentUser?.id) {
+    if (data.user_id === initialState?.currentUser?.user_id) {
       updateStatusUser.run(data.status);
     }
   });
