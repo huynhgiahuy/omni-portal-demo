@@ -30,6 +30,7 @@ declare namespace API {
     }[];
     home_address?: string;
     id?: string;
+    user_id?: string;
     image?: string;
     ip_phone?: string;
     latest_update_password?: string;
