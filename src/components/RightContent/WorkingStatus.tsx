@@ -124,6 +124,14 @@ const WorkingStatus = () => {
     }
   });
 
+  useSubWs('authen_event', (data: { success: boolean }) => {
+    if (data.success) {
+      message.success('Sẵn sàng nhận cuộc gọi');
+    } else {
+      message.error('Không sẵn sàng nhận cuộc gọi');
+    }
+  });
+
   useSubWs('reload_user_status', (data: { user_id: string; status: number }) => {
     if (data.user_id === initialState?.currentUser?.user_id) {
       updateStatusUser.run(data.status);
