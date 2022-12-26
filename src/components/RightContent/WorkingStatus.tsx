@@ -1,35 +1,43 @@
 import { CheckCircleFilled, ClockCircleFilled, MinusCircleFilled } from '@ant-design/icons';
 import { message, Select, Space } from 'antd';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './index.less';
 import Ellipse from '../../assets/Ellipse.svg';
 import { useModel, useRequest } from 'umi';
 import { requeGetUserInfoProps, requestUpdateStatusUser } from '@/services/user_info';
 import useMousePosition from '@/hooks/useMousePosition';
-import { wsContext } from '@/contexts/socketioContext';
+import { useAtom } from 'jotai';
+import { socketAtom } from '@/socketio';
+import useSubWs from '@/hooks/useSocket';
+import { dataProps } from '.';
 
 const WorkingStatus = () => {
+  const access_token = window.localStorage.getItem('access_token');
   const { initialState, setInitialState } = useModel('@@initialState');
-  const wsContextValue = useContext(wsContext);
+  const [socket] = useAtom(socketAtom);
+
   const { x, y } = useMousePosition();
   const [checkMouse, setCheckMouse] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
 
-  const token = window.localStorage.getItem('access_token');
   const [option, setOption] = useState<number>(
-    initialState?.currentUser?.status ? initialState?.currentUser?.status : 1,
+    initialState?.currentUser?.status
+      ? initialState?.currentUser?.status == 5
+        ? 1
+        : initialState?.currentUser?.status
+      : 1,
   );
 
   const updateStatusUser = useRequest(
     async (option: number) => {
       const res: { success: boolean; data: any } = await requestUpdateStatusUser(
         option,
-        token ? token : '',
+        access_token ? access_token : '',
       );
 
       if (res.success) {
         setOption(res.data[0].status);
-        wsContextValue.socketio.emit('updated_user_status');
+        socket?.emit('updated_user_status');
       } else {
         setOption(initialState?.currentUser?.status ? initialState?.currentUser?.status : 2);
         message.error('Chuyển trạng thái không thành công, vui lòng thử lại');
@@ -46,11 +54,11 @@ const WorkingStatus = () => {
   useEffect(() => {
     if (!isOnline && option === 1) {
       if (checkMouse) {
-        const res = requestUpdateStatusUser(2, token ? token : '');
+        const res = requestUpdateStatusUser(2, access_token ? access_token : '');
         res.then(async (result: requeGetUserInfoProps) => {
           if (result.success) {
             setOption(2);
-            wsContextValue.socketio.emit('updated_user_status');
+            socket?.emit('updated_user_status');
             await setInitialState((s) => ({
               ...s,
               currentUser: { ...initialState?.currentUser, status: result.data[0] },
@@ -59,11 +67,11 @@ const WorkingStatus = () => {
         });
       }
     } else if (isOnline && option === 2) {
-      const res = requestUpdateStatusUser(1, token ? token : '');
+      const res = requestUpdateStatusUser(1, access_token ? access_token : '');
       res.then(async (result: requeGetUserInfoProps) => {
         if (result.success) {
           setOption(1);
-          wsContextValue.socketio.emit('updated_user_status');
+          socket?.emit('updated_user_status');
           await setInitialState((s) => ({
             ...s,
             currentUser: { ...initialState?.currentUser, status: result.data[0] },
@@ -91,40 +99,36 @@ const WorkingStatus = () => {
         }, 300 * 1000);
       }
     }
+  }, [x, y, checkMouse]);
 
-    wsContextValue.socketio.on('emit_call_event', (data) => {
-      const eventCall = data.event;
-      switch (eventCall) {
-        case 'hangup_call':
-          setIsOnline(true);
-          setCheckMouse(true);
-          setTimeout(() => {
-            setIsOnline(false);
-          }, 300 * 1000);
+  useSubWs('emit_call_event', (data: dataProps) => {
+    const eventCall = data.event;
+    switch (eventCall) {
+      case 'hangup_call':
+        setIsOnline(true);
+        setCheckMouse(true);
 
-          break;
-        case 'answered_call':
-          setIsOnline(true);
-          setCheckMouse(false);
-          break;
-        default:
-          break;
-      }
-    });
-  }, [x, y]);
+        break;
+      case 'answered_call':
+        setIsOnline(true);
+        setCheckMouse(false);
+        break;
+      default:
+        break;
+    }
+  });
 
-  useEffect(() => {
-    wsContextValue.socketio.on('updated_profile_status', (data) => {
-      if (data.status) {
-        setOption(data.status);
-      }
-    });
-    wsContextValue.socketio.on('reload_user_status', (data) => {
-      if (data.user_id === initialState?.currentUser?.id) {
-        updateStatusUser.run(data.status);
-      }
-    });
-  }, []);
+  useSubWs('updated_profile_status', (data: { status: number }) => {
+    if (data.status) {
+      setOption(data.status);
+    }
+  });
+
+  useSubWs('reload_user_status', (data: { user_id: string; status: number }) => {
+    if (data.user_id === initialState?.currentUser?.user_id) {
+      updateStatusUser.run(data.status);
+    }
+  });
 
   return (
     <Space size={0} align="center">

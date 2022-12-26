@@ -4,7 +4,7 @@ import { PageLoading, SettingDrawer } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from 'umi';
 import { history } from 'umi';
 import defaultSettings from '../config/defaultSettings';
-import WebSocketConTextProvider from './contexts/socketioContext';
+import BasicLayout from './layouts/BasicLayout';
 const loginPath = '/user/login';
 
 /** 获取用户信息比较慢的时候会展示一个 loading */
@@ -53,12 +53,7 @@ export async function getInitialState(): Promise<{
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
-    rightContentRender: () =>
-      initialState?.currentUser?.email && (
-        <WebSocketConTextProvider>
-          <RightContent />
-        </WebSocketConTextProvider>
-      ),
+    rightContentRender: () => initialState?.currentUser?.id && <RightContent />,
     disableContentMargin: false,
     // waterMarkProps: {
     //   content: initialState?.currentUser?.name,
@@ -92,8 +87,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     childrenRender: (children, props) => {
       // if (initialState?.loading) return <PageLoading />;
       return (
-        <WebSocketConTextProvider>
-          {children}
+        <>
+          <BasicLayout>{children}</BasicLayout>
           {!props.location?.pathname?.includes('/login') && (
             <SettingDrawer
               enableDarkTheme
@@ -123,7 +118,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
               }}
             />
           )}
-        </WebSocketConTextProvider>
+        </>
       );
     },
     ...initialState?.settings,

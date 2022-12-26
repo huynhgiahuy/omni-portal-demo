@@ -35,25 +35,8 @@ export type UserInfoProps = {
   id: string;
 };
 
-const token = window.localStorage.getItem('access_token');
-
 export interface requeGetUserInfoProps extends requestProps {
   data: UserInfoProps;
-}
-
-export async function requestGetInfoUser(): Promise<requeGetUserInfoProps> {
-  return request(
-    `${endpoint}/user-service/api/settings/user/get_user_info?current_user=nghiahm4%40fpt.com.vn`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      data: {
-        token,
-      },
-    },
-  );
 }
 
 export async function requestUpdateStatusUser(
