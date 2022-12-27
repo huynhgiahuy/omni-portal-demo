@@ -15,6 +15,7 @@ const WorkingStatus = () => {
   const access_token = window.localStorage.getItem('access_token');
   const { initialState, setInitialState } = useModel('@@initialState');
   const [socket] = useAtom(socketAtom);
+  const [connectSocket, setConnectSocket] = useState(false);
 
   const { x, y } = useMousePosition();
   const [checkMouse, setCheckMouse] = useState(true);
@@ -123,6 +124,17 @@ const WorkingStatus = () => {
       setOption(data.status);
     }
   });
+
+  useSubWs('authen_event', (data: { success: boolean }) => {
+    if (data.success) {
+      setConnectSocket(true);
+    }
+  });
+  useEffect(() => {
+    if (connectSocket) {
+      message.success('Sẵn sàng nhận cuộc gọi');
+    }
+  }, [connectSocket]);
 
   useSubWs('reload_user_status', (data: { user_id: string; status: number }) => {
     if (data.user_id === initialState?.currentUser?.user_id) {
