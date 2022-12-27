@@ -722,8 +722,8 @@ const HistoryCall: React.FC = () => {
       >
         <div style={{ textAlign: 'center' }}>
           <figure>
-            <audio ref={audioRef} controls src={testAudioURL}></audio>
-            <audio src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
+            {/* <audio ref={audioRef} controls src={testAudioURL}></audio> */}
+            <audio src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" controls />
           </figure>
         </div>
       </Modal>
