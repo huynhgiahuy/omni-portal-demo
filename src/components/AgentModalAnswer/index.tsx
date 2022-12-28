@@ -684,11 +684,25 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                           <Typography.Text style={{ color: '#fff' }}>Số điện thoại</Typography.Text>
                         }
                         name="phone_number"
+                        rules={[
+                          {
+                            validator: (_, value: any) => {
+                              const phoneReg = /((0[3|5|7|8|9])+([0-9]{8,9})\b)/;
+                              if (value === undefined || !value || value.length === 0) {
+                                return Promise.reject('Vui lòng nhập số di động');
+                              } else if (value.length > 11) {
+                                return Promise.reject('Số điện thoại không hợp lệ');
+                              } else if (!phoneReg.test(value)) {
+                                return Promise.reject('Số điện thoại không hợp lệ');
+                              }
+                              return Promise.resolve();
+                            },
+                          },
+                        ]}
                       >
                         <Input
                           className={styles.inputHistoryFormStyle}
                           placeholder="Nhập thông tin"
-                          disabled
                         />
                       </Form.Item>
                       <Form.Item
