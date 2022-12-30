@@ -5,6 +5,7 @@ import styles from './index.less';
 import { PhoneFilled } from '@ant-design/icons';
 import Keyboard from '../Keyboard';
 import InfoUserCard from '../InfoUserCard';
+import useSubWs from '@/hooks/useSocket';
 
 type SuffixProps = {
   onClickNumberpad: (number: string) => void;
@@ -74,9 +75,14 @@ type DiapadProps = {
 const Diapad: React.FC<DiapadProps> = ({ isShowPhoneCall = false, onSendDTMF, onClickCall }) => {
   const [valueInput, setValueInput] = useState<string>('');
   const [openAutoComplete, setOpenAutoComplete] = useState(false);
+  const [connectSocket, setConnectSocket] = useState(false);
+
+  useSubWs('authen_event', (data: { success: boolean }) => {
+    setConnectSocket(true);
+  });
 
   const handleOnClickNumberpad = useCallback(
-    (number) => {
+    (number: string) => {
       setValueInput((s) => `${s}${number}`);
 
       onSendDTMF && onSendDTMF(number[0]);
@@ -133,7 +139,16 @@ const Diapad: React.FC<DiapadProps> = ({ isShowPhoneCall = false, onSendDTMF, on
               onClick={isShowPhoneCall ? handleCall : () => {}}
               className={`${styles['btn-phone']} ${!isShowPhoneCall && styles['btn-disable']}`}
               shape="circle"
-              icon={<PhoneFilled color="gray" />}
+              icon={
+                <div style={{ position: 'relative' }}>
+                  <PhoneFilled color="gray" />
+                  <div
+                    className={
+                      connectSocket ? styles.status_socket_success : styles.status_socket_fail
+                    }
+                  />
+                </div>
+              }
             />
           </Suffix>
         }

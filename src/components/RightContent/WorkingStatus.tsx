@@ -15,13 +15,18 @@ const WorkingStatus = () => {
   const access_token = window.localStorage.getItem('access_token');
   const { initialState, setInitialState } = useModel('@@initialState');
   const [socket] = useAtom(socketAtom);
+  const [connectSocket, setConnectSocket] = useState(false);
 
   const { x, y } = useMousePosition();
   const [checkMouse, setCheckMouse] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
 
   const [option, setOption] = useState<number>(
-    initialState?.currentUser?.status ? initialState?.currentUser?.status : 1,
+    initialState?.currentUser?.status
+      ? initialState?.currentUser?.status == 5
+        ? 1
+        : initialState?.currentUser?.status
+      : 1,
   );
 
   const updateStatusUser = useRequest(
@@ -120,8 +125,19 @@ const WorkingStatus = () => {
     }
   });
 
+  useSubWs('authen_event', (data: { success: boolean }) => {
+    if (data.success) {
+      setConnectSocket(true);
+    }
+  });
+  useEffect(() => {
+    if (connectSocket) {
+      message.success('Sẵn sàng nhận cuộc gọi');
+    }
+  }, [connectSocket]);
+
   useSubWs('reload_user_status', (data: { user_id: string; status: number }) => {
-    if (data.user_id === initialState?.currentUser?.id) {
+    if (data.user_id === initialState?.currentUser?.user_id) {
       updateStatusUser.run(data.status);
     }
   });
