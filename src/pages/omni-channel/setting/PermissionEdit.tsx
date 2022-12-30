@@ -729,7 +729,7 @@ const PermissionEdit: React.FC = () => {
       <Form className={styles.filterFormPermissionEdit} layout="vertical" form={formFilter}>
         <div>
           <div className={styles.filterFormPermissionEditDisplay}>
-            <div style={{ flex: 2, width: 217 }}>
+            <div style={{ width: 217 }}>
               <Form.Item
                 label={
                   <Typography.Text className={isTeamFilter ? `${styles.filterFieldActive}` : ''}>
@@ -754,7 +754,7 @@ const PermissionEdit: React.FC = () => {
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ flex: 2, width: 217 }}>
+            <div style={{ width: 217 }}>
               <Form.Item
                 label={
                   <Typography.Text className={isNLVFilter ? `${styles.filterFieldActive}` : ''}>
@@ -771,7 +771,7 @@ const PermissionEdit: React.FC = () => {
                 />
               </Form.Item>
             </div>
-            <div style={{ flex: 2, width: 217 }}>
+            <div style={{ width: 217 }}>
               <Form.Item
                 label={
                   <Typography.Text className={isNQFilter ? `${styles.filterFieldActive}` : ''}>
@@ -796,7 +796,7 @@ const PermissionEdit: React.FC = () => {
                 </Select>
               </Form.Item>
             </div>
-            <div style={{ flex: 2, width: 217 }}>
+            <div style={{ width: 217 }}>
               <Form.Item
                 label={
                   <Typography.Text className={isStatusFilter ? `${styles.filterFieldActive}` : ''}>
@@ -827,7 +827,7 @@ const PermissionEdit: React.FC = () => {
         <div style={{ paddingTop: '29px' }}>
           <Form.Item name="search_name">
             <Input
-              style={{ flex: 2 }}
+              style={{ width: 217 }}
               prefix={<SearchOutlined />}
               placeholder="Tìm kiếm tên người dùng"
               allowClear
