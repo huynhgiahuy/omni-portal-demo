@@ -125,8 +125,8 @@ const WorkingStatus = () => {
     }
   });
 
-  useSubWs('authen_event', (data: { success: boolean }) => {
-    if (data.success) {
+  useSubWs('connect', (data: { success: boolean }) => {
+    if (data?.success) {
       setConnectSocket(true);
     }
   });
