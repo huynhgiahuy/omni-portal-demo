@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   Space,
@@ -46,8 +46,8 @@ import OfflineIcon from '../../../../public/offline.png';
 import moment from 'moment';
 import NoFoundPage from '@/pages/404';
 import { OPTIONS_FILTER_NLV, OPTIONS_FILTER_STATUS } from '@/constants';
-import { useAtom } from 'jotai';
-import { socketAtom } from '@/socketio';
+import useSubWs from '@/hooks/useSocket';
+import api from '@/api';
 
 interface PaginationProps {
   current: number;
@@ -84,7 +84,7 @@ interface DataAllUserInfoFinal {
   position: string;
   phone_number: string;
   image: string;
-  status: string;
+  status: any;
 }
 
 const formItemLayout = {
@@ -128,7 +128,6 @@ const submitFormLayout = {
 };
 
 const PermissionEdit: React.FC = () => {
-  const [socket] = useAtom(socketAtom);
   const [isView, setIsView] = useState<string>();
   const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
   const [userKey, setUserKey] = useState<string | any>();
@@ -274,11 +273,15 @@ const PermissionEdit: React.FC = () => {
     fetchGroupPermissionData();
   }, []);
 
-  useEffect(() => {
-    socket?.on('reload_user_status', () => {
-      fetchListAllUserInfoFinalSocket.run();
+  useSubWs('user_status', (data: { email: string; status: number }) => {
+    const index = listAllUserInfoFinal.findIndex((user) => {
+      return user.email === data.email;
     });
-  }, []);
+    if (index > 0) {
+      listAllUserInfoFinal[index].status = data.status;
+      fetchListAllUserInfoFinalSocket.run();
+    }
+  });
 
   const fetchDetaiUserInfoFinal = async (user_id: any) => {
     const resDetail = await requestDetailUserInfoFinal(user_id);
@@ -488,7 +491,7 @@ const PermissionEdit: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div style={{ flex: 1 }}>
                 <Avatar
-                  src={record.image && `data:image/jpeg;base64,${record.image}`}
+                  src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${record?.image}`}
                   size="large"
                   className={styles.avatarImg}
                 />
@@ -836,7 +839,10 @@ const PermissionEdit: React.FC = () => {
                     fetchListAllUserInfoFinal.run();
                   } else {
                     setValueKeyWord(value);
-                    fetchListAllUserInfoFinal.run();
+                    setPagination({
+                      ...pagination,
+                      current: 1,
+                    });
                   }
                 },
                 500,
@@ -1037,7 +1043,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     validator: (_, value: any) => {
-                      const phoneReg = /([0]{1})+([3|5|7|8|9]{1})+([0-9]{8})/;
+                      const phoneReg = /((0[3|5|7|8|9])+([0-9]{8,9})\b)/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập số di động');
                       } else if (value.length < 10 || value.length > 11) {
