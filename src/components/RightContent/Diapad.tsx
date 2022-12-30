@@ -77,8 +77,10 @@ const Diapad: React.FC<DiapadProps> = ({ isShowPhoneCall = false, onSendDTMF, on
   const [openAutoComplete, setOpenAutoComplete] = useState(false);
   const [connectSocket, setConnectSocket] = useState(false);
 
-  useSubWs('authen_event', (data: { success: boolean }) => {
-    setConnectSocket(true);
+  useSubWs('connect', (data: { success: boolean }) => {
+    if (!!data?.success) {
+      setConnectSocket(data?.success);
+    }
   });
 
   const handleOnClickNumberpad = useCallback(
