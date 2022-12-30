@@ -28,6 +28,7 @@ import { useModel, useRequest } from 'umi';
 import type { RcFile, UploadProps } from 'antd/es/upload/interface';
 import { endpoint } from '@/services/auth';
 import { requestCheckPhoneContact } from '../report/services';
+import api from '@/api';
 
 type FormProps = {
   name: string;
@@ -51,6 +52,7 @@ const PersonalInfo: React.FC = () => {
   const [isDisable, setIsDisable] = useState(true);
   const { initialState, setInitialState } = useModel('@@initialState');
   const token = window.localStorage.getItem('access_token');
+  const [img, setImg] = useState('null');
   const [form] = Form.useForm();
 
   const requestEditUserInfoSubmit = async (data: FormProps) => {
@@ -180,10 +182,11 @@ const PersonalInfo: React.FC = () => {
           <div>
             <div className={styles.antAvatarImg}>
               <Avatar
-                src={dataImage && `data:image/jpeg;base64,${dataImage}`}
+                src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.image}`}
                 className={styles.antImg}
                 icon={!dataImage && <UserOutlined style={{ fontSize: 100 }} />}
               />
+
               <Upload
                 {...props}
                 beforeUpload={beforeUpload}
@@ -191,7 +194,10 @@ const PersonalInfo: React.FC = () => {
                   if (file?.response?.success) {
                     await setInitialState((s) => ({
                       ...s,
-                      currentUser: file?.response?.data[0],
+                      currentUser: {
+                        ...initialState?.currentUser,
+                        image: file?.response?.data[0]?.url,
+                      },
                     }));
                   }
                 }}
@@ -413,7 +419,7 @@ const PersonalInfo: React.FC = () => {
                       rules={[
                         {
                           validator: (_, value: any) => {
-                            const phoneReg = /([0]{1})+([0-9]{1})+([0-9]{8,9})/;
+                            const phoneReg = /((0[3|5|7|8|9])+([0-9]{8,9})\b)/;
                             if (value === undefined || !value || value.length === 0) {
                               return Promise.reject('Vui lòng nhập số di động');
                             } else if (value.length > 11) {

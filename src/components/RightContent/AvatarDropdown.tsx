@@ -31,6 +31,7 @@ import {
   requestUpdatenotification,
   requestUpdateScreenMode,
 } from '@/services/user_info';
+import api from '@/api';
 
 const { SubMenu } = Menu;
 const { Title } = Typography;
@@ -444,7 +445,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         <Avatar
           size="small"
           className={styles.avatar}
-          src={dataImage && `data:image/jpeg;base64,${dataImage}`}
+          src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.image}`}
           alt="avatar"
           icon={!dataImage && <UserOutlined style={{ fontSize: 20, color: 'gray' }} />}
         />
