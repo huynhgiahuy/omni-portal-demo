@@ -47,6 +47,7 @@ import moment from 'moment';
 import NoFoundPage from '@/pages/404';
 import { OPTIONS_FILTER_NLV, OPTIONS_FILTER_STATUS } from '@/constants';
 import useSubWs from '@/hooks/useSocket';
+import api from '@/api';
 
 interface PaginationProps {
   current: number;
@@ -490,7 +491,7 @@ const PermissionEdit: React.FC = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div style={{ flex: 1 }}>
                 <Avatar
-                  src={record.image && `data:image/jpeg;base64,${record.image}`}
+                  src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${record?.image}`}
                   size="large"
                   className={styles.avatarImg}
                 />
