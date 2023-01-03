@@ -13,6 +13,7 @@ import {
   message,
   Upload,
   Select,
+  Spin,
 } from 'antd';
 import {
   AppleFilled,
@@ -52,7 +53,7 @@ const PersonalInfo: React.FC = () => {
   const [isDisable, setIsDisable] = useState(true);
   const { initialState, setInitialState } = useModel('@@initialState');
   const token = window.localStorage.getItem('access_token');
-  const [img, setImg] = useState('null');
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
   const requestEditUserInfoSubmit = async (data: FormProps) => {
@@ -145,9 +146,9 @@ const PersonalInfo: React.FC = () => {
     if (!isJpgOrPng) {
       message.error('You can only upload JPG/PNG file!');
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
+    const isLt2M = file.size / 1024 < 2000;
     if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
+      message.error('Ảnh cần nhỏ hơn 2MB!');
     }
 
     return isJpgOrPng && isLt2M;
@@ -182,7 +183,16 @@ const PersonalInfo: React.FC = () => {
           <div>
             <div className={styles.antAvatarImg}>
               <Avatar
-                src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.image}`}
+                src={
+                  loading ? (
+                    <Spin />
+                  ) : (
+                    <img
+                      loading="lazy"
+                      src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.image}`}
+                    />
+                  )
+                }
                 className={styles.antImg}
                 icon={!dataImage && <UserOutlined style={{ fontSize: 100 }} />}
               />
@@ -191,6 +201,12 @@ const PersonalInfo: React.FC = () => {
                 {...props}
                 beforeUpload={beforeUpload}
                 onChange={async ({ file }) => {
+                  if (file.status === 'uploading') {
+                    setLoading(true);
+                  } else {
+                    setLoading(false);
+                  }
+
                   if (file?.response?.success) {
                     await setInitialState((s) => ({
                       ...s,

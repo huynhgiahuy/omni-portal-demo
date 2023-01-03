@@ -26,7 +26,6 @@ import {
 } from '@ant-design/icons';
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
-import AvatarModal from '../../../public/avatar_modal_ring.png';
 import {
   requestAddUserContact,
   requestGetTakeCallNote,
@@ -36,6 +35,7 @@ import { dataProps } from '../RightContent';
 import { useModel, useRequest } from 'umi';
 import moment from 'moment';
 import Timer from 'react-compound-timer';
+import api from '@/api';
 
 type AgentModalAnswerProps = {
   isModalOpen: boolean;
@@ -144,11 +144,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   handleCancel,
   isFullScreenModal,
   handleFullScreenModal,
-  handleSelectForwardUser,
   handleClickIconHistory,
   handleClickIconNote,
   handelUserTransfer,
-  valueCheckboxUser,
   isVisibleHistoryCall,
   isVisibleNoteCall,
   isActiveIconHistory,
@@ -406,11 +404,12 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                     <span className={styles.material_icons}></span>
                   </div>
                   <img
-                    src={AvatarModal}
+                    loading="lazy"
+                    src={`${api.UMI_API_BASE_URL}/user-service/api/settings/get_user_avatar_by_email?email=${dataCall?.contact_email}`}
                     alt=""
                     width={isFullScreenModal ? 105 : 58}
                     height={isFullScreenModal ? 105 : 58}
-                    style={{ position: 'relative', left: -8, zIndex: 2 }}
+                    style={{ position: 'relative', left: -8, zIndex: 2, borderRadius: '95%' }}
                   />
                 </div>
                 <Space
