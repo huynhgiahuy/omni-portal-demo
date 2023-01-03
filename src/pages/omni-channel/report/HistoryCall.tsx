@@ -276,13 +276,13 @@ const HistoryCall: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (response.data.error_code === 4030102) {
+      setTestAudioURL(response.data.data[0]);
+    } catch (e: any) {
+      if (e.response.status === 403) {
         message.error('Bạn không có quyền nghe file ghi âm!');
       } else {
-        setTestAudioURL(response.data.data[0]);
+        message.error('Không thể nghe file ghi âm!');
       }
-    } catch (e) {
-      message.error('Không thể nghe file ghi âm!');
     }
   };
 
@@ -301,16 +301,17 @@ const HistoryCall: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (response.data.error_code === 4030102) {
+      const audioFormatBlob = new Blob([response.data], { type: 'audio/*' });
+      fileDownload(audioFormatBlob, recordName);
+      setDownloadFile(false);
+    } catch (e: any) {
+      if (e.response.status === 403) {
         message.error('Bạn không có quyền tải file ghi âm!');
         setDownloadFile(false);
       } else {
-        const audioFormatBlob = new Blob([response.data], { type: 'audio/*' });
-        fileDownload(audioFormatBlob, recordName);
+        message.error('Không thể tải file ghi âm!');
         setDownloadFile(false);
       }
-    } catch (e) {
-      message.error('Không thể tải file ghi âm!');
     }
   };
 
