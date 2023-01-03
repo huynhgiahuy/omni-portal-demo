@@ -22,11 +22,11 @@ import {
 } from '@ant-design/icons';
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
-import AvatarModal from '../../../public/avatar_modal_ring.png';
 import { requestGetTakeCallNote } from '@/pages/omni-channel/report/services';
 import { dataProps } from '../RightContent';
 import { useRequest } from 'umi';
 import moment from 'moment';
+import api from '@/api';
 
 type AgentModalRingProps = {
   isModalOpen: boolean;
@@ -66,14 +66,11 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   isModalOpen,
   handleOk,
   handleCancel,
-  handleOpenAnswer,
   isFullScreenModal,
   handleFullScreenModal,
-  handleSelectForwardUser,
   handleClickIconHistory,
   handleClickIconNote,
   handelUserTransfer,
-  valueCheckboxUser,
   isVisibleHistoryCall,
   isVisibleNoteCall,
   isActiveIconHistory,
@@ -243,9 +240,8 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                     <span className={styles.material_icons}></span>
                   </div>
                   <img
-                    src={
-                      dataCall?.image ? `data:image/jpeg;base64,${dataCall?.image}` : AvatarModal
-                    }
+                    loading="lazy"
+                    src={`${api.UMI_API_BASE_URL}/user-service/api/settings/get_user_avatar_by_email?email=${dataCall?.contact_email}`}
                     alt=""
                     width={isFullScreenModal ? 105 : 58}
                     height={isFullScreenModal ? 105 : 58}
@@ -447,9 +443,6 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                                   ? ' Cuộc gọi đi'
                                   : 'Cuộc gọi nội bộ'}
                               </Typography.Paragraph>
-                              {/* <Typography.Paragraph style={{ marginBottom: 'unset', color: '#fff' }}>
-                              00:12
-                            </Typography.Paragraph> */}
                             </div>
                             <ul style={{ listStyleType: 'disc', color: '#fff' }}>
                               <li>
