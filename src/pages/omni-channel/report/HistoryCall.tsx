@@ -566,13 +566,13 @@ const HistoryCall: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (res.data.error_code === 4030102) {
+      fileDownload(res.data, 'history_call_report.xlsx');
+    } catch (e: any) {
+      if (e.response.status === 403) {
         message.error('Bạn không có quyền xuất báo cáo!');
       } else {
-        fileDownload(res.data, 'history_call_report.xlsx');
+        message.error('Không thể xuất báo cáo!');
       }
-    } catch (e) {
-      message.error('Không thể xuất báo cáo!');
     }
   };
 
