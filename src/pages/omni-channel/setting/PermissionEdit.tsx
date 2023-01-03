@@ -359,8 +359,10 @@ const PermissionEdit: React.FC = () => {
         handleCancleUpdatePermission();
       } else if (resSubmitUpdate.error_code === 4030102) {
         message.error('Bạn không có quyền cập nhật thông tin!');
+        handleCancleUpdatePermission();
       } else {
         message.error('Cập nhật thông tin thất bại!');
+        handleCancleUpdatePermission();
       }
     },
     {
