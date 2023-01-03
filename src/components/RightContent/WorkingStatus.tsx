@@ -136,12 +136,6 @@ const WorkingStatus = () => {
     }
   }, [connectSocket]);
 
-  useSubWs('reload_user_status', (data: { user_id: string; status: number }) => {
-    if (data.user_id === initialState?.currentUser?.user_id) {
-      updateStatusUser.run(data.status);
-    }
-  });
-
   return (
     <Space size={0} align="center">
       <Select
