@@ -1,166 +1,166 @@
 export const OPTIONS_PERMISSION_DB = [
   {
     label: 'Xem',
-    value: 'dashboard_read',
+    value: 'dsbo__get',
   },
   {
     label: 'Tạo mới',
-    value: 'dashboard_create',
+    value: 'dsbo__cre',
   },
   {
     label: 'Chỉnh sửa',
-    value: 'dashboard_update',
+    value: 'dsbo__upd',
   },
   {
     label: 'Xóa',
-    value: 'dashboard_delete',
+    value: 'dsbo__del',
   },
   {
     label: 'Xuất bản',
-    value: 'dashboard_export',
+    value: 'dsbo__exp',
   },
 ];
 
 export const OPTIONS_PERMISSION_DB_VALUE = [
-  'dashboard_read',
-  'dashboard_create',
-  'dashboard_update',
-  'dashboard_delete',
-  'dashboard_export',
+  'dsbo__get',
+  'dsbo__cre',
+  'dsbo__upd',
+  'dsbo__del',
+  'dsbo__exp',
 ];
 
 export const OPTIONS_PERMISSION_IM = [
   {
     label: 'Xem',
-    value: 'incident_management_read',
+    value: 'inma__get',
   },
   {
     label: 'Tạo mới',
-    value: 'incident_management_create',
+    value: 'inma__cre',
   },
   {
     label: 'Xử lý',
-    value: 'incident_management_process',
+    value: 'inma__upd',
   },
   {
     label: 'Xóa',
-    value: 'incident_management_delete',
+    value: 'inma__del',
   },
   {
     label: 'Xuất báo cáo',
-    value: 'incident_management_export',
+    value: 'inma__exp',
   },
   {
     label: 'Thiết kế',
-    value: 'incident_management_design',
+    value: 'inma__des',
   },
 ];
 
 export const OPTIONS_PERMISSION_IM_VALUE = [
-  'incident_management_read',
-  'incident_management_create',
-  'incident_management_process',
-  'incident_management_delete',
-  'incident_management_export',
-  'incident_management_design',
+  'inma__get',
+  'inma__cre',
+  'inma__upd',
+  'inma__del',
+  'inma__exp',
+  'inma__des',
 ];
 
 export const OPTIONS_PERMISSION_EM = [
   {
     label: 'Xem',
-    value: 'event_management_read',
+    value: 'evma__get',
   },
   {
     label: 'Tạo mới',
-    value: 'event_management_create',
+    value: 'evma___cre',
   },
   {
     label: 'Xử lý',
-    value: 'event_management_process',
+    value: 'evma___upd',
   },
   {
     label: 'Xóa',
-    value: 'event_management_delete',
+    value: 'evma___del',
   },
   {
     label: 'Xuất báo cáo',
-    value: 'event_management_export',
+    value: 'evma___exp',
   },
 ];
 
 export const OPTIONS_PERMISSION_EM_VALUE = [
-  'event_management_read',
-  'event_management_create',
-  'event_management_process',
-  'event_management_delete',
-  'event_management_export',
+  'evma__get',
+  'evma___cre',
+  'evma___upd',
+  'evma___del',
+  'evma___exp',
 ];
 
 export const OPTIONS_PERMISSION_CM = [
   {
     label: 'Xem',
-    value: 'change_management_read',
+    value: 'chma__get',
   },
   {
     label: 'Tạo mới',
-    value: 'change_management_create',
+    value: 'chma__cre',
   },
   {
     label: 'Xử lý',
-    value: 'change_management_process',
+    value: 'chma__upd',
   },
   {
     label: 'Xóa',
-    value: 'change_management_delete',
+    value: 'chma__del',
   },
   {
     label: 'Xuất báo cáo',
-    value: 'change_management_export',
+    value: 'chma__exp',
   },
 ];
 
 export const OPTIONS_PERMISSION_CM_VALUE = [
-  'change_management_read',
-  'change_management_create',
-  'change_management_process',
-  'change_management_delete',
-  'change_management_export',
+  'chma__get',
+  'chma__cre',
+  'chma__upd',
+  'chma__del',
+  'chma__exp',
 ];
 
 export const OPTIONS_PERMISSION_RF = [
   {
     label: 'Xem',
-    value: 'request_fufillment_read',
+    value: 'reff__get',
   },
   {
     label: 'Tạo mới',
-    value: 'request_fufillment_create',
+    value: 'reff__cre',
   },
   {
     label: 'Xử lý',
-    value: 'request_fufillment_process',
+    value: 'reff__upd',
   },
   {
     label: 'Xóa',
-    value: 'request_fufillment_delete',
+    value: 'reff__del',
   },
   {
     label: 'Xuất báo cáo',
-    value: 'request_fufillment_export',
+    value: 'reff__exp',
   },
   {
     label: 'Thiết kế',
-    value: 'request_fufillment_design',
+    value: 'reff__des',
   },
 ];
 
 export const OPTIONS_PERMISSION_RF_VALUE = [
-  'request_fufillment_read',
-  'request_fufillment_create',
-  'request_fufillment_process',
-  'request_fufillment_delete',
-  'request_fufillment_export',
-  'request_fufillment_design',
+  'reff__get',
+  'reff__cre',
+  'reff__upd',
+  'reff__del',
+  'reff__exp',
+  'reff__des',
 ];
 
 export const OPTIONS_PERMISSION_DESIGN = [
@@ -241,25 +241,21 @@ export const TREE_DATA_TKC = [
     children: [
       {
         title: 'Xem',
-        key: 'general_statistic_read',
+        key: 'gest__get',
       },
       {
         title: 'Truy vấn',
-        key: 'general_statistic_query',
+        key: 'gest__qur',
       },
       {
         title: 'Xuất báo cáo',
-        key: 'general_statistic_export',
+        key: 'gest__exp',
       },
     ],
   },
 ];
 
-export const OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE = [
-  'general_statistic_read',
-  'general_statistic_query',
-  'general_statistic_export',
-];
+export const OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE = ['gest__get', 'gest__qur', 'gest__exp'];
 
 export const TREE_DATA_BGCT = [
   {
@@ -268,29 +264,29 @@ export const TREE_DATA_BGCT = [
     children: [
       {
         title: 'Xem',
-        key: 'transfer_shift_read',
+        key: 'trsf__get',
       },
       {
         title: 'Tạo mới',
-        key: 'transfer_shift_create',
+        key: 'trsf__cre',
       },
       {
         title: 'Xử lý',
-        key: 'transfer_shift_process',
+        key: 'trsf__upd',
       },
       {
         title: 'Xuất báo cáo',
-        key: 'transfer_shift_export',
+        key: 'trsf__exp',
       },
     ],
   },
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE = [
-  'transfer_shift_read',
-  'transfer_shift_create',
-  'transfer_shift_process',
-  'transfer_shift_export',
+  'trsf__get',
+  'trsf__cre',
+  'trsf__upd',
+  'trsf__exp',
 ];
 
 export const TREE_DATA_KHD = [
@@ -300,29 +296,29 @@ export const TREE_DATA_KHD = [
     children: [
       {
         title: 'Xem',
-        key: 'night_shift_read',
+        key: 'nisf__get',
       },
       {
         title: 'Tạo mới',
-        key: 'night_shift_create',
+        key: 'nisf__cre',
       },
       {
         title: 'Xử lý',
-        key: 'night_shift_process',
+        key: 'nisf__upd',
       },
       {
         title: 'Xuất báo cáo',
-        key: 'night_shift_export',
+        key: 'nisf__exp',
       },
     ],
   },
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE = [
-  'night_shift_read',
-  'night_shift_create',
-  'night_shift_process',
-  'night_shift_export',
+  'nisf__get',
+  'nisf__cre',
+  'nisf__upd',
+  'nisf__exp',
 ];
 
 export const TREE_DATA_LSCG = [
@@ -332,29 +328,28 @@ export const TREE_DATA_LSCG = [
     children: [
       {
         title: 'Xem',
-        key: 'call_history_read',
+        key: 'cahi__get',
       },
-      {
-        title: 'Xuất báo cáo',
-        key: 'call_history_export',
-      },
-
       {
         title: 'Nghe ghi âm',
-        key: 'call_history_record',
+        key: 'cahi__reg',
       },
       {
         title: 'Tải ghi âm',
-        key: 'call_history_download',
+        key: 'cahi__red',
+      },
+      {
+        title: 'Xuất báo cáo',
+        key: 'cahi__exp',
       },
     ],
   },
 ];
 export const OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE = [
-  'call_history_read',
-  'call_history_record',
-  'call_history_export',
-  'call_history_download',
+  'cahi__get',
+  'cahi__reg',
+  'cahi__red',
+  'cahi__exp',
 ];
 
 export const TREE_DATA_CONTACT = [
@@ -364,29 +359,29 @@ export const TREE_DATA_CONTACT = [
     children: [
       {
         title: 'Xem',
-        key: 'contact_read',
+        key: 'cnta__get',
       },
       {
         title: 'Tạo mới',
-        key: 'contact_create',
+        key: 'cnta__cre',
       },
       {
         title: 'Chỉnh sửa',
-        key: 'contact_update',
+        key: 'cnta__upd',
       },
       {
         title: 'Xóa lịch sử',
-        key: 'contact_delete',
+        key: 'cnta__del',
       },
     ],
   },
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_CONTACT_VALUE = [
-  'contact_read',
-  'contact_create',
-  'contact_delete',
-  'contact_update',
+  'cnta__get',
+  'cnta__cre',
+  'cnta__upd',
+  'cnta__del',
 ];
 
 export const TREE_DATA_TTCT = [
@@ -396,34 +391,34 @@ export const TREE_DATA_TTCT = [
     children: [
       {
         title: 'Xem',
-        key: 'shift_info_read',
+        key: 'sfif__get',
       },
       {
         title: 'Tạo mới',
-        key: 'shift_info_create',
+        key: 'sfif__cre',
       },
       {
         title: 'Chỉnh sửa',
-        key: 'shift_info_update',
+        key: 'sfif__upd',
       },
       {
         title: 'Xoá',
-        key: 'shift_info_delete',
+        key: 'sfif__del',
       },
       {
         title: 'Xuất báo cáo',
-        key: 'shift_info_export',
+        key: 'sfif__exp',
       },
     ],
   },
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE = [
-  'shift_info_read',
-  'shift_info_create',
-  'shift_info_update',
-  'shift_info_delete',
-  'shift_info_export',
+  'sfif__get',
+  'sfif__cre',
+  'sfif__upd',
+  'sfif__del',
+  'sfif__exp',
 ];
 
 export const TREE_DATA_TTND = [
@@ -433,25 +428,21 @@ export const TREE_DATA_TTND = [
     children: [
       {
         title: 'Xem',
-        key: 'user_profile_read',
+        key: 'uspf__get',
       },
       {
         title: 'Chỉnh sửa',
-        key: 'user_profile_update',
+        key: 'uspf__upd',
       },
       {
         title: 'Xoá',
-        key: 'user_profile_delete',
+        key: 'uspf__del',
       },
     ],
   },
 ];
 
-export const OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE = [
-  'user_profile_read',
-  'user_profile_update',
-  'user_profile_delete',
-];
+export const OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE = ['uspf__get', 'uspf__upd', 'uspf__del'];
 
 export const TREE_DATA_NQ = [
   {
@@ -460,29 +451,29 @@ export const TREE_DATA_NQ = [
     children: [
       {
         title: 'Xem',
-        key: 'permission_group_read',
+        key: 'pegr__get',
       },
       {
         title: 'Tạo mới',
-        key: 'permission_group_create',
+        key: 'pegr__cre',
       },
       {
         title: 'Chỉnh sửa',
-        key: 'permission_group_update',
+        key: 'pegr__upd',
       },
       {
         title: 'Xóa',
-        key: 'permission_group_delete',
+        key: 'pegr__del',
       },
     ],
   },
 ];
 
 export const OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE = [
-  'permission_group_read',
-  'permission_group_create',
-  'permission_group_update',
-  'permission_group_delete',
+  'pegr__get',
+  'pegr__cre',
+  'pegr__upd',
+  'pegr__del',
 ];
 
 export const OPTIONS_PERMISSION_TKC = [
