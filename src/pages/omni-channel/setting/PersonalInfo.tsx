@@ -182,20 +182,29 @@ const PersonalInfo: React.FC = () => {
         title={
           <div>
             <div className={styles.antAvatarImg}>
-              <Avatar
-                src={
-                  loading ? (
-                    <Spin />
-                  ) : (
-                    <img
-                      loading="lazy"
-                      src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.image}`}
-                    />
-                  )
-                }
-                className={styles.antImg}
-                icon={!dataImage && <UserOutlined style={{ fontSize: 100 }} />}
-              />
+              {initialState?.currentUser?.image ? (
+                <Avatar
+                  src={
+                    loading ? (
+                      <Spin />
+                    ) : (
+                      <img
+                        loading="lazy"
+                        src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.image}`}
+                      />
+                    )
+                  }
+                  className={styles.antImg}
+                  // icon={
+                  //   !initialState?.currentUser?.image && <UserOutlined style={{ fontSize: 100 }} />
+                  // }
+                />
+              ) : (
+                <Avatar
+                  className={styles.antImg}
+                  icon={<UserOutlined style={{ fontSize: 100 }} />}
+                />
+              )}
 
               <Upload
                 {...props}
