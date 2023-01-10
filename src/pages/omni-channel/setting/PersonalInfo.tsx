@@ -154,8 +154,6 @@ const PersonalInfo: React.FC = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  const dataImage = initialState?.currentUser?.image;
-
   const labelPosition = (key: string): string => {
     switch (key) {
       case 'cbgs':
@@ -195,9 +193,6 @@ const PersonalInfo: React.FC = () => {
                     )
                   }
                   className={styles.antImg}
-                  // icon={
-                  //   !initialState?.currentUser?.image && <UserOutlined style={{ fontSize: 100 }} />
-                  // }
                 />
               ) : (
                 <Avatar
