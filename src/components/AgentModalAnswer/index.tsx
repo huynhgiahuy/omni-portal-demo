@@ -26,7 +26,6 @@ import {
 } from '@ant-design/icons';
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
-import AvatarModal from '../../../public/avatar_modal_ring.png';
 import {
   requestAddUserContact,
   requestGetTakeCallNote,
@@ -36,6 +35,7 @@ import { dataProps } from '../RightContent';
 import { useModel, useRequest } from 'umi';
 import moment from 'moment';
 import Timer from 'react-compound-timer';
+import api from '@/api';
 
 type AgentModalAnswerProps = {
   isModalOpen: boolean;
@@ -144,11 +144,9 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   handleCancel,
   isFullScreenModal,
   handleFullScreenModal,
-  handleSelectForwardUser,
   handleClickIconHistory,
   handleClickIconNote,
   handelUserTransfer,
-  valueCheckboxUser,
   isVisibleHistoryCall,
   isVisibleNoteCall,
   isActiveIconHistory,
@@ -406,11 +404,12 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                     <span className={styles.material_icons}></span>
                   </div>
                   <img
-                    src={AvatarModal}
+                    loading="lazy"
+                    src={`${api.UMI_API_BASE_URL}/user-service/api/settings/get_user_avatar_by_email?email=${dataCall?.contact_email}`}
                     alt=""
                     width={isFullScreenModal ? 105 : 58}
                     height={isFullScreenModal ? 105 : 58}
-                    style={{ position: 'relative', left: -8, zIndex: 2 }}
+                    style={{ position: 'relative', left: -8, zIndex: 2, borderRadius: '95%' }}
                   />
                 </div>
                 <Space
@@ -684,11 +683,25 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                           <Typography.Text style={{ color: '#fff' }}>Số điện thoại</Typography.Text>
                         }
                         name="phone_number"
+                        rules={[
+                          {
+                            validator: (_, value: any) => {
+                              const phoneReg = /((0[3|5|7|8|9])+([0-9]{8,9})\b)/;
+                              if (value === undefined || !value || value.length === 0) {
+                                return Promise.reject('Vui lòng nhập số di động');
+                              } else if (value.length > 11) {
+                                return Promise.reject('Số điện thoại không hợp lệ');
+                              } else if (!phoneReg.test(value)) {
+                                return Promise.reject('Số điện thoại không hợp lệ');
+                              }
+                              return Promise.resolve();
+                            },
+                          },
+                        ]}
                       >
                         <Input
                           className={styles.inputHistoryFormStyle}
                           placeholder="Nhập thông tin"
-                          disabled
                         />
                       </Form.Item>
                       <Form.Item

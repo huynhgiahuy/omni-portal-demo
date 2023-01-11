@@ -31,6 +31,7 @@ export type dataProps = {
     work_unit: string;
     ip_phone: string;
   };
+  contact_email: string;
   call_type: string;
   image: string;
 };

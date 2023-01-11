@@ -13,6 +13,7 @@ import {
   message,
   Upload,
   Select,
+  Spin,
 } from 'antd';
 import {
   AppleFilled,
@@ -28,10 +29,11 @@ import { useModel, useRequest } from 'umi';
 import type { RcFile, UploadProps } from 'antd/es/upload/interface';
 import { endpoint } from '@/services/auth';
 import { requestCheckPhoneContact } from '../report/services';
+import api from '@/api';
 
-type FormProps = {
+export type FormProps = {
   name: string;
-  position: string;
+  title: string;
   department: string;
   level: string;
   organization: string;
@@ -51,31 +53,11 @@ const PersonalInfo: React.FC = () => {
   const [isDisable, setIsDisable] = useState(true);
   const { initialState, setInitialState } = useModel('@@initialState');
   const token = window.localStorage.getItem('access_token');
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
 
   const requestEditUserInfoSubmit = async (data: FormProps) => {
-    const {
-      name,
-      position,
-      department,
-      level,
-      organization,
-      home_address,
-      work_address,
-      phone_number,
-      ip_phone,
-    } = data;
-    const res = await requestEditUserInfo(
-      name,
-      position,
-      department,
-      level,
-      organization,
-      home_address,
-      work_address,
-      phone_number,
-      ip_phone,
-    );
+    const res = await requestEditUserInfo(data);
     return res;
   };
 
@@ -143,15 +125,13 @@ const PersonalInfo: React.FC = () => {
     if (!isJpgOrPng) {
       message.error('You can only upload JPG/PNG file!');
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
+    const isLt2M = file.size / 1024 < 2000;
     if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
+      message.error('Ảnh cần nhỏ hơn 2MB!');
     }
 
     return isJpgOrPng && isLt2M;
   };
-
-  const dataImage = initialState?.currentUser?.image;
 
   const labelPosition = (key: string): string => {
     switch (key) {
@@ -179,19 +159,44 @@ const PersonalInfo: React.FC = () => {
         title={
           <div>
             <div className={styles.antAvatarImg}>
-              <Avatar
-                src={dataImage && `data:image/jpeg;base64,${dataImage}`}
-                className={styles.antImg}
-                icon={!dataImage && <UserOutlined style={{ fontSize: 100 }} />}
-              />
+              {initialState?.currentUser?.avatar ? (
+                <Avatar
+                  src={
+                    loading ? (
+                      <Spin />
+                    ) : (
+                      <img
+                        loading="lazy"
+                        src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.avatar}`}
+                      />
+                    )
+                  }
+                  className={styles.antImg}
+                />
+              ) : (
+                <Avatar
+                  className={styles.antImg}
+                  icon={<UserOutlined style={{ fontSize: 100 }} />}
+                />
+              )}
+
               <Upload
                 {...props}
                 beforeUpload={beforeUpload}
                 onChange={async ({ file }) => {
+                  if (file.status === 'uploading') {
+                    setLoading(true);
+                  } else {
+                    setLoading(false);
+                  }
+
                   if (file?.response?.success) {
                     await setInitialState((s) => ({
                       ...s,
-                      currentUser: file?.response?.data[0],
+                      currentUser: {
+                        ...initialState?.currentUser,
+                        image: file?.response?.data[0]?.url,
+                      },
                     }));
                   }
                 }}
@@ -218,7 +223,7 @@ const PersonalInfo: React.FC = () => {
                 if (
                   error.errorFields.length === 0 &&
                   (error.values.work_address !== initialState?.currentUser?.work_address ||
-                    error.values.position !== initialState?.currentUser?.position ||
+                    error.values.title !== initialState?.currentUser?.title ||
                     error.values.level !== initialState?.currentUser?.level ||
                     error.values.home_address !== initialState?.currentUser?.home_address ||
                     error.values.phone_number !== initialState?.currentUser?.phone_number ||
@@ -310,7 +315,7 @@ const PersonalInfo: React.FC = () => {
                   </Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
-                      name="position"
+                      name="title"
                       className={styles.antFormItemMargin}
                       rules={[
                         {
@@ -333,8 +338,8 @@ const PersonalInfo: React.FC = () => {
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.position &&
-                        labelPosition(initialState?.currentUser?.position)}
+                      {initialState?.currentUser?.title &&
+                        labelPosition(initialState?.currentUser?.title)}
                     </Typography.Text>
                   )}
                 </div>
@@ -413,7 +418,7 @@ const PersonalInfo: React.FC = () => {
                       rules={[
                         {
                           validator: (_, value: any) => {
-                            const phoneReg = /([0]{1})+([0-9]{1})+([0-9]{8,9})/;
+                            const phoneReg = /((0[3|5|7|8|9])+([0-9]{8,9})\b)/;
                             if (value === undefined || !value || value.length === 0) {
                               return Promise.reject('Vui lòng nhập số di động');
                             } else if (value.length > 11) {

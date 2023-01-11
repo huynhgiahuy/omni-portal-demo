@@ -866,7 +866,7 @@ const PhoneBook: React.FC = () => {
               rules={[
                 {
                   validator: (_, value: any) => {
-                    const phoneReg = /([0]{1})+([0-9]{1})+([0-9]{8,9})/;
+                    const phoneReg = /((0[3|5|7|8|9])+([0-9]{8,9})\b)/;
                     if (value === undefined || !value || value.length === 0) {
                       return Promise.reject('Vui lòng nhập số di động');
                     } else if (value.length > 11) {

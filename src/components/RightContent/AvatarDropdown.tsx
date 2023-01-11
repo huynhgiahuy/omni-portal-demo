@@ -31,6 +31,7 @@ import {
   requestUpdatenotification,
   requestUpdateScreenMode,
 } from '@/services/user_info';
+import api from '@/api';
 
 const { SubMenu } = Menu;
 const { Title } = Typography;
@@ -336,7 +337,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
               <Row>
                 <Col span={4}>
                   <Avatar size="small" style={{ backgroundColor: 'color' }}>
-                    <Image preview={false} src={IconDark}></Image>
+                    <Image preview={false} src={IconDark} />
                   </Avatar>
                 </Col>
                 <Col span={20}>
@@ -437,16 +438,19 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     </Form>
   );
 
-  const dataImage = initialState?.currentUser?.image;
   return (
     <HeaderDropdown overlay={menuHeaderDropdown}>
       <span className={`${styles.action} ${styles.account}`}>
         <Avatar
           size="small"
           className={styles.avatar}
-          src={dataImage && `data:image/jpeg;base64,${dataImage}`}
+          src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.avatar}`}
           alt="avatar"
-          icon={!dataImage && <UserOutlined style={{ fontSize: 20, color: 'gray' }} />}
+          icon={
+            !initialState?.currentUser?.avatar && (
+              <UserOutlined style={{ fontSize: 20, color: 'gray' }} />
+            )
+          }
         />
       </span>
     </HeaderDropdown>

@@ -22,7 +22,7 @@ const BasicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         },
       });
 
-      newSocket.emit('authen_event', { token: access_token });
+      // newSocket.emit('authen_event', { token: access_token });
 
       setSocket(newSocket);
     }
