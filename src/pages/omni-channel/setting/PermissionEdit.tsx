@@ -1022,7 +1022,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     validator: (_, value: any) => {
-                      const departmentReg = /[a-zA-Z]+$/;
+                      const departmentReg = /[a-zA-Z0-9]+$/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập phòng ban');
                       } else if (!departmentReg.test(value)) {
