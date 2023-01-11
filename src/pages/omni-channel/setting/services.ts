@@ -1,5 +1,6 @@
 import api from '@/api';
 import request from '@/utils/request';
+import { FormProps } from 'antd';
 
 const token = window.localStorage.getItem('access_token');
 export async function requestCreateRoleAndPerm(
@@ -45,33 +46,13 @@ export async function requestUpdateRole(
   );
 }
 
-export async function requestEditUserInfo(
-  name: string,
-  position: string,
-  department: string,
-  level: string,
-  organization: string,
-  home_address: string,
-  work_address: string,
-  phone_number: string,
-  ip_phone: string,
-) {
+export async function requestEditUserInfo(data: FormProps) {
   return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/user/update_user_infomation`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    data: {
-      name,
-      position,
-      department,
-      level,
-      organization,
-      home_address,
-      work_address,
-      phone_number,
-      ip_phone,
-    },
+    data,
   });
 }
 

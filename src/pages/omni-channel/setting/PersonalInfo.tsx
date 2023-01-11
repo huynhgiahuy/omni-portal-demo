@@ -31,9 +31,9 @@ import { endpoint } from '@/services/auth';
 import { requestCheckPhoneContact } from '../report/services';
 import api from '@/api';
 
-type FormProps = {
+export type FormProps = {
   name: string;
-  position: string;
+  title: string;
   department: string;
   level: string;
   organization: string;
@@ -57,28 +57,7 @@ const PersonalInfo: React.FC = () => {
   const [form] = Form.useForm();
 
   const requestEditUserInfoSubmit = async (data: FormProps) => {
-    const {
-      name,
-      position,
-      department,
-      level,
-      organization,
-      home_address,
-      work_address,
-      phone_number,
-      ip_phone,
-    } = data;
-    const res = await requestEditUserInfo(
-      name,
-      position,
-      department,
-      level,
-      organization,
-      home_address,
-      work_address,
-      phone_number,
-      ip_phone,
-    );
+    const res = await requestEditUserInfo(data);
     return res;
   };
 
@@ -154,8 +133,6 @@ const PersonalInfo: React.FC = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  const dataImage = initialState?.currentUser?.image;
-
   const labelPosition = (key: string): string => {
     switch (key) {
       case 'cbgs':
@@ -182,7 +159,7 @@ const PersonalInfo: React.FC = () => {
         title={
           <div>
             <div className={styles.antAvatarImg}>
-              {initialState?.currentUser?.image ? (
+              {initialState?.currentUser?.avatar ? (
                 <Avatar
                   src={
                     loading ? (
@@ -190,14 +167,11 @@ const PersonalInfo: React.FC = () => {
                     ) : (
                       <img
                         loading="lazy"
-                        src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.image}`}
+                        src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.avatar}`}
                       />
                     )
                   }
                   className={styles.antImg}
-                  // icon={
-                  //   !initialState?.currentUser?.image && <UserOutlined style={{ fontSize: 100 }} />
-                  // }
                 />
               ) : (
                 <Avatar
@@ -249,7 +223,7 @@ const PersonalInfo: React.FC = () => {
                 if (
                   error.errorFields.length === 0 &&
                   (error.values.work_address !== initialState?.currentUser?.work_address ||
-                    error.values.position !== initialState?.currentUser?.position ||
+                    error.values.title !== initialState?.currentUser?.title ||
                     error.values.level !== initialState?.currentUser?.level ||
                     error.values.home_address !== initialState?.currentUser?.home_address ||
                     error.values.phone_number !== initialState?.currentUser?.phone_number ||
@@ -341,7 +315,7 @@ const PersonalInfo: React.FC = () => {
                   </Typography.Text>
                   {isEditUser === true ? (
                     <Form.Item
-                      name="position"
+                      name="title"
                       className={styles.antFormItemMargin}
                       rules={[
                         {
@@ -364,8 +338,8 @@ const PersonalInfo: React.FC = () => {
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
-                      {initialState?.currentUser?.position &&
-                        labelPosition(initialState?.currentUser?.position)}
+                      {initialState?.currentUser?.title &&
+                        labelPosition(initialState?.currentUser?.title)}
                     </Typography.Text>
                   )}
                 </div>

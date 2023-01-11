@@ -31,7 +31,6 @@ declare namespace API {
     home_address?: string;
     id?: string;
     user_id?: string;
-    image?: string;
     ip_phone?: string;
     latest_update_password?: string;
     level?: string;
@@ -45,7 +44,7 @@ declare namespace API {
     };
     organization?: string;
     phone_number?: string;
-    position?: string;
+    title?: string;
     screen_mode?: {
       dark_mode?: boolean;
       simple_mode?: boolean;
