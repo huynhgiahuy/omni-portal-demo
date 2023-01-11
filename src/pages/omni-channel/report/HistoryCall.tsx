@@ -161,15 +161,14 @@ const HistoryCall: React.FC = () => {
 
   const fetchListDetailCallNote = useRequest(
     async (callId: any, phoneNumber: any, callDirection: any) => {
-      const res: { success: boolean; data: any } = await requestGetDetailCallNote(
-        token ? token : '',
-        callId,
-        phoneNumber,
-        callDirection,
-      );
-      if (!res.success) {
-        message.error('Không lấy được lịch sử note');
-        return;
+      const res: { success: boolean; data: any; error_code: number } =
+        await requestGetDetailCallNote(token ? token : '', callId, phoneNumber, callDirection);
+      if (res.success === false) {
+        if (res.error_code === 4030102) {
+          message.error('Bạn không có quyền xem ghi chú lịch sử cuộc gọi!');
+        } else {
+          message.error('Không thể xem ghi chú lịch sử cuộc gọi!');
+        }
       } else {
         setListNote(res.data);
       }
