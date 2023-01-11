@@ -195,7 +195,7 @@ const PersonalInfo: React.FC = () => {
                       ...s,
                       currentUser: {
                         ...initialState?.currentUser,
-                        image: file?.response?.data[0]?.url,
+                        avatar: file?.response?.data[0]?.url,
                       },
                     }));
                   }
