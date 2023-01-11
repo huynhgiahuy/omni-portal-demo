@@ -81,9 +81,9 @@ interface DataAllUserInfoFinal {
   work_address: string;
   department: string;
   level: string;
-  position: string;
+  title: string;
   phone_number: string;
-  image: string;
+  avatar: string;
   status: any;
 }
 
@@ -347,7 +347,7 @@ const PermissionEdit: React.FC = () => {
           teamKey,
           roleKey,
           values.department,
-          values.position,
+          values.title,
           values.phone_number,
           values.ip_phone,
           values.level,
@@ -488,12 +488,12 @@ const PermissionEdit: React.FC = () => {
       align: 'center',
       width: '250px',
       render: (text, record) => {
-        if (record.image !== null) {
+        if (record.avatar !== null) {
           return (
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div style={{ flex: 1 }}>
                 <Avatar
-                  src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${record?.image}`}
+                  src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${record?.avatar}`}
                   size="large"
                   className={styles.avatarImg}
                 />
@@ -916,7 +916,7 @@ const PermissionEdit: React.FC = () => {
                   error.values.ip_phone !== listEditUserInfoFinal[0].ip_phone ||
                   error.values.level !== listEditUserInfoFinal[0].level ||
                   error.values.work_address !== listEditUserInfoFinal[0].work_address ||
-                  error.values.position !== listEditUserInfoFinal[0].position)
+                  error.values.title !== listEditUserInfoFinal[0].title)
               ) {
                 setInfoUpdated(true);
               }
@@ -1022,7 +1022,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     validator: (_, value: any) => {
-                      const departmentReg = /[a-zA-Z]+$/;
+                      const departmentReg = /[a-zA-Z0-9]+$/;
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập phòng ban');
                       } else if (!departmentReg.test(value)) {
@@ -1117,7 +1117,7 @@ const PermissionEdit: React.FC = () => {
                     Chức danh <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
-                name="position"
+                name="title"
                 rules={[
                   {
                     required: true,
