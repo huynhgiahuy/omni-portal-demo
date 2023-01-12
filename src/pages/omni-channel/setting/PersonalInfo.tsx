@@ -142,7 +142,7 @@ const PersonalInfo: React.FC = () => {
       case 'l2':
         return 'L2';
       case 'tc':
-        return 'Trường ca';
+        return 'Trưởng ca';
       case 'cbqlp':
         return 'CBQLP';
       case 'da':
