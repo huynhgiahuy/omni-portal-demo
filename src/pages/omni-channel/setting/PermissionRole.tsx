@@ -1,70 +1,35 @@
-import React, { useEffect, useState } from 'react';
 import {
-  Table,
-  Space,
-  Modal,
-  Spin,
-  message,
-  Input,
-  Row,
-  Col,
-  Button,
-  Form,
-  Typography,
-  Checkbox,
-  Tree,
+    Button, Checkbox, Col, Form, Input, message, Modal, Row, Space, Spin, Table, Tree, Typography
 } from 'antd';
-import styles from '../setting/style.less';
-import type { ColumnsType, TableProps } from 'antd/es/table';
-import {
-  EditOutlined,
-  DeleteOutlined,
-  SearchOutlined,
-  PlusSquareFilled,
-  CloseCircleFilled,
-} from '@ant-design/icons';
-import {
-  requestDeleteRoleAndPermission,
-  requestCreateRoleAndPerm,
-  requestReadRoleAndPerm,
-  requestUpdateRole,
-} from './services';
-import { useRequest } from 'umi';
 import { debounce, isEqual } from 'lodash';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { useRequest } from 'umi';
+
+import {
+    OPTIONS_PERMISSION_CM, OPTIONS_PERMISSION_CM_VALUE, OPTIONS_PERMISSION_DB,
+    OPTIONS_PERMISSION_DB_VALUE, OPTIONS_PERMISSION_EM, OPTIONS_PERMISSION_EM_VALUE,
+    OPTIONS_PERMISSION_IM, OPTIONS_PERMISSION_IM_VALUE, OPTIONS_PERMISSION_RF,
+    OPTIONS_PERMISSION_RF_VALUE, OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE,
+    OPTIONS_PERMISSION_TREE_DATA_CONTACT_VALUE, OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE,
+    OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE, OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE,
+    OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE, OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE,
+    OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE, TREE_DATA_BGCT, TREE_DATA_CONTACT, TREE_DATA_KHD,
+    TREE_DATA_LSCG, TREE_DATA_NQ, TREE_DATA_TKC, TREE_DATA_TTCT, TREE_DATA_TTND
+} from '@/constants';
+import NoFoundPage from '@/pages/404';
+import {
+    CloseCircleFilled, DeleteOutlined, EditOutlined, PlusSquareFilled, SearchOutlined
+} from '@ant-design/icons';
+
+import styles from '../setting/style.less';
 import { dataPermissionTable } from './FakeData';
 import {
-  OPTIONS_PERMISSION_CM,
-  OPTIONS_PERMISSION_CM_VALUE,
-  OPTIONS_PERMISSION_DB,
-  OPTIONS_PERMISSION_DB_VALUE,
-  OPTIONS_PERMISSION_EM,
-  OPTIONS_PERMISSION_EM_VALUE,
-  OPTIONS_PERMISSION_IM,
-  OPTIONS_PERMISSION_IM_VALUE,
-  OPTIONS_PERMISSION_RF,
-  OPTIONS_PERMISSION_RF_VALUE,
-  OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE,
-  OPTIONS_PERMISSION_TREE_DATA_CONTACT_VALUE,
-  OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE,
-  OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE,
-  OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE,
-  OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE,
-  // OPTIONS_PERMISSION_TREE_DATA_TTCN_VALUE,
-  OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE,
-  OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE,
-  TREE_DATA_BGCT,
-  TREE_DATA_CONTACT,
-  TREE_DATA_KHD,
-  TREE_DATA_LSCG,
-  TREE_DATA_NQ,
-  TREE_DATA_TKC,
-  // TREE_DATA_TTCN,
-  TREE_DATA_TTCT,
-  TREE_DATA_TTND,
-} from '@/constants';
-import moment from 'moment';
-import NoFoundPage from '@/pages/404';
+    requestCreateRoleAndPerm, requestDeleteRoleAndPermission, requestReadRoleAndPerm,
+    requestUpdateRole
+} from './services';
 
+import type { ColumnsType, TableProps } from 'antd/es/table';
 interface DataAllRolePermission {
   key: React.Key;
   code: string;
@@ -388,8 +353,8 @@ const PermissionRole: React.FC = () => {
   };
 
   const handleCancleAddNewPermission = () => {
-    setIsEditRole(false);
     setAddNetPermission(false);
+    setIsEditRole(false);
   };
 
   const handleCheckAllFilterDB = (e: any) => {
