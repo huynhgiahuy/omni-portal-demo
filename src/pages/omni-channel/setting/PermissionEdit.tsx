@@ -157,6 +157,7 @@ const PermissionEdit: React.FC = () => {
 
   const [form] = Form.useForm();
   const [formFilter] = Form.useForm();
+  const [formTeam] = Form.useForm();
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -330,11 +331,12 @@ const PermissionEdit: React.FC = () => {
     } else if (values === undefined || values === '') {
       e.stopPropagation();
       e.preventDefault();
-      message.error('Vui lòng nhập team mới!');
+      message.error('Vui lòng nhập Team mới!');
     } else {
       await handleCreateNewTeamPermission(values);
       await fetchTeamPermissionData();
-      form.setFieldsValue({ newTeamValue: undefined });
+      formTeam.setFieldsValue({ newTeamValue: undefined });
+      setNewTeamValue(undefined);
       setClickAddNewTeam(false);
     }
   };
@@ -346,7 +348,6 @@ const PermissionEdit: React.FC = () => {
           userKey,
           teamKey,
           roleKey,
-          values.department,
           values.title,
           values.phone_number,
           values.ip_phone,
@@ -911,7 +912,6 @@ const PermissionEdit: React.FC = () => {
                 error.errorFields.length === 0 &&
                 (error.values.team_id !== listEditUserInfoFinal[0].team_id ||
                   error.values.role_id !== listEditUserInfoFinal[0].role_id ||
-                  error.values.department !== listEditUserInfoFinal[0].department ||
                   error.values.phone_number !== listEditUserInfoFinal[0].phone_number ||
                   error.values.ip_phone !== listEditUserInfoFinal[0].ip_phone ||
                   error.values.level !== listEditUserInfoFinal[0].level ||
@@ -927,6 +927,126 @@ const PermissionEdit: React.FC = () => {
             <div style={{ flex: 1 }}>
               <Form.Item label="Tên người dùng" name="name">
                 <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.7)' }} />
+              </Form.Item>
+              <Form.Item label="Phòng ban" name="department">
+                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.7)' }} />
+              </Form.Item>
+              <Form.Item
+                label={
+                  <Typography.Text>
+                    IP Phone <span style={{ color: 'red' }}>(*)</span>
+                  </Typography.Text>
+                }
+                name="ip_phone"
+                rules={[
+                  {
+                    validator: (_, value: any) => {
+                      const numberReg = /^[0-9]{4,7}$/;
+                      if (value === undefined || !value || value.length === 0) {
+                        return Promise.reject('Vui lòng nhập IP Phone');
+                      } else if (value.length < 4 && numberReg.test(value) === true) {
+                        return Promise.reject('IP Phone không hợp lệ');
+                      } else if (!numberReg.test(value)) {
+                        return Promise.reject('IP Phone không hợp lệ');
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label={
+                  <Typography.Text>
+                    Số di động <span style={{ color: 'red' }}>(*)</span>
+                  </Typography.Text>
+                }
+                name="phone_number"
+                rules={[
+                  {
+                    validator: (_, value: any) => {
+                      const phoneReg = /((0[3|5|7|8|9])+([0-9]{8,9})\b)/;
+                      if (value === undefined || !value || value.length === 0) {
+                        return Promise.reject('Vui lòng nhập Số di động');
+                      } else if (value.length < 10 || value.length > 11) {
+                        return Promise.reject('Số điện thoại không hợp lệ');
+                      } else if (!phoneReg.test(value)) {
+                        return Promise.reject('Số điện thoại không hợp lệ');
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+              <Form.Item
+                label={
+                  <Typography.Text>
+                    Cấp độ <span style={{ color: 'red' }}>(*)</span>
+                  </Typography.Text>
+                }
+                name="level"
+                rules={[
+                  {
+                    validator: (_, value: any) => {
+                      const levelReg = /[a-zA-Z0-9]+$/;
+                      if (value === undefined || !value || value.length === 0) {
+                        return Promise.reject('Vui lòng nhập Cấp độ');
+                      } else if (!levelReg.test(value)) {
+                        return Promise.reject('Cấp độ không hợp lệ');
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
+              >
+                <Input />
+              </Form.Item>
+            </div>
+            <div style={{ flex: 1 }}>
+              <Form.Item label="Email" name="email">
+                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.7)' }} />
+              </Form.Item>
+              <Form.Item
+                label={
+                  <Typography.Text>
+                    Nhóm quyền <span style={{ color: 'red' }}>(*)</span>
+                  </Typography.Text>
+                }
+                name="role_id"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng nhập Nhóm quyền',
+                  },
+                ]}
+              >
+                <Select onChange={handleSelectRole}>
+                  {listGroupPermission &&
+                    listGroupPermission.map((item: GroupPermission) => (
+                      <Select.Option value={item.id} key={item.id}>
+                        {item.code}
+                      </Select.Option>
+                    ))}
+                </Select>
+              </Form.Item>
+              <Form.Item
+                label={
+                  <Typography.Text>
+                    Chức danh <span style={{ color: 'red' }}>(*)</span>
+                  </Typography.Text>
+                }
+                name="title"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng nhập Chức danh',
+                  },
+                ]}
+              >
+                <Select options={OPTIONS_POSITION} menuItemSelectedIcon={<CheckOutlined />} />
               </Form.Item>
               <Form.Item
                 label={
@@ -958,7 +1078,7 @@ const PermissionEdit: React.FC = () => {
                             Chỉnh sửa / Thêm team mới
                           </Button>
                         ) : (
-                          <Form form={form}>
+                          <Form form={formTeam}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                               <div style={{ flex: 1 }}>
                                 <Form.Item name="newTeamValue" style={{ marginBottom: 'unset' }}>
@@ -1015,146 +1135,6 @@ const PermissionEdit: React.FC = () => {
               <Form.Item
                 label={
                   <Typography.Text>
-                    Phòng ban <span style={{ color: 'red' }}>(*)</span>
-                  </Typography.Text>
-                }
-                name="department"
-                rules={[
-                  {
-                    validator: (_, value: any) => {
-                      const departmentReg = /[a-zA-Z0-9]+$/;
-                      if (value === undefined || !value || value.length === 0) {
-                        return Promise.reject('Vui lòng nhập phòng ban');
-                      } else if (!departmentReg.test(value)) {
-                        return Promise.reject('Phòng ban không hợp lệ');
-                      }
-                      return Promise.resolve();
-                    },
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label={
-                  <Typography.Text>
-                    Số di động <span style={{ color: 'red' }}>(*)</span>
-                  </Typography.Text>
-                }
-                name="phone_number"
-                rules={[
-                  {
-                    validator: (_, value: any) => {
-                      const phoneReg = /((0[3|5|7|8|9])+([0-9]{8,9})\b)/;
-                      if (value === undefined || !value || value.length === 0) {
-                        return Promise.reject('Vui lòng nhập số di động');
-                      } else if (value.length < 10 || value.length > 11) {
-                        return Promise.reject('Số điện thoại không hợp lệ');
-                      } else if (!phoneReg.test(value)) {
-                        return Promise.reject('Số điện thoại không hợp lệ');
-                      }
-                      return Promise.resolve();
-                    },
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label={
-                  <Typography.Text>
-                    Cấp độ <span style={{ color: 'red' }}>(*)</span>
-                  </Typography.Text>
-                }
-                name="level"
-                rules={[
-                  {
-                    validator: (_, value: any) => {
-                      const levelReg = /[a-zA-Z0-9]+$/;
-                      if (value === undefined || !value || value.length === 0) {
-                        return Promise.reject('Vui lòng nhập cấp độ');
-                      } else if (!levelReg.test(value)) {
-                        return Promise.reject('Cấp độ không hợp lệ');
-                      }
-                      return Promise.resolve();
-                    },
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </div>
-            <div style={{ flex: 1 }}>
-              <Form.Item label="Email" name="email">
-                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.7)' }} />
-              </Form.Item>
-              <Form.Item
-                label={
-                  <Typography.Text>
-                    Nhóm quyền <span style={{ color: 'red' }}>(*)</span>
-                  </Typography.Text>
-                }
-                name="role_id"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập nhóm quyền',
-                  },
-                ]}
-              >
-                <Select onChange={handleSelectRole}>
-                  {listGroupPermission &&
-                    listGroupPermission.map((item: GroupPermission) => (
-                      <Select.Option value={item.id} key={item.id}>
-                        {item.code}
-                      </Select.Option>
-                    ))}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label={
-                  <Typography.Text>
-                    Chức danh <span style={{ color: 'red' }}>(*)</span>
-                  </Typography.Text>
-                }
-                name="title"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập chức danh',
-                  },
-                ]}
-              >
-                <Select options={OPTIONS_POSITION} menuItemSelectedIcon={<CheckOutlined />} />
-              </Form.Item>
-              <Form.Item
-                label={
-                  <Typography.Text>
-                    IP Phone <span style={{ color: 'red' }}>(*)</span>
-                  </Typography.Text>
-                }
-                name="ip_phone"
-                rules={[
-                  {
-                    validator: (_, value: any) => {
-                      const numberReg = /^[0-9]{4,7}$/;
-                      if (value === undefined || !value || value.length === 0) {
-                        return Promise.reject('Vui lòng nhập IP Phone');
-                      } else if (value.length < 4 && numberReg.test(value) === true) {
-                        return Promise.reject('IP Phone không hợp lệ');
-                      } else if (!numberReg.test(value)) {
-                        return Promise.reject('IP Phone không hợp lệ');
-                      }
-                      return Promise.resolve();
-                    },
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label={
-                  <Typography.Text>
                     Nơi công tác <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
@@ -1162,7 +1142,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập nơi công tác',
+                    message: 'Vui lòng nhập Nơi công tác',
                   },
                 ]}
               >
