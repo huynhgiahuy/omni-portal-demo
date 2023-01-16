@@ -820,7 +820,7 @@ const PermissionEdit: React.FC = () => {
             </div>
             <div style={{ paddingTop: '29px' }}>
               <Form.Item style={{ marginBottom: 'unset' }} label="">
-                <Button type="text" style={{ color: 'blue' }} onClick={(e) => onReset(e)}>
+                <Button type="link" style={{ color: 'blue' }} onClick={(e) => onReset(e)}>
                   Reset
                 </Button>
               </Form.Item>
