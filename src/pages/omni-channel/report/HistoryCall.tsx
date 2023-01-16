@@ -637,7 +637,7 @@ const HistoryCall: React.FC = () => {
             </div>
             <div style={{ paddingTop: '29px' }}>
               <Form.Item style={{ marginBottom: 'unset' }}>
-                <Button type="text" style={{ color: 'blue' }} onClick={(e) => onResetFilter(e)}>
+                <Button type="link" style={{ color: 'blue' }} onClick={(e) => onResetFilter(e)}>
                   Reset
                 </Button>
               </Form.Item>
