@@ -157,6 +157,7 @@ const PermissionEdit: React.FC = () => {
 
   const [form] = Form.useForm();
   const [formFilter] = Form.useForm();
+  const [formTeam] = Form.useForm();
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -334,7 +335,8 @@ const PermissionEdit: React.FC = () => {
     } else {
       await handleCreateNewTeamPermission(values);
       await fetchTeamPermissionData();
-      form.setFieldsValue({ newTeamValue: undefined });
+      formTeam.setFieldsValue({ newTeamValue: undefined });
+      setNewTeamValue(undefined);
       setClickAddNewTeam(false);
     }
   };
@@ -346,7 +348,6 @@ const PermissionEdit: React.FC = () => {
           userKey,
           teamKey,
           roleKey,
-          values.department,
           values.title,
           values.phone_number,
           values.ip_phone,
@@ -911,7 +912,6 @@ const PermissionEdit: React.FC = () => {
                 error.errorFields.length === 0 &&
                 (error.values.team_id !== listEditUserInfoFinal[0].team_id ||
                   error.values.role_id !== listEditUserInfoFinal[0].role_id ||
-                  error.values.department !== listEditUserInfoFinal[0].department ||
                   error.values.phone_number !== listEditUserInfoFinal[0].phone_number ||
                   error.values.ip_phone !== listEditUserInfoFinal[0].ip_phone ||
                   error.values.level !== listEditUserInfoFinal[0].level ||
@@ -928,105 +928,26 @@ const PermissionEdit: React.FC = () => {
               <Form.Item label="Tên người dùng" name="name">
                 <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.7)' }} />
               </Form.Item>
-              <Form.Item
-                label={
-                  <Typography.Text>
-                    Team <span style={{ color: 'red' }}>(*)</span>
-                  </Typography.Text>
-                }
-                name="team_id"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập Team',
-                  },
-                ]}
-              >
-                <Select
-                  onChange={handleSelectTeam}
-                  dropdownRender={(menu) => (
-                    <>
-                      {menu}
-                      <div className={styles.addNewTeamText}>
-                        <hr></hr>
-                        {clickAddNewTeam === false ? (
-                          <Button
-                            className={styles.addNewTeamBtn}
-                            type="text"
-                            onClick={() => setClickAddNewTeam(true)}
-                          >
-                            Chỉnh sửa / Thêm team mới
-                          </Button>
-                        ) : (
-                          <Form form={form}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                              <div style={{ flex: 1 }}>
-                                <Form.Item name="newTeamValue" style={{ marginBottom: 'unset' }}>
-                                  <Input
-                                    allowClear
-                                    placeholder="Nhập team mới tại đây"
-                                    className={styles.addNewTeamPlaceholder}
-                                    onChange={(e) => setNewTeamValue(e.target.value)}
-                                  />
-                                </Form.Item>
-                              </div>
-                              <div>
-                                <Form.Item style={{ marginBottom: 'unset' }}>
-                                  <Space>
-                                    <SaveOutlined
-                                      style={{ marginLeft: 10, fontSize: 14 }}
-                                      onClick={(e) => handleSubmitNewTeam(e, newTeamValue)}
-                                    />
-                                    <CloseOutlined
-                                      style={{ fontSize: 14 }}
-                                      onClick={() => setClickAddNewTeam(false)}
-                                    />
-                                  </Space>
-                                </Form.Item>
-                              </div>
-                            </div>
-                          </Form>
-                        )}
-                      </div>
-                    </>
-                  )}
-                  onDropdownVisibleChange={(open) => {
-                    if (open === false) {
-                      setClickAddNewTeam(false);
-                    }
-                    return;
-                  }}
-                >
-                  {listTeamPermission &&
-                    listTeamPermission.map((item: TeamPermission) => (
-                      <Select.Option value={item.id} key={item.id}>
-                        <div className={styles.flexLayout}>
-                          <div>{item.name}</div>
-                          {clickAddNewTeam === true ? (
-                            <DeleteOutlined onClick={(e) => handleClickDeleteTeam(e, item.id)} />
-                          ) : (
-                            ''
-                          )}
-                        </div>
-                      </Select.Option>
-                    ))}
-                </Select>
+              <Form.Item label="Phòng ban" name="department">
+                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.7)' }} />
               </Form.Item>
               <Form.Item
                 label={
                   <Typography.Text>
-                    Phòng ban <span style={{ color: 'red' }}>(*)</span>
+                    IP Phone <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
-                name="department"
+                name="ip_phone"
                 rules={[
                   {
                     validator: (_, value: any) => {
-                      const departmentReg = /[a-zA-Z0-9]+$/;
+                      const numberReg = /^[0-9]{4,7}$/;
                       if (value === undefined || !value || value.length === 0) {
-                        return Promise.reject('Vui lòng nhập phòng ban');
-                      } else if (!departmentReg.test(value)) {
-                        return Promise.reject('Phòng ban không hợp lệ');
+                        return Promise.reject('Vui lòng nhập IP Phone');
+                      } else if (value.length < 4 && numberReg.test(value) === true) {
+                        return Promise.reject('IP Phone không hợp lệ');
+                      } else if (!numberReg.test(value)) {
+                        return Promise.reject('IP Phone không hợp lệ');
                       }
                       return Promise.resolve();
                     },
@@ -1130,27 +1051,86 @@ const PermissionEdit: React.FC = () => {
               <Form.Item
                 label={
                   <Typography.Text>
-                    IP Phone <span style={{ color: 'red' }}>(*)</span>
+                    Team <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
-                name="ip_phone"
+                name="team_id"
                 rules={[
                   {
-                    validator: (_, value: any) => {
-                      const numberReg = /^[0-9]{4,7}$/;
-                      if (value === undefined || !value || value.length === 0) {
-                        return Promise.reject('Vui lòng nhập IP Phone');
-                      } else if (value.length < 4 && numberReg.test(value) === true) {
-                        return Promise.reject('IP Phone không hợp lệ');
-                      } else if (!numberReg.test(value)) {
-                        return Promise.reject('IP Phone không hợp lệ');
-                      }
-                      return Promise.resolve();
-                    },
+                    required: true,
+                    message: 'Vui lòng nhập Team',
                   },
                 ]}
               >
-                <Input />
+                <Select
+                  onChange={handleSelectTeam}
+                  dropdownRender={(menu) => (
+                    <>
+                      {menu}
+                      <div className={styles.addNewTeamText}>
+                        <hr></hr>
+                        {clickAddNewTeam === false ? (
+                          <Button
+                            className={styles.addNewTeamBtn}
+                            type="text"
+                            onClick={() => setClickAddNewTeam(true)}
+                          >
+                            Chỉnh sửa / Thêm team mới
+                          </Button>
+                        ) : (
+                          <Form form={formTeam}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <div style={{ flex: 1 }}>
+                                <Form.Item name="newTeamValue" style={{ marginBottom: 'unset' }}>
+                                  <Input
+                                    allowClear
+                                    placeholder="Nhập team mới tại đây"
+                                    className={styles.addNewTeamPlaceholder}
+                                    onChange={(e) => setNewTeamValue(e.target.value)}
+                                  />
+                                </Form.Item>
+                              </div>
+                              <div>
+                                <Form.Item style={{ marginBottom: 'unset' }}>
+                                  <Space>
+                                    <SaveOutlined
+                                      style={{ marginLeft: 10, fontSize: 14 }}
+                                      onClick={(e) => handleSubmitNewTeam(e, newTeamValue)}
+                                    />
+                                    <CloseOutlined
+                                      style={{ fontSize: 14 }}
+                                      onClick={() => setClickAddNewTeam(false)}
+                                    />
+                                  </Space>
+                                </Form.Item>
+                              </div>
+                            </div>
+                          </Form>
+                        )}
+                      </div>
+                    </>
+                  )}
+                  onDropdownVisibleChange={(open) => {
+                    if (open === false) {
+                      setClickAddNewTeam(false);
+                    }
+                    return;
+                  }}
+                >
+                  {listTeamPermission &&
+                    listTeamPermission.map((item: TeamPermission) => (
+                      <Select.Option value={item.id} key={item.id}>
+                        <div className={styles.flexLayout}>
+                          <div>{item.name}</div>
+                          {clickAddNewTeam === true ? (
+                            <DeleteOutlined onClick={(e) => handleClickDeleteTeam(e, item.id)} />
+                          ) : (
+                            ''
+                          )}
+                        </div>
+                      </Select.Option>
+                    ))}
+                </Select>
               </Form.Item>
               <Form.Item
                 label={
