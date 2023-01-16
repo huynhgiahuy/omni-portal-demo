@@ -35,7 +35,7 @@ declare namespace API {
     latest_update_password?: string;
     level?: string;
     notification?: {
-      critic_issue?: boolean;
+      critical_issue?: boolean;
       incoming_call?: boolean;
       missed_call?: boolean;
       night_plan?: boolean;
