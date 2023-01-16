@@ -718,6 +718,7 @@ const HistoryCall: React.FC = () => {
           audioRef.current.pause();
         }}
         footer={false}
+        centered
         title="Nghe file ghi âm"
       >
         <div style={{ textAlign: 'center' }}>

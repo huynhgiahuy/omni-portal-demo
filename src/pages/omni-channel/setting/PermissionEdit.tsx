@@ -413,6 +413,7 @@ const PermissionEdit: React.FC = () => {
       cancelText: 'Hủy',
       icon: <CloseCircleFilled style={{ color: 'red' }} />,
       okButtonProps: { danger: true },
+      centered: true,
     });
   };
   const handleTableChange = (newPagination: any) => {
