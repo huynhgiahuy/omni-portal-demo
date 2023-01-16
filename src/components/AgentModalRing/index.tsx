@@ -1,32 +1,21 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import styles from './index.less';
 import {
-  Modal,
-  Space,
-  Typography,
-  Popover,
-  Button,
-  Form,
-  Input,
-  Timeline,
-  List,
-  message,
+    Button, Form, Input, List, message, Modal, Popover, Space, Timeline, Typography
 } from 'antd';
+import moment from 'moment';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useRequest } from 'umi';
+
+import api from '@/api';
+import { requestGetTakeCallNote } from '@/pages/omni-channel/report/services';
 import {
-  FullscreenExitOutlined,
-  FullscreenOutlined,
-  PhoneOutlined,
-  UserOutlined,
-  EditOutlined,
-  HistoryOutlined,
+    EditOutlined, FullscreenExitOutlined, FullscreenOutlined, HistoryOutlined, PhoneOutlined,
+    UserOutlined
 } from '@ant-design/icons';
+
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
-import { requestGetTakeCallNote } from '@/pages/omni-channel/report/services';
 import { dataProps } from '../RightContent';
-import { useRequest } from 'umi';
-import moment from 'moment';
-import api from '@/api';
+import styles from './index.less';
 
 type AgentModalRingProps = {
   isModalOpen: boolean;
@@ -523,7 +512,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                       name="ip_phone"
                       rules={[
                         {
-                          pattern: new RegExp('^[0-9]{4,6}$'),
+                          pattern: new RegExp('^[0-9]{4,7}$'),
                           message: 'IP Phone không hợp lệ',
                         },
                       ]}

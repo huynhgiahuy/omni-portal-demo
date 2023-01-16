@@ -1,41 +1,24 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import styles from './index.less';
 import {
-  Modal,
-  Space,
-  Typography,
-  Popover,
-  Button,
-  Form,
-  Input,
-  Timeline,
-  List,
-  Select,
-  message,
+    Button, Form, Input, List, message, Modal, Popover, Select, Space, Timeline, Typography
 } from 'antd';
+import moment from 'moment';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Timer from 'react-compound-timer';
+import { useModel, useRequest } from 'umi';
+
+import api from '@/api';
 import {
-  AudioFilled,
-  CaretRightOutlined,
-  FullscreenExitOutlined,
-  FullscreenOutlined,
-  PauseOutlined,
-  PhoneOutlined,
-  UserOutlined,
-  EditOutlined,
-  HistoryOutlined,
+    requestAddUserContact, requestGetTakeCallNote, requestSaveCallNote
+} from '@/pages/omni-channel/report/services';
+import {
+    AudioFilled, CaretRightOutlined, EditOutlined, FullscreenExitOutlined, FullscreenOutlined,
+    HistoryOutlined, PauseOutlined, PhoneOutlined, UserOutlined
 } from '@ant-design/icons';
+
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
-import {
-  requestAddUserContact,
-  requestGetTakeCallNote,
-  requestSaveCallNote,
-} from '@/pages/omni-channel/report/services';
 import { dataProps } from '../RightContent';
-import { useModel, useRequest } from 'umi';
-import moment from 'moment';
-import Timer from 'react-compound-timer';
-import api from '@/api';
+import styles from './index.less';
 
 type AgentModalAnswerProps = {
   isModalOpen: boolean;
@@ -709,7 +692,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                         name="ip_phone"
                         rules={[
                           {
-                            pattern: new RegExp('^[0-9]{4,6}$'),
+                            pattern: new RegExp('^[0-9]{4,7}$'),
                             message: 'IP Phone không hợp lệ',
                           },
                         ]}
