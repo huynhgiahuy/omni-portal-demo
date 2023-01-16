@@ -1,38 +1,23 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import {
-  LogoutOutlined,
-  SettingOutlined,
-  UserOutlined,
-  NotificationOutlined,
-  CompassFilled,
-} from '@ant-design/icons';
-import {
-  Avatar,
-  Menu,
-  Spin,
-  Row,
-  Col,
-  Switch,
-  Divider,
-  Radio,
-  Typography,
-  Image,
-  message,
-  Form,
+    Avatar, Col, Divider, Form, Image, Menu, message, Radio, Row, Spin, Switch, Typography
 } from 'antd';
-import { history, useModel, FormattedMessage } from 'umi';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FormattedMessage, history, useModel } from 'umi';
+
+import api from '@/api';
+import { outLogin } from '@/services/ant-design-pro/api';
+import {
+    requeGetUserInfoProps, requestUpdatenotification, requestUpdateScreenMode
+} from '@/services/user_info';
+import {
+    CompassFilled, LogoutOutlined, NotificationOutlined, SettingOutlined, UserOutlined
+} from '@ant-design/icons';
+
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
-import { outLogin } from '@/services/ant-design-pro/api';
-import type { MenuInfo } from 'rc-menu/lib/interface';
 import IconDark from './Vector 132.png';
-import {
-  requeGetUserInfoProps,
-  requestUpdatenotification,
-  requestUpdateScreenMode,
-} from '@/services/user_info';
-import api from '@/api';
 
+import type { MenuInfo } from 'rc-menu/lib/interface';
 const { SubMenu } = Menu;
 const { Title } = Typography;
 
@@ -59,7 +44,7 @@ type valuesProps = {
   radio_theme: boolean;
   missed_call: boolean;
   incoming_call: boolean;
-  critic_issue: boolean;
+  critical_issue: boolean;
   night_plan: boolean;
   shift: boolean;
   overdue_message: boolean;
@@ -71,7 +56,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     radio_theme: initialState?.currentUser?.screen_mode?.dark_mode ? true : false,
     missed_call: initialState?.currentUser?.notification?.missed_call ? true : false,
     incoming_call: initialState?.currentUser?.notification?.incoming_call ? true : false,
-    critic_issue: initialState?.currentUser?.notification?.critic_issue ? true : false,
+    critical_issue: initialState?.currentUser?.notification?.critical_issue ? true : false,
     night_plan: initialState?.currentUser?.notification?.night_plan ? true : false,
     shift: initialState?.currentUser?.notification?.shift ? true : false,
     overdue_message: initialState?.currentUser?.notification?.overdue_message ? true : false,
@@ -101,7 +86,14 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   );
 
   async function onChange() {
-    const { critic_issue, incoming_call, missed_call, night_plan, overdue_message, shift } = values;
+    const {
+      critical_issue: critic_issue,
+      incoming_call,
+      missed_call,
+      night_plan,
+      overdue_message,
+      shift,
+    } = values;
     const data = { missed_call, incoming_call, critic_issue, night_plan, shift, overdue_message };
     const res = await requestUpdatenotification(data, token ? token : '');
     if (res.success) {
@@ -261,8 +253,8 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
               Thông báo sự cố lớn
             </Col>
             <Col span={4} className={styles.notifyMenuSwitch}>
-              <Form.Item className={styles.notifyMenuForm} name="critic_issue">
-                <Switch size="small" defaultChecked={values.critic_issue} onChange={onChange} />
+              <Form.Item className={styles.notifyMenuForm} name="critical_issue">
+                <Switch size="small" defaultChecked={values.critical_issue} onChange={onChange} />
               </Form.Item>
             </Col>
           </Row>
