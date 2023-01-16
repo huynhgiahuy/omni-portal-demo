@@ -331,7 +331,7 @@ const PermissionEdit: React.FC = () => {
     } else if (values === undefined || values === '') {
       e.stopPropagation();
       e.preventDefault();
-      message.error('Vui lòng nhập team mới!');
+      message.error('Vui lòng nhập Team mới!');
     } else {
       await handleCreateNewTeamPermission(values);
       await fetchTeamPermissionData();
@@ -968,7 +968,7 @@ const PermissionEdit: React.FC = () => {
                     validator: (_, value: any) => {
                       const phoneReg = /((0[3|5|7|8|9])+([0-9]{8,9})\b)/;
                       if (value === undefined || !value || value.length === 0) {
-                        return Promise.reject('Vui lòng nhập số di động');
+                        return Promise.reject('Vui lòng nhập Số di động');
                       } else if (value.length < 10 || value.length > 11) {
                         return Promise.reject('Số điện thoại không hợp lệ');
                       } else if (!phoneReg.test(value)) {
@@ -993,7 +993,7 @@ const PermissionEdit: React.FC = () => {
                     validator: (_, value: any) => {
                       const levelReg = /[a-zA-Z0-9]+$/;
                       if (value === undefined || !value || value.length === 0) {
-                        return Promise.reject('Vui lòng nhập cấp độ');
+                        return Promise.reject('Vui lòng nhập Cấp độ');
                       } else if (!levelReg.test(value)) {
                         return Promise.reject('Cấp độ không hợp lệ');
                       }
@@ -1019,7 +1019,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập nhóm quyền',
+                    message: 'Vui lòng nhập Nhóm quyền',
                   },
                 ]}
               >
@@ -1042,7 +1042,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập chức danh',
+                    message: 'Vui lòng nhập Chức danh',
                   },
                 ]}
               >
@@ -1142,7 +1142,7 @@ const PermissionEdit: React.FC = () => {
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập nơi công tác',
+                    message: 'Vui lòng nhập Nơi công tác',
                   },
                 ]}
               >
