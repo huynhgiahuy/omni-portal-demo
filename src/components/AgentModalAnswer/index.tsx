@@ -685,6 +685,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                         <Input
                           className={styles.inputHistoryFormStyle}
                           placeholder="Nhập thông tin"
+                          disabled={!isSave}
                         />
                       </Form.Item>
                       <Form.Item
