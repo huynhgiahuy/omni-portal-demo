@@ -98,6 +98,8 @@ const HistoryCall: React.FC = () => {
   const [testAudioURL, setTestAudioURL] = useState<any>();
   const [recordId, setRecordId] = useState<string>();
 
+  const [isLoadingExcel, setLoadingExcel] = useState(false);
+
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 10,
@@ -550,6 +552,7 @@ const HistoryCall: React.FC = () => {
 
   const handleExportFile = async () => {
     try {
+      setLoadingExcel(true);
       const res = await axios({
         url: `${api.UMI_API_BASE_URL}/voip-service/api/call/export_call_history_excel`,
         method: 'POST',
@@ -565,11 +568,14 @@ const HistoryCall: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      setLoadingExcel(false);
       fileDownload(res.data, 'history_call_report.xlsx');
     } catch (e: any) {
       if (e.response.status === 403) {
+        setLoadingExcel(false);
         message.error('Bạn không có quyền xuất báo cáo!');
       } else {
+        setLoadingExcel(false);
         message.error('Không thể xuất báo cáo!');
       }
     }
@@ -673,7 +679,11 @@ const HistoryCall: React.FC = () => {
               )}
             />
           </Form.Item>
-          <Button style={{ backgroundColor: '#7fb77e', color: '#fff' }} onClick={handleExportFile}>
+          <Button
+            style={{ backgroundColor: '#7fb77e', color: '#fff' }}
+            onClick={handleExportFile}
+            loading={isLoadingExcel}
+          >
             <ExportIcon /> Export
           </Button>
         </div>
@@ -718,6 +728,7 @@ const HistoryCall: React.FC = () => {
           audioRef.current.pause();
         }}
         footer={false}
+        centered
         title="Nghe file ghi âm"
       >
         <div style={{ textAlign: 'center' }}>
