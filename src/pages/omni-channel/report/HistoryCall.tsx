@@ -572,8 +572,10 @@ const HistoryCall: React.FC = () => {
       fileDownload(res.data, 'history_call_report.xlsx');
     } catch (e: any) {
       if (e.response.status === 403) {
+        setLoadingExcel(false);
         message.error('Bạn không có quyền xuất báo cáo!');
       } else {
+        setLoadingExcel(false);
         message.error('Không thể xuất báo cáo!');
       }
     }
