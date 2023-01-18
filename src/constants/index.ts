@@ -626,23 +626,23 @@ export const OPTIONS_POSITION = [
 
 export const OPTIONS_WORK_ADDRESS = [
   {
-    label: 'Miền Nam',
-    value: 'mn',
-  },
-  {
     label: 'Miền Bắc',
     value: 'mb',
+  },
+  {
+    label: 'Miền Nam',
+    value: 'mn',
   },
 ];
 
 export const OPTIONS_FILTER_NLV = [
   {
-    label: 'Miền Nam',
-    value: 'Miền Nam',
-  },
-  {
     label: 'Miền Bắc',
     value: 'Miền Bắc',
+  },
+  {
+    label: 'Miền Nam',
+    value: 'Miền Nam',
   },
 ];
 
