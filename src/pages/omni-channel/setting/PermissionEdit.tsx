@@ -1136,14 +1136,14 @@ const PermissionEdit: React.FC = () => {
               <Form.Item
                 label={
                   <Typography.Text>
-                    Nơi công tác <span style={{ color: 'red' }}>(*)</span>
+                    Nơi làm việc <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
                 name="work_address"
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập Nơi công tác',
+                    message: 'Vui lòng nhập Nơi làm việc',
                   },
                 ]}
               >
