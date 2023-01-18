@@ -596,12 +596,12 @@ const PermissionEdit: React.FC = () => {
       },
     },
     {
-      title: '',
+      title: 'Hành động',
       align: 'center',
       width: '100px',
       render: (record) => (
         <Space size="large">
-          <Tooltip title="Cập nhật">
+          <Tooltip title="Chỉnh sửa">
             <EditOutlined
               style={{ color: '#1890FF', fontSize: '20px' }}
               onClick={() => {
@@ -899,6 +899,7 @@ const PermissionEdit: React.FC = () => {
         footer={false}
         width={900}
         centered
+        className={styles.editModalFormUser}
       >
         <Form
           {...formItemLayout}
@@ -971,9 +972,9 @@ const PermissionEdit: React.FC = () => {
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập Số di động');
                       } else if (value.length < 10 || value.length > 11) {
-                        return Promise.reject('Số điện thoại không hợp lệ');
+                        return Promise.reject('Số di động không hợp lệ');
                       } else if (!phoneReg.test(value)) {
-                        return Promise.reject('Số điện thoại không hợp lệ');
+                        return Promise.reject('Số di động không hợp lệ');
                       }
                       return Promise.resolve();
                     },
