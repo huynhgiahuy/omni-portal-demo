@@ -413,6 +413,7 @@ const PermissionEdit: React.FC = () => {
       cancelText: 'Hủy',
       icon: <CloseCircleFilled style={{ color: 'red' }} />,
       okButtonProps: { danger: true },
+      centered: true,
     });
   };
   const handleTableChange = (newPagination: any) => {
@@ -595,12 +596,12 @@ const PermissionEdit: React.FC = () => {
       },
     },
     {
-      title: '',
+      title: 'Hành động',
       align: 'center',
       width: '100px',
       render: (record) => (
         <Space size="large">
-          <Tooltip title="Cập nhật">
+          <Tooltip title="Chỉnh sửa">
             <EditOutlined
               style={{ color: '#1890FF', fontSize: '20px' }}
               onClick={() => {
@@ -820,7 +821,7 @@ const PermissionEdit: React.FC = () => {
             </div>
             <div style={{ paddingTop: '29px' }}>
               <Form.Item style={{ marginBottom: 'unset' }} label="">
-                <Button type="text" style={{ color: 'blue' }} onClick={(e) => onReset(e)}>
+                <Button type="link" style={{ color: 'blue' }} onClick={(e) => onReset(e)}>
                   Reset
                 </Button>
               </Form.Item>
@@ -898,6 +899,7 @@ const PermissionEdit: React.FC = () => {
         footer={false}
         width={900}
         centered
+        className={styles.editModalFormUser}
       >
         <Form
           {...formItemLayout}
@@ -970,9 +972,9 @@ const PermissionEdit: React.FC = () => {
                       if (value === undefined || !value || value.length === 0) {
                         return Promise.reject('Vui lòng nhập Số di động');
                       } else if (value.length < 10 || value.length > 11) {
-                        return Promise.reject('Số điện thoại không hợp lệ');
+                        return Promise.reject('Số di động không hợp lệ');
                       } else if (!phoneReg.test(value)) {
-                        return Promise.reject('Số điện thoại không hợp lệ');
+                        return Promise.reject('Số di động không hợp lệ');
                       }
                       return Promise.resolve();
                     },
@@ -1135,14 +1137,14 @@ const PermissionEdit: React.FC = () => {
               <Form.Item
                 label={
                   <Typography.Text>
-                    Nơi công tác <span style={{ color: 'red' }}>(*)</span>
+                    Nơi làm việc <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
                 name="work_address"
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng nhập Nơi công tác',
+                    message: 'Vui lòng nhập Nơi làm việc',
                   },
                 ]}
               >
