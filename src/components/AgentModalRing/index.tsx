@@ -139,7 +139,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
     }
     if (dataCall?.contact) {
       setNameCall(dataCall.contact?.full_name);
-      //setPhoneCall(dataCall.contact?.phone_number);
+      setPhoneCall(dataCall.contact?.phone_number);
       form.setFieldsValue(dataCall?.contact);
     } else {
       if (dataCall?.is_ip_phone) {
@@ -147,6 +147,9 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
       } else {
         form.setFieldValue('phone_number', dataCall?.phone);
       }
+      setNameCall('Chưa có trong danh bạ');
+      dataCall?.phone && setPhoneCall(dataCall?.phone);
+      form.resetFields();
     }
     setPhoneCall(dataCall?.phone ? dataCall?.phone : '');
   });
@@ -241,7 +244,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 </div>
                 <div className={isFullScreenModal ? styles.infoPhoneFullScreen : styles.infoPhone}>
                   <Typography.Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
-                    {nameCall ? nameCall : 'Chưa có trong danh bạ'}
+                    {nameCall}
                     {!isFullScreenModal
                       ? dataCall?.contact?.work_unit
                         ? ` - ${dataCall?.contact?.work_unit}`
