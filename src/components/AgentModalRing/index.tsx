@@ -244,7 +244,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 </div>
                 <div className={isFullScreenModal ? styles.infoPhoneFullScreen : styles.infoPhone}>
                   <Typography.Text style={{ fontSize: 16, fontWeight: 700, color: 'white' }}>
-                    {nameCall ?? 'Chưa có trong danh bạ'}
+                    {nameCall}
                     {!isFullScreenModal
                       ? dataCall?.contact?.work_unit
                         ? ` - ${dataCall?.contact?.work_unit}`
