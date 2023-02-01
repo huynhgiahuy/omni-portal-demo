@@ -1025,7 +1025,7 @@ const PermissionEdit: React.FC = () => {
                   },
                 ]}
               >
-                <Select onChange={handleSelectRole}>
+                <Select onChange={handleSelectRole} menuItemSelectedIcon={<CheckOutlined />}>
                   {listGroupPermission &&
                     listGroupPermission.map((item: GroupPermission) => (
                       <Select.Option value={item.id} key={item.id}>
