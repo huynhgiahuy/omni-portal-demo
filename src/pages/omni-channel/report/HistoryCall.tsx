@@ -455,7 +455,9 @@ const HistoryCall: React.FC = () => {
           <Tooltip title="Xem ghi chú">
             <FormOutlined
               style={{ fontSize: 20 }}
-              onClick={() => handleGetDetailCallNote(record.uuid, record.sip_from_user, 'local')}
+              onClick={() =>
+                handleGetDetailCallNote(record.uuid, record.sip_from_user, record.call_direction)
+              }
             />
           </Tooltip>
         );
