@@ -159,6 +159,8 @@ const PermissionEdit: React.FC = () => {
   const [formFilter] = Form.useForm();
   const [formTeam] = Form.useForm();
 
+  const [isGroupPermission, setIsGroupPermission] = useState(false);
+
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
     pageSize: 5,
@@ -255,6 +257,9 @@ const PermissionEdit: React.FC = () => {
     const resPer = await requestGroupPermissionData();
     if (resPer.success === true) {
       setListGroupPermission(resPer.data);
+      setIsGroupPermission(false);
+    } else {
+      setIsGroupPermission(true);
     }
   };
 
@@ -288,6 +293,11 @@ const PermissionEdit: React.FC = () => {
     const resDetail = await requestDetailUserInfoFinal(user_id);
     if (resDetail.success === true) {
       setListEditUserInfoFinal(resDetail.data);
+      if (isGroupPermission === true) {
+        setListGroupPermission([
+          { code: resDetail.data[0].role_code, id: resDetail.data[0].role_id },
+        ]);
+      }
     }
   };
 
@@ -1025,7 +1035,7 @@ const PermissionEdit: React.FC = () => {
                   },
                 ]}
               >
-                <Select onChange={handleSelectRole}>
+                <Select onChange={handleSelectRole} menuItemSelectedIcon={<CheckOutlined />}>
                   {listGroupPermission &&
                     listGroupPermission.map((item: GroupPermission) => (
                       <Select.Option value={item.id} key={item.id}>

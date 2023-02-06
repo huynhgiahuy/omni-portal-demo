@@ -43,6 +43,7 @@ interface PaginationProps {
   pageSizeOptions: string[];
 }
 interface DataLSCGType {
+  uuid: string;
   _id: string;
   call_direction?: string;
   sip_from_user?: string;
@@ -454,7 +455,9 @@ const HistoryCall: React.FC = () => {
           <Tooltip title="Xem ghi chú">
             <FormOutlined
               style={{ fontSize: 20 }}
-              onClick={() => handleGetDetailCallNote(record._id, record.sip_from_user, 'local')}
+              onClick={() =>
+                handleGetDetailCallNote(record.uuid, record.sip_from_user, record.call_direction)
+              }
             />
           </Tooltip>
         );
