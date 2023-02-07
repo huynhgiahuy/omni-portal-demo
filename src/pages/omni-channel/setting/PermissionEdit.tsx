@@ -85,6 +85,7 @@ interface DataAllUserInfoFinal {
   phone_number: string;
   avatar: string;
   status: any;
+  last_update: any;
 }
 
 const formItemLayout = {
@@ -160,6 +161,8 @@ const PermissionEdit: React.FC = () => {
   const [formTeam] = Form.useForm();
 
   const [isGroupPermission, setIsGroupPermission] = useState(false);
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -478,7 +481,7 @@ const PermissionEdit: React.FC = () => {
     {
       title: '#',
       align: 'center',
-      width: '60px',
+      width: '30px',
       render: (text, record, index) => {
         if (valueKeyWord === '' || valueKeyWord === undefined) {
           return (
@@ -588,10 +591,13 @@ const PermissionEdit: React.FC = () => {
       dataIndex: 'last_update',
       key: 'last_update',
       align: 'center',
-      width: '100px',
+      width: '110px',
       render: (text, record) => {
-        return text === null || text === undefined ? '-' : moment.unix(text).format('DD-MM-YYYY');
+        return text === null || text === undefined
+          ? '-'
+          : moment.unix(text).format('DD-MM-YYYY HH:mm:ss');
       },
+      sorter: (a, b) => a.last_update - b.last_update,
     },
     {
       title: 'Trạng thái hoạt động',
@@ -734,6 +740,30 @@ const PermissionEdit: React.FC = () => {
     }
   };
 
+  const onSelectRowChange = (newSelectedRowKeys: React.Key[]) => {
+    console.log('selectedRowKeys changed: ', newSelectedRowKeys);
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const handleRowSelection = {
+    selectedRowKeys,
+    onChange: onSelectRowChange,
+  };
+
+  const hasSelected = selectedRowKeys.length > 0;
+
+  const handleConfirmDeleteMultiple = () => {
+    Modal.confirm({
+      title: 'Thao tác xóa?',
+      content: 'Bạn chắc chắn muốn xóa thông tin này',
+      okText: 'Xóa',
+      cancelText: 'Hủy',
+      icon: <CloseCircleFilled style={{ color: 'red' }} />,
+      okButtonProps: { danger: true },
+      centered: true,
+    });
+  };
+
   return isView === '403' ? (
     <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
   ) : fetchListAllUserInfoFinal.data === undefined ? (
@@ -869,6 +899,25 @@ const PermissionEdit: React.FC = () => {
           </Form.Item>
         </div>
       </Form>
+      {hasSelected ? (
+        <div className={styles.selectedRowLayout}>
+          <Typography.Text style={{ paddingRight: 32 }}>
+            Đã chọn:{' '}
+            <Typography.Text style={{ fontWeight: 'bold' }}>
+              {selectedRowKeys.length}
+            </Typography.Text>
+          </Typography.Text>
+          <Button
+            icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
+            style={{ color: '#F5222D' }}
+            onClick={handleConfirmDeleteMultiple}
+          >
+            Xóa
+          </Button>
+        </div>
+      ) : (
+        <></>
+      )}
       <Table
         dataSource={listAllUserInfoFinal}
         columns={columns}
@@ -901,6 +950,7 @@ const PermissionEdit: React.FC = () => {
           ),
           spinning: fetchListAllUserInfoFinal.loading,
         }}
+        rowSelection={handleRowSelection}
       />
       <Modal
         open={isClickUpdatePermission}
