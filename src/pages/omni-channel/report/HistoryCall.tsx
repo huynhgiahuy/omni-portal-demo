@@ -385,7 +385,9 @@ const HistoryCall: React.FC = () => {
       align: 'center',
       width: '150px',
       render: (text, record) => {
-        return text === null || text === undefined ? '-' : moment.unix(text).format('DD-MM-YYYY');
+        return text === null || text === undefined
+          ? '-'
+          : moment.unix(text).format('DD-MM-YYYY HH:mm:ss');
       },
     },
     {
