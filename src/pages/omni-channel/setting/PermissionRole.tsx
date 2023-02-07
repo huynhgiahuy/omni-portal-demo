@@ -136,6 +136,27 @@ const PermissionRole: React.FC = () => {
     selectListRF,
   );
 
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+  const hasSelected = selectedRowKeys.length > 0;
+  const handleConfirmDeleteMultiple = () => {
+    Modal.confirm({
+      title: 'Thao tác xóa?',
+      content: 'Bạn chắc chắn muốn xóa thông tin này',
+      okText: 'Xóa',
+      cancelText: 'Hủy',
+      icon: <CloseCircleFilled style={{ color: 'red' }} />,
+      okButtonProps: { danger: true },
+      centered: true,
+    });
+  };
+
   const fetchReadRoleAndPermCheckRole = useRequest(
     async (keyword?: string) => {
       const res: { success: boolean; error_code: number } = await requestReadRoleAndPerm(
@@ -1065,10 +1086,29 @@ const PermissionRole: React.FC = () => {
           </Space>
         </Col>
       </Row>
-
+      {hasSelected ? (
+        <div className={styles.selectedRowLayoutRole}>
+          <Typography.Text style={{ paddingRight: 32 }}>
+            Đã chọn:{' '}
+            <Typography.Text style={{ fontWeight: 'bold' }}>
+              {selectedRowKeys.length}
+            </Typography.Text>
+          </Typography.Text>
+          <Button
+            icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
+            style={{ color: '#F5222D' }}
+            onClick={handleConfirmDeleteMultiple}
+          >
+            Xóa
+          </Button>
+        </div>
+      ) : (
+        <></>
+      )}
       <Table
         dataSource={listAllRolePermission}
         columns={columns}
+        rowKey={(item) => item.id}
         className={styles.permissionTableRole}
         onChange={handleTableChange}
         pagination={{
@@ -1095,6 +1135,7 @@ const PermissionRole: React.FC = () => {
           ),
           spinning: fetchReadRoleAndPerm.loading,
         }}
+        rowSelection={rowSelection}
       />
       <Modal
         open={isAddNewPermission}
