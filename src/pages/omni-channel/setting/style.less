@@ -193,7 +193,7 @@
 .permissionTable {
   :global {
     .ant-table {
-      padding: 20px 20px 0 20px;
+      padding: 20px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
     }
@@ -221,6 +221,19 @@
     }
     .ant-table-cell-scrollbar:not([rowspan]) {
       box-shadow: none;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #19857b;
+      border-color: #19857b;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-table-column-sorter {
+      color: black;
     }
   }
 }
@@ -537,4 +550,13 @@
       font-size: 20px;
     }
   }
+}
+.selectedRowLayout {
+  margin-bottom: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 8px;
 }
