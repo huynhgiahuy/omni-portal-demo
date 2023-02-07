@@ -96,6 +96,18 @@
     .ant-table-cell-scrollbar:not([rowspan]) {
       box-shadow: none;
     }
+
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #19857b;
+      border-color: #19857b;
+    }
   }
 }
 
@@ -263,6 +275,7 @@
       background-color: #87c686;
       border-color: #87c686;
     }
+
     .ant-checkbox-indeterminate .ant-checkbox-inner:after {
       background-color: #fff;
     }
@@ -318,4 +331,14 @@
 }
 .filterIconActive {
   color: #87c686;
+}
+
+.selectedRowLayout {
+  margin-bottom: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 8px;
 }
