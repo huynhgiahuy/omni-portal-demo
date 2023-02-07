@@ -597,7 +597,6 @@ const PermissionEdit: React.FC = () => {
           ? '-'
           : moment.unix(text).format('DD-MM-YYYY HH:mm:ss');
       },
-      sorter: (a, b) => a.last_update - b.last_update,
     },
     {
       title: 'Trạng thái hoạt động',
@@ -741,7 +740,6 @@ const PermissionEdit: React.FC = () => {
   };
 
   const onSelectRowChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log('selectedRowKeys changed: ', newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
