@@ -741,6 +741,7 @@ const PermissionEdit: React.FC = () => {
 
   const onSelectRowChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
+    console.log(newSelectedRowKeys);
   };
 
   const handleRowSelection = {
