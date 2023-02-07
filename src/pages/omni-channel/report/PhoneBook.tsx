@@ -150,6 +150,27 @@ const PhoneBook: React.FC = () => {
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
   const [isView, setIsView] = useState('');
 
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+  const hasSelected = selectedRowKeys.length > 0;
+  const handleConfirmDeleteMultiple = () => {
+    Modal.confirm({
+      title: 'Thao tác xóa?',
+      content: 'Bạn chắc chắn muốn xóa thông tin này',
+      okText: 'Xóa',
+      cancelText: 'Hủy',
+      icon: <CloseCircleFilled style={{ color: 'red' }} />,
+      okButtonProps: { danger: true },
+      centered: true,
+    });
+  };
+
   const token = window.localStorage?.getItem('access_token');
 
   const [pagination, setPagination] = useState<PaginationProps>({
@@ -623,6 +644,7 @@ const PhoneBook: React.FC = () => {
               number: pagination.pageSize,
               external_customers: e.toString() === 'Khách hàng' ? true : false,
             });
+            setSelectedRowKeys([]);
           }}
           options={[
             {
@@ -746,7 +768,27 @@ const PhoneBook: React.FC = () => {
           </Space>
         </div>
       </Form>
+      {hasSelected ? (
+        <div className={styles.selectedRowLayout}>
+          <Typography.Text style={{ paddingRight: 32 }}>
+            Đã chọn:{' '}
+            <Typography.Text style={{ fontWeight: 'bold' }}>
+              {selectedRowKeys.length}
+            </Typography.Text>
+          </Typography.Text>
+          <Button
+            icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
+            style={{ color: '#F5222D' }}
+            onClick={handleConfirmDeleteMultiple}
+          >
+            Xóa
+          </Button>
+        </div>
+      ) : (
+        <></>
+      )}
       <Table
+        rowSelection={rowSelection}
         dataSource={dataContacts}
         columns={columnsDanhba}
         className={styles.tableStylePhoneBook}
@@ -775,6 +817,7 @@ const PhoneBook: React.FC = () => {
           ),
           spinning: getUserContact.loading || sendPinStart.loading,
         }}
+        rowKey={(item) => item.id}
       />
       <Modal
         open={openModal}
