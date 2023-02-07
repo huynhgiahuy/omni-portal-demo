@@ -849,24 +849,15 @@ const PhoneBook: React.FC = () => {
           </div>
           <div>
             <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Số điện thoại{external !== 'Nội bộ' && <span style={{ color: 'red' }}> (*)</span>}
+              Số điện thoại
             </Typography.Text>
             <Form.Item
               name="phone_number"
               style={{ marginTop: 8 }}
               rules={[
                 {
-                  validator: (_, value: any) => {
-                    const phoneReg = /((0[3|5|7|8|9])+([0-9]{8,9})\b)/;
-                    if (value === undefined || !value || value.length === 0) {
-                      return Promise.reject('Vui lòng nhập số di động');
-                    } else if (value.length > 11) {
-                      return Promise.reject('Số điện thoại không hợp lệ');
-                    } else if (!phoneReg.test(value)) {
-                      return Promise.reject('Số điện thoại không hợp lệ');
-                    }
-                    return Promise.resolve();
-                  },
+                  pattern: /((0[3|5|7|8|9])+([0-9]{8,9})\b)/,
+                  message: 'Số điện thoại không hợp lệ',
                 },
               ]}
             >

@@ -1,5 +1,6 @@
 import api from '@/api';
 import request from '@/utils/request';
+
 import { requestProps } from './auth';
 
 export const endpoint = api.UMI_API_BASE_URL;
@@ -20,6 +21,7 @@ export type UserInfoProps = {
   ip_phone: string;
   equipment: string[];
   status: string;
+  team: string;
   notification: {
     missed_call: boolean;
     incoming_call: boolean;
