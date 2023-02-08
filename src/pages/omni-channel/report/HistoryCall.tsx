@@ -12,6 +12,7 @@ import {
   Timeline,
   Tooltip,
   Select,
+  Empty,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { PlayCircleFilled, SearchOutlined, FormOutlined } from '@ant-design/icons';
@@ -48,7 +49,7 @@ interface DataLSCGType {
   call_direction?: string;
   sip_from_user?: string;
   caller_destination?: string;
-  start_epoch?: string;
+  start_epoch?: any;
   billsec?: number;
   hangup_cause?: string;
   record_path?: string;
@@ -106,7 +107,7 @@ const HistoryCall: React.FC = () => {
     pageSize: 10,
     showSizeChanger: true,
     showQuickJumper: true,
-    pageSizeOptions: ['5', '10', '20', '30', '50'],
+    pageSizeOptions: ['5', '10', '20', '30', '40', '50'],
   });
 
   const [form] = Form.useForm();
@@ -389,6 +390,7 @@ const HistoryCall: React.FC = () => {
           ? '-'
           : moment.unix(text).format('DD-MM-YYYY HH:mm:ss');
       },
+      sorter: (a, b) => a.start_epoch - b.start_epoch,
     },
     {
       title: 'Thời lượng',
@@ -714,15 +716,22 @@ const HistoryCall: React.FC = () => {
             prev_5: '5 trang trước',
           },
         }}
+        locale={{
+          triggerDesc: 'Chọn sắp xếp giảm dần',
+          triggerAsc: 'Chọn sắp xếp tăng dần',
+          cancelSort: 'Chọn hủy sắp xếp',
+          emptyText: (
+            <>
+              <Empty description={false} />
+              <p>Không có dữ liệu</p>
+            </>
+          ),
+        }}
         scroll={{
           x: window.innerWidth < 1900 ? 100 : undefined,
         }}
         loading={{
-          indicator: (
-            <div>
-              <Spin />
-            </div>
-          ),
+          indicator: <Spin />,
           spinning: fetchListLSCGData.loading,
         }}
       />

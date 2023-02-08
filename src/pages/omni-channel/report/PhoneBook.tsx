@@ -8,8 +8,8 @@ import { useModel, useRequest } from 'umi';
 
 import NoFoundPage from '@/pages/404';
 import {
-    CheckOutlined, CloseCircleFilled, CloseOutlined, DeleteOutlined, PlusSquareFilled, SaveOutlined,
-    SearchOutlined, StarFilled, StarOutlined
+    CheckOutlined, CloseCircleFilled, CloseOutlined, DeleteOutlined, PlusSquareFilled,
+    RollbackOutlined, SaveOutlined, SearchOutlined, StarFilled, StarOutlined
 } from '@ant-design/icons';
 
 import Phone from '../../../../public/phone.svg';
@@ -168,6 +168,11 @@ const PhoneBook: React.FC = () => {
       icon: <CloseCircleFilled style={{ color: 'red' }} />,
       okButtonProps: { danger: true },
       centered: true,
+      onOk() {
+        {
+          deleteUserContact.run(selectedRowKeys);
+        }
+      },
     });
   };
 
@@ -327,7 +332,7 @@ const PhoneBook: React.FC = () => {
   );
 
   const deleteUserContact = useRequest(
-    async (id) => {
+    async (id: React.Key[]) => {
       const res: { success: boolean; error_code: number } = await requestDeleteUserContact(
         token ? token : '',
         id,
@@ -429,7 +434,7 @@ const PhoneBook: React.FC = () => {
     }
   };
 
-  const handleConfirmDelete = (role_id: string) => {
+  const handleConfirmDelete = (role_id: React.Key[]) => {
     Modal.confirm({
       title: 'Thao tác xoá?',
       content: 'Bạn có chắc chắn muốn xoá thông tin này',
@@ -550,9 +555,11 @@ const PhoneBook: React.FC = () => {
               <Image className={styles.call} width={30} src={Phone} preview={false} />
             </div> */}
             <DeleteOutlined
-              style={{ color: '#F5222D', fontSize: '20px' }}
+              style={{ fontSize: '20px' }}
+              className={hasSelected ? styles.disableDelete : styles.enableDelete}
               onClick={() => {
-                record.id && handleConfirmDelete(record.id);
+                if (hasSelected) return;
+                record.id && handleConfirmDelete([record.id]);
               }}
             />
           </Space>
@@ -776,13 +783,23 @@ const PhoneBook: React.FC = () => {
               {selectedRowKeys.length}
             </Typography.Text>
           </Typography.Text>
-          <Button
-            icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
-            style={{ color: '#F5222D' }}
-            onClick={handleConfirmDeleteMultiple}
-          >
-            Xóa
-          </Button>
+          <Space>
+            <Button
+              icon={<RollbackOutlined />}
+              onClick={() => {
+                setSelectedRowKeys([]);
+              }}
+            >
+              Huỷ
+            </Button>
+            <Button
+              icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
+              style={{ color: '#F5222D' }}
+              onClick={handleConfirmDeleteMultiple}
+            >
+              Xóa
+            </Button>
+          </Space>
         </div>
       ) : (
         <></>
@@ -817,7 +834,7 @@ const PhoneBook: React.FC = () => {
           ),
           spinning: getUserContact.loading || sendPinStart.loading,
         }}
-        rowKey={(item) => item.id}
+        rowKey={(item: any) => item.id}
       />
       <Modal
         open={openModal}
