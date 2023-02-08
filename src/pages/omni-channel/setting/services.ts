@@ -1,6 +1,7 @@
+import { FormProps } from 'antd';
+
 import api from '@/api';
 import request from '@/utils/request';
-import { FormProps } from 'antd';
 
 const token = window.localStorage.getItem('access_token');
 export async function requestCreateRoleAndPerm(
@@ -184,7 +185,7 @@ export async function requestAllUserInfo(limit: number, offset: number) {
     },
   });
 }
-export async function requestDeleteRoleAndPermission(token: string, role_id: string) {
+export async function requestDeleteRoleAndPermission(token: string, role_id: React.Key[]) {
   return request(
     `${api.UMI_API_BASE_URL}/user-service/api/authorization/delete_role_and_permission`,
     {

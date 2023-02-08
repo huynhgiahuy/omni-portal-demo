@@ -19,7 +19,8 @@ import {
 } from '@/constants';
 import NoFoundPage from '@/pages/404';
 import {
-    CloseCircleFilled, DeleteOutlined, EditOutlined, PlusSquareFilled, SearchOutlined
+    CloseCircleFilled, DeleteOutlined, EditOutlined, PlusSquareFilled, RollbackOutlined,
+    SearchOutlined
 } from '@ant-design/icons';
 
 import styles from '../setting/style.less';
@@ -154,6 +155,9 @@ const PermissionRole: React.FC = () => {
       icon: <CloseCircleFilled style={{ color: 'red' }} />,
       okButtonProps: { danger: true },
       centered: true,
+      onOk() {
+        fetchDeleteRoleAndPermission.run(selectedRowKeys);
+      },
     });
   };
 
@@ -279,7 +283,7 @@ const PermissionRole: React.FC = () => {
   );
 
   const fetchDeleteRoleAndPermission = useRequest(
-    async (id: string) => {
+    async (id: React.Key[]) => {
       const res: { success: string; error_code: number } = await requestDeleteRoleAndPermission(
         token ? token : '',
         id,
@@ -296,6 +300,7 @@ const PermissionRole: React.FC = () => {
         handleCancleAddNewPermission();
         message.success('Xoá thành công');
         fetchReadRoleAndPerm.run();
+        setSelectedRowKeys([]);
       }
       return res;
     },
@@ -312,7 +317,7 @@ const PermissionRole: React.FC = () => {
     pageSizeOptions: ['5', '10', '20', '30', '50'],
   });
 
-  const handleClickDeleteRole = (role_id: string) => {
+  const handleClickDeleteRole = (role_id: [string]) => {
     Modal.confirm({
       title: 'Thao tác xoá?',
       content: 'Bạn có chắc chắn muốn xoá thông tin này',
@@ -769,9 +774,11 @@ const PermissionRole: React.FC = () => {
             }}
           />
           <DeleteOutlined
-            style={{ color: '#F5222D', fontSize: '20px' }}
+            style={{ fontSize: '20px' }}
+            className={hasSelected ? styles.disableDelete : styles.enableDelete}
             onClick={() => {
-              handleClickDeleteRole(record.id);
+              if (hasSelected) return;
+              handleClickDeleteRole([record.id]);
             }}
           />
         </Space>
@@ -1094,13 +1101,23 @@ const PermissionRole: React.FC = () => {
               {selectedRowKeys.length}
             </Typography.Text>
           </Typography.Text>
-          <Button
-            icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
-            style={{ color: '#F5222D' }}
-            onClick={handleConfirmDeleteMultiple}
-          >
-            Xóa
-          </Button>
+          <Space>
+            <Button
+              icon={<RollbackOutlined />}
+              onClick={() => {
+                setSelectedRowKeys([]);
+              }}
+            >
+              Huỷ
+            </Button>
+            <Button
+              icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
+              style={{ color: '#F5222D' }}
+              onClick={handleConfirmDeleteMultiple}
+            >
+              Xóa
+            </Button>
+          </Space>
         </div>
       ) : (
         <></>
