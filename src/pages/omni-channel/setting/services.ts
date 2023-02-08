@@ -119,7 +119,7 @@ export async function requestDetailUserPermission(limit: number, offset: number,
   );
 }
 
-export async function requestDeleteUserPermission(user_id: string) {
+export async function requestDeleteUserPermission(user_id: React.Key[]) {
   return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/delete_user_and_role`, {
     method: 'POST',
     headers: {
