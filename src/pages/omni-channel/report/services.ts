@@ -1,3 +1,5 @@
+import React from 'react';
+
 import api from '@/api';
 import request from '@/utils/request';
 
@@ -48,7 +50,7 @@ export async function requestUpdateUserContact(token: string, data: dataUserCont
   });
 }
 
-export async function requestDeleteUserContact(token: string, contacts_id: string) {
+export async function requestDeleteUserContact(token: string, contacts_id: React.Key[]) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/delete_user_contact`, {
     method: 'POST',
     headers: {
