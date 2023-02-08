@@ -1108,7 +1108,7 @@ const PermissionRole: React.FC = () => {
                 setSelectedRowKeys([]);
               }}
             >
-              Huỷ
+              Hủy
             </Button>
             <Button
               icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
