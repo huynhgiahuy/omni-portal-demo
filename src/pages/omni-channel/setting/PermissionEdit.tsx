@@ -12,6 +12,7 @@ import {
   Select,
   message,
   Tooltip,
+  Empty,
 } from 'antd';
 import {
   EditOutlined,
@@ -25,6 +26,7 @@ import {
   CheckCircleFilled,
   ClockCircleFilled,
   MinusCircleFilled,
+  RollbackOutlined,
 } from '@ant-design/icons';
 import {
   requestDeleteUserPermission,
@@ -169,7 +171,7 @@ const PermissionEdit: React.FC = () => {
     pageSize: 5,
     showSizeChanger: true,
     showQuickJumper: true,
-    pageSizeOptions: ['5', '10', '20', '30', '50'],
+    pageSizeOptions: ['5', '10', '20', '30', '40', '50'],
   });
 
   const fetchListAllUserInfoFinal = useRequest(
@@ -304,7 +306,7 @@ const PermissionEdit: React.FC = () => {
     }
   };
 
-  const handleDeleteUserPermission = async (user_id: string) => {
+  const handleDeleteUserPermission = async (user_id: React.Key[]) => {
     const response_delete = await requestDeleteUserPermission(user_id);
     if (response_delete.success === true) {
       message.success('Xóa người dùng thành công!');
@@ -415,7 +417,7 @@ const PermissionEdit: React.FC = () => {
     form.resetFields();
     setInfoUpdated(false);
   };
-  const handleClickDeleteUser = (user_id: string) => {
+  const handleClickDeleteUser = (user_id: string[]) => {
     Modal.confirm({
       title: 'Thao tác xóa?',
       content: 'Bạn chắc chắn muốn xóa thông tin này',
@@ -597,6 +599,7 @@ const PermissionEdit: React.FC = () => {
           ? '-'
           : moment.unix(text).format('DD-MM-YYYY HH:mm:ss');
       },
+      sorter: (a, b) => a.last_update - b.last_update,
     },
     {
       title: 'Trạng thái hoạt động',
@@ -611,7 +614,7 @@ const PermissionEdit: React.FC = () => {
       },
     },
     {
-      title: 'Hành động',
+      title: 'Thao tác',
       align: 'center',
       width: '100px',
       render: (record) => (
@@ -629,9 +632,14 @@ const PermissionEdit: React.FC = () => {
           </Tooltip>
           <Tooltip title="Xóa">
             <DeleteOutlined
-              style={{ color: '#F5222D', fontSize: '20px' }}
+              className={
+                hasSelected
+                  ? `${styles.deleteSingleItemDisabled}`
+                  : `${styles.deleteSingleItemActive}`
+              }
               onClick={() => {
-                handleClickDeleteUser(record.id);
+                if (hasSelected) return;
+                handleClickDeleteUser([record.id]);
               }}
             />
           </Tooltip>
@@ -750,10 +758,13 @@ const PermissionEdit: React.FC = () => {
 
   const hasSelected = selectedRowKeys.length > 0;
 
-  const handleConfirmDeleteMultiple = () => {
+  const handleConfirmDeleteMultiple = (user_id: React.Key[]) => {
     Modal.confirm({
       title: 'Thao tác xóa?',
       content: 'Bạn chắc chắn muốn xóa thông tin này',
+      onOk() {
+        handleDeleteUserPermission(user_id);
+      },
       okText: 'Xóa',
       cancelText: 'Hủy',
       icon: <CloseCircleFilled style={{ color: 'red' }} />,
@@ -905,13 +916,18 @@ const PermissionEdit: React.FC = () => {
               {selectedRowKeys.length}
             </Typography.Text>
           </Typography.Text>
-          <Button
-            icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
-            style={{ color: '#F5222D' }}
-            onClick={handleConfirmDeleteMultiple}
-          >
-            Xóa
-          </Button>
+          <Space>
+            <Button icon={<RollbackOutlined />} onClick={() => setSelectedRowKeys([])}>
+              Hủy
+            </Button>
+            <Button
+              icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
+              style={{ color: '#F5222D' }}
+              onClick={() => handleConfirmDeleteMultiple(selectedRowKeys)}
+            >
+              Xóa
+            </Button>
+          </Space>
         </div>
       ) : (
         <></>
@@ -937,15 +953,22 @@ const PermissionEdit: React.FC = () => {
             prev_5: '5 trang trước',
           },
         }}
+        locale={{
+          triggerDesc: 'Chọn sắp xếp giảm dần',
+          triggerAsc: 'Chọn sắp xếp tăng dần',
+          cancelSort: 'Chọn hủy sắp xếp',
+          emptyText: (
+            <>
+              <Empty description={false} />
+              <p>Không có dữ liệu</p>
+            </>
+          ),
+        }}
         scroll={{
           x: window.innerWidth < 1900 ? 100 : undefined,
         }}
         loading={{
-          indicator: (
-            <div>
-              <Spin />
-            </div>
-          ),
+          indicator: <Spin />,
           spinning: fetchListAllUserInfoFinal.loading,
         }}
         rowSelection={handleRowSelection}
