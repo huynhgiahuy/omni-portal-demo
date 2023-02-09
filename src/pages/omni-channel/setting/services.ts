@@ -120,14 +120,14 @@ export async function requestDetailUserPermission(limit: number, offset: number,
   );
 }
 
-export async function requestDeleteUserPermission(user_id: React.Key[]) {
+export async function requestDeleteUserPermission(user_ids: React.Key[]) {
   return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/delete_user_and_role`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
     },
     data: {
-      user_id,
+      user_ids,
     },
   });
 }
@@ -206,6 +206,7 @@ export async function requestAllUserInfoFinal(
   limit?: number,
   offset?: number,
   keyword?: string,
+  sort_key?: any,
   team_name?: any,
   work_address?: any,
   role_code?: any,
@@ -220,6 +221,7 @@ export async function requestAllUserInfoFinal(
       limit,
       offset,
       keyword,
+      sort_key,
       team_name,
       work_address,
       role_code,
