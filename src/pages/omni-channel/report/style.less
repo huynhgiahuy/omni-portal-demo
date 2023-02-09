@@ -354,3 +354,20 @@
 .enableDelete {
   color: #f5222d;
 }
+.detailTransferCallIcon {
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.2rem;
+  background: #deeffc;
+  border-radius: 4px;
+}
+.timelineLayout {
+  :global {
+    .ant-timeline.ant-timeline-pending .ant-timeline-item-last .ant-timeline-item-tail {
+      border-left: 2px solid #e8e8e8;
+    }
+    .ant-timeline-item-pending .ant-timeline-item-head {
+      font-size: 0px;
+    }
+  }
+}

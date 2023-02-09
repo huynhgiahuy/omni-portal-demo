@@ -152,6 +152,8 @@ const PermissionEdit: React.FC = () => {
   const [listValueNQ, setListValueNQ] = useState<string[] | any>();
   const [listValueStatus, setListValueStatus] = useState<string[] | any>();
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [sortColumn, setSortColumn] = useState<any>({ last_update: 0 });
 
   const [isTeamFilter, setTeamFilter] = useState(false);
   const [isNLVFilter, setNLVFilter] = useState(false);
@@ -163,8 +165,6 @@ const PermissionEdit: React.FC = () => {
   const [formTeam] = Form.useForm();
 
   const [isGroupPermission, setIsGroupPermission] = useState(false);
-
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -181,6 +181,7 @@ const PermissionEdit: React.FC = () => {
           pagination.pageSize,
           pagination.current,
           valueKeyWord,
+          sortColumn,
           listValueTeam,
           listValueNLV,
           listValueNQ,
@@ -306,8 +307,8 @@ const PermissionEdit: React.FC = () => {
     }
   };
 
-  const handleDeleteUserPermission = async (user_id: React.Key[]) => {
-    const response_delete = await requestDeleteUserPermission(user_id);
+  const handleDeleteUserPermission = async (user_ids: React.Key[]) => {
+    const response_delete = await requestDeleteUserPermission(user_ids);
     if (response_delete.success === true) {
       message.success('Xóa người dùng thành công!');
       fetchListAllUserInfoFinal.run();
@@ -417,13 +418,13 @@ const PermissionEdit: React.FC = () => {
     form.resetFields();
     setInfoUpdated(false);
   };
-  const handleClickDeleteUser = (user_id: string[]) => {
+  const handleClickDeleteUser = (user_ids: string[]) => {
     Modal.confirm({
       title: 'Thao tác xóa?',
       content: 'Bạn chắc chắn muốn xóa thông tin này',
       okText: 'Xóa',
       onOk() {
-        handleDeleteUserPermission(user_id);
+        handleDeleteUserPermission(user_ids);
       },
       cancelText: 'Hủy',
       icon: <CloseCircleFilled style={{ color: 'red' }} />,
@@ -431,7 +432,16 @@ const PermissionEdit: React.FC = () => {
       centered: true,
     });
   };
-  const handleTableChange = (newPagination: any) => {
+  const handleTableChange = (newPagination: any, filters: any, sorters: any) => {
+    let last_update = 0;
+    if (sorters.order === 'ascend') {
+      last_update = 1;
+    } else if (sorters.order === 'descend') {
+      last_update = -1;
+    } else {
+      last_update = 0;
+    }
+    setSortColumn({ last_update });
     setPagination({
       ...pagination,
       current: newPagination.current,
