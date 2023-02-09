@@ -531,6 +531,13 @@ const PhoneBook: React.FC = () => {
       key: external === 'Khách hàng' ? 'work_unit' : 'team',
       align: 'center',
       width: '265px',
+      render: (text, record) => {
+        if (external === 'Khách hàng') {
+          return text === 'OTHER' ? 'Khác' : text;
+        } else {
+          return text;
+        }
+      },
     },
     {
       title: 'Số IPP',
