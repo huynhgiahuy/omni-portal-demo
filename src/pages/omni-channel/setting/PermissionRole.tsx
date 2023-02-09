@@ -1,5 +1,6 @@
 import {
-    Button, Checkbox, Col, Form, Input, message, Modal, Row, Space, Spin, Table, Tree, Typography
+    Button, Checkbox, Col, Form, Input, message, Modal, Row, Space, Spin, Table,
+    TablePaginationConfig, Tree, Typography
 } from 'antd';
 import { debounce, isEqual } from 'lodash';
 import moment from 'moment';
@@ -82,6 +83,9 @@ const PermissionRole: React.FC = () => {
   const [roleDesc, setRoleDesc] = useState('');
   const [isView, setIsView] = useState('');
   const token = window.localStorage?.getItem('access_token');
+
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState({ created_at: 0, updated_at: 0 });
 
   const [listAllRolePermission, setListAllRolePermission] = useState<DataAllRolePermission[]>([]);
   const [isAddNewPermission, setAddNetPermission] = useState(false);
@@ -180,6 +184,7 @@ const PermissionRole: React.FC = () => {
     {
       onSuccess: (res) => {
         if (res) {
+          setIsView('200');
           setListAllRolePermission(res);
         }
       },
@@ -187,11 +192,12 @@ const PermissionRole: React.FC = () => {
   );
 
   const fetchReadRoleAndPerm = useRequest(
-    async (keyword?: string) => {
+    async (keyword?: string, sort_key?: { create_at?: number; updated_at?: number }) => {
       const res: { success: boolean; error_code: number } = await requestReadRoleAndPerm(
         token ? token : '',
         {
           keyword,
+          sort_key,
         },
       );
       if (!res.success) {
@@ -317,7 +323,7 @@ const PermissionRole: React.FC = () => {
     pageSizeOptions: ['5', '10', '20', '30', '50'],
   });
 
-  const handleClickDeleteRole = (role_id: [string]) => {
+  const handleClickDeleteRole = (role_ids: [string]) => {
     Modal.confirm({
       title: 'Thao tác xoá?',
       content: 'Bạn có chắc chắn muốn xoá thông tin này',
@@ -329,7 +335,7 @@ const PermissionRole: React.FC = () => {
       icon: <CloseCircleFilled style={{ color: 'red', fontSize: 22 }} />,
       onOk() {
         {
-          fetchDeleteRoleAndPermission.run(role_id);
+          fetchDeleteRoleAndPermission.run(role_ids);
         }
       },
 
@@ -742,6 +748,7 @@ const PermissionRole: React.FC = () => {
       title: 'Người tạo',
       dataIndex: 'create_by',
       key: 'create_by',
+
       render: (text, recode) => {
         return recode.created_by ? recode.created_by : '-';
       },
@@ -750,6 +757,7 @@ const PermissionRole: React.FC = () => {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       key: 'created_at',
+      sorter: true,
       render: (text) => {
         return text ? moment.unix(text).format('DD-MM-YYYY') : '-';
       },
@@ -758,6 +766,7 @@ const PermissionRole: React.FC = () => {
       title: 'Ngày sửa gần nhất',
       dataIndex: 'updated_at',
       key: 'updated_at',
+      sorter: true,
       render: (text) => {
         return text ? moment.unix(text).format('DD-MM-YYYY') : '-';
       },
@@ -787,15 +796,46 @@ const PermissionRole: React.FC = () => {
   ];
 
   const handleTableChange: TableProps<DataAllRolePermission>['onChange'] = (
-    newPagination: any,
-    filters: any,
+    newPagination: TablePaginationConfig,
+    filters,
     sorter: any,
     extra,
   ) => {
+    let created_at = 0;
+    let updated_at = 0;
+
+    if (sorter.field === 'created_at') {
+      switch (sorter.order) {
+        case 'ascend':
+          created_at = 1;
+          break;
+        case 'descend':
+          created_at = -1;
+          break;
+        default:
+          break;
+      }
+    } else {
+      switch (sorter.order) {
+        case 'ascend':
+          updated_at = 1;
+          break;
+        case 'descend':
+          updated_at = -1;
+          break;
+        default:
+          break;
+      }
+    }
+
+    setSort({
+      created_at,
+      updated_at,
+    });
     setPagination({
       ...pagination,
-      current: newPagination.current,
-      pageSize: newPagination.pageSize,
+      current: newPagination.current!,
+      pageSize: newPagination.pageSize!,
     });
   };
 
@@ -1056,6 +1096,11 @@ const PermissionRole: React.FC = () => {
     form.validateFields();
   }, [roleCode, roleDesc]);
 
+  useEffect(() => {
+    if (!isView) return;
+    fetchReadRoleAndPerm.run(search, sort);
+  }, [search, sort]);
+
   return isView === '403' ? (
     <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
   ) : fetchReadRoleAndPermCheckRole.loading ? (
@@ -1075,7 +1120,7 @@ const PermissionRole: React.FC = () => {
                 onChange={debounce(
                   (e) => {
                     const { value } = e.target;
-                    fetchReadRoleAndPerm.run(value);
+                    setSearch(value);
                   },
                   500,
                   {

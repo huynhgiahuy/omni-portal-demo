@@ -136,6 +136,7 @@ export async function requestReadRoleAndPerm(
   token: string,
   data?: {
     keyword?: string;
+    sort_key?: { create_at?: number; updated_at?: number };
     role_code?: string;
     permission_code?: string;
     limit?: number;
@@ -185,7 +186,7 @@ export async function requestAllUserInfo(limit: number, offset: number) {
     },
   });
 }
-export async function requestDeleteRoleAndPermission(token: string, role_id: React.Key[]) {
+export async function requestDeleteRoleAndPermission(token: string, role_ids: React.Key[]) {
   return request(
     `${api.UMI_API_BASE_URL}/user-service/api/authorization/delete_role_and_permission`,
     {
@@ -194,7 +195,7 @@ export async function requestDeleteRoleAndPermission(token: string, role_id: Rea
         Authorization: `Bearer ${token}`,
       },
       data: {
-        role_id,
+        role_ids,
       },
     },
   );

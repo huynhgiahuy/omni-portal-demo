@@ -119,6 +119,10 @@ const listUnitExternal = [
     label: 'FTQ',
     value: 'FTQ',
   },
+  {
+    label: 'Khác',
+    value: 'OTHER',
+  },
 ];
 
 const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({

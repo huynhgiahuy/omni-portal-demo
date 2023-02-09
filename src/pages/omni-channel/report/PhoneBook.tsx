@@ -101,6 +101,10 @@ const listUnitExternal = [
     label: 'FTQ',
     value: 'FTQ',
   },
+  {
+    label: 'Khác',
+    value: 'OTHER',
+  },
 ];
 
 const formItemLayout = {
@@ -434,7 +438,7 @@ const PhoneBook: React.FC = () => {
     }
   };
 
-  const handleConfirmDelete = (role_id: React.Key[]) => {
+  const handleConfirmDelete = (role_ids: React.Key[]) => {
     Modal.confirm({
       title: 'Thao tác xoá?',
       content: 'Bạn có chắc chắn muốn xoá thông tin này',
@@ -446,7 +450,7 @@ const PhoneBook: React.FC = () => {
       icon: <CloseCircleFilled style={{ color: 'red', fontSize: 22 }} />,
       onOk() {
         {
-          deleteUserContact.run(role_id);
+          deleteUserContact.run(role_ids);
         }
       },
 
@@ -527,6 +531,13 @@ const PhoneBook: React.FC = () => {
       key: external === 'Khách hàng' ? 'work_unit' : 'team',
       align: 'center',
       width: '265px',
+      render: (text, record) => {
+        if (external === 'Khách hàng') {
+          return text === 'OTHER' ? 'Khác' : text;
+        } else {
+          return text;
+        }
+      },
     },
     {
       title: 'Số IPP',
