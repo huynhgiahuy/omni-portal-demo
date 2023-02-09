@@ -83,6 +83,7 @@ export async function requestHistoryCallData(
   direction?: any,
   result?: any,
   search_name?: string,
+  sort_key?: any,
 ) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/get_call_history`, {
     method: 'POST',
@@ -97,6 +98,7 @@ export async function requestHistoryCallData(
       direction,
       result,
       search_name,
+      sort_key,
     },
   });
 }
