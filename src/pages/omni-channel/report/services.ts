@@ -50,14 +50,14 @@ export async function requestUpdateUserContact(token: string, data: dataUserCont
   });
 }
 
-export async function requestDeleteUserContact(token: string, contacts_id: React.Key[]) {
+export async function requestDeleteUserContact(token: string, contact_ids: React.Key[]) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/delete_user_contact`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
     },
     data: {
-      contacts_id,
+      contact_ids,
     },
   });
 }
