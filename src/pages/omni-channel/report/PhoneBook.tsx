@@ -101,6 +101,10 @@ const listUnitExternal = [
     label: 'FTQ',
     value: 'FTQ',
   },
+  {
+    label: 'Khác',
+    value: 'OTHER',
+  },
 ];
 
 const formItemLayout = {
