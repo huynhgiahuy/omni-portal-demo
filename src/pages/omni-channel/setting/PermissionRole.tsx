@@ -1,5 +1,5 @@
 import {
-    Button, Checkbox, Col, Form, Input, message, Modal, Row, Space, Spin, Table,
+    Button, Checkbox, Col, Empty, Form, Input, message, Modal, Row, Space, Spin, Table,
     TablePaginationConfig, Tree, Typography
 } from 'antd';
 import { debounce, isEqual } from 'lodash';
@@ -1198,6 +1198,17 @@ const PermissionRole: React.FC = () => {
           spinning: fetchReadRoleAndPerm.loading,
         }}
         rowSelection={rowSelection}
+        locale={{
+          triggerDesc: 'Chọn sắp xếp giảm dần',
+          triggerAsc: 'Chọn sắp xếp tăng dần',
+          cancelSort: 'Chọn hủy sắp xếp',
+          emptyText: (
+            <>
+              <Empty description={false} />
+              <p>Không có dữ liệu</p>
+            </>
+          ),
+        }}
       />
       <Modal
         open={isAddNewPermission}
