@@ -184,6 +184,7 @@ const PermissionRole: React.FC = () => {
     {
       onSuccess: (res) => {
         if (res) {
+          setIsView('200');
           setListAllRolePermission(res);
         }
       },
@@ -756,9 +757,7 @@ const PermissionRole: React.FC = () => {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       key: 'created_at',
-      sorter: {
-        multiple: 1,
-      },
+      sorter: true,
       render: (text) => {
         return text ? moment.unix(text).format('DD-MM-YYYY') : '-';
       },
@@ -767,9 +766,7 @@ const PermissionRole: React.FC = () => {
       title: 'Ngày sửa gần nhất',
       dataIndex: 'updated_at',
       key: 'updated_at',
-      sorter: {
-        multiple: 2,
-      },
+      sorter: true,
       render: (text) => {
         return text ? moment.unix(text).format('DD-MM-YYYY') : '-';
       },
@@ -806,14 +803,9 @@ const PermissionRole: React.FC = () => {
   ) => {
     let created_at = 0;
     let updated_at = 0;
-    if (Array.isArray(sorter)) {
-      const sortCreateAt = sorter?.filter(
-        (sortKey: { field: string }) => sortKey.field === 'created_at',
-      )[0];
-      const sortUpdatedAt = sorter?.filter(
-        (sortKey: { field: string }) => sortKey.field === 'updated_at',
-      )[0];
-      switch (sortCreateAt.order) {
+
+    if (sorter.field === 'created_at') {
+      switch (sorter.order) {
         case 'ascend':
           created_at = 1;
           break;
@@ -823,7 +815,8 @@ const PermissionRole: React.FC = () => {
         default:
           break;
       }
-      switch (sortUpdatedAt.order) {
+    } else {
+      switch (sorter.order) {
         case 'ascend':
           updated_at = 1;
           break;
@@ -831,34 +824,10 @@ const PermissionRole: React.FC = () => {
           updated_at = -1;
           break;
         default:
-          updated_at = 0;
           break;
       }
-    } else {
-      if (sorter.field === 'created_at') {
-        switch (sorter.order) {
-          case 'ascend':
-            created_at = 1;
-            break;
-          case 'descend':
-            created_at = -1;
-            break;
-          default:
-            break;
-        }
-      } else {
-        switch (sorter.order) {
-          case 'ascend':
-            updated_at = 1;
-            break;
-          case 'descend':
-            updated_at = -1;
-            break;
-          default:
-            break;
-        }
-      }
     }
+
     setSort({
       created_at,
       updated_at,
@@ -1128,6 +1097,7 @@ const PermissionRole: React.FC = () => {
   }, [roleCode, roleDesc]);
 
   useEffect(() => {
+    if (!isView) return;
     fetchReadRoleAndPerm.run(search, sort);
   }, [search, sort]);
 
