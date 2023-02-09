@@ -767,12 +767,4 @@ export const OPTIONS_FILTER_HISTORY_CALL_RESULT = [
     label: 'Từ chối',
     value: 6,
   },
-  {
-    label: 'Nhỡ trong hàng chờ',
-    value: 7,
-  },
-  {
-    label: 'Thất bại khác',
-    value: 8,
-  },
 ];

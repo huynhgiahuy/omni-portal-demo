@@ -212,14 +212,8 @@ const HistoryCall: React.FC = () => {
       color = '#b1b1b1';
       newResult = 'Không trả lời';
     } else if (result === 6) {
-      color = '#ff0000';
-      newResult = 'Từ chối';
-    } else if (result === 7) {
-      color = '#9B26B6';
-      newResult = 'Nhỡ trong hàng chờ';
-    } else if (result === 8) {
       color = '#FFAC1C';
-      newResult = 'Thất bại khác';
+      newResult = 'Từ chối';
     }
     return (
       <Tag color={color} style={{ fontWeight: 'bold' }}>
