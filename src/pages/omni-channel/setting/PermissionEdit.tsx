@@ -599,7 +599,7 @@ const PermissionEdit: React.FC = () => {
           ? '-'
           : moment.unix(text).format('DD-MM-YYYY HH:mm:ss');
       },
-      sorter: (a, b) => a.last_update - b.last_update,
+      sorter: true,
     },
     {
       title: 'Trạng thái hoạt động',

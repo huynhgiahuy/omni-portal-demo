@@ -390,7 +390,7 @@ const HistoryCall: React.FC = () => {
           ? '-'
           : moment.unix(text).format('DD-MM-YYYY HH:mm:ss');
       },
-      sorter: (a, b) => a.start_epoch - b.start_epoch,
+      sorter: true,
     },
     {
       title: 'Thời lượng',
