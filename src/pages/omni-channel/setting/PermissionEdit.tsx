@@ -312,6 +312,7 @@ const PermissionEdit: React.FC = () => {
     if (response_delete.success === true) {
       message.success('Xóa người dùng thành công!');
       fetchListAllUserInfoFinal.run();
+      setSelectedRowKeys([]);
     } else if (response_delete.error_code === 4030102) {
       message.error('Bạn không có quyền xóa thông tin này!');
     } else {
