@@ -358,6 +358,7 @@ const PhoneBook: React.FC = () => {
           external_customers: external === 'Khách hàng' ? true : false,
         });
         handleCancleModal();
+        setSelectedRowKeys([]);
       }
       return res;
     },
