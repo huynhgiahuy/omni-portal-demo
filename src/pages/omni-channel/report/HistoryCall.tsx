@@ -745,7 +745,11 @@ const HistoryCall: React.FC = () => {
         expandable={{
           expandedRowRender: (record) => (
             <div
-              style={{ maxHeight: 250, overflow: 'scroll', paddingTop: 10 }}
+              style={{
+                maxHeight: 250,
+                overflowY: 'scroll',
+                paddingTop: 10,
+              }}
               className={styles.timelineLayout}
             >
               <Timeline pending={true} pendingDot={null}>
