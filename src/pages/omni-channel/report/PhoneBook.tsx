@@ -395,6 +395,7 @@ const PhoneBook: React.FC = () => {
       }
     },
   });
+  console.log(listTeamPermission);
 
   const checkPhoneContact = useRequest(
     async (data) => {
@@ -535,7 +536,8 @@ const PhoneBook: React.FC = () => {
         if (external === 'Khách hàng') {
           return text === 'OTHER' ? 'Khác' : text;
         } else {
-          return text;
+          const team = listTeamPermission.filter((team) => team.id === text)[0]?.name;
+          return team;
         }
       },
     },
