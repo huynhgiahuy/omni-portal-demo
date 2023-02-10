@@ -216,7 +216,7 @@ const HistoryCall: React.FC = () => {
       newResult = 'Từ chối';
     }
     return (
-      <Tag color={color} style={{ fontWeight: 'bold' }}>
+      <Tag color={color} style={{ fontWeight: 'bold', margin: 'unset' }}>
         {newResult}
       </Tag>
     );
