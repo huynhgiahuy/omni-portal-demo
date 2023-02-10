@@ -151,7 +151,7 @@ const WorkingStatus = () => {
       >
         <Select.Option value={1}>
           <CheckCircleFilled style={{ color: ' #1eaf61' }} />
-          <span style={{ color: '#1890FF', fontWeight: 'bold' }} className={styles['text-status']}>
+          <span style={{ color: '#1eaf61', fontWeight: 'bold' }} className={styles['text-status']}>
             Sẵn sàng
           </span>
         </Select.Option>
