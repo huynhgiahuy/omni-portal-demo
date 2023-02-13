@@ -1,5 +1,6 @@
 import {
-    Button, Checkbox, Col, Form, Input, message, Modal, Row, Space, Spin, Table, Tree, Typography
+    Button, Checkbox, Col, Empty, Form, Input, message, Modal, Row, Space, Spin, Table,
+    TablePaginationConfig, Tree, Typography
 } from 'antd';
 import { debounce, isEqual } from 'lodash';
 import moment from 'moment';
@@ -19,7 +20,8 @@ import {
 } from '@/constants';
 import NoFoundPage from '@/pages/404';
 import {
-    CloseCircleFilled, DeleteOutlined, EditOutlined, PlusSquareFilled, SearchOutlined
+    CloseCircleFilled, DeleteOutlined, EditOutlined, PlusSquareFilled, RollbackOutlined,
+    SearchOutlined
 } from '@ant-design/icons';
 
 import styles from '../setting/style.less';
@@ -82,6 +84,9 @@ const PermissionRole: React.FC = () => {
   const [isView, setIsView] = useState('');
   const token = window.localStorage?.getItem('access_token');
 
+  const [search, setSearch] = useState('');
+  const [sort, setSort] = useState({ created_at: 0, updated_at: 0 });
+
   const [listAllRolePermission, setListAllRolePermission] = useState<DataAllRolePermission[]>([]);
   const [isAddNewPermission, setAddNetPermission] = useState(false);
   const [isEditRole, setIsEditRole] = useState(false);
@@ -136,6 +141,30 @@ const PermissionRole: React.FC = () => {
     selectListRF,
   );
 
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+  const hasSelected = selectedRowKeys.length > 0;
+  const handleConfirmDeleteMultiple = () => {
+    Modal.confirm({
+      title: 'Thao tác xóa?',
+      content: 'Bạn chắc chắn muốn xóa thông tin này',
+      okText: 'Xóa',
+      cancelText: 'Hủy',
+      icon: <CloseCircleFilled style={{ color: 'red' }} />,
+      okButtonProps: { danger: true },
+      centered: true,
+      onOk() {
+        fetchDeleteRoleAndPermission.run(selectedRowKeys);
+      },
+    });
+  };
+
   const fetchReadRoleAndPermCheckRole = useRequest(
     async (keyword?: string) => {
       const res: { success: boolean; error_code: number } = await requestReadRoleAndPerm(
@@ -155,6 +184,7 @@ const PermissionRole: React.FC = () => {
     {
       onSuccess: (res) => {
         if (res) {
+          setIsView('200');
           setListAllRolePermission(res);
         }
       },
@@ -162,11 +192,12 @@ const PermissionRole: React.FC = () => {
   );
 
   const fetchReadRoleAndPerm = useRequest(
-    async (keyword?: string) => {
+    async (keyword?: string, sort_key?: { create_at?: number; updated_at?: number }) => {
       const res: { success: boolean; error_code: number } = await requestReadRoleAndPerm(
         token ? token : '',
         {
           keyword,
+          sort_key,
         },
       );
       if (!res.success) {
@@ -258,7 +289,7 @@ const PermissionRole: React.FC = () => {
   );
 
   const fetchDeleteRoleAndPermission = useRequest(
-    async (id: string) => {
+    async (id: React.Key[]) => {
       const res: { success: string; error_code: number } = await requestDeleteRoleAndPermission(
         token ? token : '',
         id,
@@ -275,6 +306,7 @@ const PermissionRole: React.FC = () => {
         handleCancleAddNewPermission();
         message.success('Xoá thành công');
         fetchReadRoleAndPerm.run();
+        setSelectedRowKeys([]);
       }
       return res;
     },
@@ -291,7 +323,7 @@ const PermissionRole: React.FC = () => {
     pageSizeOptions: ['5', '10', '20', '30', '50'],
   });
 
-  const handleClickDeleteRole = (role_id: string) => {
+  const handleClickDeleteRole = (role_ids: [string]) => {
     Modal.confirm({
       title: 'Thao tác xoá?',
       content: 'Bạn có chắc chắn muốn xoá thông tin này',
@@ -303,7 +335,7 @@ const PermissionRole: React.FC = () => {
       icon: <CloseCircleFilled style={{ color: 'red', fontSize: 22 }} />,
       onOk() {
         {
-          fetchDeleteRoleAndPermission.run(role_id);
+          fetchDeleteRoleAndPermission.run(role_ids);
         }
       },
 
@@ -716,6 +748,7 @@ const PermissionRole: React.FC = () => {
       title: 'Người tạo',
       dataIndex: 'create_by',
       key: 'create_by',
+
       render: (text, recode) => {
         return recode.created_by ? recode.created_by : '-';
       },
@@ -724,6 +757,7 @@ const PermissionRole: React.FC = () => {
       title: 'Ngày tạo',
       dataIndex: 'created_at',
       key: 'created_at',
+      sorter: true,
       render: (text) => {
         return text ? moment.unix(text).format('DD-MM-YYYY') : '-';
       },
@@ -732,6 +766,7 @@ const PermissionRole: React.FC = () => {
       title: 'Ngày sửa gần nhất',
       dataIndex: 'updated_at',
       key: 'updated_at',
+      sorter: true,
       render: (text) => {
         return text ? moment.unix(text).format('DD-MM-YYYY') : '-';
       },
@@ -748,9 +783,11 @@ const PermissionRole: React.FC = () => {
             }}
           />
           <DeleteOutlined
-            style={{ color: '#F5222D', fontSize: '20px' }}
+            style={{ fontSize: '20px' }}
+            className={hasSelected ? styles.disableDelete : styles.enableDelete}
             onClick={() => {
-              handleClickDeleteRole(record.id);
+              if (hasSelected) return;
+              handleClickDeleteRole([record.id]);
             }}
           />
         </Space>
@@ -759,15 +796,46 @@ const PermissionRole: React.FC = () => {
   ];
 
   const handleTableChange: TableProps<DataAllRolePermission>['onChange'] = (
-    newPagination: any,
-    filters: any,
+    newPagination: TablePaginationConfig,
+    filters,
     sorter: any,
     extra,
   ) => {
+    let created_at = 0;
+    let updated_at = 0;
+
+    if (sorter.field === 'created_at') {
+      switch (sorter.order) {
+        case 'ascend':
+          created_at = 1;
+          break;
+        case 'descend':
+          created_at = -1;
+          break;
+        default:
+          break;
+      }
+    } else {
+      switch (sorter.order) {
+        case 'ascend':
+          updated_at = 1;
+          break;
+        case 'descend':
+          updated_at = -1;
+          break;
+        default:
+          break;
+      }
+    }
+
+    setSort({
+      created_at,
+      updated_at,
+    });
     setPagination({
       ...pagination,
-      current: newPagination.current,
-      pageSize: newPagination.pageSize,
+      current: newPagination.current!,
+      pageSize: newPagination.pageSize!,
     });
   };
 
@@ -1028,6 +1096,11 @@ const PermissionRole: React.FC = () => {
     form.validateFields();
   }, [roleCode, roleDesc]);
 
+  useEffect(() => {
+    if (!isView) return;
+    fetchReadRoleAndPerm.run(search, sort);
+  }, [search, sort]);
+
   return isView === '403' ? (
     <NoFoundPage status="403" title="403" subTitle="Bạn không có quyền xem trang này" />
   ) : fetchReadRoleAndPermCheckRole.loading ? (
@@ -1047,7 +1120,7 @@ const PermissionRole: React.FC = () => {
                 onChange={debounce(
                   (e) => {
                     const { value } = e.target;
-                    fetchReadRoleAndPerm.run(value);
+                    setSearch(value);
                   },
                   500,
                   {
@@ -1065,10 +1138,39 @@ const PermissionRole: React.FC = () => {
           </Space>
         </Col>
       </Row>
-
+      {hasSelected ? (
+        <div className={styles.selectedRowLayoutRole}>
+          <Typography.Text style={{ paddingRight: 32 }}>
+            Đã chọn:{' '}
+            <Typography.Text style={{ fontWeight: 'bold' }}>
+              {selectedRowKeys.length}
+            </Typography.Text>
+          </Typography.Text>
+          <Space>
+            <Button
+              icon={<RollbackOutlined />}
+              onClick={() => {
+                setSelectedRowKeys([]);
+              }}
+            >
+              Hủy
+            </Button>
+            <Button
+              icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
+              style={{ color: '#F5222D' }}
+              onClick={handleConfirmDeleteMultiple}
+            >
+              Xóa
+            </Button>
+          </Space>
+        </div>
+      ) : (
+        <></>
+      )}
       <Table
         dataSource={listAllRolePermission}
         columns={columns}
+        rowKey={(item) => item.id}
         className={styles.permissionTableRole}
         onChange={handleTableChange}
         pagination={{
@@ -1094,6 +1196,18 @@ const PermissionRole: React.FC = () => {
             </div>
           ),
           spinning: fetchReadRoleAndPerm.loading,
+        }}
+        rowSelection={rowSelection}
+        locale={{
+          triggerDesc: 'Chọn sắp xếp giảm dần',
+          triggerAsc: 'Chọn sắp xếp tăng dần',
+          cancelSort: 'Chọn hủy sắp xếp',
+          emptyText: (
+            <>
+              <Empty description={false} />
+              <p>Không có dữ liệu</p>
+            </>
+          ),
         }}
       />
       <Modal

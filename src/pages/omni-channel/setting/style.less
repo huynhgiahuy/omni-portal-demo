@@ -183,6 +183,20 @@
     .ant-table-cell-scrollbar:not([rowspan]) {
       box-shadow: none;
     }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #19857b;
+      border-color: #19857b;
+    }
+
+    .ant-table-column-sorter-inner {
+      color: black;
+    }
   }
 }
 
@@ -193,7 +207,7 @@
 .permissionTable {
   :global {
     .ant-table {
-      padding: 20px 20px 0 20px;
+      padding: 20px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
     }
@@ -221,6 +235,19 @@
     }
     .ant-table-cell-scrollbar:not([rowspan]) {
       box-shadow: none;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #19857b;
+      border-color: #19857b;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-table-column-sorter {
+      color: black;
     }
   }
 }
@@ -370,19 +397,19 @@
 .readyStatusText {
   margin-left: 9px;
   color: #1eaf61;
-  font-weight: 400;
+  font-weight: bold;
   font-size: 13px;
 }
 .abscentStatusText {
   margin-left: 9px;
   color: #faad14;
-  font-weight: 400;
+  font-weight: bold;
   font-size: 13px;
 }
 .notDisturbStatusText {
   margin-left: 9px;
   color: #f5222d;
-  font-weight: 400;
+  font-weight: bold;
   font-size: 13px;
 }
 .noActivityStatusDisplay {
@@ -396,7 +423,7 @@
 .noActivityStatusText {
   margin-left: 5px;
   color: #818181;
-  font-weight: 400;
+  font-weight: bold;
   font-size: 13px;
 }
 .offlineStatusDisplay {
@@ -410,7 +437,7 @@
 .offlineStatusText {
   margin-left: 5px;
   color: #818181;
-  font-weight: 400;
+  font-weight: bold;
   font-size: 13px;
 }
 .filterFormPermissionEdit {
@@ -459,6 +486,7 @@
       color: rgba(0, 0, 0, 1);
     }
   }
+  /* stylelint-disable-next-line declaration-empty-line-before */
   color: rgba(0, 0, 0, 1);
   font-weight: bold;
 }
@@ -537,4 +565,41 @@
       font-size: 20px;
     }
   }
+}
+.selectedRowLayout {
+  margin-bottom: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 8px;
+}
+
+.selectedRowLayoutRole {
+  margin-top: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 8px;
+}
+
+.disableDelete {
+  color: gray;
+  cursor: not-allowed !important;
+}
+
+.enableDelete {
+  color: #f5222d;
+}
+.deleteSingleItemActive {
+  color: #f5222d;
+  font-size: 20px;
+}
+.deleteSingleItemDisabled {
+  color: gray;
+  font-size: 20px;
+  cursor: not-allowed !important;
 }

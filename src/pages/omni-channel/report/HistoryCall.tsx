@@ -12,9 +12,15 @@ import {
   Timeline,
   Tooltip,
   Select,
+  Empty,
 } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { PlayCircleFilled, SearchOutlined, FormOutlined } from '@ant-design/icons';
+import {
+  PlayCircleFilled,
+  SearchOutlined,
+  FormOutlined,
+  InfoCircleFilled,
+} from '@ant-design/icons';
 import DownloadIcon from '../../../../public/cloud_download.svg';
 import ExportIcon from '@/components/ExportIcon/ExportIcon';
 import styles from '../report/style.less';
@@ -48,7 +54,7 @@ interface DataLSCGType {
   call_direction?: string;
   sip_from_user?: string;
   caller_destination?: string;
-  start_epoch?: string;
+  start_epoch?: any;
   billsec?: number;
   hangup_cause?: string;
   record_path?: string;
@@ -82,6 +88,7 @@ const HistoryCall: React.FC = () => {
   const [valueFromDateTime, setValueFromDateTime] = useState<string | any>();
   const [valueToDateTime, setValueToDateTime] = useState<string | any>();
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
+  const [sortColumn, setSortColumn] = useState<any>({ received_at: 0 });
 
   const [isHCGFilter, setHCGFilter] = useState(false);
   const [isKQFilter, setKQFilter] = useState(false);
@@ -106,7 +113,7 @@ const HistoryCall: React.FC = () => {
     pageSize: 10,
     showSizeChanger: true,
     showQuickJumper: true,
-    pageSizeOptions: ['5', '10', '20', '30', '50'],
+    pageSizeOptions: ['5', '10', '20', '30', '40', '50'],
   });
 
   const [form] = Form.useForm();
@@ -129,6 +136,7 @@ const HistoryCall: React.FC = () => {
         listValueHCG,
         listValueKQ,
         valueKeyWord,
+        sortColumn,
       );
       if (!res.success) {
         if (res.error_code === 4030102) {
@@ -204,17 +212,11 @@ const HistoryCall: React.FC = () => {
       color = '#b1b1b1';
       newResult = 'Không trả lời';
     } else if (result === 6) {
-      color = '#ff0000';
-      newResult = 'Từ chối';
-    } else if (result === 7) {
-      color = '#9B26B6';
-      newResult = 'Nhỡ trong hàng chờ';
-    } else if (result === 8) {
       color = '#FFAC1C';
-      newResult = 'Thất bại khác';
+      newResult = 'Từ chối';
     }
     return (
-      <Tag color={color} style={{ fontWeight: 'bold' }}>
+      <Tag color={color} style={{ fontWeight: 'bold', margin: 'unset' }}>
         {newResult}
       </Tag>
     );
@@ -385,8 +387,11 @@ const HistoryCall: React.FC = () => {
       align: 'center',
       width: '150px',
       render: (text, record) => {
-        return text === null || text === undefined ? '-' : moment.unix(text).format('DD-MM-YYYY');
+        return text === null || text === undefined
+          ? '-'
+          : moment.unix(text).format('DD-MM-YYYY HH:mm:ss');
       },
+      sorter: true,
     },
     {
       title: 'Thời lượng',
@@ -418,10 +423,12 @@ const HistoryCall: React.FC = () => {
             {record.billsec === 0 || record.billsec === undefined ? (
               ''
             ) : (
-              <PlayCircleFilled
-                style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }}
-                onClick={() => handleOpenModalPlaying(record._id, record.record_name)}
-              />
+              <Tooltip title="Nghe ghi âm">
+                <PlayCircleFilled
+                  style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }}
+                  onClick={() => handleOpenModalPlaying(record._id, record.record_name)}
+                />
+              </Tooltip>
             )}
             {isDownloadFile === true && record.billsec !== 0 && record._id === recordId ? (
               <Spin />
@@ -431,14 +438,16 @@ const HistoryCall: React.FC = () => {
               record.billsec === undefined ? (
               ''
             ) : (
-              <img
-                src={DownloadIcon}
-                className={styles.fileDownloadIcon}
-                onClick={() => {
-                  downloadAudio(record._id, record.record_name);
-                  setRecordId(record._id);
-                }}
-              />
+              <Tooltip title="Tải ghi âm">
+                <img
+                  src={DownloadIcon}
+                  className={styles.fileDownloadIcon}
+                  onClick={() => {
+                    downloadAudio(record._id, record.record_name);
+                    setRecordId(record._id);
+                  }}
+                />
+              </Tooltip>
             )}
           </>
         );
@@ -455,15 +464,27 @@ const HistoryCall: React.FC = () => {
           <Tooltip title="Xem ghi chú">
             <FormOutlined
               style={{ fontSize: 20 }}
-              onClick={() => handleGetDetailCallNote(record.uuid, record.sip_from_user, 'local')}
+              onClick={() =>
+                handleGetDetailCallNote(record.uuid, record.sip_from_user, record.call_direction)
+              }
             />
           </Tooltip>
         );
       },
     },
+    Table.EXPAND_COLUMN,
   ];
 
-  const handleTableChange = (newPagination: any) => {
+  const handleTableChange = (newPagination: any, filters: any, sorters: any) => {
+    let received_at = 0;
+    if (sorters.order === 'ascend') {
+      received_at = 1;
+    } else if (sorters.order === 'descend') {
+      received_at = -1;
+    } else {
+      received_at = 0;
+    }
+    setSortColumn({ received_at });
     setPagination({
       ...pagination,
       current: newPagination.current,
@@ -710,15 +731,101 @@ const HistoryCall: React.FC = () => {
             prev_5: '5 trang trước',
           },
         }}
+        locale={{
+          triggerDesc: 'Chọn sắp xếp giảm dần',
+          triggerAsc: 'Chọn sắp xếp tăng dần',
+          cancelSort: 'Chọn hủy sắp xếp',
+          emptyText: (
+            <>
+              <Empty description={false} />
+              <p>Không có dữ liệu</p>
+            </>
+          ),
+        }}
+        expandable={{
+          expandedRowRender: (record) => (
+            <div
+              style={{
+                maxHeight: 250,
+                overflowY: 'scroll',
+                paddingTop: 10,
+              }}
+              className={styles.timelineLayout}
+            >
+              <Timeline pending={true} pendingDot={null}>
+                <Timeline.Item>
+                  <Typography.Paragraph style={{ color: '#1890ff', fontWeight: 'bold' }}>
+                    09-02-2023 14:03:03
+                  </Typography.Paragraph>
+                  <Typography.Paragraph>KhuyenNNA đã chuyển tiếp cho HuyenLM</Typography.Paragraph>
+                  <Typography.Paragraph>
+                    <b style={{ textDecoration: 'underline' }}>Nội dung:</b> Giả định chuyển tiếp
+                    cuộc gọi từ KhuyenNNA sang cho HuyenLM
+                  </Typography.Paragraph>
+                </Timeline.Item>
+                <Timeline.Item>
+                  <Typography.Paragraph style={{ color: '#1890ff', fontWeight: 'bold' }}>
+                    09-02-2023 13:03:03
+                  </Typography.Paragraph>
+                  <Typography.Paragraph>HaoHG đã chuyển tiếp cho KhuyenNNA</Typography.Paragraph>
+                  <Typography.Paragraph>
+                    <b style={{ textDecoration: 'underline' }}>Nội dung:</b> Giả định chuyển tiếp
+                    cuộc gọi từ HaoHG sang cho KhuyenNNA
+                  </Typography.Paragraph>
+                </Timeline.Item>
+                <Timeline.Item>
+                  <Typography.Paragraph style={{ color: '#1890ff', fontWeight: 'bold' }}>
+                    09-02-2023 12:03:03
+                  </Typography.Paragraph>
+                  <Typography.Paragraph>MinhHD đã chuyển tiếp cho HaoHG</Typography.Paragraph>
+                  <Typography.Paragraph>
+                    <b style={{ textDecoration: 'underline' }}>Nội dung:</b> Giả định chuyển tiếp
+                    cuộc gọi từ MinhHD sang cho HaoHG
+                  </Typography.Paragraph>
+                </Timeline.Item>
+                <Timeline.Item>
+                  <Typography.Paragraph style={{ color: '#1890ff', fontWeight: 'bold' }}>
+                    09-02-2023 11:03:03
+                  </Typography.Paragraph>
+                  <Typography.Paragraph>HuyND đã chuyển tiếp cho MinhHD</Typography.Paragraph>
+                  <Typography.Paragraph>
+                    <b style={{ textDecoration: 'underline' }}>Nội dung:</b> Giả định chuyển tiếp
+                    cuộc gọi từ HuyND sang cho MinhHD
+                  </Typography.Paragraph>
+                </Timeline.Item>
+                <Timeline.Item>
+                  <Typography.Paragraph style={{ color: '#1890ff', fontWeight: 'bold' }}>
+                    09-02-2023 10:03:03
+                  </Typography.Paragraph>
+                  <Typography.Paragraph>HuyND đã nhận cuộc gọi từ Khách hàng</Typography.Paragraph>
+                  <Typography.Paragraph>
+                    <b style={{ textDecoration: 'underline' }}>Nội dung:</b> Giả định cuộc gọi đến
+                    từ Khách hàng
+                  </Typography.Paragraph>
+                </Timeline.Item>
+              </Timeline>
+            </div>
+          ),
+          expandIcon: ({ expanded, onExpand, record }) =>
+            expanded ? (
+              <Tooltip title="Bỏ xem chi tiết">
+                <InfoCircleFilled
+                  style={{ color: '#1890ff', fontSize: 18 }}
+                  className={styles.detailTransferCallIcon}
+                  onClick={(e) => onExpand(record, e)}
+                />
+              </Tooltip>
+            ) : (
+              <Tooltip title="Xem chi tiết">
+                <InfoCircleFilled style={{ fontSize: 16 }} onClick={(e) => onExpand(record, e)} />
+              </Tooltip>
+            ),
+        }}
         scroll={{
           x: window.innerWidth < 1900 ? 100 : undefined,
         }}
         loading={{
-          indicator: (
-            <div>
-              <Spin />
-            </div>
-          ),
+          indicator: <Spin />,
           spinning: fetchListLSCGData.loading,
         }}
       />

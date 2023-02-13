@@ -151,26 +151,26 @@ const WorkingStatus = () => {
       >
         <Select.Option value={1}>
           <CheckCircleFilled style={{ color: ' #1eaf61' }} />
-          <span style={{ color: '#1890FF' }} className={styles['text-status']}>
+          <span style={{ color: '#1eaf61', fontWeight: 'bold' }} className={styles['text-status']}>
             Sẵn sàng
           </span>
         </Select.Option>
         <Select.Option value={2} disabled={true}>
           <ClockCircleFilled style={{ color: ' #FAAD14' }} />
-          <span style={{ color: '#FAAD14' }} className={styles['text-status']}>
+          <span style={{ color: '#FAAD14', fontWeight: 'bold' }} className={styles['text-status']}>
             Vắng mặt
           </span>
         </Select.Option>
         <Select.Option value={3}>
           <MinusCircleFilled style={{ color: '#F5222D' }} />
-          <span style={{ color: '#F5222D' }} className={styles['text-status']}>
+          <span style={{ color: '#F5222D', fontWeight: 'bold' }} className={styles['text-status']}>
             Không làm phiền
           </span>
         </Select.Option>
         <Select.Option value={4}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <img src={Ellipse} alt="..." width={14} height={14} />
-            <div style={{ color: '#818181' }} className={styles['text-status']}>
+            <div style={{ color: '#818181', fontWeight: 'bold' }} className={styles['text-status']}>
               Không hoạt động
             </div>
           </div>

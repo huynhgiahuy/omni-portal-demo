@@ -1,36 +1,26 @@
-import React, { useState } from 'react';
 import {
-  Row,
-  Col,
-  Card,
-  Typography,
-  Button,
-  Avatar,
-  Tag,
-  Space,
-  Input,
-  Form,
-  message,
-  Upload,
-  Select,
-  Spin,
+    Avatar, Button, Card, Col, Form, Input, message, Row, Select, Space, Spin, Tag, Typography,
+    Upload
 } from 'antd';
-import {
-  AppleFilled,
-  CameraFilled,
-  EditOutlined,
-  UserOutlined,
-  WindowsFilled,
-} from '@ant-design/icons';
-import styles from '../setting/style.less';
-import { requeGetUserInfoProps } from '@/services/user_info';
-import { requestEditUserInfo } from './services';
+import React, { useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
-import type { RcFile, UploadProps } from 'antd/es/upload/interface';
-import { endpoint } from '@/services/auth';
-import { requestCheckPhoneContact } from '../report/services';
-import api from '@/api';
 
+import api from '@/api';
+import { endpoint } from '@/services/auth';
+import { requeGetUserInfoProps } from '@/services/user_info';
+import {
+    AppleFilled, CameraFilled, CloseOutlined, DeleteOutlined, EditOutlined, SaveOutlined,
+    UserOutlined, WindowsFilled
+} from '@ant-design/icons';
+
+import { requestCheckPhoneContact } from '../report/services';
+import styles from '../setting/style.less';
+import {
+    requestCreateNewTeam, requestDeleteTeamPermission, requestEditUserInfo,
+    requestTeamPermissionData
+} from './services';
+
+import type { RcFile, UploadProps } from 'antd/es/upload/interface';
 export type FormProps = {
   name: string;
   title: string;
@@ -41,7 +31,13 @@ export type FormProps = {
   work_address: string;
   phone_number: string;
   ip_phone: string;
+  team: string;
 };
+
+interface TeamPermission {
+  name: string;
+  id: string;
+}
 
 type validateFieldsProps = {
   errorFields: { errors: string[]; name: string[] }[];
@@ -54,7 +50,11 @@ const PersonalInfo: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
   const token = window.localStorage.getItem('access_token');
   const [loading, setLoading] = useState(false);
+  const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
+  const [newTeamValue, setNewTeamValue] = useState<string | any>();
+  const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
   const [form] = Form.useForm();
+  const [formTeam] = Form.useForm();
 
   const requestEditUserInfoSubmit = async (data: FormProps) => {
     const res = await requestEditUserInfo(data);
@@ -83,6 +83,7 @@ const PersonalInfo: React.FC = () => {
   );
 
   const handleEditUser = () => {
+    setIsDisable(true);
     setEditUser(!isEditUser);
     form.setFieldsValue(initialState?.currentUser);
   };
@@ -150,6 +151,68 @@ const PersonalInfo: React.FC = () => {
 
       default:
         return '';
+    }
+  };
+
+  const arrListTeam = listTeamPermission?.map((item) => item.name);
+
+  const handleSelectTeam = () => {
+    setClickAddNewTeam(false);
+  };
+
+  const fetchTeamPermissionData = async () => {
+    const resTeam = await requestTeamPermissionData();
+    if (resTeam.success === true) {
+      setListTeamPermission(resTeam.data);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeamPermissionData();
+  }, []);
+
+  const handleCreateNewTeamPermission = async (newTeamValue: string) => {
+    const resNewTeam = await requestCreateNewTeam(newTeamValue);
+    if (resNewTeam.success === true) {
+      message.success('Cập nhật team mới thành công!');
+    } else if (resNewTeam.error_code === 4030102) {
+      message.error('Bạn không có quyền cập nhật thông tin!');
+    } else {
+      message.error('Cập nhật team thất bại!');
+    }
+  };
+
+  const handleDeleteTeamPermission = async (team_id: string) => {
+    const resDelTeam = await requestDeleteTeamPermission(team_id);
+    if (resDelTeam.success === true) {
+      message.success('Xóa team thành công!');
+    } else if (resDelTeam.error_code === 4030102) {
+      message.error('Bạn không có quyền xóa thông tin này!');
+    } else {
+      message.error('Xóa team thất bại!');
+    }
+  };
+
+  const handleClickDeleteTeam = async (e: any, id: string) => {
+    await e.stopPropagation();
+    await e.preventDefault();
+    await handleDeleteTeamPermission(id);
+    await fetchTeamPermissionData();
+  };
+
+  const handleSubmitNewTeam = async (e: any, values: any) => {
+    if (arrListTeam.includes(values)) {
+      message.error('Team đã tồn tại!');
+    } else if (values === undefined || values === '') {
+      e.stopPropagation();
+      e.preventDefault();
+      message.error('Vui lòng nhập Team mới!');
+    } else {
+      await handleCreateNewTeamPermission(values);
+      await fetchTeamPermissionData();
+      formTeam.setFieldsValue({ newTeamValue: undefined });
+      setNewTeamValue(undefined);
+      setClickAddNewTeam(false);
     }
   };
 
@@ -227,7 +290,8 @@ const PersonalInfo: React.FC = () => {
                     error.values.level !== initialState?.currentUser?.level ||
                     error.values.home_address !== initialState?.currentUser?.home_address ||
                     error.values.phone_number !== initialState?.currentUser?.phone_number ||
-                    error.values.ip_phone !== initialState?.currentUser?.ip_phone)
+                    error.values.ip_phone !== initialState?.currentUser?.ip_phone ||
+                    error.values.team !== initialState?.currentUser?.team)
                 ) {
                   setIsDisable(false);
                 }
@@ -309,6 +373,108 @@ const PersonalInfo: React.FC = () => {
                     </Typography.Text>
                   )}
                 </div>
+                <div className={styles.antDataDisplay}>
+                  <Typography.Text className={styles.antTextStyle}>
+                    Team {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
+                  </Typography.Text>
+                  {isEditUser === true ? (
+                    <Form.Item
+                      name="team"
+                      className={styles.antFormItemMargin}
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng nhập Team',
+                        },
+                      ]}
+                    >
+                      <Select
+                        style={{ width: '300px' }}
+                        onChange={handleSelectTeam}
+                        dropdownRender={(menu) => (
+                          <>
+                            {menu}
+                            <div className={styles.addNewTeamText}>
+                              <hr></hr>
+                              {clickAddNewTeam === false ? (
+                                <Button
+                                  className={styles.addNewTeamBtn}
+                                  type="text"
+                                  onClick={() => setClickAddNewTeam(true)}
+                                >
+                                  Chỉnh sửa / Thêm team mới
+                                </Button>
+                              ) : (
+                                <Form form={formTeam}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <div style={{ flex: 1 }}>
+                                      <Form.Item
+                                        name="newTeamValue"
+                                        style={{ marginBottom: 'unset' }}
+                                      >
+                                        <Input
+                                          allowClear
+                                          placeholder="Nhập team mới tại đây"
+                                          className={styles.addNewTeamPlaceholder}
+                                          onChange={(e) => setNewTeamValue(e.target.value)}
+                                        />
+                                      </Form.Item>
+                                    </div>
+                                    <div>
+                                      <Form.Item style={{ marginBottom: 'unset' }}>
+                                        <Space>
+                                          <SaveOutlined
+                                            style={{ marginLeft: 10, fontSize: 14 }}
+                                            onClick={(e) => handleSubmitNewTeam(e, newTeamValue)}
+                                          />
+                                          <CloseOutlined
+                                            style={{ fontSize: 14 }}
+                                            onClick={() => setClickAddNewTeam(false)}
+                                          />
+                                        </Space>
+                                      </Form.Item>
+                                    </div>
+                                  </div>
+                                </Form>
+                              )}
+                            </div>
+                          </>
+                        )}
+                        onDropdownVisibleChange={(open) => {
+                          if (open === false) {
+                            setClickAddNewTeam(false);
+                          }
+                          return;
+                        }}
+                      >
+                        {listTeamPermission &&
+                          listTeamPermission.map((item: TeamPermission) => (
+                            <Select.Option value={item.id} key={item.id}>
+                              <div className={styles.flexLayout}>
+                                <div>{item.name}</div>
+                                {clickAddNewTeam === true ? (
+                                  <DeleteOutlined
+                                    onClick={(e) => handleClickDeleteTeam(e, item.id)}
+                                  />
+                                ) : (
+                                  ''
+                                )}
+                              </div>
+                            </Select.Option>
+                          ))}
+                      </Select>
+                    </Form.Item>
+                  ) : (
+                    <Typography.Text className={styles.antBold}>
+                      {
+                        listTeamPermission.filter(
+                          (team) => team.id === initialState?.currentUser?.team,
+                        )[0]?.name
+                      }
+                    </Typography.Text>
+                  )}
+                </div>
+
                 <div className={styles.antDataDisplay}>
                   <Typography.Text className={styles.antTextStyle}>
                     Chức danh {isEditUser === true && <span style={{ color: 'red' }}>(*)</span>}
