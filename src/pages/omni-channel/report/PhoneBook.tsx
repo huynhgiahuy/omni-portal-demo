@@ -1,6 +1,17 @@
 import {
-    Button, Form, Image, Input, message, Modal, Segmented, Select, Space, Spin, Table, TableProps,
-    Typography
+  Button,
+  Form,
+  Image,
+  Input,
+  message,
+  Modal,
+  Segmented,
+  Select,
+  Space,
+  Spin,
+  Table,
+  TableProps,
+  Typography,
 } from 'antd';
 import { debounce } from 'lodash';
 import React, { useState } from 'react';
@@ -8,18 +19,33 @@ import { useModel, useRequest } from 'umi';
 
 import NoFoundPage from '@/pages/404';
 import {
-    CheckOutlined, CloseCircleFilled, CloseOutlined, DeleteOutlined, PlusSquareFilled,
-    RollbackOutlined, SaveOutlined, SearchOutlined, StarFilled, StarOutlined
+  CheckOutlined,
+  CloseCircleFilled,
+  CloseOutlined,
+  DeleteOutlined,
+  PlusSquareFilled,
+  RollbackOutlined,
+  SaveOutlined,
+  SearchOutlined,
+  StarFilled,
+  StarOutlined,
 } from '@ant-design/icons';
 
 import Phone from '../../../../public/phone.svg';
 import styles from '../report/style.less';
 import {
-    requestCreateNewTeam, requestDeleteTeamPermission, requestTeamPermissionData
+  requestCreateNewTeam,
+  requestDeleteTeamPermission,
+  requestTeamPermissionData,
 } from '../setting/services';
 import {
-    dataUserContactProps, requestAddUserContact, requestCheckPhoneContact, requestDeleteUserContact,
-    requestGetUserContact, requestSendPinUser, requestUpdateUserContact
+  dataUserContactProps,
+  requestAddUserContact,
+  requestCheckPhoneContact,
+  requestDeleteUserContact,
+  requestGetUserContact,
+  requestSendPinUser,
+  requestUpdateUserContact,
 } from './services';
 
 import type { ColumnsType } from 'antd/es/table';
@@ -396,7 +422,6 @@ const PhoneBook: React.FC = () => {
       }
     },
   });
-  console.log(listTeamPermission);
 
   const checkPhoneContact = useRequest(
     async (data) => {
