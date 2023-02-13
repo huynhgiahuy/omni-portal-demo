@@ -88,7 +88,7 @@ const HistoryCall: React.FC = () => {
   const [valueFromDateTime, setValueFromDateTime] = useState<string | any>();
   const [valueToDateTime, setValueToDateTime] = useState<string | any>();
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
-  const [sortColumn, setSortColumn] = useState<any>({ received_at: 0 });
+  const [sortColumn, setSortColumn] = useState<any>({ start_epoch: 0 });
 
   const [isHCGFilter, setHCGFilter] = useState(false);
   const [isKQFilter, setKQFilter] = useState(false);
@@ -476,15 +476,15 @@ const HistoryCall: React.FC = () => {
   ];
 
   const handleTableChange = (newPagination: any, filters: any, sorters: any) => {
-    let received_at = 0;
+    let start_epoch = 0;
     if (sorters.order === 'ascend') {
-      received_at = 1;
+      start_epoch = 1;
     } else if (sorters.order === 'descend') {
-      received_at = -1;
+      start_epoch = -1;
     } else {
-      received_at = 0;
+      start_epoch = 0;
     }
-    setSortColumn({ received_at });
+    setSortColumn({ start_epoch });
     setPagination({
       ...pagination,
       current: newPagination.current,
