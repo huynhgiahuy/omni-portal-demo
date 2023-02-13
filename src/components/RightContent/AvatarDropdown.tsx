@@ -1,5 +1,16 @@
 import {
-    Avatar, Col, Divider, Form, Image, Menu, message, Radio, Row, Spin, Switch, Typography
+  Avatar,
+  Col,
+  Divider,
+  Form,
+  Image,
+  Menu,
+  message,
+  Radio,
+  Row,
+  Spin,
+  Switch,
+  Typography,
 } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, history, useModel } from 'umi';
@@ -7,10 +18,16 @@ import { FormattedMessage, history, useModel } from 'umi';
 import api from '@/api';
 import { outLogin } from '@/services/ant-design-pro/api';
 import {
-    requeGetUserInfoProps, requestUpdatenotification, requestUpdateScreenMode
+  requeGetUserInfoProps,
+  requestUpdatenotification,
+  requestUpdateScreenMode,
 } from '@/services/user_info';
 import {
-    CompassFilled, LogoutOutlined, NotificationOutlined, SettingOutlined, UserOutlined
+  CompassFilled,
+  LogoutOutlined,
+  NotificationOutlined,
+  SettingOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 
 import HeaderDropdown from '../HeaderDropdown';
@@ -72,7 +89,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         return;
       }
       if (key === 'user') {
-        history.push(`/omni-channel/profile`);
+        history.push(`z`);
         return;
       }
       if (key === 'notify') {
