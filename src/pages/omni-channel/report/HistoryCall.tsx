@@ -145,12 +145,12 @@ const HistoryCall: React.FC = () => {
           setListDataLSCGLength(0);
           return;
         } else if (res.error_code === 4010106) {
-          message.error('Không tìm thấy dữ liệu');
+          message.error('Không tìm thấy dữ liệu!');
           setListDataLSCG([]);
           setListDataLSCGLength(0);
           return;
         } else {
-          message.error('Không tìm thấy dữ liệu');
+          message.error('Không tìm thấy dữ liệu!');
           setListDataLSCG([]);
           setListDataLSCGLength(0);
           return;
