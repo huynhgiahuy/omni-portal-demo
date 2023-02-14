@@ -264,7 +264,7 @@ const HistoryCall: React.FC = () => {
     if (seconds < 10) {
       seconds = '0' + seconds;
     }
-    return hours + ':' + minutes + ':' + seconds;
+    return hours + ' : ' + minutes + ' : ' + seconds;
   };
 
   const playAudio = async (fileId?: any, recordName?: any) => {
@@ -337,7 +337,9 @@ const HistoryCall: React.FC = () => {
       align: 'center',
       width: '130px',
       render: (text, record) => {
-        return handleViewCallDirection(record.call_direction);
+        return text === null || text === undefined
+          ? '-'
+          : handleViewCallDirection(record.call_direction);
       },
     },
     {
@@ -355,7 +357,7 @@ const HistoryCall: React.FC = () => {
       dataIndex: 'caller_name',
       key: 'caller_name',
       align: 'center',
-      width: '150px',
+      width: '200px',
       render: (text, record) => {
         return text === null || text === undefined ? '-' : text;
       },
@@ -375,7 +377,7 @@ const HistoryCall: React.FC = () => {
       dataIndex: 'receiver_name',
       key: 'receiver_name',
       align: 'center',
-      width: '150px',
+      width: '200px',
       render: (text, record) => {
         return text === null || text === undefined ? '-' : text;
       },
@@ -421,7 +423,7 @@ const HistoryCall: React.FC = () => {
         return (
           <>
             {record.billsec === 0 || record.billsec === undefined ? (
-              ''
+              '-'
             ) : (
               <Tooltip title="Nghe ghi âm">
                 <PlayCircleFilled
@@ -458,7 +460,7 @@ const HistoryCall: React.FC = () => {
       dataIndex: 'note',
       key: 'note',
       align: 'center',
-      width: '150px',
+      width: '100px',
       render: (text, record) => {
         return (
           <Tooltip title="Xem ghi chú">
