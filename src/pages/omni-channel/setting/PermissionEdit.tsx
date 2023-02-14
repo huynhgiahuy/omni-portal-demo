@@ -176,7 +176,7 @@ const PermissionEdit: React.FC = () => {
 
   const fetchListAllUserInfoFinal = useRequest(
     async () => {
-      const res: { success: boolean; length: number; error_code: number } =
+      const res: { success: boolean; length: number; error_code: number; data: any } =
         await requestAllUserInfoFinal(
           pagination.pageSize,
           pagination.current,
@@ -192,18 +192,22 @@ const PermissionEdit: React.FC = () => {
           setIsView('403');
           return;
         } else if (res.error_code === 4010106) {
-          message.error('Không tìm thấy dữ liệu');
+          message.error('Không tìm thấy dữ liệu!');
           setListAllUserInfoFinal([]);
           setListAllUserInfoLengthFinal(0);
           return;
         } else {
-          message.error('Không tìm thấy dữ liệu');
+          message.error('Không tìm thấy dữ liệu!');
           setListAllUserInfoFinal([]);
           setListAllUserInfoLengthFinal(0);
           return;
         }
       } else {
-        setListAllUserInfoLengthFinal(res.length);
+        if (res.data.length === 0) {
+          message.error('Không tìm thấy dữ liệu!');
+        } else {
+          setListAllUserInfoLengthFinal(res.length);
+        }
       }
       return res;
     },
@@ -234,12 +238,12 @@ const PermissionEdit: React.FC = () => {
           setIsView('403');
           return;
         } else if (res.error_code === 4010106) {
-          message.error('Không tìm thấy dữ liệu');
+          message.error('Không tìm thấy dữ liệu!');
           setListAllUserInfoFinal([]);
           setListAllUserInfoLengthFinal(0);
           return;
         } else {
-          message.error('Không tìm thấy dữ liệu');
+          message.error('Không tìm thấy dữ liệu!');
           setListAllUserInfoFinal([]);
           setListAllUserInfoLengthFinal(0);
           return;
@@ -348,7 +352,7 @@ const PermissionEdit: React.FC = () => {
     } else if (values === undefined || values === '') {
       e.stopPropagation();
       e.preventDefault();
-      message.error('Vui lòng nhập Team mới!');
+      message.error('Vui lòng nhập team mới!');
     } else {
       await handleCreateNewTeamPermission(values);
       await fetchTeamPermissionData();
