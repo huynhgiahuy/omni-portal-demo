@@ -617,7 +617,7 @@ const PermissionEdit: React.FC = () => {
       dataIndex: 'status',
       key: 'status',
       align: 'center',
-      width: '125px',
+      width: '110px',
       render: (text, record) => {
         return text === null || text === undefined
           ? '-'
