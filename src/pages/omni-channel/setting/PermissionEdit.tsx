@@ -514,7 +514,7 @@ const PermissionEdit: React.FC = () => {
       dataIndex: 'name',
       key: 'name',
       align: 'center',
-      width: '250px',
+      width: '200px',
       render: (text, record) => {
         if (record.avatar !== null) {
           return (
