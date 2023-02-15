@@ -83,7 +83,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   const onMenuClick = useCallback(
     (event: MenuInfo) => {
       const { key } = event;
-      // console.log('avatar_drop_down:>> ', event);
       if (key === 'logout') {
         loginOut();
         return;

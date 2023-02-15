@@ -74,7 +74,7 @@ const clearCache = () => {
           caches.delete(key);
         });
       })
-      .catch((e) => console.log(e));
+      .catch((e) => message.error(e));
   }
 };
 
