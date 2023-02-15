@@ -7,7 +7,7 @@ const NoFoundPage: React.FC = () => {
     <Result
       status="404"
       title="404"
-      subTitle="Xin lỗi, trang bạn vừa tìm kiếm không tồn tại"
+      subTitle="Trang bạn vừa tìm kiếm không tồn tại"
       extra={
         <Button type="primary" onClick={() => history.push('/')}>
           Trang chủ
