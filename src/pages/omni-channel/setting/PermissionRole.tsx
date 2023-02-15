@@ -1,6 +1,19 @@
 import {
-    Button, Checkbox, Col, Empty, Form, Input, message, Modal, Row, Space, Spin, Table,
-    TablePaginationConfig, Tree, Typography
+  Button,
+  Checkbox,
+  Col,
+  Empty,
+  Form,
+  Input,
+  message,
+  Modal,
+  Row,
+  Space,
+  Spin,
+  Table,
+  TablePaginationConfig,
+  Tree,
+  Typography,
 } from 'antd';
 import { debounce, isEqual } from 'lodash';
 import moment from 'moment';
@@ -8,27 +21,50 @@ import React, { useEffect, useState } from 'react';
 import { useRequest } from 'umi';
 
 import {
-    OPTIONS_PERMISSION_CM, OPTIONS_PERMISSION_CM_VALUE, OPTIONS_PERMISSION_DB,
-    OPTIONS_PERMISSION_DB_VALUE, OPTIONS_PERMISSION_EM, OPTIONS_PERMISSION_EM_VALUE,
-    OPTIONS_PERMISSION_IM, OPTIONS_PERMISSION_IM_VALUE, OPTIONS_PERMISSION_RF,
-    OPTIONS_PERMISSION_RF_VALUE, OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE,
-    OPTIONS_PERMISSION_TREE_DATA_CONTACT_VALUE, OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE,
-    OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE, OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE,
-    OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE, OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE,
-    OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE, TREE_DATA_BGCT, TREE_DATA_CONTACT, TREE_DATA_KHD,
-    TREE_DATA_LSCG, TREE_DATA_NQ, TREE_DATA_TKC, TREE_DATA_TTCT, TREE_DATA_TTND
+  OPTIONS_PERMISSION_CM,
+  OPTIONS_PERMISSION_CM_VALUE,
+  OPTIONS_PERMISSION_DB,
+  OPTIONS_PERMISSION_DB_VALUE,
+  OPTIONS_PERMISSION_EM,
+  OPTIONS_PERMISSION_EM_VALUE,
+  OPTIONS_PERMISSION_IM,
+  OPTIONS_PERMISSION_IM_VALUE,
+  OPTIONS_PERMISSION_RF,
+  OPTIONS_PERMISSION_RF_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_BGCT_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_CONTACT_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_KHD_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_LSCG_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_NQ_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_TKC_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_TTCT_VALUE,
+  OPTIONS_PERMISSION_TREE_DATA_TTND_VALUE,
+  TREE_DATA_BGCT,
+  TREE_DATA_CONTACT,
+  TREE_DATA_KHD,
+  TREE_DATA_LSCG,
+  TREE_DATA_NQ,
+  TREE_DATA_TKC,
+  TREE_DATA_TTCT,
+  TREE_DATA_TTND,
 } from '@/constants';
 import NoFoundPage from '@/pages/404';
 import {
-    CloseCircleFilled, DeleteOutlined, EditOutlined, PlusSquareFilled, RollbackOutlined,
-    SearchOutlined
+  CloseCircleFilled,
+  DeleteOutlined,
+  EditOutlined,
+  PlusSquareFilled,
+  RollbackOutlined,
+  SearchOutlined,
 } from '@ant-design/icons';
 
 import styles from '../setting/style.less';
 import { dataPermissionTable } from './FakeData';
 import {
-    requestCreateRoleAndPerm, requestDeleteRoleAndPermission, requestReadRoleAndPerm,
-    requestUpdateRole
+  requestCreateRoleAndPerm,
+  requestDeleteRoleAndPermission,
+  requestReadRoleAndPerm,
+  requestUpdateRole,
 } from './services';
 
 import type { ColumnsType, TableProps } from 'antd/es/table';
@@ -152,8 +188,8 @@ const PermissionRole: React.FC = () => {
   const hasSelected = selectedRowKeys.length > 0;
   const handleConfirmDeleteMultiple = () => {
     Modal.confirm({
-      title: 'Thao tác xóa?',
-      content: 'Bạn chắc chắn muốn xóa thông tin này',
+      title: 'Thao tác xóa',
+      content: 'Bạn có chắc chắn muốn xóa thông tin này?',
       okText: 'Xóa',
       cancelText: 'Hủy',
       icon: <CloseCircleFilled style={{ color: 'red' }} />,
@@ -325,10 +361,11 @@ const PermissionRole: React.FC = () => {
 
   const handleClickDeleteRole = (role_ids: [string]) => {
     Modal.confirm({
-      title: 'Thao tác xoá?',
-      content: 'Bạn có chắc chắn muốn xoá thông tin này',
+      title: 'Thao tác xoá',
+      content: 'Bạn có chắc chắn muốn xoá thông tin này?',
       okText: 'Xoá',
       okType: 'danger',
+      centered: true,
       okButtonProps: {
         type: 'primary',
       },
