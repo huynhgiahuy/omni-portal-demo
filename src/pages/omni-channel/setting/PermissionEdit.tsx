@@ -427,8 +427,8 @@ const PermissionEdit: React.FC = () => {
 
   const handleClickDeleteUser = (user_ids: string[]) => {
     Modal.confirm({
-      title: 'Thao tác xóa?',
-      content: 'Bạn chắc chắn muốn xóa thông tin này',
+      title: 'Thao tác xóa',
+      content: 'Bạn có chắc chắn muốn xóa thông tin này?',
       okText: 'Xóa',
       onOk() {
         handleDeleteUserPermission(user_ids);
@@ -779,8 +779,8 @@ const PermissionEdit: React.FC = () => {
 
   const handleConfirmDeleteMultiple = (user_id: React.Key[]) => {
     Modal.confirm({
-      title: 'Thao tác xóa?',
-      content: 'Bạn chắc chắn muốn xóa thông tin này',
+      title: 'Thao tác xóa',
+      content: 'Bạn có chắc chắn muốn xóa thông tin này?',
       onOk() {
         handleDeleteUserPermission(user_id);
       },

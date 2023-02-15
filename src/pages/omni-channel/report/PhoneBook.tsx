@@ -1,7 +1,6 @@
 import {
   Button,
   Form,
-  Image,
   Input,
   message,
   Modal,
@@ -19,7 +18,6 @@ import { useModel, useRequest } from 'umi';
 
 import NoFoundPage from '@/pages/404';
 import {
-  CheckOutlined,
   CloseCircleFilled,
   CloseOutlined,
   DeleteOutlined,
@@ -31,7 +29,6 @@ import {
   StarOutlined,
 } from '@ant-design/icons';
 
-import Phone from '../../../../public/phone.svg';
 import styles from '../report/style.less';
 import {
   requestCreateNewTeam,
@@ -191,8 +188,8 @@ const PhoneBook: React.FC = () => {
   const hasSelected = selectedRowKeys.length > 0;
   const handleConfirmDeleteMultiple = () => {
     Modal.confirm({
-      title: 'Thao tác xóa?',
-      content: 'Bạn chắc chắn muốn xóa thông tin này',
+      title: 'Thao tác xóa',
+      content: 'Bạn có chắc chắn muốn xóa thông tin này?',
       okText: 'Xóa',
       cancelText: 'Hủy',
       icon: <CloseCircleFilled style={{ color: 'red' }} />,
@@ -467,10 +464,11 @@ const PhoneBook: React.FC = () => {
 
   const handleConfirmDelete = (role_ids: React.Key[]) => {
     Modal.confirm({
-      title: 'Thao tác xoá?',
-      content: 'Bạn có chắc chắn muốn xoá thông tin này',
+      title: 'Thao tác xoá',
+      content: 'Bạn có chắc chắn muốn xoá thông tin này?',
       okText: 'Xoá',
       okType: 'danger',
+      centered: true,
       okButtonProps: {
         type: 'primary',
       },
