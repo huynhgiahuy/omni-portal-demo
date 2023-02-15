@@ -418,11 +418,13 @@ const PermissionEdit: React.FC = () => {
   const handleClickUpdatePermission = () => {
     setClickUpdatePermission(true);
   };
+
   const handleCancleUpdatePermission = () => {
     setClickUpdatePermission(false);
     form.resetFields();
     setInfoUpdated(false);
   };
+
   const handleClickDeleteUser = (user_ids: string[]) => {
     Modal.confirm({
       title: 'Thao tác xóa?',
@@ -437,6 +439,7 @@ const PermissionEdit: React.FC = () => {
       centered: true,
     });
   };
+
   const handleTableChange = (newPagination: any, filters: any, sorters: any) => {
     let last_update = 0;
     if (sorters.order === 'ascend') {
@@ -662,6 +665,7 @@ const PermissionEdit: React.FC = () => {
       ),
     },
   ];
+
   const onReset = (e: any) => {
     if (
       listValueTeam === undefined &&
