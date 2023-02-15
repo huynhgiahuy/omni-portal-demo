@@ -45,7 +45,7 @@ const Login: React.FC = () => {
           }
         })
         .catch((err) => {
-          console.log(err);
+          message.error(err);
         });
     }
   }, []);
