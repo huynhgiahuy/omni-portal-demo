@@ -206,13 +206,13 @@ const HistoryCall: React.FC = () => {
       color = '#660000';
       newResult = 'Bận';
     } else if (result === 4) {
-      color = '#e50000';
+      color = '#FFAC1C';
       newResult = 'Hủy bỏ';
     } else if (result === 5) {
       color = '#b1b1b1';
       newResult = 'Không trả lời';
     } else if (result === 6) {
-      color = '#FFAC1C';
+      color = '#FA541C';
       newResult = 'Từ chối';
     }
     return (
