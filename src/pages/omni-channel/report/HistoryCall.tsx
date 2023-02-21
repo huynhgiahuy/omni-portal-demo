@@ -860,7 +860,7 @@ const HistoryCall: React.FC = () => {
               listNote[0]?.note?.map((item) => (
                 <Timeline.Item>
                   <Typography.Paragraph className={styles.historyCallNoteTime}>
-                    {moment.unix(item.create_at).format('DD-MM-YYYY')}
+                    {moment.unix(item.create_at).format('DD-MM-YYYY HH:mm:ss')}
                   </Typography.Paragraph>
                   <Typography.Paragraph>
                     <Typography.Text className={styles.historyCallNoteField}>
