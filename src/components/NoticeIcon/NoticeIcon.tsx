@@ -93,7 +93,7 @@ const NoticeIcon: React.FC<NoticeIconProps> & {
   const notificationBox = getNotificationBox();
   const trigger = (
     <span className={classNames(noticeButtonClass, { opened: visible })}>
-      <Badge count={count} style={{ boxShadow: 'none' }} className={styles.badge}>
+      <Badge count={count} style={{ boxShadow: 'none' }}>
         <img src={NoticeBellIcon} alt="..." className={styles.icon} />
       </Badge>
     </span>
@@ -110,6 +110,7 @@ const NoticeIcon: React.FC<NoticeIconProps> & {
       trigger={['click']}
       visible={visible}
       onVisibleChange={setVisible}
+      overlayStyle={{ paddingTop: 10 }}
     >
       {trigger}
     </HeaderDropdown>
