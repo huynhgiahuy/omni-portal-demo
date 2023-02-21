@@ -10,10 +10,10 @@ function getSoundPath(path = '') {
 export class SoundPlayer {
   constructor(soundDescription, setSoundOutputVolumn, getOutputDevice, getOutputVolume) {
     this._soundDescription = soundDescription;
-    // this._setOutputVolume = setSoundOutputVolumn;
-    // this._getOutputDevice = getOutputDevice;
-    // this._getOutputVolume = getOutputVolume;
-    // this._piiFilenames = ['Skype_Dtmf_1', 'Skype_Dtmf_2'];
+    this._setOutputVolume = setSoundOutputVolumn;
+    this._getOutputDevice = getOutputDevice;
+    this._getOutputVolume = getOutputVolume;
+    this._piiFilenames = ['Skype_Dtmf_1', 'Skype_Dtmf_2'];
     this._nextPlayerToken = 0;
     this._players = {};
   }
@@ -33,17 +33,25 @@ export class SoundPlayer {
       ),
     };
     this._players[index] = playerObj;
-    // const _player = player && player.unmute;
-    // this._updateOutputVolume(playerObj, {
-    //     force: true,
-    //     unmute: _player,
-    // }, t);
-    // this._updateOutputMuted(playerObj, {
-    //     force: true,
-    //     unmute: _player,
-    // }, t)
-    // return this._updateOutputDevice(playerObj, t, !0).always(() => playerObj)
-    // return playerObj;
+    const _player = player && player.unmute;
+    this._updateOutputVolume(
+      playerObj,
+      {
+        force: true,
+        unmute: _player,
+      },
+      t,
+    );
+    this._updateOutputMuted(
+      playerObj,
+      {
+        force: true,
+        unmute: _player,
+      },
+      t,
+    );
+    return this._updateOutputDevice(playerObj, t, !0).always(() => playerObj);
+    return playerObj;
     return Resolved().always(() => playerObj);
   }
 
@@ -79,39 +87,43 @@ export class SoundPlayer {
     }
   }
 
-  // _updateOutputDevice(e, t, i) {
-  //     const outputDevice = this._getOutputDevice(!!this._soundDescription.secondary);
-  //     if (!outputDevice || (outputDevice.id === this._deviceId && !i)) {
-  //         return Resolved();
-  //     }
-  //     console.log('a1112222')
-  //     return fromThenable(e)
-  //     // return fromThenable(e.player.setOutputDevice(outputDevice.id, outputDevice.browserId)).then(() => {
-  //     //     this._deviceId = outputDevice.id
-  //     // }).catch(err => console.log('fail to set device!', err));
-  // }
+  _updateOutputDevice(e, t, i) {
+    const outputDevice = this._getOutputDevice(!!this._soundDescription.secondary);
+    if (!outputDevice || (outputDevice.id === this._deviceId && !i)) {
+      return Resolved();
+    }
+    return fromThenable(e);
+    return fromThenable(e.player.setOutputDevice(outputDevice.id, outputDevice.browserId))
+      .then(() => {
+        this._deviceId = outputDevice.id;
+      })
+      .catch((err) => alert('err'));
+  }
 
-  // _updateOutputVolume(myPlayer, t, i) {
-  //     console.log({ output: this._getOutputVolume })
-  //     let outputVolume = this._getOutputVolume();
-  //     if ((outputVolume !== this._volume || t.force) && (t.unmute && this._soundDescription.secondary)) {
-  //         outputVolume = .5;
-  //     } else {
-  //         outputVolume = outputVolume > 0 ? outputVolume : .5;
-  //         this._setOutputVolume(outputVolume);
-  //     }
-  //     this._volume = outputVolume;
-  //     myPlayer.player.setVolume(outputVolume);
-  // }
+  _updateOutputVolume(myPlayer, t, i) {
+    let outputVolume = this._getOutputVolume();
+    if (
+      (outputVolume !== this._volume || t.force) &&
+      t.unmute &&
+      this._soundDescription.secondary
+    ) {
+      outputVolume = 0.5;
+    } else {
+      outputVolume = outputVolume > 0 ? outputVolume : 0.5;
+      this._setOutputVolume(outputVolume);
+    }
+    this._volume = outputVolume;
+    myPlayer.player.setVolume(outputVolume);
+  }
 
-  // _updateOutputMuted(myPlayer, t, i) {
-  //     let s = myPlayer.player.getMuted();
-  //     if (
-  //         lodash.isUndefined(t.unmute)
-  //         || (t.unmute && s && !t.force)
-  //         || (t.unmute && (!this._soundDescription.secondary && CallingCapabilities.unmuteDeviceSupported()))
-  //     ) {
-  //         myPlayer.player.setMuted(true);
-  //     }
-  // }
+  _updateOutputMuted(myPlayer, t, i) {
+    let s = myPlayer.player.getMuted();
+    if (
+      lodash.isUndefined(t.unmute) ||
+      (t.unmute && s && !t.force) ||
+      (t.unmute && !this._soundDescription.secondary && CallingCapabilities.unmuteDeviceSupported())
+    ) {
+      myPlayer.player.setMuted(true);
+    }
+  }
 }

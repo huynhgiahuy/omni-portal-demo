@@ -547,7 +547,7 @@ const PermissionEdit: React.FC = () => {
           );
         } else {
           return (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ flex: 1 }}>
                 <Avatar size={50} icon={<UserOutlined />} className={styles.avatarImg} />
               </div>
