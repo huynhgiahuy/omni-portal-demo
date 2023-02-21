@@ -525,11 +525,11 @@ const PermissionEdit: React.FC = () => {
       render: (text, record) => {
         if (record.avatar !== null) {
           return (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ flex: 1 }}>
                 <Avatar
                   src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${record?.avatar}`}
-                  size="large"
+                  size={50}
                   className={styles.avatarImg}
                 />
               </div>
@@ -549,7 +549,7 @@ const PermissionEdit: React.FC = () => {
           return (
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div style={{ flex: 1 }}>
-                <Avatar size="large" icon={<UserOutlined />} className={styles.avatarImg} />
+                <Avatar size={50} icon={<UserOutlined />} className={styles.avatarImg} />
               </div>
               <div style={{ flex: 3, textAlign: 'left' }}>
                 <Typography.Text>{record.name}</Typography.Text>
