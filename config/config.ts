@@ -1,6 +1,6 @@
+import { join } from 'path';
 // https://umijs.org/config/
 import { defineConfig } from 'umi';
-import { join } from 'path';
 
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
@@ -84,4 +84,11 @@ export default defineConfig({
   mfsu: {},
   webpack5: {},
   exportStatic: {},
+  chainWebpack(memo) {
+    memo.module
+      .rule('media')
+      .test(/\.(mp3|4)$/)
+      .use('file-loader')
+      .loader(require.resolve('file-loader'));
+  },
 });
