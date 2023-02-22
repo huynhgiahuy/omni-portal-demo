@@ -1,5 +1,14 @@
 import {
-    Button, Form, Input, List, message, Modal, Popover, Space, Timeline, Typography
+  Button,
+  Form,
+  Input,
+  List,
+  message,
+  Modal,
+  Popover,
+  Space,
+  Timeline,
+  Typography,
 } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -8,12 +17,17 @@ import { useRequest } from 'umi';
 import api from '@/api';
 import { requestGetTakeCallNote } from '@/pages/omni-channel/report/services';
 import {
-    EditOutlined, FullscreenExitOutlined, FullscreenOutlined, HistoryOutlined, PhoneOutlined,
-    UserOutlined
+  EditOutlined,
+  FullscreenExitOutlined,
+  FullscreenOutlined,
+  HistoryOutlined,
+  PhoneOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 
 import Arrow from '../../../public/arrow.svg';
 import Share from '../../../public/share.svg';
+import audio from '../../assets/iphone_12.mp3';
 import { dataProps } from '../RightContent';
 import styles from './index.less';
 
@@ -75,6 +89,21 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   const [phoneCall, setPhoneCall] = useState('000 000 0000');
   const [iconCall, setIconCall] = useState(false);
   const [listNote, setListNote] = useState<listNotesProps[]>([]);
+  const ringSound = new Audio(audio);
+
+  useEffect(() => {
+    let openSound: NodeJS.Timer;
+    if (isModalOpen) {
+      openSound = setInterval(() => {
+        ringSound.play();
+      }, 1000);
+    }
+    return () => {
+      clearInterval(openSound);
+      ringSound.currentTime = 0;
+      ringSound.pause();
+    };
+  }, [isModalOpen]);
 
   const token = window.localStorage?.getItem('access_token');
   let notes: notesProps[] = [];
