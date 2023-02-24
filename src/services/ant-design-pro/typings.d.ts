@@ -28,6 +28,7 @@ declare namespace API {
       location: string;
       status: boolean;
     }[];
+    team?: string;
     home_address?: string;
     id?: string;
     user_id?: string;

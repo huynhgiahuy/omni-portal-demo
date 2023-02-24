@@ -35,7 +35,6 @@ export default class UA {
           audio.srcObject = event.stream;
         });
       } else {
-        console.log(e?.request?.headers);
         this.delegate.onCallReceived(
           e?.request?.from?._display_name,
           e?.request?.headers['X-Scc--Call-Id'],
@@ -49,14 +48,11 @@ export default class UA {
       // inbound
       if (session.direction === 'incoming') {
         session.on('accepted', (data) => {
-          console.log('accepted');
-          console.log(data);
           this.delegate.onSessionEstablishing('Established');
         });
         // Agent cúp máy
         session.on('ended', (data) => {
           //handle handup call
-          console.log('ended');
           // message.warn(data);
           this.delegate.onCallHangup('Terminated');
         });
@@ -64,12 +60,9 @@ export default class UA {
         session.on('failed', (data) => {
           if (data.cause === 'Canceled') {
             //handle missed call
-            console.log(data);
             this.delegate.onMissedCall(data);
           } else {
             //handle reject call
-            console.log(data);
-            console.log('declice');
           }
           message.warn(data.cause);
           this.delegate.onCallHangup('Terminated');
@@ -156,7 +149,6 @@ export default class UA {
 
   disconnect() {
     try {
-      console.log(`disconnecting...`);
       this.userAgent.stop();
     } catch (error) {
       throw new Error(error.toString());
@@ -165,7 +157,6 @@ export default class UA {
 
   connect() {
     try {
-      console.log(`connecting...`);
       this.userAgent.start();
     } catch (error) {
       throw new Error(error.toString());

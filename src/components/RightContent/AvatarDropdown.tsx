@@ -1,5 +1,16 @@
 import {
-    Avatar, Col, Divider, Form, Image, Menu, message, Radio, Row, Spin, Switch, Typography
+  Avatar,
+  Col,
+  Divider,
+  Form,
+  Image,
+  Menu,
+  message,
+  Radio,
+  Row,
+  Spin,
+  Switch,
+  Typography,
 } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, history, useModel } from 'umi';
@@ -7,10 +18,16 @@ import { FormattedMessage, history, useModel } from 'umi';
 import api from '@/api';
 import { outLogin } from '@/services/ant-design-pro/api';
 import {
-    requeGetUserInfoProps, requestUpdatenotification, requestUpdateScreenMode
+  requeGetUserInfoProps,
+  requestUpdatenotification,
+  requestUpdateScreenMode,
 } from '@/services/user_info';
 import {
-    CompassFilled, LogoutOutlined, NotificationOutlined, SettingOutlined, UserOutlined
+  CompassFilled,
+  LogoutOutlined,
+  NotificationOutlined,
+  SettingOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 
 import HeaderDropdown from '../HeaderDropdown';
@@ -66,13 +83,12 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
   const onMenuClick = useCallback(
     (event: MenuInfo) => {
       const { key } = event;
-      // console.log('avatar_drop_down:>> ', event);
       if (key === 'logout') {
         loginOut();
         return;
       }
       if (key === 'user') {
-        history.push(`/omni-channel/profile`);
+        history.push('/omni-channel/profile');
         return;
       }
       if (key === 'notify') {
@@ -434,7 +450,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     <HeaderDropdown overlay={menuHeaderDropdown}>
       <span className={`${styles.action} ${styles.account}`}>
         <Avatar
-          size="small"
+          size={32}
           className={styles.avatar}
           src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.avatar}`}
           alt="avatar"

@@ -2,7 +2,7 @@ import { Space } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
 import Avatar from './AvatarDropdown';
-import HeaderSearch from '../HeaderSearch';
+//import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
 import Diapad from './Diapad';
 import NoticeIconView from '../NoticeIcon';
@@ -181,7 +181,7 @@ const GlobalHeaderRight: React.FC = () => {
 
   return (
     <Space className={className}>
-      <HeaderSearch
+      {/* <HeaderSearch
         className={`${styles.action} ${styles.search}`}
         placeholder="站内搜索"
         defaultValue="umi ui"
@@ -200,17 +200,13 @@ const GlobalHeaderRight: React.FC = () => {
             value: 'Pro Layout',
           },
         ]}
-        onSearch={(value) => {
-          console.log('input', value);
-        }}
-      />
+      /> */}
       <div style={{ display: 'flex' }}>
         <WorkingStatus />
       </div>
       <Diapad />
       <NoticeIconView />
       <Avatar />
-
       <AgentModalRing
         isModalOpen={isModalOpenRing}
         handleOk={handleOkRing}

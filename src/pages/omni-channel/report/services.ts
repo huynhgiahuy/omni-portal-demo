@@ -1,3 +1,5 @@
+import React from 'react';
+
 import api from '@/api';
 import request from '@/utils/request';
 
@@ -48,14 +50,14 @@ export async function requestUpdateUserContact(token: string, data: dataUserCont
   });
 }
 
-export async function requestDeleteUserContact(token: string, contacts_id: string) {
+export async function requestDeleteUserContact(token: string, contact_ids: React.Key[]) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/delete_user_contact`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
     },
     data: {
-      contacts_id,
+      contact_ids,
     },
   });
 }
@@ -81,6 +83,7 @@ export async function requestHistoryCallData(
   direction?: any,
   result?: any,
   search_name?: string,
+  sort_key?: any,
 ) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/get_call_history`, {
     method: 'POST',
@@ -95,6 +98,7 @@ export async function requestHistoryCallData(
       direction,
       result,
       search_name,
+      sort_key,
     },
   });
 }

@@ -1,33 +1,40 @@
-import React, { useState } from 'react';
 import {
   Button,
-  Input,
-  Table,
-  Segmented,
-  Space,
-  Image,
-  Modal,
   Form,
-  Typography,
+  Input,
   message,
+  Modal,
+  Segmented,
   Select,
+  Space,
   Spin,
+  Table,
   TableProps,
+  Typography,
 } from 'antd';
+import { debounce } from 'lodash';
+import React, { useState } from 'react';
+import { useModel, useRequest } from 'umi';
+
+import NoFoundPage from '@/pages/404';
 import {
-  SearchOutlined,
-  StarOutlined,
-  PlusSquareFilled,
-  StarFilled,
-  DeleteOutlined,
   CloseCircleFilled,
-  CheckOutlined,
-  SaveOutlined,
   CloseOutlined,
+  DeleteOutlined,
+  PlusSquareFilled,
+  RollbackOutlined,
+  SaveOutlined,
+  SearchOutlined,
+  StarFilled,
+  StarOutlined,
 } from '@ant-design/icons';
-import type { ColumnsType } from 'antd/es/table';
+
 import styles from '../report/style.less';
-import Phone from '../../../../public/phone.svg';
+import {
+  requestCreateNewTeam,
+  requestDeleteTeamPermission,
+  requestTeamPermissionData,
+} from '../setting/services';
 import {
   dataUserContactProps,
   requestAddUserContact,
@@ -37,15 +44,8 @@ import {
   requestSendPinUser,
   requestUpdateUserContact,
 } from './services';
-import { useModel, useRequest } from 'umi';
-import {
-  requestCreateNewTeam,
-  requestDeleteTeamPermission,
-  requestTeamPermissionData,
-} from '../setting/services';
-import { debounce } from 'lodash';
-import NoFoundPage from '@/pages/404';
 
+import type { ColumnsType } from 'antd/es/table';
 interface TeamPermission {
   name: string;
   id: string;
@@ -124,6 +124,10 @@ const listUnitExternal = [
     label: 'FTQ',
     value: 'FTQ',
   },
+  {
+    label: 'Khác',
+    value: 'OTHER',
+  },
 ];
 
 const formItemLayout = {
@@ -159,6 +163,8 @@ type validateFieldsProps = {
 const PhoneBook: React.FC = () => {
   const { initialState } = useModel('@@initialState');
   const [form] = Form.useForm();
+  const [formTeam] = Form.useForm();
+
   const [external, setExternal] = useState('Khách hàng');
   const [openModal, setOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -170,6 +176,32 @@ const PhoneBook: React.FC = () => {
   const [contactLength, setContactLength] = useState(1);
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
   const [isView, setIsView] = useState('');
+
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+  const hasSelected = selectedRowKeys.length > 0;
+  const handleConfirmDeleteMultiple = () => {
+    Modal.confirm({
+      title: 'Thao tác xóa',
+      content: 'Bạn có chắc chắn muốn xóa thông tin này?',
+      okText: 'Xóa',
+      cancelText: 'Hủy',
+      icon: <CloseCircleFilled style={{ color: 'red' }} />,
+      okButtonProps: { danger: true },
+      centered: true,
+      onOk() {
+        {
+          deleteUserContact.run(selectedRowKeys);
+        }
+      },
+    });
+  };
 
   const token = window.localStorage?.getItem('access_token');
 
@@ -327,7 +359,7 @@ const PhoneBook: React.FC = () => {
   );
 
   const deleteUserContact = useRequest(
-    async (id) => {
+    async (id: React.Key[]) => {
       const res: { success: boolean; error_code: number } = await requestDeleteUserContact(
         token ? token : '',
         id,
@@ -349,6 +381,7 @@ const PhoneBook: React.FC = () => {
           external_customers: external === 'Khách hàng' ? true : false,
         });
         handleCancleModal();
+        setSelectedRowKeys([]);
       }
       return res;
     },
@@ -429,19 +462,20 @@ const PhoneBook: React.FC = () => {
     }
   };
 
-  const handleConfirmDelete = (role_id: string) => {
+  const handleConfirmDelete = (role_ids: React.Key[]) => {
     Modal.confirm({
-      title: 'Thao tác xoá?',
-      content: 'Bạn có chắc chắn muốn xoá thông tin này',
+      title: 'Thao tác xoá',
+      content: 'Bạn có chắc chắn muốn xoá thông tin này?',
       okText: 'Xoá',
       okType: 'danger',
+      centered: true,
       okButtonProps: {
         type: 'primary',
       },
       icon: <CloseCircleFilled style={{ color: 'red', fontSize: 22 }} />,
       onOk() {
         {
-          deleteUserContact.run(role_id);
+          deleteUserContact.run(role_ids);
         }
       },
 
@@ -522,6 +556,14 @@ const PhoneBook: React.FC = () => {
       key: external === 'Khách hàng' ? 'work_unit' : 'team',
       align: 'center',
       width: '265px',
+      render: (text, record) => {
+        if (external === 'Khách hàng') {
+          return text === 'OTHER' ? 'Khác' : text;
+        } else {
+          const team = listTeamPermission.filter((team) => team.id === text)[0]?.name;
+          return team;
+        }
+      },
     },
     {
       title: 'Số IPP',
@@ -550,9 +592,11 @@ const PhoneBook: React.FC = () => {
               <Image className={styles.call} width={30} src={Phone} preview={false} />
             </div> */}
             <DeleteOutlined
-              style={{ color: '#F5222D', fontSize: '20px' }}
+              style={{ fontSize: '20px' }}
+              className={hasSelected ? styles.disableDelete : styles.enableDelete}
               onClick={() => {
-                record.id && handleConfirmDelete(record.id);
+                if (hasSelected) return;
+                record.id && handleConfirmDelete([record.id]);
               }}
             />
           </Space>
@@ -561,10 +605,9 @@ const PhoneBook: React.FC = () => {
     },
   ];
 
-  // const handleSelectTeam = (values: any) => {
-  //   setClickAddNewTeam(false);
-  //   setTeamKey(values);
-  // };
+  const handleSelectTeam = (values: any) => {
+    setClickAddNewTeam(false);
+  };
 
   const fetchTeamPermissionData = async () => {
     const resTeam = await requestTeamPermissionData();
@@ -608,9 +651,22 @@ const PhoneBook: React.FC = () => {
     fetchTeamPermissionData();
   };
 
-  const handleSubmitNewTeam = (values: any) => {
-    handleCreateNewTeamPermission(values);
-    fetchTeamPermissionData();
+  const arrListTeam = listTeamPermission?.map((item) => item.name);
+
+  const handleSubmitNewTeam = async (e: any, values: any) => {
+    if (arrListTeam.includes(values)) {
+      message.error('Team đã tồn tại!');
+    } else if (values === undefined || values === '') {
+      e.stopPropagation();
+      e.preventDefault();
+      message.error('Vui lòng nhập Team mới!');
+    } else {
+      await handleCreateNewTeamPermission(values);
+      await fetchTeamPermissionData();
+      formTeam.setFieldsValue({ newTeamValue: undefined });
+      setNewTeamValue(undefined);
+      setClickAddNewTeam(false);
+    }
   };
 
   return isView === '403' ? (
@@ -632,6 +688,7 @@ const PhoneBook: React.FC = () => {
               number: pagination.pageSize,
               external_customers: e.toString() === 'Khách hàng' ? true : false,
             });
+            setSelectedRowKeys([]);
           }}
           options={[
             {
@@ -755,7 +812,37 @@ const PhoneBook: React.FC = () => {
           </Space>
         </div>
       </Form>
+      {hasSelected ? (
+        <div className={styles.selectedRowLayout}>
+          <Typography.Text style={{ paddingRight: 32 }}>
+            Đã chọn:{' '}
+            <Typography.Text style={{ fontWeight: 'bold' }}>
+              {selectedRowKeys.length}
+            </Typography.Text>
+          </Typography.Text>
+          <Space>
+            <Button
+              icon={<RollbackOutlined />}
+              onClick={() => {
+                setSelectedRowKeys([]);
+              }}
+            >
+              Hủy
+            </Button>
+            <Button
+              icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
+              style={{ color: '#F5222D' }}
+              onClick={handleConfirmDeleteMultiple}
+            >
+              Xóa
+            </Button>
+          </Space>
+        </div>
+      ) : (
+        <></>
+      )}
       <Table
+        rowSelection={rowSelection}
         dataSource={dataContacts}
         columns={columnsDanhba}
         className={styles.tableStylePhoneBook}
@@ -784,6 +871,7 @@ const PhoneBook: React.FC = () => {
           ),
           spinning: getUserContact.loading || sendPinStart.loading,
         }}
+        rowKey={(item: any) => item.id}
       />
       <Modal
         open={openModal}
@@ -858,24 +946,15 @@ const PhoneBook: React.FC = () => {
           </div>
           <div>
             <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              Số điện thoại{external !== 'Nội bộ' && <span style={{ color: 'red' }}> (*)</span>}
+              Số điện thoại
             </Typography.Text>
             <Form.Item
               name="phone_number"
               style={{ marginTop: 8 }}
               rules={[
                 {
-                  validator: (_, value: any) => {
-                    const phoneReg = /((0[3|5|7|8|9])+([0-9]{8,9})\b)/;
-                    if (value === undefined || !value || value.length === 0) {
-                      return Promise.reject('Vui lòng nhập số di động');
-                    } else if (value.length > 11) {
-                      return Promise.reject('Số điện thoại không hợp lệ');
-                    } else if (!phoneReg.test(value)) {
-                      return Promise.reject('Số điện thoại không hợp lệ');
-                    }
-                    return Promise.resolve();
-                  },
+                  pattern: /((0[3|5|7|8|9])+([0-9]{8,9})\b)/,
+                  message: 'Số điện thoại không hợp lệ',
                 },
               ]}
             >
@@ -946,39 +1025,27 @@ const PhoneBook: React.FC = () => {
                 <Select options={listUnitExternal} placeholder="Chọn đơn vị" />
               ) : (
                 <Select
-                  // onChange={handleSelectTeam}
-                  loading={getListTeam.loading}
-                  placeholder={'Chọn nhóm'}
-                  menuItemSelectedIcon={<CheckOutlined style={{ marginLeft: 10 }} />}
+                  onChange={handleSelectTeam}
                   dropdownRender={(menu) => (
                     <>
                       {menu}
-                      <div
-                        style={{
-                          paddingLeft: '14px',
-                          paddingRight: '14px',
-                          paddingBottom: '10px',
-                        }}
-                      >
+                      <div className={styles.addNewTeamText}>
                         <hr></hr>
                         {clickAddNewTeam === false ? (
                           <Button
-                            style={{
-                              padding: 'unset',
-                              color: 'rgba(0,0,0,0.5)',
-                              fontStyle: 'italic',
-                            }}
+                            className={styles.addNewTeamBtn}
                             type="text"
                             onClick={() => setClickAddNewTeam(true)}
                           >
                             Chỉnh sửa / Thêm team mới
                           </Button>
                         ) : (
-                          <Form form={form}>
+                          <Form form={formTeam}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                               <div style={{ flex: 1 }}>
-                                <Form.Item name="newTeamValue">
+                                <Form.Item name="newTeamValue" style={{ marginBottom: 'unset' }}>
                                   <Input
+                                    allowClear
                                     placeholder="Nhập team mới tại đây"
                                     className={styles.addNewTeamPlaceholder}
                                     onChange={(e) => setNewTeamValue(e.target.value)}
@@ -986,11 +1053,11 @@ const PhoneBook: React.FC = () => {
                                 </Form.Item>
                               </div>
                               <div>
-                                <Form.Item>
+                                <Form.Item style={{ marginBottom: 'unset' }}>
                                   <Space>
                                     <SaveOutlined
                                       style={{ marginLeft: 10, fontSize: 14 }}
-                                      onClick={() => handleSubmitNewTeam(newTeamValue)}
+                                      onClick={(e) => handleSubmitNewTeam(e, newTeamValue)}
                                     />
                                     <CloseOutlined
                                       style={{ fontSize: 14 }}
@@ -1005,19 +1072,26 @@ const PhoneBook: React.FC = () => {
                       </div>
                     </>
                   )}
+                  onDropdownVisibleChange={(open) => {
+                    if (open === false) {
+                      setClickAddNewTeam(false);
+                    }
+                    return;
+                  }}
                 >
-                  {listTeamPermission.map((item: TeamPermission) => (
-                    <Select.Option value={item.name}>
-                      <div className={styles.flexLayout}>
-                        <div>{item.name}</div>
-                        {clickAddNewTeam === true ? (
-                          <DeleteOutlined onClick={(e) => handleClickDeleteTeam(e, item.id)} />
-                        ) : (
-                          ''
-                        )}
-                      </div>
-                    </Select.Option>
-                  ))}
+                  {listTeamPermission &&
+                    listTeamPermission.map((item: TeamPermission) => (
+                      <Select.Option value={item.id} key={item.id}>
+                        <div className={styles.flexLayout}>
+                          <div>{item.name}</div>
+                          {clickAddNewTeam === true ? (
+                            <DeleteOutlined onClick={(e) => handleClickDeleteTeam(e, item.id)} />
+                          ) : (
+                            ''
+                          )}
+                        </div>
+                      </Select.Option>
+                    ))}
                 </Select>
               )}
             </Form.Item>

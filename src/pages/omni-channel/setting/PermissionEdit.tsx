@@ -12,6 +12,7 @@ import {
   Select,
   message,
   Tooltip,
+  Empty,
 } from 'antd';
 import {
   EditOutlined,
@@ -25,6 +26,7 @@ import {
   CheckCircleFilled,
   ClockCircleFilled,
   MinusCircleFilled,
+  RollbackOutlined,
 } from '@ant-design/icons';
 import {
   requestDeleteUserPermission,
@@ -85,6 +87,7 @@ interface DataAllUserInfoFinal {
   phone_number: string;
   avatar: string;
   status: any;
+  last_update: any;
 }
 
 const formItemLayout = {
@@ -149,6 +152,8 @@ const PermissionEdit: React.FC = () => {
   const [listValueNQ, setListValueNQ] = useState<string[] | any>();
   const [listValueStatus, setListValueStatus] = useState<string[] | any>();
   const [valueKeyWord, setValueKeyWord] = useState<string | any>();
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [sortColumn, setSortColumn] = useState<any>({ last_update: 0 });
 
   const [isTeamFilter, setTeamFilter] = useState(false);
   const [isNLVFilter, setNLVFilter] = useState(false);
@@ -166,16 +171,17 @@ const PermissionEdit: React.FC = () => {
     pageSize: 5,
     showSizeChanger: true,
     showQuickJumper: true,
-    pageSizeOptions: ['5', '10', '20', '30', '50'],
+    pageSizeOptions: ['5', '10', '20', '30', '40', '50'],
   });
 
   const fetchListAllUserInfoFinal = useRequest(
     async () => {
-      const res: { success: boolean; length: number; error_code: number } =
+      const res: { success: boolean; length: number; error_code: number; data: any } =
         await requestAllUserInfoFinal(
           pagination.pageSize,
           pagination.current,
           valueKeyWord,
+          sortColumn,
           listValueTeam,
           listValueNLV,
           listValueNQ,
@@ -186,18 +192,22 @@ const PermissionEdit: React.FC = () => {
           setIsView('403');
           return;
         } else if (res.error_code === 4010106) {
-          message.error('Không tìm thấy dữ liệu');
+          message.error('Không tìm thấy dữ liệu!');
           setListAllUserInfoFinal([]);
           setListAllUserInfoLengthFinal(0);
           return;
         } else {
-          message.error('Không tìm thấy dữ liệu');
+          message.error('Không tìm thấy dữ liệu!');
           setListAllUserInfoFinal([]);
           setListAllUserInfoLengthFinal(0);
           return;
         }
       } else {
-        setListAllUserInfoLengthFinal(res.length);
+        if (res.data.length === 0) {
+          message.error('Không tìm thấy dữ liệu!');
+        } else {
+          setListAllUserInfoLengthFinal(res.length);
+        }
       }
       return res;
     },
@@ -228,12 +238,12 @@ const PermissionEdit: React.FC = () => {
           setIsView('403');
           return;
         } else if (res.error_code === 4010106) {
-          message.error('Không tìm thấy dữ liệu');
+          message.error('Không tìm thấy dữ liệu!');
           setListAllUserInfoFinal([]);
           setListAllUserInfoLengthFinal(0);
           return;
         } else {
-          message.error('Không tìm thấy dữ liệu');
+          message.error('Không tìm thấy dữ liệu!');
           setListAllUserInfoFinal([]);
           setListAllUserInfoLengthFinal(0);
           return;
@@ -301,11 +311,12 @@ const PermissionEdit: React.FC = () => {
     }
   };
 
-  const handleDeleteUserPermission = async (user_id: string) => {
-    const response_delete = await requestDeleteUserPermission(user_id);
+  const handleDeleteUserPermission = async (user_ids: React.Key[]) => {
+    const response_delete = await requestDeleteUserPermission(user_ids);
     if (response_delete.success === true) {
       message.success('Xóa người dùng thành công!');
       fetchListAllUserInfoFinal.run();
+      setSelectedRowKeys([]);
     } else if (response_delete.error_code === 4030102) {
       message.error('Bạn không có quyền xóa thông tin này!');
     } else {
@@ -341,7 +352,7 @@ const PermissionEdit: React.FC = () => {
     } else if (values === undefined || values === '') {
       e.stopPropagation();
       e.preventDefault();
-      message.error('Vui lòng nhập Team mới!');
+      message.error('Vui lòng nhập team mới!');
     } else {
       await handleCreateNewTeamPermission(values);
       await fetchTeamPermissionData();
@@ -407,18 +418,20 @@ const PermissionEdit: React.FC = () => {
   const handleClickUpdatePermission = () => {
     setClickUpdatePermission(true);
   };
+
   const handleCancleUpdatePermission = () => {
     setClickUpdatePermission(false);
     form.resetFields();
     setInfoUpdated(false);
   };
-  const handleClickDeleteUser = (user_id: string) => {
+
+  const handleClickDeleteUser = (user_ids: string[]) => {
     Modal.confirm({
-      title: 'Thao tác xóa?',
-      content: 'Bạn chắc chắn muốn xóa thông tin này',
+      title: 'Thao tác xóa',
+      content: 'Bạn có chắc chắn muốn xóa thông tin này?',
       okText: 'Xóa',
       onOk() {
-        handleDeleteUserPermission(user_id);
+        handleDeleteUserPermission(user_ids);
       },
       cancelText: 'Hủy',
       icon: <CloseCircleFilled style={{ color: 'red' }} />,
@@ -426,7 +439,17 @@ const PermissionEdit: React.FC = () => {
       centered: true,
     });
   };
-  const handleTableChange = (newPagination: any) => {
+
+  const handleTableChange = (newPagination: any, filters: any, sorters: any) => {
+    let last_update = 0;
+    if (sorters.order === 'ascend') {
+      last_update = 1;
+    } else if (sorters.order === 'descend') {
+      last_update = -1;
+    } else {
+      last_update = 0;
+    }
+    setSortColumn({ last_update });
     setPagination({
       ...pagination,
       current: newPagination.current,
@@ -478,7 +501,7 @@ const PermissionEdit: React.FC = () => {
     {
       title: '#',
       align: 'center',
-      width: '60px',
+      width: '30px',
       render: (text, record, index) => {
         if (valueKeyWord === '' || valueKeyWord === undefined) {
           return (
@@ -498,15 +521,15 @@ const PermissionEdit: React.FC = () => {
       dataIndex: 'name',
       key: 'name',
       align: 'center',
-      width: '250px',
+      width: '200px',
       render: (text, record) => {
         if (record.avatar !== null) {
           return (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ flex: 1 }}>
                 <Avatar
                   src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${record?.avatar}`}
-                  size="large"
+                  size={50}
                   className={styles.avatarImg}
                 />
               </div>
@@ -524,9 +547,9 @@ const PermissionEdit: React.FC = () => {
           );
         } else {
           return (
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ flex: 1 }}>
-                <Avatar size="large" icon={<UserOutlined />} className={styles.avatarImg} />
+                <Avatar size={50} icon={<UserOutlined />} className={styles.avatarImg} />
               </div>
               <div style={{ flex: 3, textAlign: 'left' }}>
                 <Typography.Text>{record.name}</Typography.Text>
@@ -588,10 +611,13 @@ const PermissionEdit: React.FC = () => {
       dataIndex: 'last_update',
       key: 'last_update',
       align: 'center',
-      width: '100px',
+      width: '110px',
       render: (text, record) => {
-        return text === null || text === undefined ? '-' : moment.unix(text).format('DD-MM-YYYY');
+        return text === null || text === undefined
+          ? '-'
+          : moment.unix(text).format('DD-MM-YYYY HH:mm:ss');
       },
+      sorter: true,
     },
     {
       title: 'Trạng thái hoạt động',
@@ -606,7 +632,7 @@ const PermissionEdit: React.FC = () => {
       },
     },
     {
-      title: 'Hành động',
+      title: 'Thao tác',
       align: 'center',
       width: '100px',
       render: (record) => (
@@ -624,9 +650,14 @@ const PermissionEdit: React.FC = () => {
           </Tooltip>
           <Tooltip title="Xóa">
             <DeleteOutlined
-              style={{ color: '#F5222D', fontSize: '20px' }}
+              className={
+                hasSelected
+                  ? `${styles.deleteSingleItemDisabled}`
+                  : `${styles.deleteSingleItemActive}`
+              }
               onClick={() => {
-                handleClickDeleteUser(record.id);
+                if (hasSelected) return;
+                handleClickDeleteUser([record.id]);
               }}
             />
           </Tooltip>
@@ -634,6 +665,7 @@ const PermissionEdit: React.FC = () => {
       ),
     },
   ];
+
   const onReset = (e: any) => {
     if (
       listValueTeam === undefined &&
@@ -732,6 +764,32 @@ const PermissionEdit: React.FC = () => {
         current: 1,
       });
     }
+  };
+
+  const onSelectRowChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const handleRowSelection = {
+    selectedRowKeys,
+    onChange: onSelectRowChange,
+  };
+
+  const hasSelected = selectedRowKeys.length > 0;
+
+  const handleConfirmDeleteMultiple = (user_id: React.Key[]) => {
+    Modal.confirm({
+      title: 'Thao tác xóa',
+      content: 'Bạn có chắc chắn muốn xóa thông tin này?',
+      onOk() {
+        handleDeleteUserPermission(user_id);
+      },
+      okText: 'Xóa',
+      cancelText: 'Hủy',
+      icon: <CloseCircleFilled style={{ color: 'red' }} />,
+      okButtonProps: { danger: true },
+      centered: true,
+    });
   };
 
   return isView === '403' ? (
@@ -869,6 +927,30 @@ const PermissionEdit: React.FC = () => {
           </Form.Item>
         </div>
       </Form>
+      {hasSelected ? (
+        <div className={styles.selectedRowLayout}>
+          <Typography.Text style={{ paddingRight: 32 }}>
+            Đã chọn:{' '}
+            <Typography.Text style={{ fontWeight: 'bold' }}>
+              {selectedRowKeys.length}
+            </Typography.Text>
+          </Typography.Text>
+          <Space>
+            <Button icon={<RollbackOutlined />} onClick={() => setSelectedRowKeys([])}>
+              Hủy
+            </Button>
+            <Button
+              icon={<DeleteOutlined style={{ color: '#F5222D' }} />}
+              style={{ color: '#F5222D' }}
+              onClick={() => handleConfirmDeleteMultiple(selectedRowKeys)}
+            >
+              Xóa
+            </Button>
+          </Space>
+        </div>
+      ) : (
+        <></>
+      )}
       <Table
         dataSource={listAllUserInfoFinal}
         columns={columns}
@@ -890,17 +972,25 @@ const PermissionEdit: React.FC = () => {
             prev_5: '5 trang trước',
           },
         }}
+        locale={{
+          triggerDesc: 'Chọn sắp xếp giảm dần',
+          triggerAsc: 'Chọn sắp xếp tăng dần',
+          cancelSort: 'Chọn hủy sắp xếp',
+          emptyText: (
+            <>
+              <Empty description={false} />
+              <p>Không có dữ liệu</p>
+            </>
+          ),
+        }}
         scroll={{
           x: window.innerWidth < 1900 ? 100 : undefined,
         }}
         loading={{
-          indicator: (
-            <div>
-              <Spin />
-            </div>
-          ),
+          indicator: <Spin />,
           spinning: fetchListAllUserInfoFinal.loading,
         }}
+        rowSelection={handleRowSelection}
       />
       <Modal
         open={isClickUpdatePermission}
