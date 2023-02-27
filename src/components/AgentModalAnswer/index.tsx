@@ -1,5 +1,15 @@
 import {
-    Button, Form, Input, List, message, Modal, Popover, Select, Space, Timeline, Typography
+  Button,
+  Form,
+  Input,
+  List,
+  message,
+  Modal,
+  Popover,
+  Select,
+  Space,
+  Timeline,
+  Typography,
 } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -8,11 +18,20 @@ import { useModel, useRequest } from 'umi';
 
 import api from '@/api';
 import {
-    requestAddUserContact, requestGetTakeCallNote, requestSaveCallNote
+  requestAddUserContact,
+  requestGetTakeCallNote,
+  requestSaveCallNote,
 } from '@/pages/omni-channel/report/services';
 import {
-    AudioFilled, CaretRightOutlined, EditOutlined, FullscreenExitOutlined, FullscreenOutlined,
-    HistoryOutlined, PauseOutlined, PhoneOutlined, UserOutlined
+  AudioFilled,
+  CaretRightOutlined,
+  EditOutlined,
+  FullscreenExitOutlined,
+  FullscreenOutlined,
+  HistoryOutlined,
+  PauseOutlined,
+  PhoneOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 
 import Arrow from '../../../public/arrow.svg';
@@ -562,14 +581,14 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
                                   color:
                                     note.call_direction === 'inbound'
                                       ? '#54FF00'
-                                      : note.call_direction === 'inbound'
+                                      : note.call_direction === 'outbound'
                                       ? '#FFAA00'
                                       : '#19C6EE',
                                 }}
                               >
                                 {note.call_direction === 'inbound'
                                   ? ' Cuộc gọi đến'
-                                  : note.call_direction === 'inbound'
+                                  : note.call_direction === 'outbound'
                                   ? ' Cuộc gọi đi'
                                   : 'Cuộc gọi nội bộ'}
                               </Typography.Paragraph>
