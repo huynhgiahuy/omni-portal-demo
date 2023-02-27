@@ -453,14 +453,14 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                                   color:
                                     note.call_direction === 'inbound'
                                       ? '#54FF00'
-                                      : note.call_direction === 'inbound'
+                                      : note.call_direction === 'outbound'
                                       ? '#FFAA00'
                                       : '#19C6EE',
                                 }}
                               >
                                 {note.call_direction === 'inbound'
                                   ? ' Cuộc gọi đến'
-                                  : note.call_direction === 'inbound'
+                                  : note.call_direction === 'outbound'
                                   ? ' Cuộc gọi đi'
                                   : 'Cuộc gọi nội bộ'}
                               </Typography.Paragraph>
