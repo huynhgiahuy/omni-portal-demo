@@ -1,0 +1,40 @@
+.m-modal-call {
+  &__modal {
+    transition: width 0.1s ease-in;
+
+    .ant-modal-body {
+      padding: 0;
+    }
+
+    &--mini-screen {
+      position: absolute !important;
+      top: 75px;
+      right: 33px;
+      transform-origin: 0 0 !important;
+    }
+
+    &--full-screen {
+      //
+    }
+  }
+
+  &__content {
+    position: relative;
+    width: 100%;
+    padding: 8px;
+    background: linear-gradient(180deg, black -3.67%, #545454 21.75%);
+    border-radius: 4px;
+
+    &--full-screen {
+      height: 423px;
+    }
+  }
+
+  &__icon-call {
+    top: 8px;
+    left: 25px;
+    color: white;
+    font-size: 22px;
+    transform: scaleX(-1);
+  }
+}
