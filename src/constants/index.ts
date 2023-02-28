@@ -737,7 +737,7 @@ export const OPTIONS_FILTER_HISTORY_CALL_DIRECTION = [
     value: 'outbound',
   },
   {
-    label: 'Nội bộ',
+    label: 'Gọi nội bộ',
     value: 'local',
   },
 ];

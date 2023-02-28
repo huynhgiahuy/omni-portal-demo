@@ -4,28 +4,21 @@ import {
   Space,
   Modal,
   Spin,
-  Avatar,
   Typography,
   Form,
   Input,
   Button,
   Select,
   message,
-  Tooltip,
   Empty,
 } from 'antd';
 import {
-  EditOutlined,
   DeleteOutlined,
   CloseCircleFilled,
   SaveOutlined,
   CloseOutlined,
   CheckOutlined,
-  UserOutlined,
   SearchOutlined,
-  CheckCircleFilled,
-  ClockCircleFilled,
-  MinusCircleFilled,
   RollbackOutlined,
 } from '@ant-design/icons';
 import {
@@ -38,97 +31,31 @@ import {
   requestCreateNewTeam,
   requestUpdateUserInfoFinal,
 } from './services';
-import styles from '../setting/style.less';
+import {
+  customUI_Stt,
+  customUI_UserInfo,
+  customUI_IpPhone,
+  customUI_Team,
+  customUI_WorkAddress,
+  customUI_RoleCode,
+  customUI_LastUpdate,
+  customUI_Status,
+  customUI_Action,
+  formItemLayout,
+  submitFormLayout,
+  DataAllUserInfoFinal,
+  PaginationProps,
+  GroupPermission,
+  TeamPermission,
+} from './CustomUIPermissionEdit';
 import type { ColumnsType } from 'antd/es/table';
 import { OPTIONS_POSITION, OPTIONS_WORK_ADDRESS } from '@/constants';
 import { useRequest } from 'umi';
 import { debounce } from 'lodash';
-import Ellipse from '../../../assets/Ellipse.svg';
-import OfflineIcon from '../../../../public/offline.png';
-import moment from 'moment';
-import NoFoundPage from '@/pages/404';
 import { OPTIONS_FILTER_NLV, OPTIONS_FILTER_STATUS } from '@/constants';
+import NoFoundPage from '@/pages/404';
 import useSubWs from '@/hooks/useSocket';
-import api from '@/api';
-
-interface PaginationProps {
-  current: number;
-  pageSize: number;
-  showSizeChanger: boolean;
-  showQuickJumper: boolean;
-  pageSizeOptions: string[];
-}
-
-interface GroupPermission {
-  code?: string;
-  desc?: string;
-  id?: string;
-}
-
-interface TeamPermission {
-  name: string;
-  id: string;
-}
-
-interface DataAllUserInfoFinal {
-  name: string;
-  email: string;
-  id: string;
-  team_name: string;
-  team_id: string;
-  role_id: string;
-  role_code: string;
-  ip_phone: string;
-  home_address: string;
-  work_address: string;
-  department: string;
-  level: string;
-  title: string;
-  phone_number: string;
-  avatar: string;
-  status: any;
-  last_update: any;
-}
-
-const formItemLayout = {
-  labelCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 24,
-    },
-    md: {
-      span: 10,
-    },
-  },
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 24,
-    },
-    md: {
-      span: 22,
-    },
-  },
-};
-
-const submitFormLayout = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-    },
-    sm: {
-      span: 10,
-    },
-    md: {
-      span: 10,
-      offset: 10,
-    },
-  },
-};
+import styles from '../setting/style.less';
 
 const PermissionEdit: React.FC = () => {
   const [isView, setIsView] = useState<string>();
@@ -165,6 +92,8 @@ const PermissionEdit: React.FC = () => {
   const [formTeam] = Form.useForm();
 
   const [isGroupPermission, setIsGroupPermission] = useState(false);
+
+  const hasSelected = selectedRowKeys.length > 0;
 
   const [pagination, setPagination] = useState<PaginationProps>({
     current: 1,
@@ -338,11 +267,11 @@ const PermissionEdit: React.FC = () => {
   const handleCreateNewTeamPermission = async (newTeamValue: string) => {
     const resNewTeam = await requestCreateNewTeam(newTeamValue);
     if (resNewTeam.success === true) {
-      message.success('Cập nhật team mới thành công!');
+      message.success('Thêm team mới thành công!');
     } else if (resNewTeam.error_code === 4030102) {
-      message.error('Bạn không có quyền cập nhật thông tin!');
+      message.error('Bạn không có quyền cập nhật thông tin này!');
     } else {
-      message.error('Cập nhật team thất bại!');
+      message.error('Thêm team mới thất bại!');
     }
   };
 
@@ -380,7 +309,7 @@ const PermissionEdit: React.FC = () => {
         await fetchListAllUserInfoFinal.run();
         handleCancleUpdatePermission();
       } else if (resSubmitUpdate.error_code === 4030102) {
-        message.error('Bạn không có quyền cập nhật thông tin!');
+        message.error('Bạn không có quyền cập nhật thông tin này!');
         handleCancleUpdatePermission();
       } else {
         message.error('Cập nhật thông tin thất bại!');
@@ -457,64 +386,12 @@ const PermissionEdit: React.FC = () => {
     });
   };
 
-  const handleRenderStatusActivity = (status: any) => {
-    if (status === 1) {
-      return (
-        <div style={{ border: '1px solid #1eaf61', borderRadius: 4 }}>
-          <CheckCircleFilled style={{ color: ' #1eaf61' }} />
-          <span className={styles.readyStatusText}>Sẵn sàng</span>
-        </div>
-      );
-    } else if (status === 2) {
-      return (
-        <div style={{ border: '1px solid #FAAD14', borderRadius: 4 }}>
-          <ClockCircleFilled style={{ color: ' #FAAD14' }} />
-          <span className={styles.abscentStatusText}>Vắng mặt</span>
-        </div>
-      );
-    } else if (status === 3) {
-      return (
-        <div style={{ border: '1px solid #F5222D', borderRadius: 4 }}>
-          <MinusCircleFilled style={{ color: '#F5222D' }} />
-          <span className={styles.notDisturbStatusText}>Không làm phiền</span>
-        </div>
-      );
-    } else if (status === 4) {
-      return (
-        <div className={styles.noActivityStatusDisplay}>
-          <img src={Ellipse} alt="..." width={14} height={14} />
-          <div className={styles.noActivityStatusText}>Không hoạt động</div>
-        </div>
-      );
-    } else if (status === 5) {
-      return (
-        <div className={styles.offlineStatusDisplay}>
-          <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
-          <div className={styles.offlineStatusText}>Đang offline</div>
-        </div>
-      );
-    }
-    return;
-  };
-
   const columns: ColumnsType<DataAllUserInfoFinal> = [
     {
       title: '#',
       align: 'center',
       width: '30px',
-      render: (text, record, index) => {
-        if (valueKeyWord === '' || valueKeyWord === undefined) {
-          return (
-            <>
-              {(pagination.current - 1) * pagination.pageSize +
-                listAllUserInfoFinal.indexOf(record) +
-                1}
-            </>
-          );
-        } else {
-          return index + 1;
-        }
-      },
+      ...customUI_Stt.parsing(valueKeyWord, pagination, listAllUserInfoFinal),
     },
     {
       title: 'Tên người dùng',
@@ -522,49 +399,7 @@ const PermissionEdit: React.FC = () => {
       key: 'name',
       align: 'center',
       width: '200px',
-      render: (text, record) => {
-        if (record.avatar !== null) {
-          return (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ flex: 1 }}>
-                <Avatar
-                  src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${record?.avatar}`}
-                  size={50}
-                  className={styles.avatarImg}
-                />
-              </div>
-              <div style={{ flex: 3, textAlign: 'left' }}>
-                <Typography.Text>{record.name}</Typography.Text>
-                <br></br>
-                <Typography.Text
-                  className={styles.emailPermissionTable}
-                  style={{ textAlign: 'center', alignItems: 'center' }}
-                >
-                  {record.email}
-                </Typography.Text>
-              </div>
-            </div>
-          );
-        } else {
-          return (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ flex: 1 }}>
-                <Avatar size={50} icon={<UserOutlined />} className={styles.avatarImg} />
-              </div>
-              <div style={{ flex: 3, textAlign: 'left' }}>
-                <Typography.Text>{record.name}</Typography.Text>
-                <br></br>
-                <Typography.Text
-                  className={styles.emailPermissionTable}
-                  style={{ textAlign: 'center', alignItems: 'center' }}
-                >
-                  {record.email}
-                </Typography.Text>
-              </div>
-            </div>
-          );
-        }
-      },
+      ...customUI_UserInfo.parsing(),
     },
     {
       title: 'Số IPP',
@@ -572,9 +407,7 @@ const PermissionEdit: React.FC = () => {
       key: 'ip_phone',
       width: '70px',
       align: 'center',
-      render: (text, record) => {
-        return text === null || text === undefined ? '-' : text;
-      },
+      ...customUI_IpPhone.parsing(),
     },
     {
       title: 'Team',
@@ -582,9 +415,7 @@ const PermissionEdit: React.FC = () => {
       key: 'team_name',
       width: '100px',
       align: 'center',
-      render: (text, record) => {
-        return text === null || text === undefined ? '-' : text;
-      },
+      ...customUI_Team.parsing(),
     },
     {
       title: 'Nơi làm việc',
@@ -592,9 +423,7 @@ const PermissionEdit: React.FC = () => {
       key: 'work_address',
       align: 'center',
       width: '100px',
-      render: (text, record) => {
-        return text === 'mn' ? 'Miền Nam' : text === 'mb' ? 'Miền Bắc' : '-';
-      },
+      ...customUI_WorkAddress.parsing(),
     },
     {
       title: 'Nhóm quyền',
@@ -602,9 +431,7 @@ const PermissionEdit: React.FC = () => {
       key: 'role_code',
       align: 'center',
       width: '100px',
-      render: (text, record) => {
-        return text === null || text === undefined ? '-' : text;
-      },
+      ...customUI_RoleCode.parsing(),
     },
     {
       title: 'Cập nhật lần cuối',
@@ -612,11 +439,7 @@ const PermissionEdit: React.FC = () => {
       key: 'last_update',
       align: 'center',
       width: '110px',
-      render: (text, record) => {
-        return text === null || text === undefined
-          ? '-'
-          : moment.unix(text).format('DD-MM-YYYY HH:mm:ss');
-      },
+      ...customUI_LastUpdate.parsing(),
       sorter: true,
     },
     {
@@ -625,43 +448,19 @@ const PermissionEdit: React.FC = () => {
       key: 'status',
       align: 'center',
       width: '110px',
-      render: (text, record) => {
-        return text === null || text === undefined
-          ? '-'
-          : handleRenderStatusActivity(record.status);
-      },
+      ...customUI_Status.parsing(),
     },
     {
       title: 'Thao tác',
       align: 'center',
       width: '100px',
-      render: (record) => (
-        <Space size="large">
-          <Tooltip title="Chỉnh sửa">
-            <EditOutlined
-              style={{ color: '#1890FF', fontSize: '20px' }}
-              onClick={() => {
-                form.setFieldsValue(record);
-                handleClickUpdatePermission();
-                fetchDetaiUserInfoFinal(record.id);
-                setUserKey(record.id);
-              }}
-            />
-          </Tooltip>
-          <Tooltip title="Xóa">
-            <DeleteOutlined
-              className={
-                hasSelected
-                  ? `${styles.deleteSingleItemDisabled}`
-                  : `${styles.deleteSingleItemActive}`
-              }
-              onClick={() => {
-                if (hasSelected) return;
-                handleClickDeleteUser([record.id]);
-              }}
-            />
-          </Tooltip>
-        </Space>
+      ...customUI_Action.parsing(
+        form,
+        hasSelected,
+        handleClickUpdatePermission,
+        fetchDetaiUserInfoFinal,
+        setUserKey,
+        handleClickDeleteUser,
       ),
     },
   ];
@@ -774,8 +573,6 @@ const PermissionEdit: React.FC = () => {
     selectedRowKeys,
     onChange: onSelectRowChange,
   };
-
-  const hasSelected = selectedRowKeys.length > 0;
 
   const handleConfirmDeleteMultiple = (user_id: React.Key[]) => {
     Modal.confirm({
