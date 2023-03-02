@@ -1239,12 +1239,7 @@ const PermissionRole: React.FC = () => {
           triggerDesc: 'Chọn sắp xếp giảm dần',
           triggerAsc: 'Chọn sắp xếp tăng dần',
           cancelSort: 'Chọn hủy sắp xếp',
-          emptyText: (
-            <>
-              <Empty description={false} />
-              <p>Không có dữ liệu</p>
-            </>
-          ),
+          emptyText: <Empty description="Không có dữ liệu" />,
         }}
       />
       <Modal

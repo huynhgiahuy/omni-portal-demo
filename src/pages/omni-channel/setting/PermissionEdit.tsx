@@ -369,11 +369,11 @@ const PermissionEdit: React.FC = () => {
     });
   };
 
-  const handleTableChange = (newPagination: any, filters: any, sorters: any) => {
+  const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
     let last_update = 0;
-    if (sorters.order === 'ascend') {
+    if (sorter.order === 'ascend') {
       last_update = 1;
-    } else if (sorters.order === 'descend') {
+    } else if (sorter.order === 'descend') {
       last_update = -1;
     } else {
       last_update = 0;
@@ -773,12 +773,7 @@ const PermissionEdit: React.FC = () => {
           triggerDesc: 'Chọn sắp xếp giảm dần',
           triggerAsc: 'Chọn sắp xếp tăng dần',
           cancelSort: 'Chọn hủy sắp xếp',
-          emptyText: (
-            <>
-              <Empty description={false} />
-              <p>Không có dữ liệu</p>
-            </>
-          ),
+          emptyText: <Empty description="Không có dữ liệu" />,
         }}
         scroll={{
           x: window.innerWidth < 1900 ? 100 : undefined,
