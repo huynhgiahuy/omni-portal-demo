@@ -143,11 +143,14 @@ const HistoryCall: React.FC = () => {
       if (res.success === false) {
         if (res.error_code === 4030102) {
           message.error('Bạn không có quyền xem ghi chú!');
+          setVisibleModalNote(false);
         } else {
           message.error('Không thể xem ghi chú!');
+          setVisibleModalNote(false);
         }
       } else {
         setListNote(res.data);
+        setVisibleModalNote(true);
       }
       return res;
     },
@@ -174,11 +177,14 @@ const HistoryCall: React.FC = () => {
         },
       });
       setTestAudioURL(response.data.data[0]);
+      setVisibleModalAudio(true);
     } catch (e: any) {
-      if (e.response.status === 403) {
+      if (e.response.data.error_code === 4030102) {
         message.error('Bạn không có quyền nghe file ghi âm!');
+        setVisibleModalAudio(false);
       } else {
         message.error('Không thể nghe file ghi âm!');
+        setVisibleModalAudio(false);
       }
     }
   };
@@ -202,7 +208,7 @@ const HistoryCall: React.FC = () => {
       fileDownload(audioFormatBlob, recordName);
       setDownloadFile(false);
     } catch (e: any) {
-      if (e.response.status === 403) {
+      if (e.response.data.error_code === 4030102) {
         message.error('Bạn không có quyền tải file ghi âm!');
         setDownloadFile(false);
       } else {
@@ -213,13 +219,11 @@ const HistoryCall: React.FC = () => {
   };
 
   const handleOpenModalPlaying = async (fieldId?: any, recordName?: any) => {
-    setVisibleModalAudio(true);
     await playAudio(fieldId, recordName);
   };
 
-  const handleGetDetailCallNote = (callId: any, phoneNumber: any, callDirection: any) => {
-    fetchListDetailCallNote.run(callId, phoneNumber, callDirection);
-    setVisibleModalNote(true);
+  const handleGetDetailCallNote = async (callId: any, phoneNumber: any, callDirection: any) => {
+    await fetchListDetailCallNote.run(callId, phoneNumber, callDirection);
   };
 
   const columns: ColumnsType<DataLSCGType> = [
@@ -311,11 +315,11 @@ const HistoryCall: React.FC = () => {
     Table.EXPAND_COLUMN,
   ];
 
-  const handleTableChange = (newPagination: any, filters: any, sorters: any) => {
+  const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
     let start_epoch = 0;
-    if (sorters.order === 'ascend') {
+    if (sorter.order === 'ascend') {
       start_epoch = 1;
-    } else if (sorters.order === 'descend') {
+    } else if (sorter.order === 'descend') {
       start_epoch = -1;
     } else {
       start_epoch = 0;
@@ -571,12 +575,7 @@ const HistoryCall: React.FC = () => {
           triggerDesc: 'Chọn sắp xếp giảm dần',
           triggerAsc: 'Chọn sắp xếp tăng dần',
           cancelSort: 'Chọn hủy sắp xếp',
-          emptyText: (
-            <>
-              <Empty description={false} />
-              <p>Không có dữ liệu</p>
-            </>
-          ),
+          emptyText: <Empty description="Không có dữ liệu" />,
         }}
         expandable={{
           expandedRowRender: (record) => (
