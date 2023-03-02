@@ -6,34 +6,50 @@ module.exports = {
   addons: [
     '@storybook/addon-links',
     '@storybook/addon-essentials',
+    // '@storybook/addon-actions',
     // '@storybook/addon-interactions',
-    'storybook-css-modules',
+    // 'storybook-css-modules',
   ],
   framework: '@storybook/react',
   core: {
     builder: '@storybook/builder-webpack5',
   },
   webpackFinal: async (config, { configType }) => {
-    config.module.rules.push({
-      test: /\.less$/i,
-      use: [
-        {
-          loader: 'style-loader',
-        },
-        {
-          loader: 'css-loader',
-        },
-        {
-          loader: 'less-loader',
-          options: {
-            lessOptions: {
-              javascriptEnabled: true,
+    config.module.rules.push(
+      {
+        test: /\.less$/i,
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+          },
+          {
+            loader: 'less-loader',
+            options: {
+              lessOptions: {
+                javascriptEnabled: true,
+              },
             },
           },
-        },
-      ],
-      include: path.resolve(__dirname, '../'),
-    });
+        ],
+        include: path.resolve(__dirname, '../'),
+      },
+      {
+        test: /\.(mp3|m4a)$/,
+        use: [
+          {
+            loader: require.resolve('file-loader'),
+
+            options: {
+              name: 'assets/[name].[ext]',
+            },
+          },
+        ],
+      },
+    );
+
     config.resolve.plugins = config.resolve.plugins || [];
     config.resolve.plugins.push(
       new TsconfigPathsPlugin({
@@ -43,6 +59,7 @@ module.exports = {
 
     return config;
   },
+
   typescript: {
     reactDocgen: 'none',
   },
