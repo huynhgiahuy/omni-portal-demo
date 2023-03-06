@@ -137,9 +137,9 @@ const HistoryCall: React.FC = () => {
   );
 
   const fetchListDetailCallNote = useRequest(
-    async (callId: string, phoneNumber: string, callDirection: string) => {
+    async (callId: string) => {
       const res: { success: boolean; data: any; error_code: number } =
-        await requestGetDetailCallNote(token ? token : '', callId, phoneNumber, callDirection);
+        await requestGetDetailCallNote(token ? token : '', callId);
       if (res.success === false) {
         if (res.error_code === 4030102) {
           message.error('Bạn không có quyền xem ghi chú!');
@@ -222,12 +222,8 @@ const HistoryCall: React.FC = () => {
     await playAudio(fieldId, recordName);
   };
 
-  const handleGetDetailCallNote = async (
-    callId: string,
-    phoneNumber: string,
-    callDirection: string,
-  ) => {
-    await fetchListDetailCallNote.run(callId, phoneNumber, callDirection);
+  const handleGetDetailCallNote = async (callId: string) => {
+    await fetchListDetailCallNote.run(callId);
   };
 
   const columns: ColumnsType<DataLSCGType> = [

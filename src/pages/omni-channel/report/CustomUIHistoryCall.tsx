@@ -222,17 +222,13 @@ export const customUI_RecordAudio = {
 };
 
 export const customUI_Note = {
-  parsing: (
-    handleGetDetailCallNote: (callId: string, phoneNumber: string, callDirection: string) => void,
-  ) => ({
+  parsing: (handleGetDetailCallNote: (callId: string) => void) => ({
     render: (text: any, record: DataLSCGType) => {
       return (
         <Tooltip title="Xem ghi chú">
           <FormOutlined
             style={{ fontSize: 20 }}
-            onClick={() =>
-              handleGetDetailCallNote(record.uuid, record.sip_from_user, record.call_direction)
-            }
+            onClick={() => handleGetDetailCallNote(record.uuid)}
           />
         </Tooltip>
       );
