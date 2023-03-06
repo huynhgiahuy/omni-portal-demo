@@ -206,10 +206,10 @@ export async function requestAllUserInfoFinal(
   offset?: number,
   keyword?: string,
   sort_key?: any,
-  team_name?: string,
-  work_address?: string,
-  role_code?: string,
-  status?: number,
+  team_name?: any,
+  work_address?: any,
+  role_code?: any,
+  status?: any,
 ) {
   return request(`${api.UMI_API_BASE_URL}/user-service/api/settings/read_user_and_role`, {
     method: 'POST',
