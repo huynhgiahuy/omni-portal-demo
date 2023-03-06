@@ -60,25 +60,25 @@ import styles from '../setting/style.less';
 const PermissionEdit: React.FC = () => {
   const [isView, setIsView] = useState<string>();
   const [isClickUpdatePermission, setClickUpdatePermission] = useState(false);
-  const [userKey, setUserKey] = useState<string | any>();
-  const [teamKey, setTeamKey] = useState<string | any>();
-  const [roleKey, setRoleKey] = useState<string | any>();
+  const [userKey, setUserKey] = useState<any>();
+  const [teamKey, setTeamKey] = useState<any>();
+  const [roleKey, setRoleKey] = useState<any>();
 
   const [listAllUserInfoFinal, setListAllUserInfoFinal] = useState<DataAllUserInfoFinal[]>([]);
-  const [listAllUserInfoLengthFinal, setListAllUserInfoLengthFinal] = useState<string | any>();
+  const [listAllUserInfoLengthFinal, setListAllUserInfoLengthFinal] = useState<any>();
   const [listEditUserInfoFinal, setListEditUserInfoFinal] = useState<DataAllUserInfoFinal[]>([]);
-  const [newTeamValue, setNewTeamValue] = useState<string | any>();
+  const [newTeamValue, setNewTeamValue] = useState<any>();
   const [listGroupPermission, setListGroupPermission] = useState<GroupPermission[]>([]);
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
 
   const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
   const [isInfoUpdated, setInfoUpdated] = useState(false);
 
-  const [listValueTeam, setListValueTeam] = useState<string[] | any>();
+  const [listValueTeam, setListValueTeam] = useState<string[]>();
   const [listValueNLV, setListValueNLV] = useState<string[]>();
-  const [listValueNQ, setListValueNQ] = useState<string[] | any>();
-  const [listValueStatus, setListValueStatus] = useState<string[] | any>();
-  const [valueKeyWord, setValueKeyWord] = useState<string | any>();
+  const [listValueNQ, setListValueNQ] = useState<string[]>();
+  const [listValueStatus, setListValueStatus] = useState<string[]>();
+  const [valueKeyWord, setValueKeyWord] = useState<any>();
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [sortColumn, setSortColumn] = useState<any>({ last_update: 0 });
 
@@ -228,7 +228,7 @@ const PermissionEdit: React.FC = () => {
     }
   });
 
-  const fetchDetaiUserInfoFinal = async (user_id: any) => {
+  const fetchDetaiUserInfoFinal = async (user_id: string) => {
     const resDetail = await requestDetailUserInfoFinal(user_id);
     if (resDetail.success === true) {
       setListEditUserInfoFinal(resDetail.data);
@@ -596,7 +596,7 @@ const PermissionEdit: React.FC = () => {
   ) : (
     <>
       <Form className={styles.filterFormPermissionEdit} layout="vertical" form={formFilter}>
-        <div>
+        <>
           <div className={styles.filterFormPermissionEditDisplay}>
             <div style={{ width: 217 }}>
               <Form.Item
@@ -692,7 +692,7 @@ const PermissionEdit: React.FC = () => {
               </Form.Item>
             </div>
           </div>
-        </div>
+        </>
         <div style={{ paddingTop: '29px' }}>
           <Form.Item name="search_name">
             <Input

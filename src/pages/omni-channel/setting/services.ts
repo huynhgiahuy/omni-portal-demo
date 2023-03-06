@@ -201,8 +201,6 @@ export async function requestDeleteRoleAndPermission(token: string, role_ids: Re
   );
 }
 
-/// API FINAL USER PERMISSION
-
 export async function requestAllUserInfoFinal(
   limit?: number,
   offset?: number,
