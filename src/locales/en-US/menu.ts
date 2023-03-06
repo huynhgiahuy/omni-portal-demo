@@ -11,4 +11,5 @@ export default {
   'menu.omni-channel.report': 'Report',
   //'menu.omni-channel.setting': 'Setting',
   'menu.omni-channel.profile': 'Profile',
+  'menu.login': 'Login',
 };
