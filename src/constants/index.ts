@@ -233,7 +233,7 @@ export const OPTIONS_PERMISSION_SETTING = [
     value: 'Nhóm quyền',
   },
 ];
-///
+
 export const TREE_DATA_TKC = [
   {
     title: 'Thống kê chung',
