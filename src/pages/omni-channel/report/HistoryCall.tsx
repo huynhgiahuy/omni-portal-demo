@@ -50,19 +50,19 @@ const HistoryCall: React.FC = () => {
   const [isView, setIsView] = useState<string>();
   const [listNote, setListNote] = useState<ListNotesProps[]>([]);
 
-  const [listValueHCG, setListValueHCG] = useState<string[] | any>();
-  const [listValueKQ, setListValueKQ] = useState<string[] | any>();
-  const [valueFromDateTime, setValueFromDateTime] = useState<string | any>();
-  const [valueToDateTime, setValueToDateTime] = useState<string | any>();
-  const [valueKeyWord, setValueKeyWord] = useState<string | any>();
+  const [listValueHCG, setListValueHCG] = useState<any>();
+  const [listValueKQ, setListValueKQ] = useState<any>();
+  const [valueFromDateTime, setValueFromDateTime] = useState<any>();
+  const [valueToDateTime, setValueToDateTime] = useState<any>();
+  const [valueKeyWord, setValueKeyWord] = useState<any>();
   const [sortColumn, setSortColumn] = useState<any>({ start_epoch: 0 });
 
   const [isHCGFilter, setHCGFilter] = useState(false);
   const [isKQFilter, setKQFilter] = useState(false);
   const [isTimeFilter, setTimeFilter] = useState(false);
 
-  const [listDataLSCG, setListDataLSCG] = useState<DataLSCGType[] | any>();
-  const [listDataLSCGLength, setListDataLSCGLength] = useState<string | any>();
+  const [listDataLSCG, setListDataLSCG] = useState<any>();
+  const [listDataLSCGLength, setListDataLSCGLength] = useState<any>();
 
   const [isVisibleModalAudio, setVisibleModalAudio] = useState(false);
   const [isVisibleModalNote, setVisibleModalNote] = useState(false);
@@ -137,7 +137,7 @@ const HistoryCall: React.FC = () => {
   );
 
   const fetchListDetailCallNote = useRequest(
-    async (callId: any, phoneNumber: any, callDirection: any) => {
+    async (callId: string, phoneNumber: string, callDirection: string) => {
       const res: { success: boolean; data: any; error_code: number } =
         await requestGetDetailCallNote(token ? token : '', callId, phoneNumber, callDirection);
       if (res.success === false) {
@@ -163,7 +163,7 @@ const HistoryCall: React.FC = () => {
     fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
   }, [pagination]);
 
-  const playAudio = async (fileId?: any, recordName?: any) => {
+  const playAudio = async (fileId: string, recordName: string) => {
     try {
       const response = await axios({
         url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_url`,
@@ -189,7 +189,7 @@ const HistoryCall: React.FC = () => {
     }
   };
 
-  const downloadAudio = async (fileId?: any, recordName?: any) => {
+  const downloadAudio = async (fileId: string, recordName: string) => {
     try {
       setDownloadFile(true);
       const response = await axios({
@@ -218,11 +218,15 @@ const HistoryCall: React.FC = () => {
     }
   };
 
-  const handleOpenModalPlaying = async (fieldId?: any, recordName?: any) => {
+  const handleOpenModalPlaying = async (fieldId: string, recordName: string) => {
     await playAudio(fieldId, recordName);
   };
 
-  const handleGetDetailCallNote = async (callId: any, phoneNumber: any, callDirection: any) => {
+  const handleGetDetailCallNote = async (
+    callId: string,
+    phoneNumber: string,
+    callDirection: string,
+  ) => {
     await fetchListDetailCallNote.run(callId, phoneNumber, callDirection);
   };
 
@@ -450,7 +454,7 @@ const HistoryCall: React.FC = () => {
   ) : (
     <>
       <Form className={styles.filterFormHistoryCall} layout="vertical" form={form}>
-        <div>
+        <>
           <div className={styles.filterFormHistoryCallDisplay}>
             <div style={{ width: '300px' }}>
               <Form.Item
@@ -511,7 +515,7 @@ const HistoryCall: React.FC = () => {
               </Form.Item>
             </div>
           </div>
-        </div>
+        </>
         <div style={{ paddingTop: '29px', display: 'flex', justifyContent: 'space-between' }}>
           <Form.Item name="search_name">
             <Input

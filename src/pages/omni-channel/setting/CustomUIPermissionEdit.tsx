@@ -29,8 +29,8 @@ export interface DataAllUserInfoFinal {
   title: string;
   phone_number: string;
   avatar: string;
-  status: any;
-  last_update: any;
+  status: number;
+  last_update: string;
 }
 
 export interface PaginationProps {

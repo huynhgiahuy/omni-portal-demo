@@ -13,7 +13,7 @@ export interface DataLSCGType {
   call_direction: string;
   sip_from_user: string;
   caller_destination: string;
-  start_epoch: any;
+  start_epoch: number;
   billsec: number;
   hangup_cause: string;
   record_path: string;
