@@ -350,7 +350,6 @@ const PermissionEdit: React.FC = () => {
 
   const handleCancleUpdatePermission = () => {
     setClickUpdatePermission(false);
-    form.resetFields();
     setInfoUpdated(false);
   };
 
