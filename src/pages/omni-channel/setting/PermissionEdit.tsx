@@ -135,6 +135,8 @@ const PermissionEdit: React.FC = () => {
       } else {
         if (res.data.length === 0) {
           message.error('Không tìm thấy dữ liệu!');
+          setListAllUserInfoFinal([]);
+          setListAllUserInfoLengthFinal(0);
         } else {
           setListAllUserInfoLengthFinal(res.length);
         }
@@ -614,9 +616,7 @@ const PermissionEdit: React.FC = () => {
                   mode="multiple"
                   placeholder="Tất cả"
                   maxTagCount="responsive"
-                  notFoundContent={
-                    <Empty description="Không có dữ liệu" imageStyle={{ width: 50, height: 50 }} />
-                  }
+                  notFoundContent={<Empty description="Không có dữ liệu" />}
                 >
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
@@ -659,9 +659,7 @@ const PermissionEdit: React.FC = () => {
                   mode="multiple"
                   placeholder="Tất cả"
                   maxTagCount="responsive"
-                  notFoundContent={
-                    <Empty description="Không có dữ liệu" imageStyle={{ width: 50, height: 50 }} />
-                  }
+                  notFoundContent={<Empty description="Không có dữ liệu" />}
                 >
                   {listGroupPermissionFilter &&
                     listGroupPermissionFilter.map((item: GroupPermission) => (
@@ -688,6 +686,7 @@ const PermissionEdit: React.FC = () => {
                   placeholder="Tất cả"
                   maxTagCount="responsive"
                   options={OPTIONS_FILTER_STATUS}
+                  notFoundContent={<Empty description="Không có dữ liệu" />}
                 />
               </Form.Item>
             </div>

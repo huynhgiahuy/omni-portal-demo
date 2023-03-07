@@ -468,6 +468,7 @@ const HistoryCall: React.FC = () => {
                   maxTagCount="responsive"
                   placeholder="Tất cả"
                   options={OPTIONS_FILTER_HISTORY_CALL_DIRECTION}
+                  notFoundContent={<Empty description="Không có dữ liệu" />}
                 />
               </Form.Item>
             </div>
@@ -487,6 +488,7 @@ const HistoryCall: React.FC = () => {
                   maxTagCount="responsive"
                   placeholder="Tất cả"
                   options={OPTIONS_FILTER_HISTORY_CALL_RESULT}
+                  notFoundContent={<Empty description="Không có dữ liệu" />}
                 />
               </Form.Item>
             </div>
