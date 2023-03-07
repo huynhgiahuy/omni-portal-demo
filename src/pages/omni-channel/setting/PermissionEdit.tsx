@@ -68,7 +68,8 @@ const PermissionEdit: React.FC = () => {
   const [listAllUserInfoLengthFinal, setListAllUserInfoLengthFinal] = useState<any>();
   const [listEditUserInfoFinal, setListEditUserInfoFinal] = useState<DataAllUserInfoFinal[]>([]);
   const [newTeamValue, setNewTeamValue] = useState<any>();
-  const [listGroupPermission, setListGroupPermission] = useState<GroupPermission[]>([]);
+  const [listGroupPermissionFilter, setListGroupPermissionFilter] = useState<GroupPermission[]>([]);
+  const [listGroupPermissionDetail, setListGroupPermissionDetail] = useState<GroupPermission[]>([]);
   const [listTeamPermission, setListTeamPermission] = useState<TeamPermission[]>([]);
 
   const [clickAddNewTeam, setClickAddNewTeam] = useState(false);
@@ -195,7 +196,8 @@ const PermissionEdit: React.FC = () => {
   const fetchGroupPermissionData = async () => {
     const resPer = await requestGroupPermissionData();
     if (resPer.success === true) {
-      setListGroupPermission(resPer.data);
+      setListGroupPermissionFilter(resPer.data);
+      setListGroupPermissionDetail(resPer.data);
       setIsGroupPermission(false);
     } else {
       setIsGroupPermission(true);
@@ -233,7 +235,7 @@ const PermissionEdit: React.FC = () => {
     if (resDetail.success === true) {
       setListEditUserInfoFinal(resDetail.data);
       if (isGroupPermission === true) {
-        setListGroupPermission([
+        setListGroupPermissionDetail([
           { code: resDetail.data[0].role_code, id: resDetail.data[0].role_id },
         ]);
       }
@@ -612,6 +614,9 @@ const PermissionEdit: React.FC = () => {
                   mode="multiple"
                   placeholder="Tất cả"
                   maxTagCount="responsive"
+                  notFoundContent={
+                    <Empty description="Không có dữ liệu" imageStyle={{ width: 50, height: 50 }} />
+                  }
                 >
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
@@ -654,9 +659,12 @@ const PermissionEdit: React.FC = () => {
                   mode="multiple"
                   placeholder="Tất cả"
                   maxTagCount="responsive"
+                  notFoundContent={
+                    <Empty description="Không có dữ liệu" imageStyle={{ width: 50, height: 50 }} />
+                  }
                 >
-                  {listGroupPermission &&
-                    listGroupPermission.map((item: GroupPermission) => (
+                  {listGroupPermissionFilter &&
+                    listGroupPermissionFilter.map((item: GroupPermission) => (
                       <Select.Option value={item.code} key={item.id}>
                         {item.code}
                       </Select.Option>
@@ -917,8 +925,8 @@ const PermissionEdit: React.FC = () => {
                 ]}
               >
                 <Select onChange={handleSelectRole} menuItemSelectedIcon={<CheckOutlined />}>
-                  {listGroupPermission &&
-                    listGroupPermission.map((item: GroupPermission) => (
+                  {listGroupPermissionDetail &&
+                    listGroupPermissionDetail.map((item: GroupPermission) => (
                       <Select.Option value={item.id} key={item.id}>
                         {item.code}
                       </Select.Option>
@@ -957,6 +965,9 @@ const PermissionEdit: React.FC = () => {
               >
                 <Select
                   onChange={handleSelectTeam}
+                  notFoundContent={
+                    <Empty description="Không có dữ liệu" imageStyle={{ width: 50, height: 50 }} />
+                  }
                   dropdownRender={(menu) => (
                     <>
                       {menu}
