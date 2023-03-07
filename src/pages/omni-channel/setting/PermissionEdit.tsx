@@ -827,10 +827,10 @@ const PermissionEdit: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
               <Form.Item label="Tên người dùng" name="name">
-                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.7)' }} />
+                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.4)' }} />
               </Form.Item>
               <Form.Item label="Phòng ban" name="department">
-                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.7)' }} />
+                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.4)' }} />
               </Form.Item>
               <Form.Item
                 label={
@@ -908,7 +908,7 @@ const PermissionEdit: React.FC = () => {
             </div>
             <div style={{ flex: 1 }}>
               <Form.Item label="Email" name="email">
-                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.7)' }} />
+                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.4)' }} />
               </Form.Item>
               <Form.Item
                 label={
