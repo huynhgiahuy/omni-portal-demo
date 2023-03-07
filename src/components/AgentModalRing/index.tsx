@@ -1,14 +1,5 @@
 import {
-  Button,
-  Form,
-  Input,
-  List,
-  message,
-  Modal,
-  Popover,
-  Space,
-  Timeline,
-  Typography,
+    Button, Form, Input, List, message, Modal, Popover, Space, Timeline, Typography
 } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -17,12 +8,8 @@ import { useRequest } from 'umi';
 import api from '@/api';
 import { requestGetTakeCallNote } from '@/pages/omni-channel/report/services';
 import {
-  EditOutlined,
-  FullscreenExitOutlined,
-  FullscreenOutlined,
-  HistoryOutlined,
-  PhoneOutlined,
-  UserOutlined,
+    EditOutlined, FullscreenExitOutlined, FullscreenOutlined, HistoryOutlined, PhoneOutlined,
+    UserOutlined
 } from '@ant-design/icons';
 
 import Arrow from '../../../public/arrow.svg';
@@ -132,7 +119,7 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
   );
 
   useEffect(() => {
-    if (isVisibleHistoryCall) {
+    if (isVisibleHistoryCall && isModalOpen) {
       if (dataCall?.direction === 'local') {
         getTakeCallNote.run({
           phone_number: dataCall?.contact?.ip_phone,
