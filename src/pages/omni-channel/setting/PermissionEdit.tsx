@@ -137,6 +137,7 @@ const PermissionEdit: React.FC = () => {
           message.error('Không tìm thấy dữ liệu!');
           setListAllUserInfoFinal([]);
           setListAllUserInfoLengthFinal(0);
+          setSelectedRowKeys([]);
         } else {
           setListAllUserInfoLengthFinal(res.length);
         }
