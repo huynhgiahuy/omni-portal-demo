@@ -11,6 +11,7 @@ import {
   Table,
   TableProps,
   Typography,
+  Empty,
 } from 'antd';
 import { debounce } from 'lodash';
 import React, { useState } from 'react';
@@ -861,6 +862,9 @@ const PhoneBook: React.FC = () => {
             prev_3: '3 trang trước',
             prev_5: '5 trang trước',
           },
+        }}
+        locale={{
+          emptyText: <Empty description="Không có dữ liệu" />,
         }}
         scroll={{ x: 300 }}
         loading={{
