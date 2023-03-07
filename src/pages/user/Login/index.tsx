@@ -1,11 +1,13 @@
-import { LoginForm } from '@ant-design/pro-form';
 import { Button, message, Tabs } from 'antd';
 import React, { useLayoutEffect, useState } from 'react';
 import { history, useIntl, useModel } from 'umi';
 
-import styles from './index.less';
 import { getUrlSSO, requestGetInfoUser } from '@/services/auth';
+import { LoginForm } from '@ant-design/pro-form';
+
 import api from '../../../api';
+import styles from './index.less';
+
 const Login: React.FC = () => {
   const [type, setType] = useState<string>('account');
   const [isLogin, setIsLogin] = useState<boolean>(true);
@@ -76,7 +78,7 @@ const Login: React.FC = () => {
         <div className={styles.content}>
           <LoginForm
             logo={<img alt="logo" src="/logo.svg" />}
-            title="Omni Channel"
+            title="Happy Connect"
             initialValues={{
               autoLogin: true,
             }}
