@@ -71,6 +71,8 @@ export const CustomUI_CallDirection = {
             <CallInterval /> {newCallDirection}
           </>
         );
+      } else if (call_direction === undefined || call_direction === null) {
+        return '-';
       }
       return;
     },
@@ -163,6 +165,8 @@ export const customUI_Result = {
       } else if (record.result === 6) {
         color = '#FA541C';
         newResult = 'Từ chối';
+      } else if (record.result === 7 || record.result === 8) {
+        return '-';
       }
       return text === null || text === undefined ? (
         '-'
