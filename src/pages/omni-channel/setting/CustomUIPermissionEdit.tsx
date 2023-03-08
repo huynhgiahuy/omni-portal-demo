@@ -161,7 +161,7 @@ export const customUI_UserInfo = {
 export const customUI_IpPhone = {
   parsing: () => ({
     render: (text: any, record: DataAllUserInfoFinal) => {
-      return text === null || text === undefined ? '-' : text;
+      return text === null || text === undefined || text === '' ? '-' : text;
     },
   }),
 };
