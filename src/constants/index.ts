@@ -233,7 +233,7 @@ export const OPTIONS_PERMISSION_SETTING = [
     value: 'Nhóm quyền',
   },
 ];
-///
+
 export const TREE_DATA_TKC = [
   {
     title: 'Thống kê chung',
@@ -737,7 +737,7 @@ export const OPTIONS_FILTER_HISTORY_CALL_DIRECTION = [
     value: 'outbound',
   },
   {
-    label: 'Nội bộ',
+    label: 'Gọi nội bộ',
     value: 'local',
   },
 ];

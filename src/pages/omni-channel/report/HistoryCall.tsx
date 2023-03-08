@@ -4,7 +4,6 @@ import {
   Button,
   Typography,
   Input,
-  Tag,
   Form,
   message,
   Spin,
@@ -14,97 +13,64 @@ import {
   Select,
   Empty,
 } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
 import {
-  PlayCircleFilled,
-  SearchOutlined,
-  FormOutlined,
-  InfoCircleFilled,
-} from '@ant-design/icons';
-import DownloadIcon from '../../../../public/cloud_download.svg';
-import ExportIcon from '@/components/ExportIcon/ExportIcon';
-import styles from '../report/style.less';
+  CustomUI_CallDirection,
+  customUI_SipFromUser,
+  customUI_CallerName,
+  customUI_CallerDestination,
+  customUI_ReceiverName,
+  customUI_StartEpoch,
+  customUI_BillSec,
+  customUI_Result,
+  customUI_RecordAudio,
+  customUI_Note,
+  DataLSCGType,
+  PaginationProps,
+  ListNotesProps,
+} from './CustomUIHistoryCall';
+import type { ColumnsType } from 'antd/es/table';
+import { SearchOutlined, InfoCircleFilled } from '@ant-design/icons';
 import { requestHistoryCallData, requestGetDetailCallNote } from './services';
+import {
+  OPTIONS_FILTER_HISTORY_CALL_DIRECTION,
+  OPTIONS_FILTER_HISTORY_CALL_RESULT,
+} from '@/constants';
 import { useRequest } from 'umi';
 import { debounce } from 'lodash';
-import CallInboundIcon from '@/components/PhoneCallType/CallInboundIcon';
-import CallInterval from '@/components/PhoneCallType/CallInterval';
-import CallOutboundIcon from '@/components/PhoneCallType/CallOutboundIcon';
+import CustomizeRangePicker from '@/components/RangePicker';
+import ExportIcon from '@/components/ExportIcon/ExportIcon';
 import moment from 'moment';
 import fileDownload from 'js-file-download';
 import axios from 'axios';
 import api from '@/api';
 import NoFoundPage from '@/pages/404';
-import {
-  OPTIONS_FILTER_HISTORY_CALL_DIRECTION,
-  OPTIONS_FILTER_HISTORY_CALL_RESULT,
-} from '@/constants';
-import CustomizeRangePicker from '@/components/RangePicker';
-
-interface PaginationProps {
-  current: number;
-  pageSize: number;
-  showSizeChanger: boolean;
-  showQuickJumper: boolean;
-  pageSizeOptions: string[];
-}
-interface DataLSCGType {
-  uuid: string;
-  _id: string;
-  call_direction?: string;
-  sip_from_user?: string;
-  caller_destination?: string;
-  start_epoch?: any;
-  billsec?: number;
-  hangup_cause?: string;
-  record_path?: string;
-  record_name?: string;
-  note?: any[];
-  caller_name?: string;
-  receiver_name?: string;
-  result?: string;
-}
-
-interface notesProps {
-  call_direction: string;
-  content: string;
-  create_at: number;
-  personnel: string;
-}
-
-interface listNotesProps {
-  call_id: string;
-  id: string;
-  note: notesProps[];
-  phone_number: string;
-}
+import styles from '../report/style.less';
 
 const HistoryCall: React.FC = () => {
   const [isView, setIsView] = useState<string>();
-  const [listNote, setListNote] = useState<listNotesProps[]>([]);
+  const [listNote, setListNote] = useState<ListNotesProps[]>([]);
 
-  const [listValueHCG, setListValueHCG] = useState<string[] | any>();
-  const [listValueKQ, setListValueKQ] = useState<string[] | any>();
-  const [valueFromDateTime, setValueFromDateTime] = useState<string | any>();
-  const [valueToDateTime, setValueToDateTime] = useState<string | any>();
-  const [valueKeyWord, setValueKeyWord] = useState<string | any>();
+  const [listValueHCG, setListValueHCG] = useState<any>();
+  const [listValueKQ, setListValueKQ] = useState<any>();
+  const [valueFromDateTime, setValueFromDateTime] = useState<any>();
+  const [valueToDateTime, setValueToDateTime] = useState<any>();
+  const [valueKeyWord, setValueKeyWord] = useState<any>();
   const [sortColumn, setSortColumn] = useState<any>({ start_epoch: 0 });
 
   const [isHCGFilter, setHCGFilter] = useState(false);
   const [isKQFilter, setKQFilter] = useState(false);
   const [isTimeFilter, setTimeFilter] = useState(false);
 
-  const [listDataLSCG, setListDataLSCG] = useState<DataLSCGType[] | any>();
-  const [listDataLSCGLength, setListDataLSCGLength] = useState<string | any>();
-
-  const audioRef = useRef<any>();
+  const [listDataLSCG, setListDataLSCG] = useState<any>();
+  const [listDataLSCGLength, setListDataLSCGLength] = useState<any>();
 
   const [isVisibleModalAudio, setVisibleModalAudio] = useState(false);
   const [isVisibleModalNote, setVisibleModalNote] = useState(false);
   const [isDownloadFile, setDownloadFile] = useState(false);
 
+  const audioRef = useRef<any>();
   const [testAudioURL, setTestAudioURL] = useState<any>();
-  const [recordId, setRecordId] = useState<string>();
+  const [recordId, setRecordId] = useState<string>('');
 
   const [isLoadingExcel, setLoadingExcel] = useState(false);
 
@@ -171,17 +137,20 @@ const HistoryCall: React.FC = () => {
   );
 
   const fetchListDetailCallNote = useRequest(
-    async (callId: any, phoneNumber: any, callDirection: any) => {
+    async (callId: string) => {
       const res: { success: boolean; data: any; error_code: number } =
-        await requestGetDetailCallNote(token ? token : '', callId, phoneNumber, callDirection);
+        await requestGetDetailCallNote(token ? token : '', callId);
       if (res.success === false) {
         if (res.error_code === 4030102) {
-          message.error('Bạn không có quyền xem ghi chú lịch sử cuộc gọi!');
+          message.error('Bạn không có quyền xem ghi chú!');
+          setVisibleModalNote(false);
         } else {
-          message.error('Không thể xem ghi chú lịch sử cuộc gọi!');
+          message.error('Không thể xem ghi chú!');
+          setVisibleModalNote(false);
         }
       } else {
         setListNote(res.data);
+        setVisibleModalNote(true);
       }
       return res;
     },
@@ -194,80 +163,7 @@ const HistoryCall: React.FC = () => {
     fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
   }, [pagination]);
 
-  const handleViewResult = (result: any) => {
-    let color, newResult;
-    if (result === 1) {
-      color = '#87d068';
-      newResult = 'Thành công';
-    } else if (result === 2) {
-      color = '#ff0000';
-      newResult = 'Thất bại';
-    } else if (result === 3) {
-      color = '#660000';
-      newResult = 'Bận';
-    } else if (result === 4) {
-      color = '#FFAC1C';
-      newResult = 'Hủy bỏ';
-    } else if (result === 5) {
-      color = '#b1b1b1';
-      newResult = 'Không trả lời';
-    } else if (result === 6) {
-      color = '#FA541C';
-      newResult = 'Từ chối';
-    }
-    return (
-      <Tag color={color} style={{ fontWeight: 'bold', margin: 'unset' }}>
-        {newResult}
-      </Tag>
-    );
-  };
-
-  const handleViewCallDirection = (call_direction: any) => {
-    let newCallDirection;
-    if (call_direction === 'inbound') {
-      newCallDirection = 'Gọi vào';
-      return (
-        <>
-          <CallInboundIcon /> {newCallDirection}
-        </>
-      );
-    } else if (call_direction === 'outbound') {
-      newCallDirection = 'Gọi ra';
-      return (
-        <>
-          <CallOutboundIcon /> {newCallDirection}
-        </>
-      );
-    } else if (call_direction === 'local') {
-      newCallDirection = 'Gọi nội bộ';
-      return (
-        <>
-          <CallInterval /> {newCallDirection}
-        </>
-      );
-    }
-    return;
-  };
-
-  const handleChangeBillSec = (val: any) => {
-    var sec_num: any = parseInt(val, 10);
-    var hours: any = Math.floor(sec_num / 3600);
-    var minutes: any = Math.floor((sec_num - hours * 3600) / 60);
-    var seconds: any = sec_num - hours * 3600 - minutes * 60;
-
-    if (hours < 10) {
-      hours = '0' + hours;
-    }
-    if (minutes < 10) {
-      minutes = '0' + minutes;
-    }
-    if (seconds < 10) {
-      seconds = '0' + seconds;
-    }
-    return hours + ' : ' + minutes + ' : ' + seconds;
-  };
-
-  const playAudio = async (fileId?: any, recordName?: any) => {
+  const playAudio = async (fileId: string, recordName: string) => {
     try {
       const response = await axios({
         url: `${api.UMI_API_BASE_URL}/voip-service/api/call/get_record_url`,
@@ -281,16 +177,19 @@ const HistoryCall: React.FC = () => {
         },
       });
       setTestAudioURL(response.data.data[0]);
+      setVisibleModalAudio(true);
     } catch (e: any) {
-      if (e.response.status === 403) {
+      if (e.response.data.error_code === 4030102) {
         message.error('Bạn không có quyền nghe file ghi âm!');
+        setVisibleModalAudio(false);
       } else {
         message.error('Không thể nghe file ghi âm!');
+        setVisibleModalAudio(false);
       }
     }
   };
 
-  const downloadAudio = async (fileId?: any, recordName?: any) => {
+  const downloadAudio = async (fileId: string, recordName: string) => {
     try {
       setDownloadFile(true);
       const response = await axios({
@@ -309,7 +208,7 @@ const HistoryCall: React.FC = () => {
       fileDownload(audioFormatBlob, recordName);
       setDownloadFile(false);
     } catch (e: any) {
-      if (e.response.status === 403) {
+      if (e.response.data.error_code === 4030102) {
         message.error('Bạn không có quyền tải file ghi âm!');
         setDownloadFile(false);
       } else {
@@ -319,14 +218,12 @@ const HistoryCall: React.FC = () => {
     }
   };
 
-  const handleOpenModalPlaying = async (fieldId?: any, recordName?: any) => {
-    setVisibleModalAudio(true);
+  const handleOpenModalPlaying = async (fieldId: string, recordName: string) => {
     await playAudio(fieldId, recordName);
   };
 
-  const handleGetDetailCallNote = (callId: any, phoneNumber: any, callDirection: any) => {
-    fetchListDetailCallNote.run(callId, phoneNumber, callDirection);
-    setVisibleModalNote(true);
+  const handleGetDetailCallNote = async (callId: string) => {
+    await fetchListDetailCallNote.run(callId);
   };
 
   const columns: ColumnsType<DataLSCGType> = [
@@ -336,11 +233,7 @@ const HistoryCall: React.FC = () => {
       key: 'call_direction',
       align: 'center',
       width: '130px',
-      render: (text, record) => {
-        return text === null || text === undefined
-          ? '-'
-          : handleViewCallDirection(record.call_direction);
-      },
+      ...CustomUI_CallDirection.parsing(),
     },
     {
       title: 'Số máy gọi',
@@ -348,9 +241,7 @@ const HistoryCall: React.FC = () => {
       key: 'sip_from_user',
       align: 'center',
       width: '110px',
-      render: (text, record) => {
-        return text === null || text === undefined ? '-' : text;
-      },
+      ...customUI_SipFromUser.parsing(),
     },
     {
       title: 'Tên người gọi',
@@ -358,9 +249,7 @@ const HistoryCall: React.FC = () => {
       key: 'caller_name',
       align: 'center',
       width: '200px',
-      render: (text, record) => {
-        return text === null || text === undefined ? '-' : text;
-      },
+      ...customUI_CallerName.parsing(),
     },
     {
       title: 'Số máy nhận',
@@ -368,9 +257,7 @@ const HistoryCall: React.FC = () => {
       key: 'caller_destination',
       align: 'center',
       width: '110px',
-      render: (text, record) => {
-        return text === null || text === undefined ? '-' : text;
-      },
+      ...customUI_CallerDestination.parsing(),
     },
     {
       title: 'Tên người nhận',
@@ -378,9 +265,7 @@ const HistoryCall: React.FC = () => {
       key: 'receiver_name',
       align: 'center',
       width: '200px',
-      render: (text, record) => {
-        return text === null || text === undefined ? '-' : text;
-      },
+      ...customUI_ReceiverName.parsing(),
     },
     {
       title: 'Thời gian bắt đầu',
@@ -388,12 +273,8 @@ const HistoryCall: React.FC = () => {
       key: 'start_epoch',
       align: 'center',
       width: '150px',
-      render: (text, record) => {
-        return text === null || text === undefined
-          ? '-'
-          : moment.unix(text).format('DD-MM-YYYY HH:mm:ss');
-      },
       sorter: true,
+      ...customUI_StartEpoch.parsing(),
     },
     {
       title: 'Thời lượng',
@@ -401,9 +282,7 @@ const HistoryCall: React.FC = () => {
       key: 'billsec',
       align: 'center',
       width: '100px',
-      render: (text, record) => {
-        return text === null || text === undefined ? '-' : handleChangeBillSec(text.toString());
-      },
+      ...customUI_BillSec.parsing(),
     },
     {
       title: 'Kết quả',
@@ -411,49 +290,19 @@ const HistoryCall: React.FC = () => {
       key: 'result',
       align: 'center',
       width: '150px',
-      render: (text, record) => {
-        return text === null || text === undefined ? '-' : handleViewResult(record.result);
-      },
+      ...customUI_Result.parsing(),
     },
     {
       title: 'Ghi âm',
       width: '120px',
       align: 'center',
-      render: (text, record) => {
-        return (
-          <>
-            {record.billsec === 0 || record.billsec === undefined ? (
-              '-'
-            ) : (
-              <Tooltip title="Nghe ghi âm">
-                <PlayCircleFilled
-                  style={{ color: '#1890ff', marginRight: '5px', fontSize: '25px' }}
-                  onClick={() => handleOpenModalPlaying(record._id, record.record_name)}
-                />
-              </Tooltip>
-            )}
-            {isDownloadFile === true && record.billsec !== 0 && record._id === recordId ? (
-              <Spin />
-            ) : (isDownloadFile === false && record.billsec === 0) ||
-              record.billsec === undefined ||
-              (isDownloadFile === true && record.billsec === 0) ||
-              record.billsec === undefined ? (
-              ''
-            ) : (
-              <Tooltip title="Tải ghi âm">
-                <img
-                  src={DownloadIcon}
-                  className={styles.fileDownloadIcon}
-                  onClick={() => {
-                    downloadAudio(record._id, record.record_name);
-                    setRecordId(record._id);
-                  }}
-                />
-              </Tooltip>
-            )}
-          </>
-        );
-      },
+      ...customUI_RecordAudio.parsing(
+        recordId,
+        isDownloadFile,
+        handleOpenModalPlaying,
+        downloadAudio,
+        setRecordId,
+      ),
     },
     {
       title: 'Ghi chú',
@@ -461,27 +310,16 @@ const HistoryCall: React.FC = () => {
       key: 'note',
       align: 'center',
       width: '100px',
-      render: (text, record) => {
-        return (
-          <Tooltip title="Xem ghi chú">
-            <FormOutlined
-              style={{ fontSize: 20 }}
-              onClick={() =>
-                handleGetDetailCallNote(record.uuid, record.sip_from_user, record.call_direction)
-              }
-            />
-          </Tooltip>
-        );
-      },
+      ...customUI_Note.parsing(handleGetDetailCallNote),
     },
     Table.EXPAND_COLUMN,
   ];
 
-  const handleTableChange = (newPagination: any, filters: any, sorters: any) => {
+  const handleTableChange = (newPagination: any, filters: any, sorter: any) => {
     let start_epoch = 0;
-    if (sorters.order === 'ascend') {
+    if (sorter.order === 'ascend') {
       start_epoch = 1;
-    } else if (sorters.order === 'descend') {
+    } else if (sorter.order === 'descend') {
       start_epoch = -1;
     } else {
       start_epoch = 0;
@@ -612,7 +450,7 @@ const HistoryCall: React.FC = () => {
   ) : (
     <>
       <Form className={styles.filterFormHistoryCall} layout="vertical" form={form}>
-        <div>
+        <>
           <div className={styles.filterFormHistoryCallDisplay}>
             <div style={{ width: '300px' }}>
               <Form.Item
@@ -630,6 +468,7 @@ const HistoryCall: React.FC = () => {
                   maxTagCount="responsive"
                   placeholder="Tất cả"
                   options={OPTIONS_FILTER_HISTORY_CALL_DIRECTION}
+                  notFoundContent={<Empty description="Không có dữ liệu" />}
                 />
               </Form.Item>
             </div>
@@ -649,6 +488,7 @@ const HistoryCall: React.FC = () => {
                   maxTagCount="responsive"
                   placeholder="Tất cả"
                   options={OPTIONS_FILTER_HISTORY_CALL_RESULT}
+                  notFoundContent={<Empty description="Không có dữ liệu" />}
                 />
               </Form.Item>
             </div>
@@ -673,7 +513,7 @@ const HistoryCall: React.FC = () => {
               </Form.Item>
             </div>
           </div>
-        </div>
+        </>
         <div style={{ paddingTop: '29px', display: 'flex', justifyContent: 'space-between' }}>
           <Form.Item name="search_name">
             <Input
@@ -737,12 +577,7 @@ const HistoryCall: React.FC = () => {
           triggerDesc: 'Chọn sắp xếp giảm dần',
           triggerAsc: 'Chọn sắp xếp tăng dần',
           cancelSort: 'Chọn hủy sắp xếp',
-          emptyText: (
-            <>
-              <Empty description={false} />
-              <p>Không có dữ liệu</p>
-            </>
-          ),
+          emptyText: <Empty description="Không có dữ liệu" />,
         }}
         expandable={{
           expandedRowRender: (record) => (
