@@ -829,9 +829,13 @@ const PermissionEdit: React.FC = () => {
         open={isClickUpdatePermission}
         onCancel={handleCancleUpdatePermission}
         title={
-          <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
-            {listEditUserInfoFinal[0]?.name}
-          </Typography.Text>
+          listEditUserInfoFinal[0]?.name ? (
+            <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
+              {listEditUserInfoFinal[0]?.name}
+            </Typography.Text>
+          ) : (
+            ''
+          )
         }
         footer={false}
         width={900}
