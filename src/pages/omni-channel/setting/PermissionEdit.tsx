@@ -469,7 +469,7 @@ const PermissionEdit: React.FC = () => {
     },
   ];
 
-  const onReset = (e: any) => {
+  const onResetFilter = (e: any) => {
     if (
       listValueTeam === undefined &&
       listValueNLV === undefined &&
@@ -693,7 +693,7 @@ const PermissionEdit: React.FC = () => {
             </div>
             <div style={{ paddingTop: '29px' }}>
               <Form.Item style={{ marginBottom: 'unset' }} label="">
-                <Button type="link" style={{ color: 'blue' }} onClick={(e) => onReset(e)}>
+                <Button type="link" style={{ color: 'blue' }} onClick={(e) => onResetFilter(e)}>
                   Reset
                 </Button>
               </Form.Item>
