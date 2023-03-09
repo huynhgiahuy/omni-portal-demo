@@ -1,16 +1,18 @@
-import { Typography, Avatar, Space, Tooltip } from 'antd';
+import { Avatar, Space, Tooltip, Typography } from 'antd';
+import moment from 'moment';
+
+import api from '@/api';
 import {
-  EditOutlined,
-  DeleteOutlined,
-  UserOutlined,
   CheckCircleFilled,
   ClockCircleFilled,
+  DeleteOutlined,
+  EditOutlined,
   MinusCircleFilled,
+  UserOutlined,
 } from '@ant-design/icons';
-import Ellipse from '../../../assets/Ellipse.svg';
+
+import Ellipse from '../../../../public/Ellipse.svg';
 import OfflineIcon from '../../../../public/offline.png';
-import api from '@/api';
-import moment from 'moment';
 import styles from '../setting/style.less';
 
 export interface DataAllUserInfoFinal {
@@ -93,19 +95,15 @@ export const submitFormLayout = {
 };
 
 export const customUI_Stt = {
-  parsing: (valueKeyWord: string, pagination: any, listAllUserInfoFinal: any) => ({
-    render: (text: any, record: DataAllUserInfoFinal, index: any) => {
-      if (valueKeyWord === '' || valueKeyWord === undefined) {
-        return (
-          <>
-            {(pagination.current - 1) * pagination.pageSize +
-              listAllUserInfoFinal.indexOf(record) +
-              1}
-          </>
-        );
-      } else {
-        return index + 1;
-      }
+  parsing: (pagination: any, listAllUserInfoFinal: any) => ({
+    render: (text: any, record: DataAllUserInfoFinal) => {
+      return (
+        <>
+          {(pagination.current - 1) * pagination.pageSize +
+            listAllUserInfoFinal.indexOf(record) +
+            1}
+        </>
+      );
     },
   }),
 };
@@ -124,11 +122,13 @@ export const customUI_UserInfo = {
               />
             </div>
             <div style={{ flex: 3, textAlign: 'left' }}>
-              <Typography.Text>{record.name}</Typography.Text>
+              <Typography.Text style={{ color: 'rgba(0,0,0,1)', fontWeight: 600 }}>
+                {record.name}
+              </Typography.Text>
               <br></br>
               <Typography.Text
                 className={styles.emailPermissionTable}
-                style={{ textAlign: 'center', alignItems: 'center' }}
+                style={{ textAlign: 'center', alignItems: 'center', color: 'rgba(0,0,0,1)' }}
               >
                 {record.email}
               </Typography.Text>
@@ -142,11 +142,13 @@ export const customUI_UserInfo = {
               <Avatar size={50} icon={<UserOutlined />} className={styles.avatarImg} />
             </div>
             <div style={{ flex: 3, textAlign: 'left' }}>
-              <Typography.Text>{record.name}</Typography.Text>
+              <Typography.Text style={{ color: 'rgba(0,0,0,1)', fontWeight: 600 }}>
+                {record.name}
+              </Typography.Text>
               <br></br>
               <Typography.Text
                 className={styles.emailPermissionTable}
-                style={{ textAlign: 'center', alignItems: 'center' }}
+                style={{ textAlign: 'center', alignItems: 'center', color: 'rgba(0,0,0,1)' }}
               >
                 {record.email}
               </Typography.Text>
@@ -234,7 +236,7 @@ export const customUI_Status = {
       } else if (record.status === 5) {
         return (
           <div className={styles.offlineStatusDisplay}>
-            <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
+            <img src={OfflineIcon} width={14} height={14} />
             <div className={styles.offlineStatusText}>Đang offline</div>
           </div>
         );

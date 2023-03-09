@@ -1,4 +1,3 @@
-import 'antd/dist/antd.css';
 import '../src/global.less';
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },

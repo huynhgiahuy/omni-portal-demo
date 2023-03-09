@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import HistoryCall from './index';
 
 export default {
-  title: 'Molecules/HistoryCall',
+  title: 'HappyConnect/Molecules/HistoryCall',
   component: HistoryCall,
   argTypes: {},
 } as ComponentMeta<typeof HistoryCall>;

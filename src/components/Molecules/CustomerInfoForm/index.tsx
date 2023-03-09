@@ -75,18 +75,18 @@ const listUnitExternal = [
 ];
 
 export interface customerInfoProps {
-  email: string;
-  full_name: string;
-  name_unit: string;
+  email?: string;
+  full_name?: string;
+  name_unit?: string;
   ip_phone?: string;
-  phone_number: string;
-  work_unit: string;
+  phone_number?: string;
+  work_unit?: string;
 }
 
 export interface CustomerInfoFormProps {
   type: 'edit' | 'view';
   customerInfo: customerInfoProps;
-  handleSaveForm: (e: customerInfoProps) => void;
+  handleSaveForm?: (e: customerInfoProps) => void;
 }
 
 const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
@@ -97,12 +97,12 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
   const [form] = Form.useForm();
 
   const handleOnFinish = (values: customerInfoProps) => {
-    handleSaveForm(values);
+    handleSaveForm && handleSaveForm(values);
   };
 
   useEffect(() => {
     form.setFieldsValue(customerInfo);
-  }, []);
+  }, [type]);
 
   return (
     <div className="m-customer-info-form">
@@ -218,19 +218,28 @@ const CustomerInfoForm: React.FC<CustomerInfoFormProps> = ({
             />
           </Form.Item>
           {type === 'edit' && (
-            <Form.Item noStyle>
-              <Space style={{ marginTop: 10 }}>
-                <Button
-                  onClick={() => {
-                    form.resetFields();
-                  }}
-                >
-                  Hủy
-                </Button>
-                <Button type="primary" htmlType="submit">
-                  Lưu
-                </Button>
-              </Space>
+            <Form.Item shouldUpdate noStyle>
+              {() => (
+                <Space style={{ marginTop: 10 }}>
+                  <Button
+                    onClick={() => {
+                      form.resetFields();
+                    }}
+                  >
+                    Hủy
+                  </Button>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    disabled={
+                      !form.isFieldsTouched(true) ||
+                      !!form.getFieldsError().filter(({ errors }) => errors.length).length
+                    }
+                  >
+                    Lưu
+                  </Button>
+                </Space>
+              )}
             </Form.Item>
           )}
         </Form>

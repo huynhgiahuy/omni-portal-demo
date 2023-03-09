@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import ButtonCall from './index';
 
 export default {
-  title: 'Atom/ButtonCall',
+  title: 'HappyConnect/Atom/ButtonCall',
   component: ButtonCall,
   argTypes: {
     type: {

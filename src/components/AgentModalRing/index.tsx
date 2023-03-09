@@ -1,5 +1,14 @@
 import {
-    Button, Form, Input, List, message, Modal, Popover, Space, Timeline, Typography
+  Button,
+  Form,
+  Input,
+  List,
+  message,
+  Modal,
+  Popover,
+  Space,
+  Timeline,
+  Typography,
 } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -8,8 +17,12 @@ import { useRequest } from 'umi';
 import api from '@/api';
 import { requestGetTakeCallNote } from '@/pages/omni-channel/report/services';
 import {
-    EditOutlined, FullscreenExitOutlined, FullscreenOutlined, HistoryOutlined, PhoneOutlined,
-    UserOutlined
+  EditOutlined,
+  FullscreenExitOutlined,
+  FullscreenOutlined,
+  HistoryOutlined,
+  PhoneOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 
 import Arrow from '../../../public/arrow.svg';
@@ -29,7 +42,6 @@ type AgentModalRingProps = {
   handleClickIconHistory: () => void;
   handleClickIconNote: () => void;
   handelUserTransfer: (e: string) => void;
-  valueCheckboxUser: any;
   isVisibleHistoryCall: boolean;
   isVisibleNoteCall: boolean;
   isActiveIconHistory: boolean;

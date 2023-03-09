@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import CustomerInfoForm, { customerInfoProps } from './index';
 
 export default {
-  title: 'Molecules/CustomerInfoForm',
+  title: 'HappyConnect/Molecules/CustomerInfoForm',
   component: CustomerInfoForm,
   argTypes: {
     type: {

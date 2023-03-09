@@ -1,7 +1,7 @@
 import './index.less';
 
 import { Modal, Space, Typography } from 'antd';
-import clsx from 'clsx';
+import classNames from 'classnames';
 import React, { useEffect, useRef, useState } from 'react';
 import Timer from 'react-compound-timer';
 
@@ -17,42 +17,50 @@ import {
 } from '@ant-design/icons';
 
 import Arrow from '../../../../public/arrow.svg';
+import audio from '../../../assets/iphone_12.mp3';
 import CustomerInfoForm, { customerInfoProps } from '../../Molecules/CustomerInfoForm';
 import HistoryCall, { notesProps } from '../../Molecules/HistoryCall';
 import NoteCall from '../../Molecules/NoteCall';
 
+export type CallTypeProps = 'ring' | 'answer';
+export type CallRedirectProps = 'inbound' | 'outbound' | 'local';
+
 export interface ModalCallProps {
-  type: 'ring' | 'answer';
-  callRedirect?: 'inbound' | 'outbound' | 'local';
-  muteCall: boolean;
+  callType: CallTypeProps;
+  callRedirect: CallRedirectProps;
   open: boolean;
-  avatar: string;
-  // dataCall: {
-  //   name_call?: string;
-  //   phone_call?: string;
-  //   name_unit?: string;
-  //   work_unit?: string;
-  // };
+  avatar?: string;
+  handleUserTransfer?: (e: string) => void;
+  onClickChangeCall?: (e: string) => void;
   listTransfer: ListTransferButtonShareProps[];
   customerInfo: customerInfoProps;
+  handleSaveForm?: (e: customerInfoProps) => void;
   notes: notesProps[];
+  handleFormNote?: (note: string) => void;
+  handleReveiveCall?: () => void;
+  handleHangUpCall?: () => void;
 }
 
 const ModalCall: React.FC<ModalCallProps> = ({
-  type,
+  callType,
   callRedirect,
   open,
   avatar,
   listTransfer,
+  handleUserTransfer,
+  onClickChangeCall,
   customerInfo,
+  handleSaveForm,
   notes,
+  handleFormNote,
+  handleReveiveCall,
+  handleHangUpCall,
 }) => {
   const refTimer = useRef<any>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isFullScreenModal, setIsFullScreenModal] = useState(false);
   const [isVisibleNoteCall, setIsVisibleNoteCall] = useState(false);
   const [isVisibleHistoryCall, setIsVisibleHistoryCall] = useState(false);
-  const ringSound = new Audio(`assets/iphone_12.mp3`);
   const [isMuteCall, setIsMuteCall] = useState(false);
 
   useEffect(() => {
@@ -77,10 +85,12 @@ const ModalCall: React.FC<ModalCallProps> = ({
       setIsVisibleNoteCall(false);
     }
   }, [isFullScreenModal, isOpen]);
+  const ringSound = new Audio();
 
   useEffect(() => {
     let openSound: NodeJS.Timer;
-    if (open && type === 'ring') {
+    ringSound.src = audio;
+    if (open && callType === 'ring') {
       openSound = setInterval(() => {
         ringSound.play();
       }, 1000);
@@ -91,33 +101,30 @@ const ModalCall: React.FC<ModalCallProps> = ({
       ringSound.pause();
       setIsFullScreenModal(false);
     };
-  }, [open, type]);
+  }, [open, callType]);
 
-  const handleReveiveCall = () => {
-    console.log('reveice');
-  };
-  const handleHangUpCall = () => {
-    console.log('hang-up');
-  };
+  //   console.log('reveice');
+  // };
+  // const handleHangUpCall = () => {
+  //   console.log('hang-up');
+  // };
 
   const handleMuteCall = () => {
     if (isMuteCall) {
       setIsMuteCall(false);
-      console.log('un-mute-call');
     } else {
       setIsMuteCall(true);
-      console.log('mute-call');
     }
   };
 
   return (
     <div className="o-modal-call">
       <Modal
-        className={clsx(
+        className={classNames(
           'o-modal-call__modal',
-          type === 'ring' && !isFullScreenModal
+          callType === 'ring' && !isFullScreenModal
             ? 'o-modal-call__modal--ring'
-            : type === 'answer' && !isFullScreenModal
+            : callType === 'answer' && !isFullScreenModal
             ? 'o-modal-call__modal--answer'
             : '',
         )}
@@ -128,24 +135,24 @@ const ModalCall: React.FC<ModalCallProps> = ({
         centered={isFullScreenModal}
         width={isFullScreenModal ? 772 : 373}
         wrapClassName={
-          !isFullScreenModal && type === 'answer' ? 'o-modal-call__wrap_modal' : undefined
+          !isFullScreenModal && callType === 'answer' ? 'o-modal-call__wrap_modal' : undefined
         }
       >
         <div
-          className={clsx(
+          className={classNames(
             'o-modal-call__content',
             (isVisibleHistoryCall || isVisibleNoteCall) && 'o-modal-call__size-form',
           )}
         >
           <div className="flex justify-between">
-            {type === 'ring' ? (
+            {callType === 'ring' ? (
               <div className="flex">
                 <div className="flex">
                   <PhoneOutlined className="o-modal-call__icon-call" />
                   <img
                     src={Arrow}
                     alt="arrow"
-                    className={clsx(
+                    className={classNames(
                       'o-modal-call__arrow-call',
                       callRedirect === 'outbound' && 'o-modal-call__arrow-call--out-bound',
                     )}
@@ -184,7 +191,7 @@ const ModalCall: React.FC<ModalCallProps> = ({
             )}
           </div>
           <div
-            className={clsx(
+            className={classNames(
               'o-modal-call__info-customer',
               isFullScreenModal && 'o-modal-call__info-customer--fullscreen',
             )}
@@ -201,20 +208,20 @@ const ModalCall: React.FC<ModalCallProps> = ({
                 align="center"
               >
                 <div
-                  className={clsx(
+                  className={classNames(
                     'o-modal-call__avatar',
                     isFullScreenModal && 'o-modal-call__avatar--full-screen',
                   )}
                 >
                   <img
                     loading="lazy"
-                    src={`${api.UMI_API_BASE_URL}/user-service/api/settings/get_user_avatar_by_email?email=${avatar}`}
+                    src={avatar}
                     alt=""
                     width={isFullScreenModal ? 105 : 58}
                     height={isFullScreenModal ? 105 : 58}
                     style={{ position: 'relative', left: -8, zIndex: 2, borderRadius: '95%' }}
                   />
-                  {type === 'ring' && (
+                  {callType === 'ring' && (
                     <>
                       <div className={'o-modal-call__circle1'} />
                       <div className={'o-modal-call__circle2'} />
@@ -222,7 +229,7 @@ const ModalCall: React.FC<ModalCallProps> = ({
                   )}
                 </div>
                 <div
-                  className={clsx(
+                  className={classNames(
                     'o-modal-call__info-phone',
                     isFullScreenModal && 'o-modal-call__info-phone--full-screen',
                   )}
@@ -234,13 +241,15 @@ const ModalCall: React.FC<ModalCallProps> = ({
                   {isFullScreenModal && customerInfo?.work_unit && (
                     <>
                       <Typography.Text style={{ fontSize: 13, fontWeight: 400, color: 'white' }}>
-                        {`${customerInfo?.name_unit} - ${customerInfo?.work_unit}`}
+                        {customerInfo?.name_unit
+                          ? `${customerInfo?.name_unit} - ${customerInfo?.work_unit}`
+                          : `${customerInfo?.work_unit}`}
                       </Typography.Text>
                       <br />
                     </>
                   )}
                   <Typography.Text style={{ fontSize: 13, fontWeight: 400, color: 'white' }}>
-                    {customerInfo?.phone_number ? customerInfo?.phone_number : '0000 000 000'}
+                    {customerInfo?.ip_phone ? customerInfo?.ip_phone : customerInfo?.phone_number}
                   </Typography.Text>
                 </div>
               </Space>
@@ -253,7 +262,7 @@ const ModalCall: React.FC<ModalCallProps> = ({
                   marginBottom: 16,
                 }}
               >
-                {type === 'ring' ? (
+                {callType === 'ring' ? (
                   <ButtonCall type="reveice" onClick={handleReveiveCall} />
                 ) : (
                   <ButtonCall type={isMuteCall ? 'un-mute' : 'mute'} onClick={handleMuteCall} />
@@ -261,9 +270,10 @@ const ModalCall: React.FC<ModalCallProps> = ({
 
                 <ButtonShare
                   open={open}
-                  type={type}
+                  type={callType}
                   listTransfer={listTransfer}
-                  onClickChangeCall={() => {}}
+                  onClickChangeCall={onClickChangeCall}
+                  handleUserTransfer={handleUserTransfer}
                 />
                 <ButtonCall type="hang-up" onClick={handleHangUpCall} />
               </Space>
@@ -271,18 +281,20 @@ const ModalCall: React.FC<ModalCallProps> = ({
             {isVisibleNoteCall && (
               <div className="o-modal-call__info-form">
                 <CustomerInfoForm
-                  type={customerInfo?.full_name ? 'view' : 'edit'}
+                  type={
+                    customerInfo?.full_name || customerInfo?.email || callType === 'ring'
+                      ? 'view'
+                      : 'edit'
+                  }
                   customerInfo={customerInfo}
-                  handleSaveForm={(e) => {
-                    console.log(e);
-                  }}
+                  handleSaveForm={handleSaveForm}
                 />
-                <br />
-                <NoteCall
-                  handleFormNote={(value) => {
-                    console.log(value.note);
-                  }}
-                />
+                {callType === 'answer' && (
+                  <>
+                    <br />
+                    <NoteCall handleFormNote={handleFormNote} />
+                  </>
+                )}
               </div>
             )}
 
@@ -296,7 +308,7 @@ const ModalCall: React.FC<ModalCallProps> = ({
           {isFullScreenModal && (
             <div className={'o-modal-call__button-right-side'}>
               <EditOutlined
-                className={clsx(
+                className={classNames(
                   'o-modal-call__button-note',
                   isVisibleNoteCall && 'o-modal-call__button-note--active',
                 )}
@@ -310,7 +322,7 @@ const ModalCall: React.FC<ModalCallProps> = ({
                 }}
               />
               <HistoryOutlined
-                className={clsx(
+                className={classNames(
                   'o-modal-call__button-history',
                   isVisibleHistoryCall && 'o-modal-call__button-history--active',
                 )}

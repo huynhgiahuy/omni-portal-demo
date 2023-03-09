@@ -17,7 +17,7 @@ interface ButtonShareProps {
   open?: boolean;
   type?: string;
   handleUserTransfer?: (e: string) => void;
-  onClickChangeCall: (e: string) => void;
+  onClickChangeCall?: (e: string) => void;
   listTransfer: ListTransferButtonShareProps[];
 }
 
@@ -41,7 +41,7 @@ const ButtonShare: React.FC<ButtonShareProps> = ({
 
   const submit = () => {
     setIsOpen(false);
-    onClickChangeCall(userSelect);
+    onClickChangeCall && onClickChangeCall(userSelect);
   };
 
   return (

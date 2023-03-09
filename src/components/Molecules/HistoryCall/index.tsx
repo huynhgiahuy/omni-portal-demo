@@ -1,7 +1,7 @@
 import './index.less';
 
 import { Timeline, Typography } from 'antd';
-import clsx from 'clsx';
+import classNames from 'classnames';
 import moment from 'moment';
 import React from 'react';
 
@@ -18,13 +18,13 @@ interface HistoryCallProps {
 
 const HistoryCall: React.FC<HistoryCallProps> = ({ notes }) => {
   return (
-    <div className={clsx('m-history-call', !notes?.length && 'm-history-call--full-height')}>
+    <div className={classNames('m-history-call', !notes?.length && 'm-history-call--full-height')}>
       <div className="m-history-call__header">
         <Typography.Text className="m-history-call__title">Lịch sử</Typography.Text>
       </div>
       <div className="m-history-call__content">
         <Timeline>
-          {notes ? (
+          {notes?.length ? (
             notes?.map((note) => {
               return (
                 <Timeline.Item>

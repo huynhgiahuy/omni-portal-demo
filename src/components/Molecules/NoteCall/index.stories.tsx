@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import NoteCall from './index';
 
 export default {
-  title: 'Molecules/NoteCall',
+  title: 'HappyConnect/Molecules/NoteCall',
   component: NoteCall,
   argTypes: {},
 } as ComponentMeta<typeof NoteCall>;

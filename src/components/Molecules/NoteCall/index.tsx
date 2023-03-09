@@ -4,7 +4,7 @@ import { Button, Form, Input, Space, Typography } from 'antd';
 import React, { useState } from 'react';
 
 interface NoteCallProps {
-  handleFormNote: (values: { note: string }) => void;
+  handleFormNote?: (note: string) => void;
 }
 
 const NoteCall: React.FC<NoteCallProps> = ({ handleFormNote }) => {
@@ -12,7 +12,7 @@ const NoteCall: React.FC<NoteCallProps> = ({ handleFormNote }) => {
   const [isSendNote, setIsSendNote] = useState(false);
 
   const onFinish = (values: { note: string }) => {
-    handleFormNote(values);
+    handleFormNote && handleFormNote(values.note);
   };
 
   return (

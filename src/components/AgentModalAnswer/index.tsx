@@ -1,5 +1,15 @@
 import {
-    Button, Form, Input, List, message, Modal, Popover, Select, Space, Timeline, Typography
+  Button,
+  Form,
+  Input,
+  List,
+  message,
+  Modal,
+  Popover,
+  Select,
+  Space,
+  Timeline,
+  Typography,
 } from 'antd';
 import moment from 'moment';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -8,11 +18,20 @@ import { useModel, useRequest } from 'umi';
 
 import api from '@/api';
 import {
-    requestAddUserContact, requestGetTakeCallNote, requestSaveCallNote
+  requestAddUserContact,
+  requestGetTakeCallNote,
+  requestSaveCallNote,
 } from '@/pages/omni-channel/report/services';
 import {
-    AudioFilled, CaretRightOutlined, EditOutlined, FullscreenExitOutlined, FullscreenOutlined,
-    HistoryOutlined, PauseOutlined, PhoneOutlined, UserOutlined
+  AudioFilled,
+  CaretRightOutlined,
+  EditOutlined,
+  FullscreenExitOutlined,
+  FullscreenOutlined,
+  HistoryOutlined,
+  PauseOutlined,
+  PhoneOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
 
 import Arrow from '../../../public/arrow.svg';
@@ -30,7 +49,6 @@ type AgentModalAnswerProps = {
   handleClickIconHistory: () => void;
   handleClickIconNote: () => void;
   handelUserTransfer: (e: string) => void;
-  valueCheckboxUser: any;
   isVisibleHistoryCall: boolean;
   isVisibleNoteCall: boolean;
   isActiveIconHistory: boolean;

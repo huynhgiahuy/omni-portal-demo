@@ -1,6 +1,5 @@
 import './index.less';
 
-import clsx from 'clsx';
 import React from 'react';
 
 import { AudioFilled, CaretRightOutlined, PauseOutlined, PhoneOutlined } from '@ant-design/icons';

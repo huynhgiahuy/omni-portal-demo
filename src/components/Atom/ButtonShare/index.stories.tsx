@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import ButtonShare from './index';
 
 export default {
-  title: 'Atom/ButtonShare',
+  title: 'HappyConnect/Atom/ButtonShare',
   component: ButtonShare,
   argTypes: {},
 } as ComponentMeta<typeof ButtonShare>;

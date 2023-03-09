@@ -1,15 +1,17 @@
-import { CheckCircleFilled, ClockCircleFilled, MinusCircleFilled } from '@ant-design/icons';
 import { message, Select, Space } from 'antd';
-import { useEffect, useState } from 'react';
-import styles from './index.less';
-import Ellipse from '../../assets/Ellipse.svg';
-import { useModel, useRequest } from 'umi';
-import { requeGetUserInfoProps, requestUpdateStatusUser } from '@/services/user_info';
-import useMousePosition from '@/hooks/useMousePosition';
 import { useAtom } from 'jotai';
-import { socketAtom } from '@/socketio';
+import { useEffect, useState } from 'react';
+import { useModel, useRequest } from 'umi';
+
+import useMousePosition from '@/hooks/useMousePosition';
 import useSubWs from '@/hooks/useSocket';
-import { dataProps } from '.';
+import { requeGetUserInfoProps, requestUpdateStatusUser } from '@/services/user_info';
+import { socketAtom } from '@/socketio';
+import { CheckCircleFilled, ClockCircleFilled, MinusCircleFilled } from '@ant-design/icons';
+
+import Ellipse from '../../../public/Ellipse.svg';
+import { dataProps } from './';
+import styles from './index.less';
 
 const WorkingStatus = () => {
   const access_token = window.localStorage.getItem('access_token');

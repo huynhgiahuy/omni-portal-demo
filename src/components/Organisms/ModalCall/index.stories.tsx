@@ -1,12 +1,15 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { message } from 'antd';
+import { useState } from 'react';
 
-import ModalCall from './index';
+import { ComponentMeta, ComponentStory, Story } from '@storybook/react';
+
+import ModalCall, { CallTypeProps } from './index';
 
 export default {
-  title: 'Organisms/ModalCall',
+  title: 'HappyConnect/Organisms/ModalCall',
   component: ModalCall,
   argTypes: {
-    type: {
+    callType: {
       options: ['ring', 'answer'],
       control: { type: 'radio' },
     },
@@ -19,8 +22,9 @@ const Template: ComponentStory<typeof ModalCall> = (args) => <ModalCall {...args
 export const RingCall = Template.bind({});
 RingCall.args = {
   open: true,
-  type: 'ring',
+  callType: 'ring',
   callRedirect: 'inbound',
+  avatar: 'https://picsum.photos/200/300',
   customerInfo: {
     full_name: 'Nguyễn Thị Diệu Nhi',
     name_unit: 'NhiNTD',
@@ -29,13 +33,26 @@ RingCall.args = {
     work_unit: 'IDC',
     ip_phone: '1111',
   },
+  handleUserTransfer: (e) => {
+    message.info(`User transfer ${e}`);
+  },
+  onClickChangeCall: (e) => {
+    message.info(`User click ${e}`);
+  },
+  handleReveiveCall: () => {
+    message.info('reveive call');
+  },
+  handleHangUpCall: () => {
+    message.info('hang up call');
+  },
 };
 
 export const Answer = Template.bind({});
 Answer.args = {
   open: true,
-  type: 'answer',
+  callType: 'answer',
   callRedirect: 'inbound',
+  avatar: 'https://picsum.photos/200/300',
   notes: [
     {
       personnel: 'Test1',
@@ -92,5 +109,34 @@ Answer.args = {
       create_at: 1677730815,
     },
   ],
-  muteCall: true,
+};
+
+export const Demo: Story = () => {
+  const customerInfo = {
+    full_name: 'Nguyễn Thị Diệu Nhi',
+    name_unit: 'NhiNTD',
+    phone_number: '0908778291',
+    email: 'test@gmail.com',
+    work_unit: 'IDC',
+    ip_phone: '1111',
+  };
+  const [open, setOpen] = useState(true);
+  const [callType, setCallType] = useState<CallTypeProps>('ring');
+  return (
+    <ModalCall
+      open={open}
+      callType={callType}
+      callRedirect={'inbound'}
+      customerInfo={customerInfo}
+      avatar="https://picsum.photos/200/300"
+      notes={[]}
+      listTransfer={[]}
+      handleReveiveCall={() => {
+        setCallType('answer');
+      }}
+      handleHangUpCall={() => {
+        setOpen(false);
+      }}
+    />
+  );
 };
