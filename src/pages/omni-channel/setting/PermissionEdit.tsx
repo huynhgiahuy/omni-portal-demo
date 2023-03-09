@@ -395,7 +395,7 @@ const PermissionEdit: React.FC = () => {
       title: '#',
       align: 'center',
       width: '30px',
-      ...customUI_Stt.parsing(valueKeyWord, pagination, listAllUserInfoFinal),
+      ...customUI_Stt.parsing(pagination, listAllUserInfoFinal),
     },
     {
       title: 'Tên người dùng',
