@@ -120,7 +120,9 @@ export const customUI_UserInfo = {
               />
             </div>
             <div style={{ flex: 3, textAlign: 'left' }}>
-              <Typography.Text style={{ fontWeight: 'bold' }}>{record.name}</Typography.Text>
+              <Typography.Text style={{ fontWeight: 'bold', color: 'rgba(0,0,0,1)' }}>
+                {record.name}
+              </Typography.Text>
               <br></br>
               <Typography.Text
                 className={styles.emailPermissionTable}
@@ -138,7 +140,9 @@ export const customUI_UserInfo = {
               <Avatar size={50} icon={<UserOutlined />} className={styles.avatarImg} />
             </div>
             <div style={{ flex: 3, textAlign: 'left' }}>
-              <Typography.Text style={{ fontWeight: 'bold' }}>{record.name}</Typography.Text>
+              <Typography.Text style={{ fontWeight: 'bold', color: 'rgba(0,0,0,1)' }}>
+                {record.name}
+              </Typography.Text>
               <br></br>
               <Typography.Text
                 className={styles.emailPermissionTable}

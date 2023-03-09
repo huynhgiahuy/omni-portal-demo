@@ -394,7 +394,7 @@ const PermissionEdit: React.FC = () => {
     {
       title: '#',
       align: 'center',
-      width: '30px',
+      width: '10px',
       ...customUI_Stt.parsing(pagination, listAllUserInfoFinal),
     },
     {
@@ -605,7 +605,11 @@ const PermissionEdit: React.FC = () => {
             <div style={{ width: 217 }}>
               <Form.Item
                 label={
-                  <Typography.Text className={isTeamFilter ? `${styles.filterFieldActive}` : ''}>
+                  <Typography.Text
+                    className={
+                      isTeamFilter ? `${styles.filterFieldActive}` : `${styles.filterFieldNoActive}`
+                    }
+                  >
                     Team
                   </Typography.Text>
                 }
@@ -618,10 +622,15 @@ const PermissionEdit: React.FC = () => {
                   placeholder="Tất cả"
                   maxTagCount="responsive"
                   notFoundContent={<Empty description="Không có dữ liệu" />}
+                  style={{ color: 'rgba(0,0,0,1)' }}
                 >
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
-                      <Select.Option value={item.name} key={item.id}>
+                      <Select.Option
+                        value={item.name}
+                        key={item.id}
+                        style={{ color: 'rgba(0,0,0,1)' }}
+                      >
                         {item.name}
                       </Select.Option>
                     ))}
@@ -631,7 +640,11 @@ const PermissionEdit: React.FC = () => {
             <div style={{ width: 217 }}>
               <Form.Item
                 label={
-                  <Typography.Text className={isNLVFilter ? `${styles.filterFieldActive}` : ''}>
+                  <Typography.Text
+                    className={
+                      isNLVFilter ? `${styles.filterFieldActive}` : `${styles.filterFieldNoActive}`
+                    }
+                  >
                     Nơi làm việc
                   </Typography.Text>
                 }
@@ -642,13 +655,18 @@ const PermissionEdit: React.FC = () => {
                   onChange={handleSelectValueNLV}
                   placeholder="Tất cả"
                   options={OPTIONS_FILTER_NLV}
+                  style={{ color: 'rgba(0,0,0,1)' }}
                 />
               </Form.Item>
             </div>
             <div style={{ width: 217 }}>
               <Form.Item
                 label={
-                  <Typography.Text className={isNQFilter ? `${styles.filterFieldActive}` : ''}>
+                  <Typography.Text
+                    className={
+                      isNQFilter ? `${styles.filterFieldActive}` : `${styles.filterFieldNoActive}`
+                    }
+                  >
                     Nhóm quyền
                   </Typography.Text>
                 }
@@ -661,10 +679,15 @@ const PermissionEdit: React.FC = () => {
                   placeholder="Tất cả"
                   maxTagCount="responsive"
                   notFoundContent={<Empty description="Không có dữ liệu" />}
+                  style={{ color: 'rgba(0,0,0,1)' }}
                 >
                   {listGroupPermissionFilter &&
                     listGroupPermissionFilter.map((item: GroupPermission) => (
-                      <Select.Option value={item.code} key={item.id}>
+                      <Select.Option
+                        value={item.code}
+                        key={item.id}
+                        style={{ color: 'rgba(0,0,0,1)' }}
+                      >
                         {item.code}
                       </Select.Option>
                     ))}
@@ -674,7 +697,13 @@ const PermissionEdit: React.FC = () => {
             <div style={{ width: 217 }}>
               <Form.Item
                 label={
-                  <Typography.Text className={isStatusFilter ? `${styles.filterFieldActive}` : ''}>
+                  <Typography.Text
+                    className={
+                      isStatusFilter
+                        ? `${styles.filterFieldActive}`
+                        : `${styles.filterFieldNoActive}`
+                    }
+                  >
                     Trạng thái hoạt động
                   </Typography.Text>
                 }
@@ -688,6 +717,7 @@ const PermissionEdit: React.FC = () => {
                   maxTagCount="responsive"
                   options={OPTIONS_FILTER_STATUS}
                   notFoundContent={<Empty description="Không có dữ liệu" />}
+                  style={{ color: 'rgba(0,0,0,1)' }}
                 />
               </Form.Item>
             </div>
@@ -733,14 +763,18 @@ const PermissionEdit: React.FC = () => {
       </Form>
       {hasSelected ? (
         <div className={styles.selectedRowLayout}>
-          <Typography.Text style={{ paddingRight: 32 }}>
+          <Typography.Text style={{ paddingRight: 32, color: 'rgba(0,0,0,1)' }}>
             Đã chọn:{' '}
             <Typography.Text style={{ fontWeight: 'bold' }}>
               {selectedRowKeys.length}
             </Typography.Text>
           </Typography.Text>
           <Space>
-            <Button icon={<RollbackOutlined />} onClick={() => setSelectedRowKeys([])}>
+            <Button
+              style={{ color: 'rgba(0,0,0,1)' }}
+              icon={<RollbackOutlined />}
+              onClick={() => setSelectedRowKeys([])}
+            >
               Hủy
             </Button>
             <Button
@@ -794,7 +828,11 @@ const PermissionEdit: React.FC = () => {
       <Modal
         open={isClickUpdatePermission}
         onCancel={handleCancleUpdatePermission}
-        title={listEditUserInfoFinal[0]?.name}
+        title={
+          <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
+            {listEditUserInfoFinal[0]?.name}
+          </Typography.Text>
+        }
         footer={false}
         width={900}
         centered
@@ -826,15 +864,25 @@ const PermissionEdit: React.FC = () => {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ flex: 1 }}>
-              <Form.Item label="Tên người dùng" name="name">
-                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.4)' }} />
-              </Form.Item>
-              <Form.Item label="Phòng ban" name="department">
+              <Form.Item
+                label={
+                  <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>Họ và tên</Typography.Text>
+                }
+                name="name"
+              >
                 <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.4)' }} />
               </Form.Item>
               <Form.Item
                 label={
-                  <Typography.Text>
+                  <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>Phòng ban</Typography.Text>
+                }
+                name="department"
+              >
+                <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.4)' }} />
+              </Form.Item>
+              <Form.Item
+                label={
+                  <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
                     IP Phone <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
@@ -855,11 +903,11 @@ const PermissionEdit: React.FC = () => {
                   },
                 ]}
               >
-                <Input />
+                <Input style={{ color: 'rgba(0,0,0,1)' }} />
               </Form.Item>
               <Form.Item
                 label={
-                  <Typography.Text>
+                  <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
                     Số di động <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
@@ -880,11 +928,11 @@ const PermissionEdit: React.FC = () => {
                   },
                 ]}
               >
-                <Input />
+                <Input style={{ color: 'rgba(0,0,0,1)' }} />
               </Form.Item>
               <Form.Item
                 label={
-                  <Typography.Text>
+                  <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
                     Cấp độ <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
@@ -903,16 +951,19 @@ const PermissionEdit: React.FC = () => {
                   },
                 ]}
               >
-                <Input />
+                <Input style={{ color: 'rgba(0,0,0,1)' }} />
               </Form.Item>
             </div>
             <div style={{ flex: 1 }}>
-              <Form.Item label="Email" name="email">
+              <Form.Item
+                label={<Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>Email</Typography.Text>}
+                name="email"
+              >
                 <Input disabled style={{ fontWeight: 'bold', color: 'rgba(0,0,0,0.4)' }} />
               </Form.Item>
               <Form.Item
                 label={
-                  <Typography.Text>
+                  <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
                     Nhóm quyền <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
@@ -924,10 +975,18 @@ const PermissionEdit: React.FC = () => {
                   },
                 ]}
               >
-                <Select onChange={handleSelectRole} menuItemSelectedIcon={<CheckOutlined />}>
+                <Select
+                  onChange={handleSelectRole}
+                  menuItemSelectedIcon={<CheckOutlined />}
+                  style={{ color: 'rgba(0,0,0,1)' }}
+                >
                   {listGroupPermissionDetail &&
                     listGroupPermissionDetail.map((item: GroupPermission) => (
-                      <Select.Option value={item.id} key={item.id}>
+                      <Select.Option
+                        value={item.id}
+                        key={item.id}
+                        style={{ color: 'rgba(0,0,0,1)' }}
+                      >
                         {item.code}
                       </Select.Option>
                     ))}
@@ -935,7 +994,7 @@ const PermissionEdit: React.FC = () => {
               </Form.Item>
               <Form.Item
                 label={
-                  <Typography.Text>
+                  <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
                     Chức danh <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
@@ -947,11 +1006,15 @@ const PermissionEdit: React.FC = () => {
                   },
                 ]}
               >
-                <Select options={OPTIONS_POSITION} menuItemSelectedIcon={<CheckOutlined />} />
+                <Select
+                  options={OPTIONS_POSITION}
+                  menuItemSelectedIcon={<CheckOutlined />}
+                  style={{ color: 'rgba(0,0,0,1)' }}
+                />
               </Form.Item>
               <Form.Item
                 label={
-                  <Typography.Text>
+                  <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
                     Team <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
@@ -965,6 +1028,7 @@ const PermissionEdit: React.FC = () => {
               >
                 <Select
                   onChange={handleSelectTeam}
+                  style={{ color: 'rgba(0,0,0,1)' }}
                   notFoundContent={
                     <Empty description="Không có dữ liệu" imageStyle={{ width: 50, height: 50 }} />
                   }
@@ -1023,7 +1087,11 @@ const PermissionEdit: React.FC = () => {
                 >
                   {listTeamPermission &&
                     listTeamPermission.map((item: TeamPermission) => (
-                      <Select.Option value={item.id} key={item.id}>
+                      <Select.Option
+                        value={item.id}
+                        key={item.id}
+                        style={{ color: 'rgba(0,0,0,1)' }}
+                      >
                         <div className={styles.flexLayout}>
                           <div>{item.name}</div>
                           {clickAddNewTeam === true ? (
@@ -1038,7 +1106,7 @@ const PermissionEdit: React.FC = () => {
               </Form.Item>
               <Form.Item
                 label={
-                  <Typography.Text>
+                  <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
                     Nơi làm việc <span style={{ color: 'red' }}>(*)</span>
                   </Typography.Text>
                 }
@@ -1050,13 +1118,17 @@ const PermissionEdit: React.FC = () => {
                   },
                 ]}
               >
-                <Select options={OPTIONS_WORK_ADDRESS} menuItemSelectedIcon={<CheckOutlined />} />
+                <Select
+                  options={OPTIONS_WORK_ADDRESS}
+                  menuItemSelectedIcon={<CheckOutlined />}
+                  style={{ color: 'rgba(0,0,0,1)' }}
+                />
               </Form.Item>
             </div>
           </div>
           <Form.Item {...submitFormLayout} style={{ marginBottom: 'unset' }}>
             <Button
-              style={{ marginRight: '10px' }}
+              style={{ marginRight: '10px', color: 'rgba(0,0,0,1)' }}
               onClick={handleCancleUpdatePermission}
               disabled={handleCallApiUpdateUserInfo.loading}
             >

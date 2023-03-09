@@ -455,7 +455,11 @@ const HistoryCall: React.FC = () => {
             <div style={{ width: '300px' }}>
               <Form.Item
                 label={
-                  <Typography.Text className={isHCGFilter ? `${styles.filterFieldActive}` : ''}>
+                  <Typography.Text
+                    className={
+                      isHCGFilter ? `${styles.filterFieldActive}` : `${styles.filterFieldNoActive}`
+                    }
+                  >
                     Hướng cuộc gọi
                   </Typography.Text>
                 }
@@ -475,7 +479,11 @@ const HistoryCall: React.FC = () => {
             <div style={{ width: '300px' }}>
               <Form.Item
                 label={
-                  <Typography.Text className={isKQFilter ? `${styles.filterFieldActive}` : ''}>
+                  <Typography.Text
+                    className={
+                      isKQFilter ? `${styles.filterFieldActive}` : `${styles.filterFieldNoActive}`
+                    }
+                  >
                     Kết quả
                   </Typography.Text>
                 }
@@ -495,7 +503,11 @@ const HistoryCall: React.FC = () => {
             <div style={{ width: '300px' }}>
               <Form.Item
                 label={
-                  <Typography.Text className={isTimeFilter ? `${styles.filterFieldActive}` : ''}>
+                  <Typography.Text
+                    className={
+                      isTimeFilter ? `${styles.filterFieldActive}` : `${styles.filterFieldNoActive}`
+                    }
+                  >
                     Thời gian
                   </Typography.Text>
                 }
@@ -674,7 +686,9 @@ const HistoryCall: React.FC = () => {
         }}
         footer={false}
         centered
-        title="Nghe file ghi âm"
+        title={
+          <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>Nghe file ghi âm</Typography.Text>
+        }
       >
         <div style={{ textAlign: 'center' }}>
           <figure>
@@ -687,7 +701,9 @@ const HistoryCall: React.FC = () => {
         onCancel={() => setVisibleModalNote(false)}
         footer={false}
         centered
-        title="Ghi chú cuộc gọi"
+        title={
+          <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>Ghi chú cuộc gọi</Typography.Text>
+        }
       >
         <div className={styles.historyCallNoteTimeline}>
           <Timeline pending={true} pendingDot={null}>
@@ -713,7 +729,9 @@ const HistoryCall: React.FC = () => {
               ))
             ) : (
               <div style={{ textAlign: 'center' }}>
-                <Typography.Text>Không có ghi chú</Typography.Text>
+                <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
+                  Không có ghi chú
+                </Typography.Text>
               </div>
             )}
           </Timeline>
