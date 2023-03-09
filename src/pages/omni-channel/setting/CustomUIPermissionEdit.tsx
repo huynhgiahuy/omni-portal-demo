@@ -93,19 +93,15 @@ export const submitFormLayout = {
 };
 
 export const customUI_Stt = {
-  parsing: (valueKeyWord: string, pagination: any, listAllUserInfoFinal: any) => ({
-    render: (text: any, record: DataAllUserInfoFinal, index: any) => {
-      if (valueKeyWord === '' || valueKeyWord === undefined) {
-        return (
-          <>
-            {(pagination.current - 1) * pagination.pageSize +
-              listAllUserInfoFinal.indexOf(record) +
-              1}
-          </>
-        );
-      } else {
-        return index + 1;
-      }
+  parsing: (pagination: any, listAllUserInfoFinal: any) => ({
+    render: (text: any, record: DataAllUserInfoFinal) => {
+      return (
+        <>
+          {(pagination.current - 1) * pagination.pageSize +
+            listAllUserInfoFinal.indexOf(record) +
+            1}
+        </>
+      );
     },
   }),
 };
@@ -234,7 +230,7 @@ export const customUI_Status = {
       } else if (record.status === 5) {
         return (
           <div className={styles.offlineStatusDisplay}>
-            <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
+            <img src={OfflineIcon} width={14} height={14} />
             <div className={styles.offlineStatusText}>Đang offline</div>
           </div>
         );
