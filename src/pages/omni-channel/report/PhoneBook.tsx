@@ -531,9 +531,11 @@ const PhoneBook: React.FC = () => {
       dataIndex: 'full_name',
       key: 'full_name',
       align: 'center',
-      width: '200px',
+      width: '250px',
       render: (text, record) => {
-        return (
+        return text === null || text === undefined || text === '' ? (
+          '-'
+        ) : (
           <Typography.Text
             style={{ cursor: 'pointer', color: '#45911F', fontWeight: 600 }}
             onClick={() => {
@@ -555,6 +557,9 @@ const PhoneBook: React.FC = () => {
       key: 'phone_number',
       align: 'center',
       width: '270px',
+      render: (text, record) => {
+        return text === null || text === undefined || text === '' ? '-' : text;
+      },
     },
     {
       title: external === 'Khách hàng' ? 'Đơn vị' : 'Team',
@@ -577,6 +582,9 @@ const PhoneBook: React.FC = () => {
       key: 'ip_phone',
       align: 'center',
       width: '235px',
+      render: (text, record) => {
+        return text === null || text === undefined || text === '' ? '-' : text;
+      },
     },
     {
       title: 'Email',
@@ -584,6 +592,9 @@ const PhoneBook: React.FC = () => {
       key: 'email',
       align: 'center',
       width: '340px',
+      render: (text, record) => {
+        return text === null || text === undefined || text === '' ? '-' : text;
+      },
     },
     {
       title: 'Thao tác',
