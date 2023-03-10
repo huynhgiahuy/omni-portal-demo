@@ -556,7 +556,7 @@ const HistoryCall: React.FC = () => {
             />
           </Form.Item>
           <Button
-            style={{ backgroundColor: '#7fb77e', color: '#fff' }}
+            style={{ backgroundColor: '#478D46', color: '#fff', fontWeight: 'bold' }}
             onClick={handleExportFile}
             loading={isLoadingExcel}
           >

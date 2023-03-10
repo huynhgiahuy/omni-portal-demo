@@ -41,7 +41,7 @@ const Setting: React.FC = () => {
         ]}
         className={styles.antSegmented}
         onChange={handleChangeSegmented}
-        style={{ backgroundColor: '#e3eaf4' }}
+        style={{ backgroundColor: '#e3eaf4', color: 'rgba(0,0,0,1)' }}
       />
       {isChangeView === 'Thông tin cá nhân' ? (
         <PersonalInfo />
