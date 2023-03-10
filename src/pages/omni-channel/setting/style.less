@@ -255,11 +255,6 @@
   }
 }
 
-.emailPermissionTable {
-  color: #595959;
-  font-size: 10px;
-}
-
 .addPermissionTable {
   :global {
     .ant-table-thead > tr > th {
@@ -376,6 +371,7 @@
   &[type='number'] {
     -moz-appearance: textfield;
   }
+  color: rgba(0, 0, 0, 1);
 }
 
 .avatarImg {
@@ -573,4 +569,35 @@
   color: gray;
   font-size: 20px;
   cursor: not-allowed !important;
+}
+
+.userInfoField {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.userInfoName {
+  color: rgba(0, 0, 0, 1);
+  font-weight: 600;
+}
+
+.userInfoEmail {
+  align-items: center;
+  color: rgba(0, 0, 0, 1);
+  font-size: 10px;
+  text-align: center;
+}
+
+.formLabel {
+  color: rgba(0, 0, 0, 1);
+}
+
+.formInput {
+  color: rgba(0, 0, 0, 1);
+}
+
+.formDisableInput {
+  color: rgba(0, 0, 0, 0.4);
+  font-weight: bold;
 }

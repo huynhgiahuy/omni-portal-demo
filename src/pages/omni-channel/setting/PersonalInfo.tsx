@@ -1,6 +1,18 @@
 import {
-    Avatar, Button, Card, Col, Form, Input, message, Row, Select, Space, Spin, Tag, Typography,
-    Upload
+  Avatar,
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  message,
+  Row,
+  Select,
+  Space,
+  Spin,
+  Tag,
+  Typography,
+  Upload,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
@@ -9,15 +21,23 @@ import api from '@/api';
 import { endpoint } from '@/services/auth';
 import { requeGetUserInfoProps } from '@/services/user_info';
 import {
-    AppleFilled, CameraFilled, CloseOutlined, DeleteOutlined, EditOutlined, SaveOutlined,
-    UserOutlined, WindowsFilled
+  AppleFilled,
+  CameraFilled,
+  CloseOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  SaveOutlined,
+  UserOutlined,
+  WindowsFilled,
 } from '@ant-design/icons';
 
 import { requestCheckPhoneContact } from '../report/services';
 import styles from '../setting/style.less';
 import {
-    requestCreateNewTeam, requestDeleteTeamPermission, requestEditUserInfo,
-    requestTeamPermissionData
+  requestCreateNewTeam,
+  requestDeleteTeamPermission,
+  requestEditUserInfo,
+  requestTeamPermissionData,
 } from './services';
 
 import type { RcFile, UploadProps } from 'antd/es/upload/interface';
@@ -310,7 +330,11 @@ const PersonalInfo: React.FC = () => {
 
                   {isEditUser === true ? (
                     <Form.Item name="name" className={styles.antFormItemMargin}>
-                      <Input disabled style={{ width: '300px' }} />
+                      <Input
+                        disabled
+                        style={{ width: '300px' }}
+                        className={styles.formDisableInput}
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -323,7 +347,11 @@ const PersonalInfo: React.FC = () => {
 
                   {isEditUser === true ? (
                     <Form.Item name="email" className={styles.antFormItemMargin}>
-                      <Input disabled style={{ width: '300px' }} />
+                      <Input
+                        disabled
+                        style={{ width: '300px' }}
+                        className={styles.formDisableInput}
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -336,7 +364,11 @@ const PersonalInfo: React.FC = () => {
 
                   {isEditUser === true ? (
                     <Form.Item name="department" className={styles.antFormItemMargin}>
-                      <Input disabled style={{ width: '300px' }} />
+                      <Input
+                        disabled
+                        style={{ width: '300px' }}
+                        className={styles.formDisableInput}
+                      />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -360,6 +392,7 @@ const PersonalInfo: React.FC = () => {
                       ]}
                     >
                       <Select
+                        className={styles.formInput}
                         style={{ width: '300px' }}
                         options={[
                           { value: 'mb', label: 'Miền Bắc' },
@@ -389,6 +422,7 @@ const PersonalInfo: React.FC = () => {
                       ]}
                     >
                       <Select
+                        className={styles.formInput}
                         style={{ width: '300px' }}
                         onChange={handleSelectTeam}
                         dropdownRender={(menu) => (
@@ -491,6 +525,7 @@ const PersonalInfo: React.FC = () => {
                       ]}
                     >
                       <Select
+                        className={styles.formInput}
                         style={{ width: '300px' }}
                         options={[
                           { value: 'cbgs', label: 'Cán bộ Giám sát' },
@@ -533,7 +568,7 @@ const PersonalInfo: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} />
+                      <Input style={{ width: '300px' }} className={styles.formInput} />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
@@ -559,7 +594,7 @@ const PersonalInfo: React.FC = () => {
                         },
                       ]}
                     >
-                      <Input style={{ width: '300px' }} />
+                      <Input style={{ width: '300px' }} className={styles.formInput} />
                     </Form.Item>
                   ) : (
                     <Typography.Text className={styles.antBold}>
