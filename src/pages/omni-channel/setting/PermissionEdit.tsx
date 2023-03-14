@@ -1058,12 +1058,14 @@ const PermissionEdit: React.FC = () => {
                                 <Form.Item style={{ marginBottom: 'unset' }}>
                                   <Space>
                                     <SaveOutlined
-                                      style={{ marginLeft: 10, fontSize: 14 }}
+                                      style={{ marginLeft: 10, fontSize: 16 }}
                                       onClick={(e) => handleSubmitNewTeam(e, newTeamValue)}
+                                      className={styles.saveNewTeamIcon}
                                     />
                                     <CloseOutlined
-                                      style={{ fontSize: 14 }}
+                                      style={{ fontSize: 16 }}
                                       onClick={() => setClickAddNewTeam(false)}
+                                      className={styles.closeAddNewTeamIcon}
                                     />
                                   </Space>
                                 </Form.Item>
@@ -1087,7 +1089,12 @@ const PermissionEdit: React.FC = () => {
                         <div className={styles.flexLayout}>
                           <div>{item.name}</div>
                           {clickAddNewTeam === true ? (
-                            <DeleteOutlined onClick={(e) => handleClickDeleteTeam(e, item.id)} />
+                            <div className={styles.deleteTeamIcon}>
+                              <DeleteOutlined
+                                onClick={(e) => handleClickDeleteTeam(e, item.id)}
+                                style={{ fontSize: 16 }}
+                              />
+                            </div>
                           ) : (
                             ''
                           )}
