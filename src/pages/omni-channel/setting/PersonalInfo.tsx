@@ -13,6 +13,7 @@ import {
   Tag,
   Typography,
   Upload,
+  Tooltip,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
@@ -290,7 +291,21 @@ const PersonalInfo: React.FC = () => {
               </Upload>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <EditOutlined style={{ fontSize: '22px' }} onClick={handleEditUser} />
+              {isEditUser ? (
+                <Tooltip title="Bỏ chỉnh sửa">
+                  <EditOutlined
+                    onClick={handleEditUser}
+                    className={styles.isEditPersonalInfoIcon}
+                  />
+                </Tooltip>
+              ) : (
+                <Tooltip title="Chỉnh sửa">
+                  <EditOutlined
+                    onClick={handleEditUser}
+                    className={styles.isNotEditPersonalInfoIcon}
+                  />
+                </Tooltip>
+              )}
             </div>
           </div>
         }
@@ -458,12 +473,14 @@ const PersonalInfo: React.FC = () => {
                                       <Form.Item style={{ marginBottom: 'unset' }}>
                                         <Space>
                                           <SaveOutlined
-                                            style={{ marginLeft: 10, fontSize: 14 }}
+                                            style={{ marginLeft: 10, fontSize: 16 }}
                                             onClick={(e) => handleSubmitNewTeam(e, newTeamValue)}
+                                            className={styles.saveNewTeamIcon}
                                           />
                                           <CloseOutlined
-                                            style={{ fontSize: 14 }}
+                                            style={{ fontSize: 16 }}
                                             onClick={() => setClickAddNewTeam(false)}
+                                            className={styles.closeAddNewTeamIcon}
                                           />
                                         </Space>
                                       </Form.Item>
@@ -487,9 +504,12 @@ const PersonalInfo: React.FC = () => {
                               <div className={styles.flexLayout}>
                                 <div>{item.name}</div>
                                 {clickAddNewTeam === true ? (
-                                  <DeleteOutlined
-                                    onClick={(e) => handleClickDeleteTeam(e, item.id)}
-                                  />
+                                  <div className={styles.deleteTeamIcon}>
+                                    <DeleteOutlined
+                                      onClick={(e) => handleClickDeleteTeam(e, item.id)}
+                                      style={{ fontSize: 16 }}
+                                    />
+                                  </div>
                                 ) : (
                                   ''
                                 )}
