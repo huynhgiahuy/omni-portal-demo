@@ -456,7 +456,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
           alt="avatar"
           icon={
             !initialState?.currentUser?.avatar && (
-              <UserOutlined style={{ fontSize: 20, color: 'gray' }} />
+              <UserOutlined style={{ fontSize: 20, color: '#fff' }} />
             )
           }
         />
