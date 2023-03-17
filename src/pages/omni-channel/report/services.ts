@@ -183,12 +183,7 @@ export async function requestGetTranferInfo(token: string, data?: {}) {
   });
 }
 
-export async function requestGetDetailCallNote(
-  token: string,
-  call_id: any,
-  phone_number: any,
-  call_direction: any,
-) {
+export async function requestGetDetailCallNote(token: string, call_id: any) {
   return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/take_call_note`, {
     method: 'POST',
     headers: {
@@ -196,8 +191,6 @@ export async function requestGetDetailCallNote(
     },
     data: {
       call_id,
-      phone_number,
-      call_direction,
     },
   });
 }

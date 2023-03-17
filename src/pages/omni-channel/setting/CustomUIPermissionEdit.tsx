@@ -93,19 +93,15 @@ export const submitFormLayout = {
 };
 
 export const customUI_Stt = {
-  parsing: (valueKeyWord: string, pagination: any, listAllUserInfoFinal: any) => ({
-    render: (text: any, record: DataAllUserInfoFinal, index: any) => {
-      if (valueKeyWord === '' || valueKeyWord === undefined) {
-        return (
-          <>
-            {(pagination.current - 1) * pagination.pageSize +
-              listAllUserInfoFinal.indexOf(record) +
-              1}
-          </>
-        );
-      } else {
-        return index + 1;
-      }
+  parsing: (pagination: any, listAllUserInfoFinal: any) => ({
+    render: (text: any, record: DataAllUserInfoFinal) => {
+      return (
+        <>
+          {(pagination.current - 1) * pagination.pageSize +
+            listAllUserInfoFinal.indexOf(record) +
+            1}
+        </>
+      );
     },
   }),
 };
@@ -115,7 +111,7 @@ export const customUI_UserInfo = {
     render: (text: any, record: DataAllUserInfoFinal) => {
       if (record.avatar !== null) {
         return (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className={styles.userInfoField}>
             <div style={{ flex: 1 }}>
               <Avatar
                 src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${record?.avatar}`}
@@ -124,32 +120,22 @@ export const customUI_UserInfo = {
               />
             </div>
             <div style={{ flex: 3, textAlign: 'left' }}>
-              <Typography.Text>{record.name}</Typography.Text>
+              <Typography.Text className={styles.userInfoName}>{record.name}</Typography.Text>
               <br></br>
-              <Typography.Text
-                className={styles.emailPermissionTable}
-                style={{ textAlign: 'center', alignItems: 'center' }}
-              >
-                {record.email}
-              </Typography.Text>
+              <Typography.Text className={styles.userInfoEmail}>{record.email}</Typography.Text>
             </div>
           </div>
         );
       } else {
         return (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className={styles.userInfoField}>
             <div style={{ flex: 1 }}>
               <Avatar size={50} icon={<UserOutlined />} className={styles.avatarImg} />
             </div>
             <div style={{ flex: 3, textAlign: 'left' }}>
-              <Typography.Text>{record.name}</Typography.Text>
+              <Typography.Text className={styles.userInfoName}>{record.name}</Typography.Text>
               <br></br>
-              <Typography.Text
-                className={styles.emailPermissionTable}
-                style={{ textAlign: 'center', alignItems: 'center' }}
-              >
-                {record.email}
-              </Typography.Text>
+              <Typography.Text className={styles.userInfoEmail}>{record.email}</Typography.Text>
             </div>
           </div>
         );
@@ -161,7 +147,7 @@ export const customUI_UserInfo = {
 export const customUI_IpPhone = {
   parsing: () => ({
     render: (text: any, record: DataAllUserInfoFinal) => {
-      return text === null || text === undefined ? '-' : text;
+      return text === null || text === undefined || text === '' ? '-' : text;
     },
   }),
 };
@@ -234,7 +220,7 @@ export const customUI_Status = {
       } else if (record.status === 5) {
         return (
           <div className={styles.offlineStatusDisplay}>
-            <img src={OfflineIcon} width={14} height={14} style={{ marginTop: 3 }} />
+            <img src={OfflineIcon} width={14} height={14} />
             <div className={styles.offlineStatusText}>Đang offline</div>
           </div>
         );

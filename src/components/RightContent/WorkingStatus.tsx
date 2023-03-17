@@ -1,15 +1,17 @@
-import { CheckCircleFilled, ClockCircleFilled, MinusCircleFilled } from '@ant-design/icons';
 import { message, Select, Space } from 'antd';
-import { useEffect, useState } from 'react';
-import styles from './index.less';
-import Ellipse from '../../assets/Ellipse.svg';
-import { useModel, useRequest } from 'umi';
-import { requeGetUserInfoProps, requestUpdateStatusUser } from '@/services/user_info';
-import useMousePosition from '@/hooks/useMousePosition';
 import { useAtom } from 'jotai';
-import { socketAtom } from '@/socketio';
+import { useEffect, useState } from 'react';
+import { useModel, useRequest } from 'umi';
+
+import useMousePosition from '@/hooks/useMousePosition';
 import useSubWs from '@/hooks/useSocket';
-import { dataProps } from '.';
+import { requeGetUserInfoProps, requestUpdateStatusUser } from '@/services/user_info';
+import { socketAtom } from '@/socketio';
+import { CheckCircleFilled, ClockCircleFilled, MinusCircleFilled } from '@ant-design/icons';
+
+import Ellipse from '../../assets/Ellipse.svg';
+import { dataProps } from './';
+import styles from './index.less';
 
 const WorkingStatus = () => {
   const access_token = window.localStorage.getItem('access_token');
@@ -53,32 +55,27 @@ const WorkingStatus = () => {
   //Check offline
 
   useEffect(() => {
+    const updateStatus = async (status: number) => {
+      const result: requeGetUserInfoProps = await requestUpdateStatusUser(
+        status,
+        access_token ? access_token : '',
+      );
+      if (result.success) {
+        setOption(status);
+        socket?.emit('updated_user_status');
+        await setInitialState((s) => ({
+          ...s,
+          currentUser: { ...initialState?.currentUser, status: result.data[0] },
+        }));
+      }
+    };
+
     if (!isOnline && option === 1) {
       if (checkMouse) {
-        const res = requestUpdateStatusUser(2, access_token ? access_token : '');
-        res.then(async (result: requeGetUserInfoProps) => {
-          if (result.success) {
-            setOption(2);
-            socket?.emit('updated_user_status');
-            await setInitialState((s) => ({
-              ...s,
-              currentUser: { ...initialState?.currentUser, status: result.data[0] },
-            }));
-          }
-        });
+        updateStatus(2);
       }
     } else if (isOnline && option === 2) {
-      const res = requestUpdateStatusUser(1, access_token ? access_token : '');
-      res.then(async (result: requeGetUserInfoProps) => {
-        if (result.success) {
-          setOption(1);
-          socket?.emit('updated_user_status');
-          await setInitialState((s) => ({
-            ...s,
-            currentUser: { ...initialState?.currentUser, status: result.data[0] },
-          }));
-        }
-      });
+      updateStatus(1);
     }
   }, [isOnline, option, checkMouse]);
 

@@ -1,5 +1,5 @@
 import { DatePicker } from 'antd';
-import styles from '@/pages/omni-channel/report/style.less';
+import styles from './style.less';
 import moment from 'moment';
 
 const { RangePicker } = DatePicker;

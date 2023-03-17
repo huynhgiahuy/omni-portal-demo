@@ -1,7 +1,7 @@
 import React from 'react';
 
-const CallInboundIcon = ({ ...props }) => (
-  <span className={`anticon ${props.className ? props.className : ''}`} {...props}>
+const CallInboundIcon = () => (
+  <span style={{ verticalAlign: 'sub', marginRight: 3 }}>
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
       <g clipPath="url(#clip0)">
         <path d="M10.6665 1.3335V5.3335H14.6665" stroke="#F6BB23" strokeLinecap="square" />

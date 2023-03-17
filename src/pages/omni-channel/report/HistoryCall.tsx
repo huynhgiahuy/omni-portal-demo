@@ -137,9 +137,9 @@ const HistoryCall: React.FC = () => {
   );
 
   const fetchListDetailCallNote = useRequest(
-    async (callId: string, phoneNumber: string, callDirection: string) => {
+    async (callId: string) => {
       const res: { success: boolean; data: any; error_code: number } =
-        await requestGetDetailCallNote(token ? token : '', callId, phoneNumber, callDirection);
+        await requestGetDetailCallNote(token ? token : '', callId);
       if (res.success === false) {
         if (res.error_code === 4030102) {
           message.error('Bạn không có quyền xem ghi chú!');
@@ -222,12 +222,8 @@ const HistoryCall: React.FC = () => {
     await playAudio(fieldId, recordName);
   };
 
-  const handleGetDetailCallNote = async (
-    callId: string,
-    phoneNumber: string,
-    callDirection: string,
-  ) => {
-    await fetchListDetailCallNote.run(callId, phoneNumber, callDirection);
+  const handleGetDetailCallNote = async (callId: string) => {
+    await fetchListDetailCallNote.run(callId);
   };
 
   const columns: ColumnsType<DataLSCGType> = [
@@ -459,7 +455,11 @@ const HistoryCall: React.FC = () => {
             <div style={{ width: '300px' }}>
               <Form.Item
                 label={
-                  <Typography.Text className={isHCGFilter ? `${styles.filterFieldActive}` : ''}>
+                  <Typography.Text
+                    className={
+                      isHCGFilter ? `${styles.filterFieldActive}` : `${styles.filterFieldNoActive}`
+                    }
+                  >
                     Hướng cuộc gọi
                   </Typography.Text>
                 }
@@ -472,13 +472,18 @@ const HistoryCall: React.FC = () => {
                   maxTagCount="responsive"
                   placeholder="Tất cả"
                   options={OPTIONS_FILTER_HISTORY_CALL_DIRECTION}
+                  notFoundContent={<Empty description="Không có dữ liệu" />}
                 />
               </Form.Item>
             </div>
             <div style={{ width: '300px' }}>
               <Form.Item
                 label={
-                  <Typography.Text className={isKQFilter ? `${styles.filterFieldActive}` : ''}>
+                  <Typography.Text
+                    className={
+                      isKQFilter ? `${styles.filterFieldActive}` : `${styles.filterFieldNoActive}`
+                    }
+                  >
                     Kết quả
                   </Typography.Text>
                 }
@@ -491,13 +496,18 @@ const HistoryCall: React.FC = () => {
                   maxTagCount="responsive"
                   placeholder="Tất cả"
                   options={OPTIONS_FILTER_HISTORY_CALL_RESULT}
+                  notFoundContent={<Empty description="Không có dữ liệu" />}
                 />
               </Form.Item>
             </div>
             <div style={{ width: '300px' }}>
               <Form.Item
                 label={
-                  <Typography.Text className={isTimeFilter ? `${styles.filterFieldActive}` : ''}>
+                  <Typography.Text
+                    className={
+                      isTimeFilter ? `${styles.filterFieldActive}` : `${styles.filterFieldNoActive}`
+                    }
+                  >
                     Thời gian
                   </Typography.Text>
                 }
@@ -546,7 +556,7 @@ const HistoryCall: React.FC = () => {
             />
           </Form.Item>
           <Button
-            style={{ backgroundColor: '#7fb77e', color: '#fff' }}
+            style={{ backgroundColor: '#478D46', color: '#fff', fontWeight: 'bold' }}
             onClick={handleExportFile}
             loading={isLoadingExcel}
           >
@@ -676,7 +686,9 @@ const HistoryCall: React.FC = () => {
         }}
         footer={false}
         centered
-        title="Nghe file ghi âm"
+        title={
+          <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>Nghe file ghi âm</Typography.Text>
+        }
       >
         <div style={{ textAlign: 'center' }}>
           <figure>
@@ -689,7 +701,9 @@ const HistoryCall: React.FC = () => {
         onCancel={() => setVisibleModalNote(false)}
         footer={false}
         centered
-        title="Ghi chú cuộc gọi"
+        title={
+          <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>Ghi chú cuộc gọi</Typography.Text>
+        }
       >
         <div className={styles.historyCallNoteTimeline}>
           <Timeline pending={true} pendingDot={null}>
@@ -715,7 +729,9 @@ const HistoryCall: React.FC = () => {
               ))
             ) : (
               <div style={{ textAlign: 'center' }}>
-                <Typography.Text>Không có ghi chú</Typography.Text>
+                <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
+                  Không có ghi chú
+                </Typography.Text>
               </div>
             )}
           </Timeline>
