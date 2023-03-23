@@ -194,3 +194,15 @@ export async function requestGetDetailCallNote(token: string, call_id: any) {
     },
   });
 }
+
+export async function requestGetDetailTransferHistoryCall(token: string, call_id: any) {
+  return request(`${api.UMI_API_BASE_URL}/voip-service/api/call/get_call_history_detail`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: {
+      call_id,
+    },
+  });
+}
