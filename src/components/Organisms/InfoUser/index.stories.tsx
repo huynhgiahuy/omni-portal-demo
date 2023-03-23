@@ -100,6 +100,7 @@ export const EditForm: Story = () => {
         });
         setIsEditForm(false);
         setIsDisableSave(true);
+        message.success('Cập nhập thành công');
       }}
       handleNewTeam={(value, form) => {
         const newList = [...list, { id: `${list.length + 1}`, name: value }];

@@ -113,7 +113,7 @@ export const customUI_UserInfo = {
     render: (text: any, record: DataAllUserInfoFinal) => {
       if (record.avatar !== null) {
         return (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className={styles.userInfoField}>
             <div style={{ flex: 1 }}>
               <Avatar
                 src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${record?.avatar}`}
@@ -122,36 +122,22 @@ export const customUI_UserInfo = {
               />
             </div>
             <div style={{ flex: 3, textAlign: 'left' }}>
-              <Typography.Text style={{ color: 'rgba(0,0,0,1)', fontWeight: 600 }}>
-                {record.name}
-              </Typography.Text>
+              <Typography.Text className={styles.userInfoName}>{record.name}</Typography.Text>
               <br></br>
-              <Typography.Text
-                className={styles.emailPermissionTable}
-                style={{ textAlign: 'center', alignItems: 'center', color: 'rgba(0,0,0,1)' }}
-              >
-                {record.email}
-              </Typography.Text>
+              <Typography.Text className={styles.userInfoEmail}>{record.email}</Typography.Text>
             </div>
           </div>
         );
       } else {
         return (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className={styles.userInfoField}>
             <div style={{ flex: 1 }}>
               <Avatar size={50} icon={<UserOutlined />} className={styles.avatarImg} />
             </div>
             <div style={{ flex: 3, textAlign: 'left' }}>
-              <Typography.Text style={{ color: 'rgba(0,0,0,1)', fontWeight: 600 }}>
-                {record.name}
-              </Typography.Text>
+              <Typography.Text className={styles.userInfoName}>{record.name}</Typography.Text>
               <br></br>
-              <Typography.Text
-                className={styles.emailPermissionTable}
-                style={{ textAlign: 'center', alignItems: 'center', color: 'rgba(0,0,0,1)' }}
-              >
-                {record.email}
-              </Typography.Text>
+              <Typography.Text className={styles.userInfoEmail}>{record.email}</Typography.Text>
             </div>
           </div>
         );

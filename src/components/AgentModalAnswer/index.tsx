@@ -45,7 +45,6 @@ type AgentModalAnswerProps = {
   handleCancel: () => void;
   isFullScreenModal: boolean;
   handleFullScreenModal: () => void;
-  handleSelectForwardUser: (e: any) => void;
   handleClickIconHistory: () => void;
   handleClickIconNote: () => void;
   handelUserTransfer: (e: string) => void;

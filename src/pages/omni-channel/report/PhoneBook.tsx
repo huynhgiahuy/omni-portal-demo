@@ -12,6 +12,7 @@ import {
   TableProps,
   Typography,
   Empty,
+  Tooltip,
 } from 'antd';
 import { debounce } from 'lodash';
 import React, { useState } from 'react';
@@ -494,29 +495,33 @@ const PhoneBook: React.FC = () => {
       render: (text, record) => (
         <>
           {record.pin_user ? (
-            <StarFilled
-              style={{ color: '#FFC700', fontSize: 20 }}
-              onClick={() => {
-                const data = {
-                  contacts_id: record.id,
-                  pin_user: false,
-                  email_user: initialState?.currentUser?.email,
-                };
-                sendPinStart.run(data);
-              }}
-            />
+            <Tooltip title="Bỏ bookmark">
+              <StarFilled
+                style={{ color: '#FFC700', fontSize: 20 }}
+                onClick={() => {
+                  const data = {
+                    contacts_id: record.id,
+                    pin_user: false,
+                    email_user: initialState?.currentUser?.email,
+                  };
+                  sendPinStart.run(data);
+                }}
+              />
+            </Tooltip>
           ) : (
-            <StarOutlined
-              style={{ fontSize: 20 }}
-              onClick={() => {
-                const data = {
-                  contacts_id: record.id,
-                  pin_user: true,
-                  email_user: initialState?.currentUser?.email,
-                };
-                sendPinStart.run(data);
-              }}
-            />
+            <Tooltip title="Chọn bookmark">
+              <StarOutlined
+                style={{ fontSize: 20 }}
+                onClick={() => {
+                  const data = {
+                    contacts_id: record.id,
+                    pin_user: true,
+                    email_user: initialState?.currentUser?.email,
+                  };
+                  sendPinStart.run(data);
+                }}
+              />
+            </Tooltip>
           )}
         </>
       ),
@@ -526,11 +531,13 @@ const PhoneBook: React.FC = () => {
       dataIndex: 'full_name',
       key: 'full_name',
       align: 'center',
-      width: '200px',
+      width: '250px',
       render: (text, record) => {
-        return (
+        return text === null || text === undefined || text === '' ? (
+          '-'
+        ) : (
           <Typography.Text
-            style={{ cursor: 'pointer', color: '#45911F' }}
+            style={{ cursor: 'pointer', color: '#45911F', fontWeight: 600 }}
             onClick={() => {
               handleOpenModal();
               setIsEdit(true);
@@ -550,6 +557,9 @@ const PhoneBook: React.FC = () => {
       key: 'phone_number',
       align: 'center',
       width: '270px',
+      render: (text, record) => {
+        return text === null || text === undefined || text === '' ? '-' : text;
+      },
     },
     {
       title: external === 'Khách hàng' ? 'Đơn vị' : 'Team',
@@ -572,6 +582,9 @@ const PhoneBook: React.FC = () => {
       key: 'ip_phone',
       align: 'center',
       width: '235px',
+      render: (text, record) => {
+        return text === null || text === undefined || text === '' ? '-' : text;
+      },
     },
     {
       title: 'Email',
@@ -579,9 +592,12 @@ const PhoneBook: React.FC = () => {
       key: 'email',
       align: 'center',
       width: '340px',
+      render: (text, record) => {
+        return text === null || text === undefined || text === '' ? '-' : text;
+      },
     },
     {
-      title: '',
+      title: 'Thao tác',
       dataIndex: '',
       key: '',
       align: 'center',
@@ -592,14 +608,16 @@ const PhoneBook: React.FC = () => {
             {/* <div style={{ cursor: 'pointer' }}>
               <Image className={styles.call} width={30} src={Phone} preview={false} />
             </div> */}
-            <DeleteOutlined
-              style={{ fontSize: '20px' }}
-              className={hasSelected ? styles.disableDelete : styles.enableDelete}
-              onClick={() => {
-                if (hasSelected) return;
-                record.id && handleConfirmDelete([record.id]);
-              }}
-            />
+            <Tooltip title="Xóa">
+              <DeleteOutlined
+                style={{ fontSize: '20px' }}
+                className={hasSelected ? styles.disableDelete : styles.enableDelete}
+                onClick={() => {
+                  if (hasSelected) return;
+                  record.id && handleConfirmDelete([record.id]);
+                }}
+              />
+            </Tooltip>
           </Space>
         );
       },
@@ -702,6 +720,7 @@ const PhoneBook: React.FC = () => {
             },
           ]}
           className={styles.antSegmented}
+          style={{ backgroundColor: '#e3eaf4', color: 'rgba(0,0,0,1)' }}
         />
       </div>
       <Form layout="vertical" form={form}>
@@ -709,12 +728,16 @@ const PhoneBook: React.FC = () => {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            marginTop: 10,
+            marginTop: 20,
           }}
         >
           <Space size="middle">
             <Form.Item
-              label={external === 'Khách hàng' ? 'Đơn vị' : 'Team'}
+              label={
+                <Typography.Text style={{ color: 'rgba(0,0,0,1)' }}>
+                  {external === 'Khách hàng' ? 'Đơn vị' : 'Team'}
+                </Typography.Text>
+              }
               name={external === 'Khách hàng' ? 'unit' : 'team_unit'}
             >
               <Select
@@ -754,6 +777,7 @@ const PhoneBook: React.FC = () => {
 
             <Form.Item style={{ marginBottom: 0 }}>
               <Button
+                style={{ color: 'blue' }}
                 type="link"
                 onClick={() => {
                   if (
@@ -778,8 +802,9 @@ const PhoneBook: React.FC = () => {
           <Space>
             <Form.Item name="search" style={{ marginBottom: 0 }}>
               <Input
-                style={{ width: '200px' }}
+                style={{ width: '250px' }}
                 prefix={<SearchOutlined />}
+                allowClear
                 placeholder="Nhập từ khoá"
                 onChange={debounce(
                   () => {
@@ -1017,7 +1042,7 @@ const PhoneBook: React.FC = () => {
           </div>
           <div>
             <Typography.Text className={styles.antTextStyle} style={{ marginBottom: 8 }}>
-              {external === 'Khách hàng' ? 'Đơn vị công tác' : 'Team'}
+              {external === 'Khách hàng' ? 'Đơn vị công tác' : 'Team'}{' '}
               <span style={{ color: 'red' }}>(*)</span>
             </Typography.Text>
             <Form.Item
