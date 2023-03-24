@@ -636,25 +636,47 @@ const HistoryCall: React.FC = () => {
                 }}
               >
                 <Timeline style={{ padding: 'unset', margin: 'unset' }}>
-                  {record?.transferInfo
-                    .slice(1)
-                    .reverse()
-                    .map((item) => (
-                      <Timeline.Item key={`${item.line}-${item.receiver_name}-${item.caller_name}`}>
-                        <Typography.Paragraph>
-                          <Typography.Text style={{ fontWeight: 'bold' }}>
-                            {item.caller_name}
-                          </Typography.Text>{' '}
-                          đã chuyển tiếp cho{' '}
-                          <Typography.Text style={{ fontWeight: 'bold' }}>
-                            {item.receiver_name}
-                          </Typography.Text>
-                        </Typography.Paragraph>
-                      </Timeline.Item>
-                    ))}
+                  {record.transferInfo.length ? (
+                    record?.transferInfo
+                      .slice(1)
+                      .reverse()
+                      .map((item) => (
+                        <Timeline.Item
+                          key={`${item.line}-${item.receiver_name}-${item.caller_name}`}
+                        >
+                          <Typography.Paragraph>
+                            <Typography.Text style={{ fontWeight: 'bold' }}>
+                              {item.caller_name}
+                            </Typography.Text>{' '}
+                            đã chuyển tiếp cho{' '}
+                            <Typography.Text style={{ fontWeight: 'bold' }}>
+                              {item.receiver_name}
+                            </Typography.Text>
+                          </Typography.Paragraph>
+                        </Timeline.Item>
+                      ))
+                  ) : (
+                    <Timeline.Item style={{ fontStyle: 'italic', color: 'rgba(0,0,0,0.5)' }}>
+                      Không có dữ liệu chuyển tiếp
+                    </Timeline.Item>
+                  )}
                   <Timeline.Item>
                     <Typography.Paragraph>
-                      {record.caller_name === null || record.receiver_name === null ? (
+                      {record.transferInfo.length ||
+                      record.caller_destination === null ||
+                      record.sip_from_user === null ? (
+                        <>
+                          <Typography.Text style={{ fontWeight: 'bold' }}>
+                            {record?.transferInfo[0]?.receiver_name}
+                          </Typography.Text>{' '}
+                          đã nhận cuộc gọi từ{' '}
+                          <Typography.Text style={{ fontWeight: 'bold' }}>
+                            {record?.transferInfo[0]?.caller_name}
+                          </Typography.Text>
+                        </>
+                      ) : record.transferInfo.length ||
+                        record.receiver_name === null ||
+                        record.caller_name === null ? (
                         <>
                           <Typography.Text style={{ fontWeight: 'bold' }}>
                             {record.caller_destination}
