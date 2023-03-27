@@ -404,6 +404,7 @@ const HistoryCall: React.FC = () => {
       setValueFromDateTime(undefined);
       setValueToDateTime(undefined);
       fetchListLSCGData.run(undefined, undefined);
+      setListExpandedRowKeys([]);
     } else {
       setTimeFilter(true);
       setValueFromDateTime(moment(dateString[0], 'DD-MM-YYYY').startOf('day'));
@@ -412,6 +413,7 @@ const HistoryCall: React.FC = () => {
         moment(dateString[0], 'DD-MM-YYYY').startOf('day'),
         moment(dateString[1], 'DD-MM-YYYY').endOf('day'),
       );
+      setListExpandedRowKeys([]);
     }
   };
 
@@ -435,6 +437,7 @@ const HistoryCall: React.FC = () => {
       setValueKeyWord(undefined);
       setValueFromDateTime(undefined);
       setValueToDateTime(undefined);
+      setListExpandedRowKeys([]);
       setPagination({
         ...pagination,
         current: 1,
