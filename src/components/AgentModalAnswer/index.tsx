@@ -241,7 +241,7 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
   );
 
   useEffect(() => {
-    if (isVisibleHistoryCall && isModalOpen) {
+    if (isModalOpen) {
       if (dataCall?.direction === 'local') {
         getTakeCallNote.run({
           phone_number: dataCall?.contact?.ip_phone,
@@ -255,10 +255,8 @@ const AgentModalAnswer: React.FC<AgentModalAnswerProps> = ({
           call_direction: dataCall?.direction,
         });
       }
-    } else {
-      setListNote([]);
     }
-  }, [isVisibleHistoryCall]);
+  }, [isModalOpen]);
 
   const listTransfer = useMemo(
     () =>

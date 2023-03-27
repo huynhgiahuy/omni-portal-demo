@@ -1,0 +1,41 @@
+.a-comment-column-map {
+  display: flex;
+  align-items: center;
+  &__size {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 20px;
+    cursor: pointer;
+    &:hover {
+      box-shadow: rgba(50, 50, 93, 0.25) 0 30px 60px -12px inset,
+        rgba(0, 0, 0, 0.3) 0 18px 36px -18px inset;
+    }
+  }
+
+  &--red {
+    background-color: red;
+  }
+
+  &--green {
+    background: rgba(19, 218, 146, 0.8);
+  }
+
+  &--yellow {
+    background: #fbd511;
+  }
+
+  &--orange {
+    background: #ff5c00;
+  }
+
+  &--mustard {
+    background: rgba(251, 213, 17, 0.5);
+  }
+
+  &__selected {
+    outline: 2px solid black;
+    outline-offset: -2px;
+  }
+}
