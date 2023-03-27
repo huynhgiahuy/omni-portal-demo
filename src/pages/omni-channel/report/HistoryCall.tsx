@@ -30,7 +30,11 @@ import {
 } from './CustomUIHistoryCall';
 import type { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, InfoCircleFilled } from '@ant-design/icons';
-import { requestHistoryCallData, requestGetDetailCallNote } from './services';
+import {
+  requestHistoryCallData,
+  requestGetDetailCallNote,
+  requestGetDetailTransferHistoryCall,
+} from './services';
 import {
   OPTIONS_FILTER_HISTORY_CALL_DIRECTION,
   OPTIONS_FILTER_HISTORY_CALL_RESULT,
@@ -49,6 +53,7 @@ import styles from '../report/style.less';
 const HistoryCall: React.FC = () => {
   const [isView, setIsView] = useState<string>();
   const [listNote, setListNote] = useState<ListNotesProps[]>([]);
+  const [listExpandedRowKeys, setListExpandedRowKeys] = useState([]);
 
   const [listValueHCG, setListValueHCG] = useState<any>();
   const [listValueKQ, setListValueKQ] = useState<any>();
@@ -130,7 +135,8 @@ const HistoryCall: React.FC = () => {
       manual: true,
       onSuccess: (res: any) => {
         if (res) {
-          setListDataLSCG(res);
+          const newData = res.map((item: { transferInfo: [] }) => ({ ...item, transferInfo: [] }));
+          setListDataLSCG(newData);
         }
       },
     },
@@ -151,6 +157,29 @@ const HistoryCall: React.FC = () => {
       } else {
         setListNote(res.data);
         setVisibleModalNote(true);
+      }
+      return res;
+    },
+    {
+      manual: true,
+    },
+  );
+
+  const fetchListDetailTransferCall = useRequest(
+    async (callId: string) => {
+      const res: { success: boolean; data: any; error_code: number } =
+        await requestGetDetailTransferHistoryCall(token ? token : '', callId);
+      if (res.success === false) {
+        if (res.error_code === 4030102) {
+          message.error('Bạn không có quyền xem chi tiết chuyển tiếp!');
+        } else {
+          message.error('Không thể xem ghi chi tiết chuyển tiếp!');
+        }
+      } else {
+        const index = listDataLSCG.findIndex((item: { uuid: string }) => item.uuid === callId);
+        const newDataTable = [...listDataLSCG];
+        newDataTable[index].transferInfo = res.data;
+        setListDataLSCG(newDataTable);
       }
       return res;
     },
@@ -330,10 +359,12 @@ const HistoryCall: React.FC = () => {
       current: newPagination.current,
       pageSize: newPagination.pageSize,
     });
+    setListExpandedRowKeys([]);
   };
 
   const handleSelectValueHCG = (values: any) => {
     if (values.length === 0) {
+      setListExpandedRowKeys([]);
       setListValueHCG(undefined);
       setHCGFilter(false);
       setPagination({
@@ -341,6 +372,7 @@ const HistoryCall: React.FC = () => {
         current: 1,
       });
     } else {
+      setListExpandedRowKeys([]);
       setHCGFilter(true);
       setListValueHCG(values);
       setPagination({
@@ -352,6 +384,7 @@ const HistoryCall: React.FC = () => {
 
   const handleSelectValueKQ = (values: any) => {
     if (values.length === 0) {
+      setListExpandedRowKeys([]);
       setListValueKQ(undefined);
       setKQFilter(false);
       setPagination({
@@ -359,6 +392,7 @@ const HistoryCall: React.FC = () => {
         current: 1,
       });
     } else {
+      setListExpandedRowKeys([]);
       setKQFilter(true);
       setListValueKQ(values);
       setPagination({
@@ -374,6 +408,7 @@ const HistoryCall: React.FC = () => {
       setValueFromDateTime(undefined);
       setValueToDateTime(undefined);
       fetchListLSCGData.run(undefined, undefined);
+      setListExpandedRowKeys([]);
     } else {
       setTimeFilter(true);
       setValueFromDateTime(moment(dateString[0], 'DD-MM-YYYY').startOf('day'));
@@ -382,6 +417,7 @@ const HistoryCall: React.FC = () => {
         moment(dateString[0], 'DD-MM-YYYY').startOf('day'),
         moment(dateString[1], 'DD-MM-YYYY').endOf('day'),
       );
+      setListExpandedRowKeys([]);
     }
   };
 
@@ -405,6 +441,7 @@ const HistoryCall: React.FC = () => {
       setValueKeyWord(undefined);
       setValueFromDateTime(undefined);
       setValueToDateTime(undefined);
+      setListExpandedRowKeys([]);
       setPagination({
         ...pagination,
         current: 1,
@@ -537,9 +574,11 @@ const HistoryCall: React.FC = () => {
                 (e) => {
                   const { value } = e.target;
                   if (value === '') {
+                    setListExpandedRowKeys([]);
                     setValueKeyWord(undefined);
                     fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
                   } else {
+                    setListExpandedRowKeys([]);
                     setValueKeyWord(value);
                     setPagination({
                       ...pagination,
@@ -592,69 +631,90 @@ const HistoryCall: React.FC = () => {
           emptyText: <Empty description="Không có dữ liệu" />,
         }}
         expandable={{
-          expandedRowRender: (record) => (
-            <div
-              style={{
-                maxHeight: 250,
-                overflowY: 'scroll',
-                paddingTop: 10,
-              }}
-              className={styles.timelineLayout}
-            >
-              <Timeline pending={true} pendingDot={null}>
-                <Timeline.Item>
-                  <Typography.Paragraph style={{ color: '#1890ff', fontWeight: 'bold' }}>
-                    09-02-2023 14:03:03
-                  </Typography.Paragraph>
-                  <Typography.Paragraph>KhuyenNNA đã chuyển tiếp cho HuyenLM</Typography.Paragraph>
-                  <Typography.Paragraph>
-                    <b style={{ textDecoration: 'underline' }}>Nội dung:</b> Giả định chuyển tiếp
-                    cuộc gọi từ KhuyenNNA sang cho HuyenLM
-                  </Typography.Paragraph>
-                </Timeline.Item>
-                <Timeline.Item>
-                  <Typography.Paragraph style={{ color: '#1890ff', fontWeight: 'bold' }}>
-                    09-02-2023 13:03:03
-                  </Typography.Paragraph>
-                  <Typography.Paragraph>HaoHG đã chuyển tiếp cho KhuyenNNA</Typography.Paragraph>
-                  <Typography.Paragraph>
-                    <b style={{ textDecoration: 'underline' }}>Nội dung:</b> Giả định chuyển tiếp
-                    cuộc gọi từ HaoHG sang cho KhuyenNNA
-                  </Typography.Paragraph>
-                </Timeline.Item>
-                <Timeline.Item>
-                  <Typography.Paragraph style={{ color: '#1890ff', fontWeight: 'bold' }}>
-                    09-02-2023 12:03:03
-                  </Typography.Paragraph>
-                  <Typography.Paragraph>MinhHD đã chuyển tiếp cho HaoHG</Typography.Paragraph>
-                  <Typography.Paragraph>
-                    <b style={{ textDecoration: 'underline' }}>Nội dung:</b> Giả định chuyển tiếp
-                    cuộc gọi từ MinhHD sang cho HaoHG
-                  </Typography.Paragraph>
-                </Timeline.Item>
-                <Timeline.Item>
-                  <Typography.Paragraph style={{ color: '#1890ff', fontWeight: 'bold' }}>
-                    09-02-2023 11:03:03
-                  </Typography.Paragraph>
-                  <Typography.Paragraph>HuyND đã chuyển tiếp cho MinhHD</Typography.Paragraph>
-                  <Typography.Paragraph>
-                    <b style={{ textDecoration: 'underline' }}>Nội dung:</b> Giả định chuyển tiếp
-                    cuộc gọi từ HuyND sang cho MinhHD
-                  </Typography.Paragraph>
-                </Timeline.Item>
-                <Timeline.Item>
-                  <Typography.Paragraph style={{ color: '#1890ff', fontWeight: 'bold' }}>
-                    09-02-2023 10:03:03
-                  </Typography.Paragraph>
-                  <Typography.Paragraph>HuyND đã nhận cuộc gọi từ Khách hàng</Typography.Paragraph>
-                  <Typography.Paragraph>
-                    <b style={{ textDecoration: 'underline' }}>Nội dung:</b> Giả định cuộc gọi đến
-                    từ Khách hàng
-                  </Typography.Paragraph>
-                </Timeline.Item>
-              </Timeline>
-            </div>
-          ),
+          expandedRowKeys: listExpandedRowKeys,
+          onExpandedRowsChange: (e: any) => {
+            setListExpandedRowKeys(e);
+          },
+          expandedRowRender: (record) => {
+            return (
+              <div
+                style={{
+                  maxHeight: 250,
+                  overflowY: 'scroll',
+                  paddingTop: 50,
+                }}
+              >
+                <Timeline style={{ padding: 'unset', margin: 'unset' }}>
+                  {record.transferInfo.length ? (
+                    record?.transferInfo
+                      .slice(1)
+                      .reverse()
+                      .map((item) => (
+                        <Timeline.Item
+                          key={`${item.line}-${item.receiver_name}-${item.caller_name}`}
+                        >
+                          <Typography.Paragraph>
+                            <Typography.Text style={{ fontWeight: 'bold' }}>
+                              {item.caller_name}
+                            </Typography.Text>{' '}
+                            đã chuyển tiếp cho{' '}
+                            <Typography.Text style={{ fontWeight: 'bold' }}>
+                              {item.receiver_name}
+                            </Typography.Text>
+                          </Typography.Paragraph>
+                        </Timeline.Item>
+                      ))
+                  ) : (
+                    <Timeline.Item style={{ fontStyle: 'italic', color: 'rgba(0,0,0,0.5)' }}>
+                      Không có dữ liệu chuyển tiếp
+                    </Timeline.Item>
+                  )}
+                  <Timeline.Item>
+                    <Typography.Paragraph>
+                      {record.transferInfo.length ||
+                      record.caller_destination === null ||
+                      record.sip_from_user === null ? (
+                        <>
+                          <Typography.Text style={{ fontWeight: 'bold' }}>
+                            {record?.transferInfo[0]?.receiver_name}
+                          </Typography.Text>{' '}
+                          đã nhận cuộc gọi từ{' '}
+                          <Typography.Text style={{ fontWeight: 'bold' }}>
+                            {record?.transferInfo[0]?.caller_name}
+                          </Typography.Text>
+                        </>
+                      ) : record.transferInfo.length ||
+                        record.receiver_name === null ||
+                        record.caller_name === null ? (
+                        <>
+                          <Typography.Text style={{ fontWeight: 'bold' }}>
+                            {record.caller_destination}
+                          </Typography.Text>{' '}
+                          đã nhận cuộc gọi từ{' '}
+                          <Typography.Text style={{ fontWeight: 'bold' }}>
+                            {record.sip_from_user}
+                          </Typography.Text>
+                        </>
+                      ) : (
+                        <>
+                          <Typography.Text style={{ fontWeight: 'bold' }}>
+                            {record.receiver_name}
+                          </Typography.Text>{' '}
+                          đã nhận cuộc gọi từ{' '}
+                          <Typography.Text style={{ fontWeight: 'bold' }}>
+                            {record.caller_name}
+                          </Typography.Text>
+                        </>
+                      )}
+                    </Typography.Paragraph>
+                  </Timeline.Item>
+                </Timeline>
+              </div>
+            );
+          },
+          onExpand(expanded, record) {
+            expanded ? fetchListDetailTransferCall.run(record.uuid) : null;
+          },
           expandIcon: ({ expanded, onExpand, record }) =>
             expanded ? (
               <Tooltip title="Bỏ xem chi tiết">
@@ -709,7 +769,7 @@ const HistoryCall: React.FC = () => {
           <Timeline pending={true} pendingDot={null}>
             {listNote[0]?.note?.length ? (
               listNote[0]?.note?.map((item) => (
-                <Timeline.Item>
+                <Timeline.Item key={`${item.create_at}-${item.personnel}-${item.content}`}>
                   <Typography.Paragraph className={styles.historyCallNoteTime}>
                     {moment.unix(item.create_at).format('DD-MM-YYYY HH:mm:ss')}
                   </Typography.Paragraph>

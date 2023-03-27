@@ -22,6 +22,13 @@ export interface DataLSCGType {
   caller_name: string;
   receiver_name: string;
   result: number;
+  transferInfo: [
+    {
+      receiver_name: string;
+      line: number;
+      caller_name?: string;
+    },
+  ];
 }
 
 export interface PaginationProps {

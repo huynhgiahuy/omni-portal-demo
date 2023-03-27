@@ -1,4 +1,5 @@
 import api from '@/api';
+import { NotificationProps } from '@/components/Organisms/InfoUser';
 import request from '@/utils/request';
 
 import { requestProps } from './auth';
@@ -57,8 +58,8 @@ export async function requestUpdateStatusUser(
 }
 
 export async function requestUpdateScreenMode(
-  dark_mode: boolean,
-  token: string,
+  dark_mode?: boolean,
+  token?: string,
 ): Promise<requeGetUserInfoProps> {
   return request(`${endpoint}/user-service/api/settings/user/update_user_screen_mode`, {
     method: 'POST',
@@ -73,14 +74,7 @@ export async function requestUpdateScreenMode(
 }
 
 export async function requestUpdatenotification(
-  data: {
-    missed_call: boolean;
-    incoming_call: boolean;
-    critic_issue: boolean;
-    night_plan: boolean;
-    shift: boolean;
-    overdue_message: boolean;
-  },
+  data: NotificationProps,
   token: string,
 ): Promise<requeGetUserInfoProps> {
   return request(`${endpoint}/user-service/api/settings/user/update_user_notification`, {

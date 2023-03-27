@@ -55,32 +55,27 @@ const WorkingStatus = () => {
   //Check offline
 
   useEffect(() => {
+    const updateStatus = async (status: number) => {
+      const result: requeGetUserInfoProps = await requestUpdateStatusUser(
+        status,
+        access_token ? access_token : '',
+      );
+      if (result.success) {
+        setOption(status);
+        socket?.emit('updated_user_status');
+        await setInitialState((s) => ({
+          ...s,
+          currentUser: { ...initialState?.currentUser, status: result.data[0] },
+        }));
+      }
+    };
+
     if (!isOnline && option === 1) {
       if (checkMouse) {
-        const res = requestUpdateStatusUser(2, access_token ? access_token : '');
-        res.then(async (result: requeGetUserInfoProps) => {
-          if (result.success) {
-            setOption(2);
-            socket?.emit('updated_user_status');
-            await setInitialState((s) => ({
-              ...s,
-              currentUser: { ...initialState?.currentUser, status: result.data[0] },
-            }));
-          }
-        });
+        updateStatus(2);
       }
     } else if (isOnline && option === 2) {
-      const res = requestUpdateStatusUser(1, access_token ? access_token : '');
-      res.then(async (result: requeGetUserInfoProps) => {
-        if (result.success) {
-          setOption(1);
-          socket?.emit('updated_user_status');
-          await setInitialState((s) => ({
-            ...s,
-            currentUser: { ...initialState?.currentUser, status: result.data[0] },
-          }));
-        }
-      });
+      updateStatus(1);
     }
   }, [isOnline, option, checkMouse]);
 

@@ -1,5 +1,5 @@
 import { Resolved, Defer } from 'synctasks';
-
+import lodash from 'lodash';
 import { MyAudio } from './CustomAudio';
 
 function getSoundPath(path = '') {

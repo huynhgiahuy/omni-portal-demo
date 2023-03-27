@@ -6,7 +6,6 @@ import {
   Image,
   Menu,
   message,
-  Radio,
   Row,
   Spin,
   Switch,
@@ -36,7 +35,6 @@ import IconDark from './Vector 132.png';
 
 import type { MenuInfo } from 'rc-menu/lib/interface';
 const { SubMenu } = Menu;
-const { Title } = Typography;
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -58,26 +56,30 @@ const loginOut = async () => {
 };
 
 type valuesProps = {
-  radio_theme: boolean;
   missed_call: boolean;
   incoming_call: boolean;
-  critical_issue: boolean;
+  critic_issue: boolean;
   night_plan: boolean;
   shift: boolean;
   overdue_message: boolean;
 };
 
 const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
+  const [form] = Form.useForm();
   const { initialState, setInitialState } = useModel('@@initialState');
   const [values, setValues] = useState<valuesProps>({
-    radio_theme: initialState?.currentUser?.screen_mode?.dark_mode ? true : false,
     missed_call: initialState?.currentUser?.notification?.missed_call ? true : false,
     incoming_call: initialState?.currentUser?.notification?.incoming_call ? true : false,
-    critical_issue: initialState?.currentUser?.notification?.critical_issue ? true : false,
+    critic_issue: initialState?.currentUser?.notification?.critic_issue ? true : false,
     night_plan: initialState?.currentUser?.notification?.night_plan ? true : false,
     shift: initialState?.currentUser?.notification?.shift ? true : false,
     overdue_message: initialState?.currentUser?.notification?.overdue_message ? true : false,
   });
+
+  const [valueSetting, setValueSetting] = useState({
+    radio_theme: initialState?.currentUser?.screen_mode?.dark_mode ? true : false,
+  });
+
   const token = window.localStorage.getItem('access_token');
 
   const onMenuClick = useCallback(
@@ -101,15 +103,22 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     [setInitialState],
   );
 
-  async function onChange() {
-    const {
-      critical_issue: critic_issue,
-      incoming_call,
-      missed_call,
-      night_plan,
-      overdue_message,
-      shift,
-    } = values;
+  useEffect(() => {
+    setValues({
+      missed_call: initialState?.currentUser?.notification?.missed_call ? true : false,
+      incoming_call: initialState?.currentUser?.notification?.incoming_call ? true : false,
+      critic_issue: initialState?.currentUser?.notification?.critic_issue ? true : false,
+      night_plan: initialState?.currentUser?.notification?.night_plan ? true : false,
+      shift: initialState?.currentUser?.notification?.shift ? true : false,
+      overdue_message: initialState?.currentUser?.notification?.overdue_message ? true : false,
+    });
+    setValueSetting({
+      radio_theme: initialState?.currentUser?.screen_mode?.dark_mode ? true : false,
+    });
+  }, [initialState?.currentUser]);
+
+  async function onChangeNotifications() {
+    const { critic_issue, incoming_call, missed_call, night_plan, overdue_message, shift } = values;
     const data = { missed_call, incoming_call, critic_issue, night_plan, shift, overdue_message };
     const res = await requestUpdatenotification(data, token ? token : '');
     if (res.success) {
@@ -118,17 +127,21 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         currentUser: { ...initialState?.currentUser, notification: res.data[0] },
       }));
     } else {
-      message.error('Cập nhập trạng thái không thành công, vui lòng thử lại');
+      message.error('Cập nhập trạng thái không thành công');
       return;
     }
   }
 
+  async function onChangeSettings(e: boolean) {
+    setValueSetting({ radio_theme: e });
+  }
+
   useEffect(() => {
     if (
-      values.radio_theme !== initialState?.currentUser?.screen_mode?.dark_mode &&
+      valueSetting.radio_theme !== initialState?.currentUser?.screen_mode?.dark_mode &&
       initialState?.currentUser?.screen_mode?.dark_mode !== undefined
     ) {
-      const res = requestUpdateScreenMode(values.radio_theme, token ? token : '');
+      const res = requestUpdateScreenMode(valueSetting.radio_theme, token ? token : '');
 
       res
         .then(async (result: requeGetUserInfoProps) => {
@@ -137,11 +150,23 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
               ...s,
               currentUser: {
                 ...initialState.currentUser,
-                setting: {
-                  ...initialState.settings,
+                screen_mode: {
+                  ...initialState.currentUser?.screen_mode,
                   dark_mode: result.data[0].dark_mode,
                   simple_mode: result.data[0].simple_mode,
                 },
+              },
+              settings: {
+                navTheme: result.data[0].dark_mode ? 'realDark' : 'light',
+                primaryColor: '#1890ff',
+                layout: 'side',
+                contentWidth: 'Fluid',
+                fixedHeader: true,
+                fixSiderbar: true,
+                pwa: false,
+                logo: '/logo_theme.svg',
+                headerHeight: 48,
+                splitMenus: false,
               },
             }));
           } else {
@@ -149,47 +174,11 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
           }
         })
         .catch((error) => {
-          message.error('Chuyển giao diện lỗi vui lòng thử lại');
+          message.error('Cài đặt lỗi');
           return;
         });
     }
-  }, [values.radio_theme]);
-
-  function handleLight() {
-    setInitialState((s) => ({
-      ...s,
-      settings: {
-        navTheme: 'light',
-        primaryColor: '#1890ff',
-        layout: 'side',
-        contentWidth: 'Fluid',
-        fixedHeader: true,
-        fixSiderbar: true,
-        pwa: false,
-        logo: '/logo_theme.svg',
-        headerHeight: 48,
-        splitMenus: false,
-      },
-    }));
-  }
-
-  const handleDark = async () => {
-    await setInitialState((s: any) => ({
-      ...s,
-      settings: {
-        navTheme: 'realDark',
-        primaryColor: '#1890ff',
-        layout: 'side',
-        contentWidth: 'Fluid',
-        fixedHeader: true,
-        fixSiderbar: true,
-        pwa: false,
-        logo: '/logo_theme.svg',
-        headerHeight: 48,
-        splitMenus: false,
-      },
-    }));
-  };
+  }, [valueSetting.radio_theme]);
 
   const loading = (
     <span className={`${styles.action} ${styles.account}`}>
@@ -215,6 +204,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
 
   const menuHeaderDropdown = (
     <Form
+      form={form}
       onValuesChange={(e) => {
         const testValue = Object.assign(values, e);
         setValues(testValue);
@@ -250,7 +240,11 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             </Col>
             <Col span={4} className={styles.notifyMenuSwitch}>
               <Form.Item className={styles.notifyMenuForm} name="missed_call">
-                <Switch size="small" defaultChecked={values.missed_call} onChange={onChange} />
+                <Switch
+                  size="small"
+                  checked={values.missed_call}
+                  onChange={onChangeNotifications}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -260,7 +254,11 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             </Col>
             <Col span={4} className={styles.notifyMenuSwitch}>
               <Form.Item className={styles.notifyMenuForm} name="incoming_call">
-                <Switch size="small" defaultChecked={values.incoming_call} onChange={onChange} />
+                <Switch
+                  size="small"
+                  checked={values.incoming_call}
+                  onChange={onChangeNotifications}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -270,7 +268,11 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             </Col>
             <Col span={4} className={styles.notifyMenuSwitch}>
               <Form.Item className={styles.notifyMenuForm} name="critical_issue">
-                <Switch size="small" defaultChecked={values.critical_issue} onChange={onChange} />
+                <Switch
+                  size="small"
+                  checked={values.critic_issue}
+                  onChange={onChangeNotifications}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -280,7 +282,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             </Col>
             <Col span={4} className={styles.notifyMenuSwitch}>
               <Form.Item className={styles.notifyMenuForm} name="night_plan">
-                <Switch size="small" defaultChecked={values.night_plan} onChange={onChange} />
+                <Switch size="small" checked={values.night_plan} onChange={onChangeNotifications} />
               </Form.Item>
             </Col>
           </Row>
@@ -290,7 +292,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             </Col>
             <Col span={4} className={styles.notifyMenuSwitch}>
               <Form.Item className={styles.notifyMenuForm} name="shift">
-                <Switch size="small" defaultChecked={values.shift} onChange={onChange} />
+                <Switch size="small" checked={values.shift} onChange={onChangeNotifications} />
               </Form.Item>
             </Col>
           </Row>
@@ -300,7 +302,11 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             </Col>
             <Col span={4} className={styles.notifyMenuSwitch}>
               <Form.Item className={styles.notifyMenuForm} name="overdue_message">
-                <Switch size="small" defaultChecked={values.overdue_message} onChange={onChange} />
+                <Switch
+                  size="small"
+                  checked={values.overdue_message}
+                  onChange={onChangeNotifications}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -348,47 +354,26 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
                     <Image preview={false} src={IconDark} />
                   </Avatar>
                 </Col>
-                <Col span={20}>
+                <Col span={16}>
                   <FormattedMessage
                     id="menu.account.monitor.omni.dark"
                     defaultMessage="monitor setting"
                   />
                 </Col>
+                <Col span={4}>
+                  <Form.Item noStyle name="radio_theme">
+                    <Switch
+                      size="small"
+                      checked={valueSetting.radio_theme}
+                      onChange={onChangeSettings}
+                    />
+                  </Form.Item>
+                </Col>
               </Row>
             </div>
-            <Form.Item name="radio_theme">
-              <Radio.Group
-                defaultValue={
-                  initialState?.currentUser?.screen_mode?.dark_mode
-                    ? initialState?.currentUser?.screen_mode?.dark_mode
-                    : false
-                }
-              >
-                <p className={styles.popupDisplayContent}>
-                  Điều chỉnh giao diện của phần mềm để giảm độ chói và cho đôi mắt được nghỉ ngơi.
-                </p>
-                <Row onChange={handleLight}>
-                  <Col span={16}>
-                    <Title level={5} className={styles.popupDisplayColTitle}>
-                      Tắt
-                    </Title>
-                  </Col>
-                  <Col span={8}>
-                    <Radio className={styles.popupDisplayColRadio} value={false}></Radio>
-                  </Col>
-                </Row>
-                <Row onChange={handleDark}>
-                  <Col span={16}>
-                    <Title level={5} className={styles.popupDisplayColTitle}>
-                      Bật
-                    </Title>
-                  </Col>
-                  <Col span={8}>
-                    <Radio className={styles.popupDisplayColRadio} value={true}></Radio>
-                  </Col>
-                </Row>
-              </Radio.Group>
-            </Form.Item>
+            <p className={styles.popupDisplayContent}>
+              Điều chỉnh giao diện của phần mềm để giảm độ chói và cho đôi mắt được nghỉ ngơi.
+            </p>
             <div className={styles.popupDisplayTitle}>
               <Row>
                 <Col span={4}>
@@ -398,39 +383,22 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
                     />
                   </Avatar>
                 </Col>
-                <Col span={20}>
+                <Col span={16}>
                   <FormattedMessage
                     id="menu.account.monitor.omni.zoom"
                     defaultMessage="monitor setting"
                   />
                 </Col>
+                <Col>
+                  <Form.Item noStyle name="radio_theme">
+                    <Switch size="small" />
+                  </Form.Item>
+                </Col>
               </Row>
             </div>
-            <Radio.Group defaultValue={1}>
-              <p className={styles.popupDisplayContent}>
-                Làm giảm kích thước phông chữ để có thêm nội dung vừa với màn hình.
-              </p>
-              <Row>
-                <Col span={16}>
-                  <Title level={5} className={styles.popupDisplayColTitle}>
-                    Tắt
-                  </Title>
-                </Col>
-                <Col span={8}>
-                  <Radio className={styles.popupDisplayColRadio} value={1}></Radio>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={16}>
-                  <Title level={5} className={styles.popupDisplayColTitle}>
-                    Bật
-                  </Title>
-                </Col>
-                <Col span={8}>
-                  <Radio className={styles.popupDisplayColRadio} value={2}></Radio>
-                </Col>
-              </Row>
-            </Radio.Group>
+            <p className={styles.popupDisplayContent}>
+              Làm giảm kích thước phông chữ để có thêm nội dung vừa với màn hình.
+            </p>
           </div>
         </SubMenu>
         <Menu.Divider />

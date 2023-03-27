@@ -7,7 +7,7 @@ export default {
   'menu.account.monitor.omni.dark': 'Chế độ tối',
   'menu.account.monitor.omni.zoom': 'Chế độ thu gọn',
   //Omni Channel
-  'menu.omni-channel': 'Omni Channel',
+  'menu.omni-channel': 'Happy Connect',
   'menu.omni-channel.report': 'Report',
   //'menu.omni-channel.setting': 'Setting',
   'menu.omni-channel.profile': 'Profile',
