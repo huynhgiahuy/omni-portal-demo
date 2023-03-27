@@ -364,6 +364,7 @@ const HistoryCall: React.FC = () => {
 
   const handleSelectValueHCG = (values: any) => {
     if (values.length === 0) {
+      setListExpandedRowKeys([]);
       setListValueHCG(undefined);
       setHCGFilter(false);
       setPagination({
@@ -371,6 +372,7 @@ const HistoryCall: React.FC = () => {
         current: 1,
       });
     } else {
+      setListExpandedRowKeys([]);
       setHCGFilter(true);
       setListValueHCG(values);
       setPagination({
@@ -382,6 +384,7 @@ const HistoryCall: React.FC = () => {
 
   const handleSelectValueKQ = (values: any) => {
     if (values.length === 0) {
+      setListExpandedRowKeys([]);
       setListValueKQ(undefined);
       setKQFilter(false);
       setPagination({
@@ -389,6 +392,7 @@ const HistoryCall: React.FC = () => {
         current: 1,
       });
     } else {
+      setListExpandedRowKeys([]);
       setKQFilter(true);
       setListValueKQ(values);
       setPagination({
@@ -570,9 +574,11 @@ const HistoryCall: React.FC = () => {
                 (e) => {
                   const { value } = e.target;
                   if (value === '') {
+                    setListExpandedRowKeys([]);
                     setValueKeyWord(undefined);
                     fetchListLSCGData.run(valueFromDateTime, valueToDateTime);
                   } else {
+                    setListExpandedRowKeys([]);
                     setValueKeyWord(value);
                     setPagination({
                       ...pagination,
