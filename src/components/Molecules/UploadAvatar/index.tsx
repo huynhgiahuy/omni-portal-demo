@@ -3,7 +3,6 @@ import './index.less';
 import { Avatar, message, Spin, Upload, UploadFile } from 'antd';
 import React, { useState } from 'react';
 
-import api from '@/api';
 import { endpoint } from '@/services/auth';
 import { CameraFilled, UserOutlined } from '@ant-design/icons';
 
@@ -68,7 +67,7 @@ const UploadAvatar: React.FC<UploadAvatarProps> = ({ avatar, handleUploadAvatar 
           className="m-upload-avatar__img-hover"
           showUploadList={false}
         >
-          <CameraFilled style={{ fontSize: 40, color: 'white' }} />
+          <CameraFilled style={{ fontSize: 40, color: '#87c686' }} />
         </Upload>
       </div>
     </>

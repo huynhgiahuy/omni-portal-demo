@@ -56,7 +56,6 @@ export interface SettingsProps {
 }
 
 interface InfoUserProps {
-  editForm: boolean;
   currentUser: FormProps | API.CurrentUser;
   notifications: NotificationProps;
   settings: SettingsProps;
@@ -162,8 +161,7 @@ const InfoUser: React.FC<InfoUserProps> = ({
                         {currentUser.email ? currentUser.email : '...'}
                       </div>
                       <div className="o-info-user__avatar-content">
-                        {currentUser.title &&
-                          labelPosition(currentUser.title ? currentUser.title : '...')}
+                        {currentUser.title ? labelPosition(currentUser.title) : '...'}
                       </div>
                     </Space>
                   </div>

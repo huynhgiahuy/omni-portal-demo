@@ -1,5 +1,6 @@
 import { Table, TableProps } from 'antd';
 import React from 'react';
+import './index.less';
 
 interface TableComponentProps extends TableProps<any> {}
 

@@ -1,6 +1,7 @@
-import { FormInstance, message } from 'antd';
+import { FormInstance, Tabs, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useModel, useRequest } from 'umi';
+import type { TabsProps } from 'antd';
 
 import api from '@/api';
 import InfoUser, {
@@ -21,6 +22,23 @@ import {
   requestEditUserInfo,
   requestTeamPermissionData,
 } from './services';
+import TableComponent from '@/components/Atom/Table';
+import { ColumnsType } from 'antd/lib/table';
+import {
+  CustomUI_CallDirection,
+  customUI_SipFromUser,
+  customUI_CallerName,
+  customUI_CallerDestination,
+  customUI_ReceiverName,
+  customUI_StartEpoch,
+  customUI_BillSec,
+  customUI_Result,
+  customUI_RecordAudio,
+  customUI_Note,
+  DataLSCGType,
+  PaginationProps,
+  ListNotesProps,
+} from '../report/CustomUIHistoryCall';
 
 interface TeamPermission {
   name: string;
@@ -53,6 +71,74 @@ const defaultSettings = {
   radio_theme: false,
   action_call: false,
 };
+
+const columnsLSCGT: ColumnsType<DataLSCGType> = [
+  {
+    title: 'Hướng cuộc gọi',
+    dataIndex: 'call_direction',
+    key: 'call_direction',
+    align: 'center',
+    width: '130px',
+    ...CustomUI_CallDirection.parsing(),
+  },
+  {
+    title: 'Số máy gọi',
+    dataIndex: 'sip_from_user',
+    key: 'sip_from_user',
+    align: 'center',
+    width: '110px',
+    ...customUI_SipFromUser.parsing(),
+  },
+  {
+    title: 'Tên người gọi',
+    dataIndex: 'caller_name',
+    key: 'caller_name',
+    align: 'center',
+    width: '200px',
+    ...customUI_CallerName.parsing(),
+  },
+  {
+    title: 'Số máy nhận',
+    dataIndex: 'caller_destination',
+    key: 'caller_destination',
+    align: 'center',
+    width: '110px',
+    ...customUI_CallerDestination.parsing(),
+  },
+  {
+    title: 'Tên người nhận',
+    dataIndex: 'receiver_name',
+    key: 'receiver_name',
+    align: 'center',
+    width: '200px',
+    ...customUI_ReceiverName.parsing(),
+  },
+  {
+    title: 'Thời gian bắt đầu',
+    dataIndex: 'start_epoch',
+    key: 'start_epoch',
+    align: 'center',
+    width: '150px',
+    sorter: true,
+    ...customUI_StartEpoch.parsing(),
+  },
+  {
+    title: 'Thời lượng',
+    dataIndex: 'billsec',
+    key: 'billsec',
+    align: 'center',
+    width: '100px',
+    ...customUI_BillSec.parsing(),
+  },
+  {
+    title: 'Kết quả',
+    dataIndex: 'result',
+    key: 'result',
+    align: 'center',
+    width: '150px',
+    ...customUI_Result.parsing(),
+  },
+];
 
 const PersonalInfo: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
@@ -210,26 +296,46 @@ const PersonalInfo: React.FC = () => {
       });
   };
 
+  const items: TabsProps['items'] = [
+    {
+      key: '1',
+      label: `Lịch sử cuộc gọi`,
+      children: <TableComponent columns={columnsLSCGT} />,
+    },
+    // {
+    //   key: '2',
+    //   label: `Phản hồi`,
+    //   children: `Content of Tab Pane 2`,
+    // },
+    // {
+    //   key: '3',
+    //   label: `Thông báo`,
+    //   children: `Content of Tab Pane 3`,
+    // },
+  ];
+
   return (
-    <InfoUser
-      editForm={false}
-      avatar={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${avatar}`}
-      currentUser={initialState?.currentUser || defaultCurrentUser}
-      notifications={initialState?.currentUser?.notification || defaultNotifications}
-      settings={initialState?.currentUser?.screen_mode || defaultSettings}
-      listTeamPermission={listTeamPermission}
-      handleCheckPhone={(value, form) => {
-        checkPhoneContact.run(value, form);
-      }}
-      handleUploadAvatar={async (e) => {
-        setAvatar(e?.response?.data[0]?.url);
-      }}
-      handleChangeNotifications={handleChangeNotifications}
-      handleChangeSettings={handleChangeSettings}
-      handleSaveInfoForm={handleSaveInfoForm}
-      handleNewTeam={handleNewTeam}
-      handleDeleteTeam={handleDeleteTeam}
-    />
+    <>
+      <InfoUser
+        avatar={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${avatar}`}
+        currentUser={initialState?.currentUser || defaultCurrentUser}
+        notifications={initialState?.currentUser?.notification || defaultNotifications}
+        settings={initialState?.currentUser?.screen_mode || defaultSettings}
+        listTeamPermission={listTeamPermission}
+        handleCheckPhone={(value, form) => {
+          checkPhoneContact.run(value, form);
+        }}
+        handleUploadAvatar={async (e) => {
+          setAvatar(e?.response?.data[0]?.url);
+        }}
+        handleChangeNotifications={handleChangeNotifications}
+        handleChangeSettings={handleChangeSettings}
+        handleSaveInfoForm={handleSaveInfoForm}
+        handleNewTeam={handleNewTeam}
+        handleDeleteTeam={handleDeleteTeam}
+      />
+      <Tabs defaultActiveKey="1" items={items} />
+    </>
   );
 };
 export default PersonalInfo;
