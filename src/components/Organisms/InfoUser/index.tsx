@@ -338,11 +338,13 @@ const InfoUser: React.FC<InfoUserProps> = ({
 
       <Modal
         open={isEditForm}
+        className="modal-info-form"
         maskStyle={{
           background: settings?.dark_mode ? 'rgba(255, 255, 255, 0)' : 'rgba(255, 255, 255, 0.8)',
         }}
         closable={false}
         footer={false}
+        title="Chỉnh sửa thông tin"
       >
         <InfoUserFrom
           currentUser={currentUser}
