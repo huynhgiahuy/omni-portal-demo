@@ -14,7 +14,7 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, history, useModel } from 'umi';
 
-import api from '@/api';
+import api from '@/apiEndpoint';
 import { outLogin } from '@/services/ant-design-pro/api';
 import {
   requeGetUserInfoProps,

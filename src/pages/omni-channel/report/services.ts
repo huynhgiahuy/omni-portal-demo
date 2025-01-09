@@ -1,6 +1,6 @@
 import React from 'react';
 
-import api from '@/api';
+import api from '@/apiEndpoint';
 import request from '@/utils/request';
 
 export type dataUserContactProps = {

@@ -1,4 +1,4 @@
-import api from '@/api';
+import api from '@/apiEndpoint/index';
 import { NotificationProps } from '@/components/Organisms/InfoUser';
 import request from '@/utils/request';
 

@@ -1,7 +1,7 @@
 import { Button, message, notification } from 'antd';
 import { useIntl } from 'umi';
 import defaultSettings from '../config/defaultSettings';
-import api from './api';
+import api from './apiEndpoint';
 import { verifySSO } from './services/auth';
 import { history } from 'umi';
 
@@ -51,9 +51,9 @@ if (window.location.href.includes('code')) {
   };
 
   const response = await verifySSO(data);
-  if (response?.success === true) {
-    window.localStorage.setItem('access_token', response?.data[0]?.access_token);
-    window.localStorage.setItem('rid', response?.data[0]?.refresh_token);
+  console.log("respone = ", response)
+  if (response?.data[0]?.token) {
+    window.localStorage.setItem('token', response?.data[0]?.token);
   }
 }
 

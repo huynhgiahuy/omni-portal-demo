@@ -1,112 +1,62 @@
-import { Button, message, Tabs } from 'antd';
-import React, { useLayoutEffect, useState } from 'react';
+import { Button, Tabs } from 'antd';
+import React, { useLayoutEffect, } from 'react';
 import { history, useIntl, useModel } from 'umi';
 
-import { getUrlSSO, requestGetInfoUser } from '@/services/auth';
+import { getUrlSSO } from '@/services/auth';
 import { LoginForm } from '@ant-design/pro-form';
 
-import api from '../../../api';
 import styles from './index.less';
 
 const Login: React.FC = () => {
-  const [type, setType] = useState<string>('account');
-  const [isLogin, setIsLogin] = useState<boolean>(true);
   const { setInitialState } = useModel('@@initialState');
-  const token = window.localStorage.getItem('access_token');
-
-  const intl = useIntl();
-
-  const fetchUserInfo = async (data: API.CurrentUser[]) => {
+  const userToken = window.localStorage.getItem('token');
+  const fetchUserInfo = async (data: any) => {
     await setInitialState((s) => ({
       ...s,
-      currentUser: data[0],
-      token: token,
+      currentUser: data,
+      token: userToken,
     }));
   };
 
+  const intl = useIntl();
+
   useLayoutEffect(() => {
-    if (token) {
-      const requestInfoUser = async () => {
-        setIsLogin(false);
-        return token && (await requestGetInfoUser(token));
-      };
-
-      requestInfoUser()
-        .then((res: any) => {
-          if (res.success) {
-            setIsLogin(false);
-            fetchUserInfo(res.data);
-
-            if (history.length > 2) {
-              history.go(-1);
-            } else {
-              history.push('/');
-            }
-          } else {
-            setIsLogin(true);
-          }
-        })
-        .catch((err) => {
-          message.error(err);
-        });
+    if (userToken) {
+      history.push("/omni-channel/403")
     }
   }, []);
 
-  const handleSubmit = async (values: API.LoginParams) => {
-    try {
-    } catch (error) {
-      const defaultLoginFailureMessage = intl.formatMessage({
-        id: 'pages.login.failure',
-        defaultMessage: '登录失败，请重试！',
-      });
-      message.error(defaultLoginFailureMessage);
-    }
-  };
-
   const handleClickLogin = async () => {
-    const urlSSO = await getUrlSSO(api.UMI_API_URL);
-    if (urlSSO?.success) {
-      window.location.href = urlSSO.data[0];
-    }
-
-    return null;
+    const urlSSO = await getUrlSSO();
+    window.localStorage.setItem('token', urlSSO?.token);
+    await fetchUserInfo(urlSSO)
+    history.push("/omni-channel/403")
   };
 
   return (
     <div className={styles.container}>
-      {isLogin && (
-        <div className={styles.content}>
-          <LoginForm
-            logo={<img alt="logo" src="/logo.svg" />}
-            title="Happy Connect"
-            initialValues={{
-              autoLogin: true,
-            }}
-            submitter={false}
-            onFinish={async (values) => {
-              await handleSubmit(values as API.LoginParams);
-            }}
-          >
-            <Tabs activeKey={type} onChange={setType}>
-              <Tabs.TabPane
-                key="account"
-                tab={intl.formatMessage({
-                  id: 'pages.login.accountLogin.tab',
-                  defaultMessage: '账户密码登录',
-                })}
-              />
-            </Tabs>
-
-            {type === 'account' && (
-              <>
-                <Button className={styles.loginBtn} onClick={handleClickLogin}>
-                  Đăng nhập bằng SSO
-                </Button>
-              </>
-            )}
-          </LoginForm>
-        </div>
-      )}
+      <div className={styles.content}>
+        <LoginForm
+          logo={<img alt="logo" src="/logo.svg" />}
+          title="Happy Connect"
+          submitter={false}
+        >
+          <Tabs>
+            <Tabs.TabPane
+              key="account"
+              tab={intl.formatMessage({
+                id: 'pages.login.accountLogin.tab',
+                defaultMessage: '账户密码登录',
+              })}
+            />
+          </Tabs>
+          <>
+            <Button className={styles.loginBtn} onClick={handleClickLogin}>
+              Đăng nhập bằng SSO
+            </Button>
+          </>
+        </LoginForm>
+      </div>
     </div>
   );
 };

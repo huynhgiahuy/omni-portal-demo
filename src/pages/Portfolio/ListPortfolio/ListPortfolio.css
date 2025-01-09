@@ -1,0 +1,8 @@
+.myPortfolioHeader {
+    text-align: center;
+}
+.myPortfolioContent {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+}

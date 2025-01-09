@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import api from '@/api';
+import api from '../apiEndpoint/index'
 
 export const endpoint = api.UMI_API_BASE_URL;
 
@@ -19,44 +19,38 @@ export interface requestProps {
 
 export interface requeGetUrlSSOProps extends requestProps {
   data: string[];
+  token: string;
 }
 
 interface requestVerifySSO extends requestProps {
   data: Array<{
-    access_token: string;
-    expires_at: number;
-    expires_in: number;
-    id_token: string;
-    'not-before-policy': number;
-    refresh_expires_in: number;
-    refresh_token: string;
-    scope: string;
-    session_state: string;
-    token_type: string;
+    token: string;
   }>;
 }
 
-export const getUrlSSO = (url?: string): Promise<requeGetUrlSSOProps> => {
-  return request(`${endpoint}/auth-service/api/get_url_sso`, {
+export const getUrlSSO = (): Promise<requeGetUrlSSOProps> => {
+  return request(`${endpoint}/api/account/login`, {
     method: 'POST',
     data: {
-      redirect_uri: url,
+      username: 'Test1',
+      password: 'Test1@15652889'
     },
   });
 };
 
 export async function verifySSO(data: any): Promise<requestVerifySSO> {
-  return request(`${endpoint}/auth-service/api/get_token`, {
+  return request(`${endpoint}/api/account/login`, {
     method: 'POST',
     data,
   });
 }
 
-export async function requestGetInfoUser(token: string): Promise<requeGetUrlSSOProps> {
-  return request(`${endpoint}/user-service/api/settings/user/get_user_info`, {
+export async function requestGetInfoUser(): Promise<requeGetUrlSSOProps> {
+  return request(`${endpoint}/api/account/login`, {
     method: 'POST',
-    headers: {
-      Authorization: 'Bearer ' + token,
+    data: {
+      username: 'Test1',
+      password: 'Test1@15652889'
     },
   });
 }

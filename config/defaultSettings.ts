@@ -12,9 +12,8 @@ const Settings: LayoutSettings & {
   fixedHeader: true,
   fixSiderbar: true,
   colorWeak: false,
-  title: 'Happy Connect',
+  title: 'Ant Design Pro',
   pwa: false,
-  // logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
   logo: '/logo_theme.svg',
   iconfontUrl: '',
 };

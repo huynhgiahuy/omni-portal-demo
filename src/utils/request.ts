@@ -5,7 +5,7 @@
 import { extend } from 'umi-request';
 import { get, set } from './local-storage';
 import { requestRefreshToken } from '@/services/auth';
-import api from '@/api';
+import api from '@/apiEndpoint';
 import { errorCode } from '@/constants/error-code';
 import { message } from 'antd';
 

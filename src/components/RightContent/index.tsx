@@ -8,7 +8,6 @@ import useSubWs from '@/hooks/useSocket';
 import { requestGetTranferInfo } from '@/pages/omni-channel/report/services';
 import { socketAtom } from '@/socketio';
 
-import AgentModalAnswer from '../AgentModalAnswer';
 import AgentModalRing from '../AgentModalRing';
 import NoticeIconView from '../NoticeIcon';
 import Avatar from './AvatarDropdown';
@@ -209,22 +208,6 @@ const GlobalHeaderRight: React.FC = () => {
         handleOk={handleOkRing}
         handleCancel={handleCancelRing}
         handleOpenAnswer={showModalAnswer}
-        isFullScreenModal={isFullScreenModal}
-        handleFullScreenModal={handleFullScreenModal}
-        handleClickIconHistory={handleClickIconHistory}
-        handleClickIconNote={handleClickIconNote}
-        isVisibleHistoryCall={isVisibleHistoryCall}
-        isVisibleNoteCall={isVisibleNoteCall}
-        isActiveIconHistory={isActiveIconHistory}
-        isActiveIconNote={isActiveIconNote}
-        dataContacts={dataTranfers}
-        handelUserTransfer={handelUserTransfer}
-        dataCall={dataCall}
-      />
-      <AgentModalAnswer
-        isModalOpen={isModalOpenAnswer}
-        handleOk={handleOkAnswer}
-        handleCancel={handleCancelAnswer}
         isFullScreenModal={isFullScreenModal}
         handleFullScreenModal={handleFullScreenModal}
         handleClickIconHistory={handleClickIconHistory}

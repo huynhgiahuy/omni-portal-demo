@@ -14,7 +14,7 @@ import moment from 'moment';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useRequest } from 'umi';
 
-import api from '@/api';
+import api from '@/apiEndpoint';
 import { requestGetTakeCallNote } from '@/pages/omni-channel/report/services';
 import {
   EditOutlined,
@@ -418,12 +418,12 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                 )} */}
                 <PhoneOutlined
                   className={styles.phoneHandUp}
-                  // onClick={() => {
-                  //   setPopoverForward(false);
-                  //   setTimeout(() => {
-                  //     showConfirm();
-                  //   }, 0);
-                  // }}
+                // onClick={() => {
+                //   setPopoverForward(false);
+                //   setTimeout(() => {
+                //     showConfirm();
+                //   }, 0);
+                // }}
                 />
               </Space>
             </div>
@@ -452,15 +452,15 @@ const AgentModalRing: React.FC<AgentModalRingProps> = ({
                                     note.call_direction === 'inbound'
                                       ? '#54FF00'
                                       : note.call_direction === 'outbound'
-                                      ? '#FFAA00'
-                                      : '#19C6EE',
+                                        ? '#FFAA00'
+                                        : '#19C6EE',
                                 }}
                               >
                                 {note.call_direction === 'inbound'
                                   ? ' Cuộc gọi đến'
                                   : note.call_direction === 'outbound'
-                                  ? ' Cuộc gọi đi'
-                                  : 'Cuộc gọi nội bộ'}
+                                    ? ' Cuộc gọi đi'
+                                    : 'Cuộc gọi nội bộ'}
                               </Typography.Paragraph>
                             </div>
                             <ul style={{ listStyleType: 'disc', color: '#fff' }}>

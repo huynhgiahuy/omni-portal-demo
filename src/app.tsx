@@ -41,10 +41,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 
     onPageChange: () => {
       const { location } = history;
-
-      if (!initialState?.currentUser && location.pathname !== loginPath) {
-        history.push(loginPath);
-      }
     },
 
     menuHeaderRender: undefined,
@@ -52,8 +48,8 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     childrenRender: (children, props) => {
       return (
         <>
-          <BasicLayout>{children}</BasicLayout>
-          {!props.location?.pathname?.includes('/login') && (
+          {children}
+          {!props.location?.pathname?.includes('/user/login') && (
             <SettingDrawer
               enableDarkTheme
               prefixCls="setting_theme"
@@ -71,7 +67,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
                     fixedHeader: true,
                     fixSiderbar: true,
                     pwa: false,
-                    logo: '/pro_icon.svg',
+                    logo: '/logo_theme.svg',
                     headerHeight: 48,
                     splitMenus: false,
                   },

@@ -23,24 +23,21 @@
     name: 'omni-channel',
     icon: '/icons/omni_icon.svg',
     routes: [
-      // {
-      //   path: '/omni-channel/report',
-      //   name: 'report',
-      //   component: './omni-channel/report/index',
-      // },
       {
-        path: '/omni-channel/profile',
-        name: 'profile',
-        component: './omni-channel/setting/index',
-      },
-      {
+        path: '/omni-channel/403',
+        name: 'Test 403',
         component: './403',
       },
+      {
+        path: '/omni-channel/search-page',
+        name: 'Search Page',
+        component: './SearchPage/SearchPage'
+      }
     ],
   },
   {
     path: '/',
-    redirect: '/omni-channel/profile',
+    redirect: '/user/login',
   },
   {
     component: './403',
