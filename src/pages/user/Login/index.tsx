@@ -22,7 +22,7 @@ const Login: React.FC = () => {
 
   useLayoutEffect(() => {
     if (userToken) {
-      history.push("/omni-channel/403")
+      history.push("/omni-channel/search-page")
     }
   }, []);
 
@@ -30,7 +30,7 @@ const Login: React.FC = () => {
     const urlSSO = await getUrlSSO();
     window.localStorage.setItem('token', urlSSO?.token);
     await fetchUserInfo(urlSSO)
-    history.push("/omni-channel/403")
+    history.push("/omni-channel/search-page")
   };
 
   return (
@@ -38,7 +38,7 @@ const Login: React.FC = () => {
       <div className={styles.content}>
         <LoginForm
           logo={<img alt="logo" src="/logo.svg" />}
-          title="Happy Connect"
+          title="Ant Design Pro"
           submitter={false}
         >
           <Tabs>
@@ -46,15 +46,12 @@ const Login: React.FC = () => {
               key="account"
               tab={intl.formatMessage({
                 id: 'pages.login.accountLogin.tab',
-                defaultMessage: '账户密码登录',
               })}
             />
           </Tabs>
-          <>
-            <Button className={styles.loginBtn} onClick={handleClickLogin}>
-              Đăng nhập bằng SSO
-            </Button>
-          </>
+          <Button className={styles.loginBtn} onClick={handleClickLogin}>
+            Đăng nhập bằng SSO
+          </Button>
         </LoginForm>
       </div>
     </div>
