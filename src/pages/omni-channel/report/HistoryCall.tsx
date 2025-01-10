@@ -672,8 +672,8 @@ const HistoryCall: React.FC = () => {
                   <Timeline.Item>
                     <Typography.Paragraph>
                       {record.transferInfo.length ||
-                      record.caller_destination === null ||
-                      record.sip_from_user === null ? (
+                        record.caller_destination === null ||
+                        record.sip_from_user === null ? (
                         <>
                           <Typography.Text style={{ fontWeight: 'bold' }}>
                             {record?.transferInfo[0]?.receiver_name}

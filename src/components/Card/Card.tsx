@@ -31,10 +31,10 @@ const Card: React.FC<Props> = ({
       <p className="font-bold text-veryDarkBlue">
         [{searchResult.exchangeShortName} - {searchResult.stockExchange}]
       </p>
-      <AddPortfolio
+      {/* <AddPortfolio
         onPortfolioCreate={onPortfolioCreate}
         symbol={searchResult.symbol}
-      />
+      /> */}
     </div>
   );
 };

@@ -11,11 +11,11 @@ const NoFoundPage: React.FC = () => {
   })
   return (
     <Result
-      status="404"
-      title="404"
+      status="403"
+      title="403"
       subTitle="Trang bạn vừa tìm kiếm không tồn tại"
       extra={
-        <Button type="primary" onClick={() => history.push('/user/login')}>
+        <Button type="primary" onClick={() => history.push('/omni-channel/search-page')}>
           Trang chủ
         </Button>
       }

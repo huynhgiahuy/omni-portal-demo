@@ -24,15 +24,15 @@
     icon: '/icons/omni_icon.svg',
     routes: [
       {
-        path: '/omni-channel/403',
-        name: 'Test 403',
-        component: './403',
-      },
-      {
         path: '/omni-channel/search-page',
         name: 'Search Page',
-        component: './SearchPage/SearchPage'
-      }
+        component: './SearchPage/SearchPage',
+      },
+      {
+        path: '/omni-channel/403',
+        name: '403 Page',
+        component: './403',
+      },
     ],
   },
   {

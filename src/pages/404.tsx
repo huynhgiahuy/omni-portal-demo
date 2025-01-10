@@ -15,7 +15,7 @@ const NoFoundPage: React.FC<NoFoundPageProps> = ({ status, title, subTitle }) =>
     title={title ? title : '500'}
     subTitle={subTitle ? subTitle : 'Đã xảy ra lỗi.'}
     extra={
-      <Button type="primary" onClick={() => history.push('/')}>
+      <Button type="primary" onClick={() => history.push('/omni-channel/search-page')}>
         Trang chủ
       </Button>
     }

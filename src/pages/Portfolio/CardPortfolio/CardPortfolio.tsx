@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { PortfolioGet } from "@/models/Portfolio";
 import DeletePortfolio from "../DeletePortfolio/DeletePortfolio";
-import { Card, Row, Col } from "antd";
+import { Card } from "antd";
 import styles from './CardPortfolio.css'
 
 interface Props {

@@ -242,11 +242,11 @@ const PhoneBook: React.FC = () => {
           data
             ? data
             : {
-                email_user: initialState?.currentUser?.email,
-                page_number: pagination.current,
-                number: pagination.pageSize,
-                external_customers: external === 'Khách hàng' ? true : false,
-              },
+              email_user: initialState?.currentUser?.email,
+              page_number: pagination.current,
+              number: pagination.pageSize,
+              external_customers: external === 'Khách hàng' ? true : false,
+            },
         );
       if (!res.success) {
         if (res.error_code === 4030102) {
@@ -274,11 +274,11 @@ const PhoneBook: React.FC = () => {
           data
             ? data
             : {
-                email_user: initialState?.currentUser?.email,
-                page_number: pagination.current,
-                number: pagination.pageSize,
-                external_customers: external === 'Khách hàng' ? true : false,
-              },
+              email_user: initialState?.currentUser?.email,
+              page_number: pagination.current,
+              number: pagination.pageSize,
+              external_customers: external === 'Khách hàng' ? true : false,
+            },
         );
       if (!res.success) {
         if (res.error_code === 4030102) {
@@ -768,9 +768,9 @@ const PhoneBook: React.FC = () => {
                   external === 'Khách hàng'
                     ? listUnitExternal
                     : getListTeam?.data?.map((option: { name: string; id: string }) => ({
-                        label: option.name,
-                        value: option.name,
-                      }))
+                      label: option.name,
+                      value: option.name,
+                    }))
                 }
               />
             </Form.Item>
@@ -910,10 +910,10 @@ const PhoneBook: React.FC = () => {
           !isEdit && external === 'Khách hàng'
             ? 'Thêm khách hàng'
             : external === 'Khách hàng'
-            ? 'Thông tin khách hàng'
-            : !isEdit && external === 'Nội bộ'
-            ? 'Thêm người dùng'
-            : 'Thông tin người dùng'
+              ? 'Thông tin khách hàng'
+              : !isEdit && external === 'Nội bộ'
+                ? 'Thêm người dùng'
+                : 'Thông tin người dùng'
         }
         footer={false}
         width={620}

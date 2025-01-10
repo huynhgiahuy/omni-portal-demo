@@ -12,7 +12,7 @@ export default {
   //'menu.omni-channel.setting': 'Setting',
   'menu.omni-channel.profile': 'Profile',
   'menu-omni-channel.welcome': 'Welcome',
-  'menu-omni-channel.test403': 'Test 403',
+  'menu-omni-channel.test403': '403 Page',
   'menu-omni-channel.SearchPage': 'Search Page',
   'menu.login': 'Login',
 };
