@@ -74,9 +74,7 @@
             "related": ".xml"
           }
         },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        "frameworkReferences": ["Microsoft.AspNetCore.App"]
       },
       "Microsoft.AspNetCore.Cryptography.Internal/8.0.0": {
         "type": "package",
@@ -158,9 +156,7 @@
             "related": ".xml"
           }
         },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        "frameworkReferences": ["Microsoft.AspNetCore.App"]
       },
       "Microsoft.AspNetCore.OpenApi/8.0.11": {
         "type": "package",
@@ -177,9 +173,7 @@
             "related": ".xml"
           }
         },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        "frameworkReferences": ["Microsoft.AspNetCore.App"]
       },
       "Microsoft.Bcl.AsyncInterfaces/6.0.0": {
         "type": "package",
@@ -1104,9 +1098,7 @@
             "related": ".pdb;.xml"
           }
         },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        "frameworkReferences": ["Microsoft.AspNetCore.App"]
       },
       "Swashbuckle.AspNetCore.SwaggerGen/6.6.2": {
         "type": "package",
@@ -1136,9 +1128,7 @@
             "related": ".pdb;.xml"
           }
         },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
+        "frameworkReferences": ["Microsoft.AspNetCore.App"]
       },
       "System.CodeDom/4.4.0": {
         "type": "package",
@@ -4620,6 +4610,7 @@
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 8.0.0",
       "Microsoft.AspNetCore.Mvc.NewtonsoftJson >= 8.0.0",
       "Microsoft.AspNetCore.OpenApi >= 8.0.11",
+      "Microsoft.EntityFrameworkCore >= 8.0.0",
       "Microsoft.EntityFrameworkCore.Design >= 8.0.0",
       "Microsoft.EntityFrameworkCore.SqlServer >= 8.0.0",
       "Microsoft.EntityFrameworkCore.Tools >= 8.0.0",
@@ -4629,23 +4620,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ADMIN\\.nuget\\packages\\": {}
+    "C:\\Users\\giahu\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Project\\omni-portal\\api\\api.csproj",
+      "projectUniqueName": "D:\\Project\\omni-portal-demo\\api\\api.csproj",
       "projectName": "api",
-      "projectPath": "D:\\Project\\omni-portal\\api\\api.csproj",
-      "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-      "outputPath": "D:\\Project\\omni-portal\\api\\obj\\",
+      "projectPath": "D:\\Project\\omni-portal-demo\\api\\api.csproj",
+      "packagesPath": "C:\\Users\\giahu\\.nuget\\packages\\",
+      "outputPath": "D:\\Project\\omni-portal-demo\\api\\obj\\",
       "projectStyle": "PackageReference",
-      "configFilePaths": [
-        "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config"
-      ],
-      "originalTargetFrameworks": [
-        "net8.0"
-      ],
+      "configFilePaths": ["C:\\Users\\giahu\\AppData\\Roaming\\NuGet\\NuGet.Config"],
+      "originalTargetFrameworks": ["net8.0"],
       "sources": {
         "https://api.nuget.org/v3/index.json": {}
       },
@@ -4656,9 +4643,7 @@
         }
       },
       "warningProperties": {
-        "warnAsError": [
-          "NU1605"
-        ]
+        "warnAsError": ["NU1605"]
       },
       "restoreAuditProperties": {
         "enableAudit": "true",
@@ -4685,6 +4670,10 @@
           "Microsoft.AspNetCore.OpenApi": {
             "target": "Package",
             "version": "[8.0.11, )"
+          },
+          "Microsoft.EntityFrameworkCore": {
+            "target": "Package",
+            "version": "[8.0.0, )"
           },
           "Microsoft.EntityFrameworkCore.Design": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
@@ -4715,15 +4704,7 @@
             "version": "[6.6.2, )"
           }
         },
-        "imports": [
-          "net461",
-          "net462",
-          "net47",
-          "net471",
-          "net472",
-          "net48",
-          "net481"
-        ],
+        "imports": ["net461", "net462", "net47", "net471", "net472", "net48", "net481"],
         "assetTargetFallback": true,
         "warn": true,
         "frameworkReferences": {
