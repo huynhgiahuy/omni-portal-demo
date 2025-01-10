@@ -1,9 +1,9 @@
 .myPortfolioList {
-    margin: 5px;
-    text-align: center;
+  margin: 5px 5px 5px 0px;
+  text-align: center;
 }
 .myPortfolioListContent {
-    display: flex;
-    justify-content: center;
-    font-weight: bold;
+  display: flex;
+  justify-content: center;
+  font-weight: bold;
 }

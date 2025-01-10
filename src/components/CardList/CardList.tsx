@@ -14,7 +14,7 @@ const CardList: React.FC<Props> = ({
   onPortfolioCreate,
 }: Props): JSX.Element => {
   return (
-    <div>
+    <>
       {searchResults.length > 0 ? (
         searchResults.map((result) => {
           console.log(result)
@@ -24,13 +24,10 @@ const CardList: React.FC<Props> = ({
               className={styles.cardList}
               key={result.symbol}
             >
+
               <div className={styles.cardListContent}>
-                <div>
-                  {result.symbol}_{result.name}_{result.exchangeShortName}_{result.currency}_{result.stockExchange}
-                </div>
-                <div>
-                  <AddPortfolio onPortfolioCreate={onPortfolioCreate} symbol={result.symbol} />
-                </div>
+                {result.symbol}_{result.name}_{result.exchangeShortName}_{result.currency}_{result.stockExchange}
+                <AddPortfolio onPortfolioCreate={onPortfolioCreate} symbol={result.symbol} />
               </div>
             </Card>
           );
@@ -40,7 +37,7 @@ const CardList: React.FC<Props> = ({
           No results!?????????????
         </Card>
       )}
-    </div>
+    </>
   );
 };
 

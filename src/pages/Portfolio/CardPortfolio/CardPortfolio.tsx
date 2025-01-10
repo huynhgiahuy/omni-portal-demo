@@ -12,23 +12,19 @@ interface Props {
 const CardPortfolio = ({ portfolioValue, onPortfolioDelete }: Props) => {
   return (
     <div className={styles.myPortfolioList}>
-      <Row>
-        <Col>
-          <Card>
-            <Link
-              to={`/omni-channel/${portfolioValue.symbol}/company-profile`}
-              className={styles.myPortfolioListContent}
-            >
-              {portfolioValue.symbol}
-            </Link>
-            <br></br>
-            <DeletePortfolio
-              portfolioValue={portfolioValue}
-              onPortfolioDelete={onPortfolioDelete}
-            />
-          </Card>
-        </Col>
-      </Row >
+      <Card>
+        <Link
+          to={`/omni-channel/${portfolioValue.symbol}/company-profile`}
+          className={styles.myPortfolioListContent}
+        >
+          {portfolioValue.symbol}
+        </Link>
+        <br></br>
+        <DeletePortfolio
+          portfolioValue={portfolioValue}
+          onPortfolioDelete={onPortfolioDelete}
+        />
+      </Card>
     </div>
   );
 };

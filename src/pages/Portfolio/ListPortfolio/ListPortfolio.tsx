@@ -9,7 +9,7 @@ interface Props {
 
 const ListPortfolio = ({ portfolioValues, onPortfolioDelete }: Props) => {
   return (
-    <div>
+    <>
       <h2 className={styles.myPortfolioHeader}>
         My Portfolio
       </h2>
@@ -29,7 +29,7 @@ const ListPortfolio = ({ portfolioValues, onPortfolioDelete }: Props) => {
           </h3>
         )}
       </div>
-    </div>
+    </>
   );
 };
 
