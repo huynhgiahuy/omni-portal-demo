@@ -29,6 +29,10 @@
         component: './SearchPage/SearchPage',
       },
       {
+        path: '/omni-channel/search-page/company-profile/:symbol',
+        component: './CompanyProfilePage/CompanyProfilePage',
+      },
+      {
         path: '/omni-channel/403',
         name: '403 Page',
         component: './403',

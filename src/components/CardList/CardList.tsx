@@ -17,7 +17,6 @@ const CardList: React.FC<Props> = ({
     <>
       {searchResults.length > 0 ? (
         searchResults.map((result) => {
-          console.log(result)
           return (
             <Card
               id={result.symbol}

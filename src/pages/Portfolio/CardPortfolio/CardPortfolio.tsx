@@ -14,7 +14,7 @@ const CardPortfolio = ({ portfolioValue, onPortfolioDelete }: Props) => {
     <div className={styles.myPortfolioList}>
       <Card>
         <Link
-          to={`/omni-channel/${portfolioValue.symbol}/company-profile`}
+          to={`/omni-channel/search-page/company-profile/${portfolioValue.symbol}`}
           className={styles.myPortfolioListContent}
         >
           {portfolioValue.symbol}

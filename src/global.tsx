@@ -51,7 +51,6 @@ if (window.location.href.includes('code')) {
   };
 
   const response = await verifySSO(data);
-  console.log("respone = ", response)
   if (response?.data[0]?.token) {
     window.localStorage.setItem('token', response?.data[0]?.token);
   }
