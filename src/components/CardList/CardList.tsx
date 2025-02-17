@@ -31,11 +31,7 @@ const CardList: React.FC<Props> = ({
             </Card>
           );
         })
-      ) : (
-        <Card >
-          No results!?????????????
-        </Card>
-      )}
+      ) : null}
     </>
   );
 };

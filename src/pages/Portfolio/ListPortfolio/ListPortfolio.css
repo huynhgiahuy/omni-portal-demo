@@ -1,4 +1,6 @@
 .myPortfolioHeader {
+  font-weight: bold;
+  font-size: 25;
   text-align: center;
 }
 .myPortfolioContent {

@@ -4,6 +4,9 @@ import defaultSettings from '../config/defaultSettings';
 import api from './apiEndpoint';
 import { verifySSO } from './services/auth';
 import { history } from 'umi';
+import Schema from 'async-validator';
+
+Schema.warning = function () { };
 
 const myBrowser = () => {
   if ((navigator.userAgent.indexOf('Opera') || navigator.userAgent.indexOf('OPR')) != -1) {

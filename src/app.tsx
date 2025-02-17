@@ -8,6 +8,7 @@ import BasicLayout from './layouts/BasicLayout';
 
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from 'umi';
+import { IntlProvider } from 'umi';
 const loginPath = '/user/login';
 
 /**
@@ -75,6 +76,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
               }}
             />
           )}
+
         </>
       );
     },

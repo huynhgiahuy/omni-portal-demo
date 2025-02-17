@@ -1,9 +1,9 @@
-import { Button, Tabs } from 'antd';
-import React, { useLayoutEffect, } from 'react';
+import { Button, Tabs, Input, message } from 'antd';
+import React, { useLayoutEffect, useState } from 'react';
 import { history, useIntl, useModel } from 'umi';
 
 import { getUrlSSO } from '@/services/auth';
-import { LoginForm } from '@ant-design/pro-form';
+import ProForm, { LoginForm, ProFormText } from '@ant-design/pro-form';
 
 import styles from './index.less';
 
@@ -26,8 +26,12 @@ const Login: React.FC = () => {
     }
   }, []);
 
-  const handleClickLogin = async () => {
-    const urlSSO = await getUrlSSO();
+  const handleClick = async (values: any) => {
+    const urlSSO = await getUrlSSO(values.username, values.password);
+    if (urlSSO?.token == undefined) {
+      message.error(urlSSO.toString())
+      return;
+    }
     window.localStorage.setItem('token', urlSSO?.token);
     await fetchUserInfo(urlSSO)
     history.push("/omni-channel/search-page")
@@ -39,7 +43,9 @@ const Login: React.FC = () => {
         <LoginForm
           logo={<img alt="logo" src="/logo.svg" />}
           title="Ant Design Pro"
-          submitter={false}
+          onFinish={async (values) => {
+            handleClick(values);
+          }}
         >
           <Tabs>
             <Tabs.TabPane
@@ -49,9 +55,29 @@ const Login: React.FC = () => {
               })}
             />
           </Tabs>
-          <Button className={styles.loginBtn} onClick={handleClickLogin}>
+          <ProFormText
+            name="username"
+            label={false}
+            placeholder="Nhập username"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập username"
+              },
+            ]} />
+          <ProFormText.Password
+            name="password"
+            label={false}
+            placeholder="Nhập mật khẩu"
+            rules={[
+              {
+                required: true,
+                message: "Vui lòng nhập mật khẩu"
+              },
+            ]} />
+          {/* <Button className={styles.loginBtn} onClick={handleClick}>
             Đăng nhập bằng SSO
-          </Button>
+          </Button> */}
         </LoginForm>
       </div>
     </div>

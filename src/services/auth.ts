@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-import api from '../apiEndpoint/index'
+import api from '../apiEndpoint/index';
 
 export const endpoint = api.UMI_API_BASE_URL;
 
@@ -28,12 +28,15 @@ interface requestVerifySSO extends requestProps {
   }>;
 }
 
-export const getUrlSSO = (): Promise<requeGetUrlSSOProps> => {
+export const getUrlSSO = (
+  usernameValue: string,
+  passwordValue: string,
+): Promise<requeGetUrlSSOProps> => {
   return request(`${endpoint}/api/account/login`, {
     method: 'POST',
     data: {
-      username: 'Test1',
-      password: 'Test1@15652889'
+      username: usernameValue,
+      password: passwordValue,
     },
   });
 };
@@ -50,7 +53,7 @@ export async function requestGetInfoUser(): Promise<requeGetUrlSSOProps> {
     method: 'POST',
     data: {
       username: 'Test1',
-      password: 'Test1@15652889'
+      password: 'Test1@15652889',
     },
   });
 }
