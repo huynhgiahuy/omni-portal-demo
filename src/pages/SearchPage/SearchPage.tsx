@@ -10,8 +10,8 @@ import {
   portfolioDeleteAPI,
   portfolioGetAPI,
 } from "@/services/PortfolioService";
-//import { toast } from "react-toastify";
 import { history } from "umi";
+import { message } from 'antd'
 
 interface Props { }
 
@@ -52,10 +52,11 @@ const SearchPage = (props: Props) => {
       .then((res) => {
         if (res?.status === 204) {
           getPortfolio();
+          message.success('Add successfully')
         }
       })
-      .catch((e) => {
-        console.log(e)
+      .catch((e: any) => {
+        message.warning(e);
       });
   };
 
@@ -63,6 +64,7 @@ const SearchPage = (props: Props) => {
     portfolioDeleteAPI(symbol).then((res) => {
       if (res?.status === 200) {
         getPortfolio();
+        message.success('Delete successfully')
       }
     });
   };
@@ -70,10 +72,11 @@ const SearchPage = (props: Props) => {
   const onSearchSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     const result = await searchCompanies(search);
-    //setServerError(result.data);
-    if (typeof result === "string") {
+    if (typeof result == 'string') {
+      message.error('Fetch data unsuccessfully')
       setServerError(result);
-    } else if (Array.isArray(result.data)) {
+    } else if (Array.isArray(result.data) && result.data.length > 0) {
+      message.success('Fetch data successfully')
       setSearchResult(result.data);
     }
   };

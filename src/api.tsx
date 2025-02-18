@@ -1,4 +1,5 @@
 import axios from "axios";
+import { message } from 'antd';
 import {
   CompanyBalanceSheet,
   CompanyCashFlow,
@@ -25,10 +26,10 @@ export const searchCompanies = async (query: string) => {
     return data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.log("error message: ", error.message);
+      message.error(error.message);
       return error.message;
     } else {
-      console.log("unexpected error: ", error);
+      message.error('Unexpected error has occured');
       return "An expected error has occured.";
     }
   }
@@ -41,7 +42,7 @@ export const getCompanyProfile = async (query: string) => {
       , { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
     return data;
   } catch (error: any) {
-    console.log("error message: ", error.message);
+    message.error(error.message);
   }
   return;
 };
@@ -57,7 +58,7 @@ export const getKeyMetrics = async (query: string) => {
       });
     return data;
   } catch (error: any) {
-    console.log("error message: ", error.message);
+    message.error(error.message);
   }
   return;
 };
@@ -73,7 +74,7 @@ export const getIncomeStatement = async (query: string) => {
       });
     return data;
   } catch (error: any) {
-    console.log("error message: ", error.message);
+    message.error(error.message);
   }
   return;
 };
@@ -89,7 +90,7 @@ export const getBalanceSheet = async (query: string) => {
       });
     return data;
   } catch (error: any) {
-    console.log("error message: ", error.message);
+    message.error(error.message);
   }
   return;
 };
@@ -105,7 +106,7 @@ export const getCashFlow = async (query: string) => {
       });
     return data;
   } catch (error: any) {
-    console.log("error message: ", error.message);
+    message.error(error.message);
   }
   return;
 };
@@ -117,7 +118,7 @@ export const getTenK = async (query: string) => {
       , { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
     return data;
   } catch (error: any) {
-    console.log("error message: ", error.message);
+    message.error(error.message);
   }
   return;
 };
@@ -133,7 +134,7 @@ export const getHistoricalDividend = async (query: string) => {
       });
     return data;
   } catch (error: any) {
-    console.log("error message: ", error.message);
+    message.error(error.message);
   }
   return;
 };

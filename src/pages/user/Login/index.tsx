@@ -1,9 +1,8 @@
-import { Button, Tabs, Input, message } from 'antd';
-import React, { useLayoutEffect, useState } from 'react';
-import { history, useIntl, useModel } from 'umi';
-
+import { Tabs, message } from 'antd';
+import React, { useLayoutEffect } from 'react';
+import { history, useModel } from 'umi';
 import { getUrlSSO } from '@/services/auth';
-import ProForm, { LoginForm, ProFormText } from '@ant-design/pro-form';
+import { LoginForm, ProFormText } from '@ant-design/pro-form';
 
 import styles from './index.less';
 
@@ -17,8 +16,6 @@ const Login: React.FC = () => {
       token: userToken,
     }));
   };
-
-  const intl = useIntl();
 
   useLayoutEffect(() => {
     if (userToken) {
@@ -34,6 +31,7 @@ const Login: React.FC = () => {
     }
     window.localStorage.setItem('token', urlSSO?.token);
     await fetchUserInfo(urlSSO)
+    message.success('Login Successfully!')
     history.push("/omni-channel/search-page")
   };
 
@@ -47,13 +45,11 @@ const Login: React.FC = () => {
             handleClick(values);
           }}
         >
-          <Tabs>
-            <Tabs.TabPane
-              key="account"
-              tab={intl.formatMessage({
-                id: 'pages.login.accountLogin.tab',
-              })}
-            />
+          <Tabs items={[{
+            key: 'account',
+            label: 'Đăng nhập hệ thống',
+          }]}>
+            <Tabs.TabPane key="account" />
           </Tabs>
           <ProFormText
             name="username"

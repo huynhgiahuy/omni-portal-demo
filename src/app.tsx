@@ -1,14 +1,9 @@
 import { history } from 'umi';
-
 import RightContent from '@/components/RightContent';
 import { SettingDrawer } from '@ant-design/pro-layout';
-
 import defaultSettings from '../config/defaultSettings';
-import BasicLayout from './layouts/BasicLayout';
-
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from 'umi';
-import { IntlProvider } from 'umi';
 const loginPath = '/user/login';
 
 /**
@@ -39,10 +34,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
   return {
     rightContentRender: () => initialState?.currentUser?.id && <RightContent />,
     disableContentMargin: false,
-
-    onPageChange: () => {
-      const { location } = history;
-    },
 
     menuHeaderRender: undefined,
 
