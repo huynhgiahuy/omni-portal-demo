@@ -32,7 +32,7 @@ export async function getInitialState(): Promise<{
 
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
-    rightContentRender: () => initialState?.currentUser?.id && <RightContent />,
+    rightContentRender: () => <RightContent />,
     disableContentMargin: false,
 
     menuHeaderRender: undefined,

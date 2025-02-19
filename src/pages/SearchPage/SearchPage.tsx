@@ -11,7 +11,7 @@ import {
   portfolioGetAPI,
 } from "@/services/PortfolioService";
 import { history } from "umi";
-import { message } from 'antd'
+import { message, Card } from 'antd'
 
 interface Props { }
 
@@ -95,7 +95,7 @@ const SearchPage = (props: Props) => {
         searchResults={searchResult}
         onPortfolioCreate={onPortfolioCreate}
       />
-      {serverError && <div>Unable to connect to API</div>}
+      {serverError && <Card>Unable to connect to API</Card>}
     </>
   );
 };

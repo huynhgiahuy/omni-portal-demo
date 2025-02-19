@@ -7,20 +7,18 @@ import {
   Menu,
   message,
   Row,
-  Spin,
   Switch,
-  Typography,
 } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, history, useModel } from 'umi';
 
-import api from '@/apiEndpoint';
+// import api from '@/apiEndpoint';
 import { outLogin } from '@/services/ant-design-pro/api';
-import {
-  requeGetUserInfoProps,
-  requestUpdatenotification,
-  requestUpdateScreenMode,
-} from '@/services/user_info';
+// import {
+//   requeGetUserInfoProps,
+//   requestUpdatenotification,
+//   requestUpdateScreenMode,
+// } from '@/services/user_info';
 import {
   CompassFilled,
   LogoutOutlined,
@@ -80,8 +78,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     radio_theme: initialState?.currentUser?.screen_mode?.dark_mode ? true : false,
   });
 
-  const token = window.localStorage.getItem('access_token');
-
   const onMenuClick = useCallback(
     (event: MenuInfo) => {
       const { key } = event;
@@ -117,89 +113,8 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     });
   }, [initialState?.currentUser]);
 
-  async function onChangeNotifications() {
-    const { critic_issue, incoming_call, missed_call, night_plan, overdue_message, shift } = values;
-    const data = { missed_call, incoming_call, critic_issue, night_plan, shift, overdue_message };
-    const res = await requestUpdatenotification(data, token ? token : '');
-    if (res.success) {
-      await setInitialState((s) => ({
-        ...s,
-        currentUser: { ...initialState?.currentUser, notification: res.data[0] },
-      }));
-    } else {
-      message.error('Cập nhập trạng thái không thành công');
-      return;
-    }
-  }
-
   async function onChangeSettings(e: boolean) {
     setValueSetting({ radio_theme: e });
-  }
-
-  useEffect(() => {
-    if (
-      valueSetting.radio_theme !== initialState?.currentUser?.screen_mode?.dark_mode &&
-      initialState?.currentUser?.screen_mode?.dark_mode !== undefined
-    ) {
-      const res = requestUpdateScreenMode(valueSetting.radio_theme, token ? token : '');
-
-      res
-        .then(async (result: requeGetUserInfoProps) => {
-          if (result.success) {
-            await setInitialState((s) => ({
-              ...s,
-              currentUser: {
-                ...initialState.currentUser,
-                screen_mode: {
-                  ...initialState.currentUser?.screen_mode,
-                  dark_mode: result.data[0].dark_mode,
-                  simple_mode: result.data[0].simple_mode,
-                },
-              },
-              settings: {
-                navTheme: result.data[0].dark_mode ? 'realDark' : 'light',
-                primaryColor: '#1890ff',
-                layout: 'side',
-                contentWidth: 'Fluid',
-                fixedHeader: true,
-                fixSiderbar: true,
-                pwa: false,
-                logo: '/logo_theme.svg',
-                headerHeight: 48,
-                splitMenus: false,
-              },
-            }));
-          } else {
-            return;
-          }
-        })
-        .catch((error) => {
-          message.error('Cài đặt lỗi');
-          return;
-        });
-    }
-  }, [valueSetting.radio_theme]);
-
-  const loading = (
-    <span className={`${styles.action} ${styles.account}`}>
-      <Spin
-        size="small"
-        style={{
-          marginLeft: 8,
-          marginRight: 8,
-        }}
-      />
-    </span>
-  );
-
-  if (!initialState?.currentUser) {
-    return loading;
-  }
-
-  const { currentUser } = initialState;
-
-  if (!currentUser) {
-    return loading;
   }
 
   const menuHeaderDropdown = (
@@ -243,7 +158,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
                 <Switch
                   size="small"
                   checked={values.missed_call}
-                  onChange={onChangeNotifications}
+                //onChange={onChangeNotifications}
                 />
               </Form.Item>
             </Col>
@@ -257,7 +172,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
                 <Switch
                   size="small"
                   checked={values.incoming_call}
-                  onChange={onChangeNotifications}
+                //onChange={onChangeNotifications}
                 />
               </Form.Item>
             </Col>
@@ -271,7 +186,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
                 <Switch
                   size="small"
                   checked={values.critic_issue}
-                  onChange={onChangeNotifications}
+                //onChange={onChangeNotifications}
                 />
               </Form.Item>
             </Col>
@@ -282,7 +197,11 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             </Col>
             <Col span={4} className={styles.notifyMenuSwitch}>
               <Form.Item className={styles.notifyMenuForm} name="night_plan">
-                <Switch size="small" checked={values.night_plan} onChange={onChangeNotifications} />
+                <Switch
+                  size="small"
+                  checked={values.night_plan}
+                //onChange={onChangeNotifications} 
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -292,7 +211,11 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
             </Col>
             <Col span={4} className={styles.notifyMenuSwitch}>
               <Form.Item className={styles.notifyMenuForm} name="shift">
-                <Switch size="small" checked={values.shift} onChange={onChangeNotifications} />
+                <Switch
+                  size="small"
+                  checked={values.shift}
+                //onChange={onChangeNotifications} 
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -305,7 +228,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
                 <Switch
                   size="small"
                   checked={values.overdue_message}
-                  onChange={onChangeNotifications}
+                //onChange={onChangeNotifications}
                 />
               </Form.Item>
             </Col>
@@ -420,12 +343,10 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         <Avatar
           size={32}
           className={styles.avatar}
-          src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.avatar}`}
+          //src={`${api.UMI_API_BASE_URL}/user-service/api/user/get_user_avatar?file_name=${initialState?.currentUser?.avatar}`}
           alt="avatar"
           icon={
-            !initialState?.currentUser?.avatar && (
-              <UserOutlined style={{ fontSize: 20, color: '#fff' }} />
-            )
+            <UserOutlined style={{ fontSize: 20, color: '#fff' }} />
           }
         />
       </span>
