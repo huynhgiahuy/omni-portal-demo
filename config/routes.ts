@@ -21,7 +21,7 @@
   {
     path: '/omni-channel',
     name: 'omni-channel',
-    icon: '/icons/omni_icon.svg',
+    icon: 'form',
     routes: [
       {
         path: '/omni-channel/search-page',

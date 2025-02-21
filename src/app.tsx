@@ -36,8 +36,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     rightContentRender: () => <RightContent />,
     disableContentMargin: false,
 
-    menuHeaderRender: undefined,
-
     childrenRender: (children, props) => {
       return (
         <>
