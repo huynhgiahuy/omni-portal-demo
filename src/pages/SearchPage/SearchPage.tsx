@@ -52,7 +52,7 @@ const SearchPage = (props: Props) => {
       .then((res) => {
         if (res?.status === 204) {
           getPortfolio();
-          message.success('Add successfully')
+          message.success('Thêm thành công!')
         }
       })
       .catch((e: any) => {
@@ -64,7 +64,7 @@ const SearchPage = (props: Props) => {
     portfolioDeleteAPI(symbol).then((res) => {
       if (res?.status === 200) {
         getPortfolio();
-        message.success('Delete successfully')
+        message.success('Xóa thành công!')
       }
     });
   };
@@ -73,10 +73,10 @@ const SearchPage = (props: Props) => {
     e.preventDefault();
     const result = await searchCompanies(search);
     if (typeof result == 'string') {
-      message.error('Fetch data unsuccessfully')
+      message.error('Không thể lấy dữ liệu!')
       setServerError(result);
     } else if (Array.isArray(result.data) && result.data.length > 0) {
-      message.success('Fetch data successfully')
+      message.success('Lấy dữ liệu thành công!')
       setSearchResult(result.data);
     }
   };

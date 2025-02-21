@@ -18,7 +18,8 @@ export interface requestProps {
 }
 
 export interface requeGetUrlSSOProps extends requestProps {
-  data: string[];
+  username: string;
+  email: string;
   token: string;
 }
 
@@ -71,13 +72,6 @@ export async function requestLogout() {
     params: {
       redirect_uri: `${api.UMI_API_URL}`,
     },
-  });
-}
-
-export async function requestLogin2(data: any) {
-  return request(`${endpoint}/user/login`, {
-    method: 'POST',
-    data,
   });
 }
 

@@ -1,9 +1,8 @@
-import { Tabs, message } from 'antd';
-import React, { useLayoutEffect } from 'react';
+import { Tabs, message, Button } from 'antd';
+import React, { useEffect } from 'react';
 import { history, useModel } from 'umi';
 import { getUrlSSO } from '@/services/auth';
 import { LoginForm, ProFormText } from '@ant-design/pro-form';
-
 import styles from './index.less';
 
 const Login: React.FC = () => {
@@ -17,21 +16,22 @@ const Login: React.FC = () => {
     }));
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (userToken) {
       history.push("/omni-channel/search-page")
     }
   }, []);
 
-  const handleClick = async (values: any) => {
+  const handleClickLogin = async (values: any) => {
     const urlSSO = await getUrlSSO(values.username, values.password);
     if (urlSSO?.token == undefined) {
       message.error(urlSSO.toString())
       return;
     }
     window.localStorage.setItem('token', urlSSO?.token);
+    window.localStorage.setItem('username', urlSSO?.username);
     await fetchUserInfo(urlSSO)
-    message.success('Login Successfully!')
+    message.success('Đăng nhập thành công!')
     history.push("/omni-channel/search-page")
   };
 
@@ -42,7 +42,12 @@ const Login: React.FC = () => {
           logo={<img alt="logo" src="/logo.svg" />}
           title="Ant Design Pro"
           onFinish={async (values) => {
-            handleClick(values);
+            handleClickLogin(values);
+          }}
+          submitter={{
+            searchConfig: {
+              submitText: "Đăng nhập"
+            }
           }}
         >
           <Tabs items={[{
@@ -54,7 +59,7 @@ const Login: React.FC = () => {
           <ProFormText
             name="username"
             label={false}
-            placeholder="Nhập username"
+            placeholder="Username"
             rules={[
               {
                 required: true,
@@ -64,16 +69,13 @@ const Login: React.FC = () => {
           <ProFormText.Password
             name="password"
             label={false}
-            placeholder="Nhập mật khẩu"
+            placeholder="Password"
             rules={[
               {
                 required: true,
                 message: "Vui lòng nhập mật khẩu"
               },
             ]} />
-          {/* <Button className={styles.loginBtn} onClick={handleClick}>
-            Đăng nhập bằng SSO
-          </Button> */}
         </LoginForm>
       </div>
     </div>

@@ -11,14 +11,7 @@ import {
 } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, history, useModel } from 'umi';
-
-// import api from '@/apiEndpoint';
 import { outLogin } from '@/services/ant-design-pro/api';
-// import {
-//   requeGetUserInfoProps,
-//   requestUpdatenotification,
-//   requestUpdateScreenMode,
-// } from '@/services/user_info';
 import {
   CompassFilled,
   LogoutOutlined,
