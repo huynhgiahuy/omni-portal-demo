@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CompanyProfile } from "@/company";
 import { getCompanyProfile } from "@/api";
-import { useParams } from "umi";
+import { useParams, history } from "umi";
 import CompanyDashboard from "@/components/CompanyDashboard/CompanyDashboardHeader/CompanyDashboardHeader";
 import { PageLoading } from "@ant-design/pro-layout";
 
@@ -9,6 +9,7 @@ const CompanyProfilePage = () => {
 
     const [companyData, setCompanyData] = useState<CompanyProfile>();
     const { symbol } = useParams<{ symbol: string }>();
+    const userToken = window.localStorage.getItem('token');
 
     const getCompanyDataList = async () => {
         const value = await getCompanyProfile(symbol);
@@ -16,7 +17,12 @@ const CompanyProfilePage = () => {
     }
 
     useEffect(() => {
-        getCompanyDataList();
+        if (userToken) {
+            getCompanyDataList();
+        }
+        else {
+            history.push('/user/login');
+        }
     }, [])
 
     return (

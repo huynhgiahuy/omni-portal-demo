@@ -5,13 +5,11 @@ import {
   Form,
   Image,
   Menu,
-  message,
   Row,
   Switch,
 } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, history, useModel } from 'umi';
-import { outLogin } from '@/services/ant-design-pro/api';
 import {
   CompassFilled,
   LogoutOutlined,
@@ -35,15 +33,9 @@ export type GlobalHeaderRightProps = {
  * 退出登录，并且将当前的 url 保存
  */
 const loginOut = async () => {
-  const logoutRequest = await outLogin();
-
-  if (logoutRequest.success) {
-    window.localStorage.removeItem('access_token');
-    window.localStorage.removeItem('rid');
-    window.location.href = logoutRequest.data[0];
-  } else {
-    message.error('Không thể đăng xuất vui lòng thử lại');
-  }
+  window.localStorage.removeItem('token');
+  window.localStorage.removeItem('username');
+  history.push('/user/login');
 };
 
 type valuesProps = {
@@ -79,7 +71,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         return;
       }
       if (key === 'user') {
-        history.push('/omni-channel/profile');
+        history.push('/omni-channel/search-page');
         return;
       }
       if (key === 'notify') {

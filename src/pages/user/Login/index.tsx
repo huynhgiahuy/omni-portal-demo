@@ -1,4 +1,4 @@
-import { Tabs, message, Button } from 'antd';
+import { Tabs, message } from 'antd';
 import React, { useEffect } from 'react';
 import { history, useModel } from 'umi';
 import { getUrlSSO } from '@/services/auth';

@@ -1,6 +1,5 @@
 import { Space } from 'antd';
 import Avatar from './AvatarDropdown';
-import { useModel } from 'umi';
 
 export type SiderTheme = 'light' | 'dark';
 
