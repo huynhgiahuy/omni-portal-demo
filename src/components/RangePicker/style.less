@@ -1,0 +1,61 @@
+.antRangePicker {
+  :global {
+    .ant-picker-input > input {
+      color: rgba(0, 0, 0, 1);
+      text-align: center;
+    }
+    .ant-picker-input > input:placeholder-shown {
+      text-align: center;
+    }
+    .ant-picker-panel-container {
+      position: relative;
+      padding-left: 100px;
+    }
+    .ant-picker-panels {
+      border-left: 1px solid #f0f0f0;
+    }
+    .ant-picker-panels .ant-picker-panel {
+      border-bottom: 0;
+    }
+    .ant-picker-footer {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .ant-picker-ranges {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 110px;
+      padding-top: 10px;
+    }
+    .ant-picker-ranges .ant-picker-preset {
+      display: block;
+      margin-right: 10px;
+      margin-bottom: 5px;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .ant-picker-ranges .ant-picker-preset > span {
+      display: block;
+      height: 26px;
+      margin: 0;
+      padding: 0 8px;
+      line-height: 26px;
+      background-color: transparent;
+      border: none;
+    }
+    .ant-picker-ranges .ant-picker-preset:hover {
+      background-color: #e6f7ff;
+    }
+    .ant-picker-decade-panel .ant-picker-content,
+    .ant-picker-year-panel .ant-picker-content,
+    .ant-picker-quarter-panel .ant-picker-content,
+    .ant-picker-month-panel .ant-picker-content {
+      height: 228px;
+    }
+    .ant-picker-range-arrow {
+      margin-left: 58.5px;
+    }
+  }
+}

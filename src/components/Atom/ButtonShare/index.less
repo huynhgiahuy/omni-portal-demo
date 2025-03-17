@@ -1,0 +1,51 @@
+.a-button-share {
+  &__popover {
+    background-color: red;
+  }
+
+  &__forward-phone {
+    color: rgba(0, 0, 0, 0.45);
+  }
+
+  &__phone-share {
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    background: #399dee;
+    border-radius: 100%;
+    cursor: pointer;
+  }
+
+  &__list-transfer {
+    height: 180px;
+    overflow: scroll;
+    overflow: -moz-scrollbars-none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+      width: 0 !important;
+    }
+
+    .ant-list-item-meta {
+      align-items: center;
+    }
+
+    .ant-list-item-meta-avatar {
+      display: flex;
+      width: 14px;
+      height: 14px;
+      margin: 0 10px;
+    }
+
+    .ant-list-item-meta-title {
+      margin-bottom: 0;
+    }
+  }
+
+  &__forward-select-button {
+    display: flex;
+    justify-content: right;
+    padding-top: 10px;
+  }
+}

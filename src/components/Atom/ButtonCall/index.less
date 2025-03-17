@@ -1,0 +1,96 @@
+.a-button-call {
+  display: flex;
+
+  @keyframes phonePickUp {
+    0% {
+      rotate: -10deg;
+    }
+    50% {
+      rotate: 30deg;
+    }
+    100% {
+      rotate: -10deg;
+    }
+  }
+
+  &__reveice {
+    transform: scaleX(-1);
+    cursor: pointer;
+    svg {
+      padding: 10px;
+      font-size: 40px;
+      background: #52c41b;
+      border-radius: 100%;
+      animation: phonePickUp 0.3s infinite forwards;
+      fill: white;
+    }
+  }
+  &__hang-up {
+    cursor: pointer;
+    svg {
+      padding: 10px;
+      font-size: 40px;
+      background: red;
+      border-radius: 100%;
+      fill: white;
+      rotate: -135deg;
+    }
+  }
+
+  &__mute {
+    background: #399dee;
+    border-radius: 100%;
+    cursor: pointer;
+    svg {
+      padding: 10px;
+      font-size: 40px;
+      fill: white;
+    }
+  }
+
+  &__un-mute {
+    position: relative;
+    background: red;
+    border-radius: 100%;
+    cursor: pointer;
+    svg {
+      padding: 10px;
+      font-size: 40px;
+      fill: white;
+    }
+
+    &::before {
+      position: absolute;
+      top: 20px;
+      left: 5px;
+      display: block;
+      width: 30px;
+      height: 2px;
+      background: white;
+      content: '';
+      rotate: 140deg;
+    }
+  }
+
+  &__pause {
+    background: red;
+    border-radius: 100%;
+    cursor: pointer;
+    svg {
+      padding: 10px;
+      font-size: 40px;
+      fill: white;
+    }
+  }
+
+  &__play {
+    background: #399dee;
+    border-radius: 100%;
+    cursor: pointer;
+    svg {
+      padding: 10px;
+      font-size: 40px;
+      fill: white;
+    }
+  }
+}

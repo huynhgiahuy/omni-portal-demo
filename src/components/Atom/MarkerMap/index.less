@@ -1,0 +1,39 @@
+.a-marker-map {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    width: 24px;
+    height: 24px;
+  }
+
+  &__tooltip {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+  }
+
+  &--red {
+    background-color: red;
+  }
+
+  &--green {
+    background: rgba(19, 218, 146, 0.8);
+    transform: matrix(0.17, 0.99, -0.98, 0.2, 0, 0);
+  }
+
+  &--yellow {
+    background: yellow;
+  }
+
+  &--orange {
+    background: orange;
+  }
+
+  &--mustard {
+    background: rgba(251, 213, 17, 0.5);
+  }
+}

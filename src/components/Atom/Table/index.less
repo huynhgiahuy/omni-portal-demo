@@ -1,0 +1,69 @@
+.a-table-component {
+  .ant-table-content {
+    box-shadow: rgba(0, 0, 0, 0.35) 0 5px 15px;
+  }
+
+  .ant-table-thead {
+    .ant-table-cell {
+      color: black;
+      background-color: #7fb77e;
+      // &:first-child {
+      //   border-radius: 8px 0 0 0 !important;
+      // }
+
+      // &:last-child {
+      //   border-radius: 0 8px 0 0 !important;
+      // }
+    }
+  }
+
+  .ant-table-tbody {
+    & > tr {
+      td {
+        border-bottom: 1px solid #e8e7e7 !important;
+        border-bottom: none;
+      }
+    }
+
+    .ant-table-cell {
+      // &:first-child {
+      //   border-radius: 8px 0 0 0 !important;
+      // }
+
+      // &:last-child {
+      //   border-radius: 0 8px 0 0 !important;
+      // }
+    }
+  }
+
+  .ant-pagination-item-active {
+    background: #7fb77e !important;
+    border-color: #7fb77e !important;
+  }
+  .ant-pagination-item-active a {
+    color: #fff;
+  }
+  .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+    color: #fff;
+    background-color: #7fb77e;
+  }
+  .ant-table-fixed-header .ant-table-scroll .ant-table-header {
+    background-color: #7fb77e;
+  }
+  .ant-table-cell-scrollbar:not([rowspan]) {
+    box-shadow: none;
+  }
+  .ant-checkbox-indeterminate .ant-checkbox-inner::after {
+    background-color: #fff;
+  }
+  .ant-checkbox-checked .ant-checkbox-inner,
+  .ant-checkbox-indeterminate .ant-checkbox-inner {
+    margin: unset;
+    padding: unset;
+    background-color: #19857b;
+    border-color: #19857b;
+  }
+  .ant-table-column-sorter-inner {
+    color: black;
+  }
+}

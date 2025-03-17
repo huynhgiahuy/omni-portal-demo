@@ -1,0 +1,7 @@
+.cardList {
+  margin: 5px 0px 5px 0px;
+}
+.cardListContent {
+  display: flex;
+  justify-content: space-between;
+}

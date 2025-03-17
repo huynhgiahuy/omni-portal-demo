@@ -1,0 +1,632 @@
+/* stylelint-disable selector-pseudo-element-colon-notation */
+@import (reference) '~antd/es/style/themes/index';
+
+.antSegmented {
+  :global {
+    .ant-segmented {
+      background-color: #e3eaf4;
+    }
+    .ant-segmented-group {
+      background-color: #e3eaf4;
+      border: #e3eaf4;
+    }
+    .ant-segmented-item-selected {
+      color: #fff;
+      font-weight: bold;
+      background-color: #7fb77e;
+    }
+    .ant-segmented-item:hover {
+      color: #fff;
+    }
+    .ant-segmented-item:focus {
+      color: #fff;
+    }
+  }
+}
+
+.detailCardLayout {
+  margin-top: 100px;
+  background-color: white;
+  border: 1px solid #59895c;
+  border-radius: 8px;
+  :global {
+    .ant-card-head {
+      border-bottom: unset;
+    }
+    .ant-card-body {
+      padding-left: unset;
+    }
+  }
+}
+
+.detailCardLayoutNoMar {
+  margin-top: 1rem;
+  background-color: white;
+  border: 1px solid #59895c;
+  border-radius: 8px;
+  :global {
+    .ant-card-head {
+      border-bottom: unset;
+    }
+    .ant-card-body {
+      padding-left: unset;
+    }
+  }
+}
+
+.antAvatarImg {
+  position: absolute;
+  top: -80px;
+  left: 50px;
+  width: 143px;
+  height: 143px;
+  background-color: white;
+  border-radius: 100%;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+
+  &:hover {
+    opacity: 0.9;
+    .antAvatarImgHover {
+      opacity: 1;
+    }
+  }
+
+  & .antAvatarImgHover {
+    position: absolute;
+    top: 35%;
+    left: 38%;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+  }
+}
+
+.antImg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+
+  img {
+    object-fit: cover;
+  }
+}
+
+.antFieldDisplay {
+  margin-bottom: 20px;
+  padding: 5px;
+  font-weight: bold;
+  font-size: 18px;
+  background-color: #f0f2f5;
+  border-radius: 6px;
+}
+
+.antDataDisplay {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.antTextStyle {
+  color: rgba(0, 0, 0, 1);
+  font-size: 18px;
+}
+
+.antBold {
+  color: rgba(0, 0, 0, 1);
+  font-weight: bold;
+}
+
+.antShiftTabPane {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  :global {
+    .ant-tabs-nav-wrap {
+      display: flex;
+      justify-content: center;
+    }
+  }
+}
+
+.osDeviceStyle {
+  margin-right: 10px;
+  color: rgba(0, 0, 0, 1);
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.locationDeviceStyle {
+  margin-right: 10px;
+  color: rgba(0, 0, 0, 0.53);
+  font-weight: 400;
+  font-size: 13px;
+  font-style: italic;
+
+  .locationDot {
+    width: 6px;
+    height: 6px;
+    background: #bababa;
+    border-radius: 100%;
+  }
+}
+
+.permissionTableRole {
+  margin-top: 20px;
+  :global {
+    .ant-table {
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    }
+    .ant-table-content {
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+    }
+    .ant-table-thead > tr > th {
+      color: rgba(0, 0, 0, 1);
+      font-weight: bold;
+      background-color: #7fb77e;
+    }
+    .ant-table-thead {
+      font-size: 14px;
+    }
+    .ant-pagination-item-active {
+      background: #7fb77e;
+      border-color: #7fb77e;
+    }
+    .ant-pagination-item-active a {
+      color: #fff;
+    }
+    .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+      color: #fff;
+      background-color: #7fb77e;
+    }
+    .ant-table-fixed-header .ant-table-scroll .ant-table-header {
+      background-color: #7fb77e;
+    }
+    .ant-table-cell-scrollbar:not([rowspan]) {
+      box-shadow: none;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #19857b;
+      border-color: #19857b;
+    }
+    .ant-table-column-sorter-inner {
+      color: black;
+    }
+  }
+}
+
+.permissionTable {
+  :global {
+    .ant-table {
+      padding: 20px;
+      color: rgba(0, 0, 0, 1);
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    }
+    .ant-table-thead > tr > th {
+      color: rgba(0, 0, 0, 1);
+      font-weight: bold;
+      background-color: #7fb77e;
+    }
+    .ant-table-thead {
+      color: rgba(0, 0, 0, 1);
+      font-size: 14px;
+    }
+    .ant-pagination-item-active {
+      background: #7fb77e;
+      border-color: #7fb77e;
+    }
+    .ant-pagination-item-active a {
+      color: #fff;
+    }
+    .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+      color: #fff;
+      background-color: #7fb77e;
+    }
+    .ant-table-fixed-header .ant-table-scroll .ant-table-header {
+      background-color: #7fb77e;
+    }
+    .ant-table-cell-scrollbar:not([rowspan]) {
+      box-shadow: none;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #19857b;
+      border-color: #19857b;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-table-column-sorter {
+      color: black;
+    }
+  }
+}
+
+.addPermissionTable {
+  :global {
+    .ant-table-thead > tr > th {
+      color: rgba(0, 0, 0, 1);
+      font-weight: bold;
+      background-color: #7fb77e;
+    }
+    .ant-table-thead {
+      font-size: 14px;
+    }
+    .ant-table-cell-scrollbar:not([rowspan]) {
+      box-shadow: none;
+    }
+  }
+}
+
+.addPermissionInputPlaceholder {
+  :global {
+    .ant-input:placeholder-shown {
+      font-style: italic;
+    }
+    .ant-form-item-explain-error {
+      font-style: italic;
+    }
+  }
+}
+
+.addPermissionInput {
+  font-style: italic;
+}
+
+.antCheckboxGroup {
+  :global {
+    .ant-checkbox-group-item {
+      margin-right: 20px;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #87c686;
+      border-color: #87c686;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner:after {
+      left: 50%;
+      transform: rotate(45deg) scale(1) translate(-100%, -20%);
+    }
+  }
+}
+
+.antFormItemMargin {
+  margin-bottom: unset;
+}
+
+.treeDataCheckbox {
+  :global {
+    .ant-tree-checkbox-checked .ant-tree-checkbox-inner,
+    .ant-tree-checkbox-indeterminate .ant-tree-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #87c686;
+      border-color: #87c686;
+    }
+    .ant-tree-checkbox-indeterminate .ant-tree-checkbox-inner:after {
+      background-color: #fff;
+    }
+  }
+}
+
+.checkboxStyle {
+  :global {
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #87c686;
+      border-color: #87c686;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner:after {
+      left: 50%;
+      transform: rotate(45deg) scale(1) translate(-100%, -20%);
+    }
+  }
+}
+
+.addNewTeamPlaceholder {
+  font-style: italic;
+  :global {
+    .ant-input:placeholder-shown {
+      font-style: italic;
+    }
+  }
+}
+
+.flexLayout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inputNumber {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    margin: 0;
+    -webkit-appearance: none;
+  }
+  /* stylelint-disable-next-line selector-attribute-quotes */
+  &[type='number'] {
+    -moz-appearance: textfield;
+  }
+  color: rgba(0, 0, 0, 1);
+}
+
+.avatarImg {
+  img {
+    object-fit: cover;
+  }
+}
+
+.readyStatusText {
+  margin-left: 9px;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.abscentStatusText {
+  margin-left: 9px;
+  color: #faad14;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.notDisturbStatusText {
+  margin-left: 9px;
+  color: #f5222d;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.noActivityStatusDisplay {
+  display: flex;
+  align-items: center;
+  padding-left: 10%;
+  text-align: center;
+  border: 1px solid #818181;
+  border-radius: 4px;
+}
+
+.noActivityStatusText {
+  margin-left: 5px;
+  color: #818181;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.offlineStatusDisplay {
+  display: flex;
+  align-items: center;
+  padding-left: 18%;
+  text-align: center;
+  border: 1px solid #818181;
+  border-radius: 4px;
+}
+
+.offlineStatusText {
+  margin-left: 5px;
+  color: #818181;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.filterFormPermissionEdit {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding-top: 30px;
+}
+
+.filterFormPermissionEditDisplay {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.addNewTeamText {
+  padding-right: 14px;
+  padding-bottom: 10px;
+  padding-left: 14px;
+}
+
+.addNewTeamBtn {
+  padding: unset;
+  color: rgba(0, 0, 0, 0.5);
+  font-style: italic;
+}
+
+.filterFieldActive {
+  font-weight: bold;
+  text-decoration: underline;
+}
+.filterFieldNoActive {
+  color: rgba(0, 0, 0, 1);
+}
+
+.checkboxPopoverAll {
+  :global {
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #87c686;
+      border-color: #87c686;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner:after {
+      left: 50%;
+      transform: rotate(45deg) scale(1) translate(-100%, -20%);
+    }
+    .ant-checkbox-wrapper {
+      color: rgba(0, 0, 0, 1);
+    }
+  }
+  /* stylelint-disable-next-line declaration-empty-line-before */
+  color: rgba(0, 0, 0, 1);
+  font-weight: bold;
+}
+
+.checkboxPopover {
+  :global {
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      margin: unset;
+      padding: unset;
+      background-color: #87c686;
+      border-color: #87c686;
+    }
+    .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+      background-color: #fff;
+    }
+    .ant-checkbox-checked .ant-checkbox-inner:after {
+      left: 50%;
+      transform: rotate(45deg) scale(1) translate(-100%, -20%);
+    }
+    .ant-checkbox-group-item {
+      display: flex;
+      margin-right: 0;
+      padding-bottom: 10px;
+    }
+    .ant-checkbox-wrapper {
+      color: rgba(0, 0, 0, 1);
+    }
+  }
+}
+
+.editModalFormUser {
+  :global {
+    .ant-modal-title {
+      font-weight: 700 !important;
+      font-size: 24px !important;
+    }
+    .ant-modal-close-icon svg {
+      font-size: 20px;
+    }
+  }
+}
+
+.selectedRowLayout {
+  margin-bottom: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 8px;
+}
+
+.selectedRowLayoutRole {
+  margin-top: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 8px;
+}
+
+.disableDelete {
+  color: gray;
+  cursor: not-allowed !important;
+}
+
+.enableDelete {
+  color: #f5222d;
+}
+
+.deleteSingleItemActive {
+  color: #f5222d;
+  font-size: 20px;
+}
+
+.deleteSingleItemDisabled {
+  color: gray;
+  font-size: 20px;
+  cursor: not-allowed !important;
+}
+
+.userInfoField {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.userInfoName {
+  color: rgba(0, 0, 0, 1);
+  font-weight: 600;
+}
+
+.userInfoEmail {
+  align-items: center;
+  color: rgba(0, 0, 0, 1);
+  font-size: 10px;
+  text-align: center;
+}
+
+.formLabel {
+  color: rgba(0, 0, 0, 1);
+}
+
+.formInput {
+  color: rgba(0, 0, 0, 1);
+}
+
+.formDisableInput {
+  color: rgba(0, 0, 0, 0.4);
+  font-weight: bold;
+}
+
+.deleteTeamIcon:hover {
+  color: red;
+}
+
+.saveNewTeamIcon:hover {
+  color: green;
+}
+
+.closeAddNewTeamIcon:hover {
+  color: red;
+}
+
+.isEditPersonalInfoIcon {
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.2rem;
+  color: #fff;
+  font-size: 22px;
+  background: #7fb77e;
+  border-radius: 4px;
+}
+.isNotEditPersonalInfoIcon {
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.2rem;
+  font-size: 22px;
+  background: #f0f2f5;
+  border-radius: 4px;
+}
