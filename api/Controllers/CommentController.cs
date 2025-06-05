@@ -29,7 +29,7 @@ namespace api.Controllers
             IStockRepository stockRepo,
             UserManager<AppUser> userManager,
             IFMPService fmpService
-            )
+        )
         {
             _commentRepo = commentRepo;
             _stockRepo = stockRepo;

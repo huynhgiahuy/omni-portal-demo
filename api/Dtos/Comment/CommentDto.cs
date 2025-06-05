@@ -14,8 +14,8 @@ namespace api.Dtos.Comment
         [MinLength(1, ErrorMessage = "Title must be 1 character")]
         public string Title { get; set; } = string.Empty;
         [Required]
-        [MaxLength(500, ErrorMessage = "Title can not be over 500 characters")]
-        [MinLength(1, ErrorMessage = "Title must be 1 character")]
+        [MaxLength(500, ErrorMessage = "Content can not be over 500 characters")]
+        [MinLength(1, ErrorMessage = "Content must be 1 character")]
         public string Content { get; set; } = string.Empty;
         public string CreatedBy { get; set; } = string.Empty;
         public DateTime CreatedOn { get; set; } = DateTime.Now;

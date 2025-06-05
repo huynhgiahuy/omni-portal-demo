@@ -66,7 +66,8 @@ namespace api.Controllers
 
             var userPortfolio = await _portfolioRepo.GetUserPortfolio(appUser);
 
-            if (userPortfolio.Any(e => e.Symbol.ToLower() == symbol.ToLower())) return BadRequest("Can not add same stock to portfolio");
+            if (userPortfolio.Any(e => e.Symbol.ToLower() == symbol.ToLower()))
+                return BadRequest("Can not add same stock to portfolio");
 
             var portfolioModel = new Portfolio
             {
