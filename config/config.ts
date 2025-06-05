@@ -1,11 +1,8 @@
-import { join } from 'path';
 // https://umijs.org/config/
 import { defineConfig } from 'umi';
 
 import defaultSettings from './defaultSettings';
 import routes from './routes';
-
-const { REACT_APP_ENV } = process.env;
 
 export default defineConfig({
   hash: true,

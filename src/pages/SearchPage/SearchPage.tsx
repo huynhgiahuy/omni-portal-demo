@@ -21,12 +21,15 @@ const SearchPage = (props: Props) => {
   const [searchResult, setSearchResult] = useState<CompanySearch[]>([]);
   const [serverError, setServerError] = useState<string | null>(null);
   const userToken = window.localStorage.getItem("token");
+  const userName = window.localStorage.getItem("username");
 
   useEffect(() => {
-    if (userToken) {
+    if (userToken && userName) {
       getPortfolio();
     }
     else {
+      window.localStorage.removeItem("token")
+      window.localStorage.removeItem("username")
       history.push("/user/login")
     }
   }, []);

@@ -31,7 +31,7 @@ const Login: React.FC = () => {
     window.localStorage.setItem('token', urlSSO?.token);
     window.localStorage.setItem('username', urlSSO?.username);
     await fetchUserInfo(urlSSO)
-    message.success('Đăng nhập thành công!')
+    message.success('Đăng nhập thành công!!!')
     history.push("/omni-channel/search-page")
   };
 
